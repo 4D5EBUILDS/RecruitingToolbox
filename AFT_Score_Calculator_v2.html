@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AFT — Army Fitness Test Calculator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root{
+  --bg:#080a07;--surface:#0f1410;--surface2:#161d15;--surface3:#1e2820;
+  --border:#253022;--border2:#344530;
+  --olive:#6b8c3e;--olive-l:#91b858;--olive-dim:#3d5224;
+  --amber:#c4891f;--amber-l:#e8b040;--amber-dim:#6b4a0e;
+  --red:#b83228;--red-l:#e04535;--green:#2d7a4e;--green-l:#3dab6b;
+  --blue:#2a5a8c;--blue-l:#4a8acc;
+  --text:#b8c8a8;--text-dim:#6a806a;--text-dimmer:#3d503d;
+  --white:#e8f0d8;--scan:rgba(140,200,80,0.025);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:15px;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,var(--scan) 2px,var(--scan) 4px);pointer-events:none;z-index:999;}
+body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:32px 32px;opacity:.2;pointer-events:none;z-index:0;}
+
+/* HEADER */
+header{position:relative;z-index:10;background:var(--surface);border-bottom:1px solid var(--border2);}
+.hdr-top{background:var(--olive-dim);padding:4px 24px;display:flex;justify-content:space-between;align-items:center;}
+.hdr-top span{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--olive-l);letter-spacing:.1em;}
+.hdr-main{display:flex;align-items:center;gap:20px;padding:14px 24px;flex-wrap:wrap;}
+.hdr-emblem{width:52px;height:52px;flex-shrink:0;}
+.hdr-text h1{font-family:'Oswald',sans-serif;font-size:26px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--white);line-height:1;}
+.hdr-text p{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--olive-l);letter-spacing:.08em;margin-top:4px;}
+.hdr-right{margin-left:auto;text-align:right;display:flex;flex-direction:column;gap:6px;align-items:flex-end;}
+.hdr-tag{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.1em;}
+.hdr-tag.amber{color:var(--amber);border:1px solid var(--amber-dim);padding:3px 8px;}
+.hdr-tag.dim{color:var(--text-dimmer);}
+
+/* CONFIG BAR */
+.config-bar{position:relative;z-index:10;background:var(--surface2);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;}
+.cfg-field{display:flex;align-items:center;gap:8px;}
+.cfg-label{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text-dimmer);letter-spacing:.1em;}
+.cfg-select{background:var(--surface3);border:1px solid var(--border2);color:var(--olive-l);font-family:'Share Tech Mono',monospace;font-size:12px;padding:5px 10px;outline:none;cursor:pointer;letter-spacing:.04em;}
+.cfg-select:focus{border-color:var(--olive);}
+
+/* MAIN */
+.wrap{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:20px 20px 40px;}
+
+/* STATUS ROW */
+.status-row{display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
+.stat-card{background:var(--surface);border:1px solid var(--border);padding:12px 16px;flex:1;min-width:120px;position:relative;}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.stat-card.green::before{background:var(--green);}
+.stat-card.red::before{background:var(--red);}
+.stat-card.amber::before{background:var(--amber);}
+.stat-card.blue::before{background:var(--blue);}
+.stat-card.olive::before{background:var(--olive);}
+.stat-label{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text-dimmer);letter-spacing:.12em;margin-bottom:4px;}
+.stat-val{font-family:'Oswald',sans-serif;font-size:26px;font-weight:700;letter-spacing:.06em;line-height:1;}
+.stat-sub{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text-dim);margin-top:3px;letter-spacing:.04em;}
+
+/* SECTION LABEL */
+.sec-label{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text-dimmer);letter-spacing:.2em;padding:16px 0 8px;display:flex;align-items:center;gap:12px;}
+.sec-label::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* EVENTS GRID */
+.ev-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:16px;}
+@media(max-width:900px){.ev-grid{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:600px){.ev-grid{grid-template-columns:1fr 1fr;}}
+
+.ev-card{background:var(--surface);border:1px solid var(--border);position:relative;overflow:hidden;display:flex;flex-direction:column;}
+.ev-card::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;transition:background .3s;}
+.ev-card.pass::after{background:var(--green);}
+.ev-card.fail::after{background:var(--red);}
+.ev-card.neutral::after{background:var(--border2);}
+
+.ev-hdr{padding:8px 10px 6px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start;}
+.ev-name{font-family:'Oswald',sans-serif;font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--white);line-height:1.2;}
+.ev-abbr{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--amber);border:1px solid var(--amber-dim);padding:1px 5px;letter-spacing:.06em;white-space:nowrap;}
+.ev-body{padding:10px;flex:1;}
+.ev-score{font-family:'Oswald',sans-serif;font-size:36px;font-weight:700;line-height:1;margin-bottom:4px;transition:color .3s;}
+.ev-bar-bg{height:3px;background:var(--surface3);border:1px solid var(--border);margin-bottom:8px;position:relative;}
+.ev-bar-fg{position:absolute;top:0;left:0;bottom:0;transition:width .3s,background .3s;}
+.ev-60mark{position:absolute;top:-2px;bottom:-2px;width:1px;background:var(--amber);opacity:.6;left:60%;}
+
+/* FIELD */
+.field{margin-bottom:8px;}
+.field-lbl{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text-dimmer);letter-spacing:.1em;display:flex;justify-content:space-between;margin-bottom:3px;}
+.field-lbl .fv{color:var(--olive-l);font-size:10px;}
+.field-row{display:flex;align-items:center;gap:5px;}
+.field-row input[type=range]{flex:1;-webkit-appearance:none;height:2px;background:var(--border2);outline:none;}
+.field-row input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;background:var(--olive-l);cursor:pointer;clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%);}
+.field-row input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--olive-l);cursor:pointer;border:none;clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%);}
+.manual-in{width:62px;background:var(--surface2);border:1px solid var(--border2);color:var(--olive-l);font-family:'Share Tech Mono',monospace;font-size:11px;padding:3px 5px;text-align:center;outline:none;}
+.manual-in:focus{border-color:var(--olive);}
+.ev-badge{display:inline-flex;align-items:center;gap:4px;margin-top:6px;padding:3px 8px;border:1px solid;font-family:'Oswald',sans-serif;font-size:12px;font-weight:700;letter-spacing:.1em;}
+.ev-badge.pass{border-color:var(--green);color:var(--green-l);background:rgba(45,122,78,.08);}
+.ev-badge.fail{border-color:var(--red);color:var(--red-l);background:rgba(184,50,40,.08);}
+.ev-badge.neutral{border-color:var(--border2);color:var(--text-dim);}
+
+/* 2 COL CHARTS */
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+@media(max-width:700px){.charts-grid{grid-template-columns:1fr;}}
+.chart-panel{background:var(--surface);border:1px solid var(--border);}
+.chart-hdr{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.chart-title{font-family:'Oswald',sans-serif;font-size:13px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--white);}
+.chart-sub{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text-dimmer);letter-spacing:.06em;}
+.chart-body{padding:14px;}
+.chart-wrap{position:relative;}
+
+/* THRESHOLD TABLE */
+.th-table{width:100%;border-collapse:collapse;font-family:'Share Tech Mono',monospace;font-size:11px;}
+.th-table th{padding:6px 8px;color:var(--text-dimmer);letter-spacing:.08em;font-weight:400;border-bottom:1px solid var(--border);text-align:left;}
+.th-table td{padding:5px 8px;border-bottom:1px solid var(--border);letter-spacing:.03em;}
+.th-table tr:last-child td{border-bottom:none;}
+.th-table .row-you{background:rgba(200,137,31,.07);}
+.th-table .row-you td{color:var(--amber-l) !important;font-weight:700;}
+.th-table .col-pass{color:var(--green-l);}
+.th-table .col-fail{color:var(--red-l);}
+
+/* PROMO POINTS */
+.promo-bar{display:flex;height:32px;border:1px solid var(--border);overflow:hidden;margin:8px 0;}
+.promo-seg{display:flex;align-items:center;justify-content:center;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:.06em;transition:flex .4s;}
+.promo-indicator{position:relative;height:8px;background:var(--surface3);border:1px solid var(--border);margin:4px 0 8px;}
+.promo-fill{position:absolute;top:0;left:0;bottom:0;background:var(--amber);transition:width .4s;}
+.promo-marker{position:absolute;top:-3px;bottom:-3px;width:2px;}
+
+/* PROMOTION CARD */
+.promo-card{background:var(--surface2);border:1px solid var(--border);padding:12px 14px;display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.pc-item .pc-lbl{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text-dimmer);letter-spacing:.1em;margin-bottom:3px;}
+.pc-item .pc-val{font-family:'Oswald',sans-serif;font-size:20px;font-weight:700;letter-spacing:.06em;}
+
+/* INFO BOX */
+.info-box{background:var(--surface2);border-left:3px solid var(--amber);padding:9px 12px;font-size:12px;color:var(--text-dim);line-height:1.5;margin-bottom:12px;}
+.info-box strong{color:var(--amber-l);}
+
+/* FOOTER */
+footer{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:12px 20px 32px;border-top:1px solid var(--border);font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text-dimmer);letter-spacing:.05em;display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px;}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.ev-card{animation:fadeUp .3s ease both;}
+.ev-card:nth-child(2){animation-delay:.04s;}
+.ev-card:nth-child(3){animation-delay:.08s;}
+.ev-card:nth-child(4){animation-delay:.12s;}
+.ev-card:nth-child(5){animation-delay:.16s;}
+.stat-card{animation:fadeUp .2s ease both;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hdr-top">
+    <span>HQDA // ARMY PHYSICAL READINESS // AFT SCORING SYSTEM // FM 7-22</span>
+    <span id="ts">LOADING...</span>
+  </div>
+  <div class="hdr-main">
+    <svg class="hdr-emblem" viewBox="0 0 52 52" fill="none">
+      <circle cx="26" cy="26" r="25" stroke="#6b8c3e" stroke-width="1.5"/>
+      <circle cx="26" cy="26" r="20" stroke="#3d5224" stroke-width="1"/>
+      <polygon points="26,5 30,19 44,19 33,27.5 37,42 26,33 15,42 19,27.5 8,19 22,19" fill="#3d5224" stroke="#91b858" stroke-width="1.2"/>
+      <text x="26" y="50" font-family="Share Tech Mono,monospace" font-size="4.5" fill="#6b8c3e" text-anchor="middle" letter-spacing="1">U·S·ARMY</text>
+    </svg>
+    <div class="hdr-text">
+      <h1>ARMY FITNESS TEST</h1>
+      <p>OFFICIAL AFT SCORING · APPROVED 15 MAY 2025 · EFFECTIVE 1 JUN 2025 · ARMY.MIL</p>
+    </div>
+    <div class="hdr-right">
+      <span class="hdr-tag amber">AFT SCORING SCALES v2025.06</span>
+      <span class="hdr-tag dim">FIVE EVENTS · MAX 500 PTS · NOT FOR OFFICIAL USE</span>
+    </div>
+  </div>
+</header>
+
+<!-- CONFIG -->
+<div class="config-bar">
+  <div class="cfg-field">
+    <span class="cfg-label">AGE GROUP</span>
+    <select class="cfg-select" id="sel-age">
+      <option value="0">17–21</option><option value="1">22–26</option>
+      <option value="2">27–31</option><option value="3" selected>32–36</option>
+      <option value="4">37–41</option><option value="5">42–46</option>
+      <option value="6">47–51</option><option value="7">52–56</option>
+    </select>
+  </div>
+  <div class="cfg-field">
+    <span class="cfg-label">STANDARD</span>
+    <select class="cfg-select" id="sel-std">
+      <option value="300" selected>GENERAL (300 MIN)</option>
+      <option value="350">COMBAT MOS (350 MIN)</option>
+    </select>
+  </div>
+  <div style="margin-left:auto;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text-dimmer);">
+    SLIDER + TYPE M:SS OR NUMBER → ENTER &nbsp;|&nbsp; BELOW THRESHOLD = 0 PTS / FAIL
+  </div>
+</div>
+
+<div class="wrap">
+
+<!-- STATUS CARDS -->
+<div class="status-row">
+  <div class="stat-card olive">
+    <div class="stat-label">TOTAL SCORE</div>
+    <div class="stat-val" id="s-total" style="color:var(--olive-l);">—</div>
+    <div class="stat-sub">OUT OF 500 MAX</div>
+  </div>
+  <div class="stat-card olive">
+    <div class="stat-label">MIN REQUIRED</div>
+    <div class="stat-val" id="s-req" style="color:var(--text-dim);">300</div>
+    <div class="stat-sub" id="s-req-sub">GENERAL STANDARD</div>
+  </div>
+  <div class="stat-card green" id="sc-result">
+    <div class="stat-label">RESULT</div>
+    <div class="stat-val" id="s-result" style="color:var(--text-dim);">—</div>
+    <div class="stat-sub" id="s-result-sub">AWAITING INPUT</div>
+  </div>
+  <div class="stat-card amber">
+    <div class="stat-label">PROMOTION PTS</div>
+    <div class="stat-val" id="s-promo" style="color:var(--amber-l);">—</div>
+    <div class="stat-sub" id="s-promo-sub">350–379=+10 · 380–399=+20 · 400+=+30</div>
+  </div>
+  <div class="stat-card blue">
+    <div class="stat-label">LOWEST EVENT</div>
+    <div class="stat-val" id="s-lowest" style="color:var(--blue-l);font-size:18px;">—</div>
+    <div class="stat-sub" id="s-lowest-sub">LIMITING FACTOR</div>
+  </div>
+</div>
+
+<!-- EVENTS -->
+<div class="sec-label">01 // EVENT SCORES — SLIDER + MANUAL INPUT</div>
+<div class="ev-grid" id="ev-grid"></div>
+
+<!-- CHARTS ROW 1 -->
+<div class="sec-label">02 // PERFORMANCE ANALYSIS</div>
+<div class="charts-grid">
+
+  <!-- RADAR -->
+  <div class="chart-panel">
+    <div class="chart-hdr">
+      <span class="chart-title">Event Profile</span>
+      <span class="chart-sub">RADAR // ALL 5 EVENTS</span>
+    </div>
+    <div class="chart-body">
+      <div class="chart-wrap" style="height:250px;"><canvas id="radar-chart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- BAR CHART -->
+  <div class="chart-panel">
+    <div class="chart-hdr">
+      <span class="chart-title">Scores vs. Thresholds</span>
+      <span class="chart-sub">PASS LINE = 60 PTS</span>
+    </div>
+    <div class="chart-body">
+      <div class="chart-wrap" style="height:250px;"><canvas id="bar-chart"></canvas></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- CHARTS ROW 2 -->
+<div class="charts-grid">
+
+  <!-- THRESHOLD TABLE -->
+  <div class="chart-panel">
+    <div class="chart-hdr">
+      <span class="chart-title">Threshold Reference</span>
+      <span class="chart-sub">YOUR SCORES HIGHLIGHTED</span>
+    </div>
+    <div class="chart-body" style="padding:0;">
+      <table class="th-table">
+        <thead>
+          <tr>
+            <th>LEVEL</th>
+            <th>MDL (lbs)</th>
+            <th>HRP (reps)</th>
+            <th>SDC (M:SS)</th>
+            <th>PLK (M:SS)</th>
+            <th>2MR (M:SS)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="color:var(--green-l);">MAX 100</td>
+            <td id="t-mdl-100">—</td>
+            <td id="t-hrp-100">—</td>
+            <td id="t-sdc-100">—</td>
+            <td id="t-plk-100">—</td>
+            <td id="t-run-100">—</td>
+          </tr>
+          <tr>
+            <td style="color:var(--olive-l);">SCORE 80</td>
+            <td id="t-mdl-80">—</td>
+            <td id="t-hrp-80">—</td>
+            <td id="t-sdc-80">—</td>
+            <td id="t-plk-80">—</td>
+            <td id="t-run-80">—</td>
+          </tr>
+          <tr>
+            <td style="color:var(--amber-l);">SCORE 70</td>
+            <td id="t-mdl-70">—</td>
+            <td id="t-hrp-70">—</td>
+            <td id="t-sdc-70">—</td>
+            <td id="t-plk-70">—</td>
+            <td id="t-run-70">—</td>
+          </tr>
+          <tr>
+            <td style="color:var(--red-l);">MIN 60</td>
+            <td id="t-mdl-60">—</td>
+            <td id="t-hrp-60">—</td>
+            <td id="t-sdc-60">—</td>
+            <td id="t-plk-60">—</td>
+            <td id="t-run-60">—</td>
+          </tr>
+          <tr class="row-you">
+            <td>▶ YOU</td>
+            <td id="t-you-mdl">—</td>
+            <td id="t-you-hrp">—</td>
+            <td id="t-you-sdc">—</td>
+            <td id="t-you-plk">—</td>
+            <td id="t-you-run">—</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PROMOTION POINTS + SCORE HISTORY -->
+  <div class="chart-panel">
+    <div class="chart-hdr">
+      <span class="chart-title">Score Breakdown</span>
+      <span class="chart-sub">PROMOTION POINTS &amp; TIER</span>
+    </div>
+    <div class="chart-body">
+      <div class="info-box">
+        <strong>Promotion Points (FM 7-22 / DTMS):</strong> General standard score recorded Oct 1 2025+. Combat MOS standard Jan 1 2026+. Max 30 pts added to promotion worksheet.
+      </div>
+      <!-- PROMO SEGMENTS -->
+      <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text-dimmer);letter-spacing:.1em;margin-bottom:4px;">PROMOTION TIER</div>
+      <div class="promo-bar" id="promo-bar">
+        <div class="promo-seg" id="pseg-white" style="flex:36;background:rgba(184,50,40,.2);color:var(--red-l);">FAIL</div>
+        <div class="promo-seg" id="pseg-base"  style="flex:50;background:rgba(61,82,36,.3);color:var(--text-dim);">300–349</div>
+        <div class="promo-seg" id="pseg-10"    style="flex:30;background:rgba(61,82,36,.4);color:var(--text-dim);">+10</div>
+        <div class="promo-seg" id="pseg-20"    style="flex:20;background:rgba(61,82,36,.5);color:var(--text-dim);">+20</div>
+        <div class="promo-seg" id="pseg-30"    style="flex:100;background:rgba(61,82,36,.6);color:var(--text-dim);">+30 PTS</div>
+      </div>
+      <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text-dimmer);display:flex;justify-content:space-between;margin-bottom:12px;">
+        <span>0</span><span>300</span><span>350</span><span>380</span><span>400</span><span>500</span>
+      </div>
+
+      <!-- PROMO POINTS GRID -->
+      <div class="promo-card">
+        <div class="pc-item">
+          <div class="pc-lbl">PROMO PTS EARNED</div>
+          <div class="pc-val" id="pp-pts" style="color:var(--amber-l);">—</div>
+        </div>
+        <div class="pc-item">
+          <div class="pc-lbl">SCORE TIER</div>
+          <div class="pc-val" id="pp-tier" style="color:var(--text-dim);font-size:14px;">—</div>
+        </div>
+        <div class="pc-item">
+          <div class="pc-lbl">ABOVE MINIMUM BY</div>
+          <div class="pc-val" id="pp-above" style="color:var(--olive-l);">—</div>
+        </div>
+        <div class="pc-item">
+          <div class="pc-lbl">TO NEXT TIER</div>
+          <div class="pc-val" id="pp-next" style="color:var(--text-dim);font-size:14px;">—</div>
+        </div>
+      </div>
+
+      <!-- AFT EXEMPTION NOTE -->
+      <div style="margin-top:12px;padding:8px 10px;background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--blue);">
+        <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--blue-l);letter-spacing:.08em;margin-bottom:3px;">AFT BODY COMP EXEMPTION — ARMY DIRECTIVE 2025-17</div>
+        <div style="font-size:12px;color:var(--text-dim);line-height:1.4;">Score <strong style="color:var(--white);">≥465</strong> with <strong style="color:var(--white);">≥80 pts/event</strong> = exempt from tape test regardless of screening weight. Status: <strong id="exempt-status" style="color:var(--text-dim);">—</strong></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- SCORE DISTANCE CHART (full width) -->
+<div class="chart-panel" style="margin-bottom:16px;">
+  <div class="chart-hdr">
+    <span class="chart-title">Points Needed to Level Up</span>
+    <span class="chart-sub">DISTANCE FROM KEY THRESHOLDS</span>
+  </div>
+  <div class="chart-body">
+    <div class="chart-wrap" style="height:140px;"><canvas id="gap-chart"></canvas></div>
+  </div>
+</div>
+
+<!-- PLANK REFERENCE NOTE -->
+<div class="info-box">
+  <strong>Plank 60-pt minimums by age group:</strong>
+  1:30 (17–21) · 1:25 (22–26) · 1:20 (27–31) · <strong style="color:var(--white);">1:15 (32–36)</strong> · 1:10 (37–41+) &nbsp;|&nbsp;
+  <strong>2MR 60-pt minimums:</strong> 19:57 (17–21) · 19:45 (22–26) · 19:45 (27–31) · <strong style="color:var(--white);">20:44 (32–36)</strong> · 20:44 (37–41) · 22:04 (42–46) · 22:04 (47–51) · 22:50 (52–56)
+</div>
+
+</div><!-- /wrap -->
+
+<footer>
+  <span>SOURCE: ARMY.MIL · AFT SCORING SCALES PDF · APPROVED 15 MAY 2025 · EFFECTIVE 1 JUN 2025 · FM 7-22</span>
+  <span>NOT FOR OFFICIAL USE — EDUCATIONAL/TRAINING REFERENCE ONLY</span>
+</footer>
+
+<script>
+// ── TIMESTAMP ──
+function tick(){document.getElementById('ts').textContent=new Date().toISOString().replace('T',' ').substring(0,19)+' UTC';}
+tick();setInterval(tick,1000);
+
+// ── SCORING TABLES ──────────────────────────────────────────────────────────────
+const MDL=[
+[[150,60],[160,63],[170,65],[180,67],[190,69],[200,70],[210,73],[220,75],[230,77],[240,79],[250,81],[260,83],[270,85],[280,87],[290,89],[300,92],[310,94],[320,96],[330,98],[340,100]],
+[[150,60],[160,63],[170,65],[180,67],[190,70],[200,71],[210,73],[220,75],[230,77],[240,79],[250,81],[260,83],[270,85],[280,87],[290,89],[300,91],[310,93],[320,95],[330,97],[340,99],[350,100]],
+[[150,60],[160,63],[170,65],[180,67],[190,70],[200,71],[210,73],[220,75],[230,77],[240,79],[250,81],[260,83],[270,85],[280,87],[290,89],[300,91],[310,93],[320,95],[330,97],[340,98],[350,100]],
+[[140,60],[150,61],[160,63],[170,65],[180,67],[190,70],[200,71],[210,73],[220,75],[230,77],[240,79],[250,81],[260,83],[270,85],[280,87],[290,89],[300,91],[310,93],[320,95],[330,97],[340,99],[350,100]],
+[[140,60],[150,62],[160,63],[170,65],[180,67],[190,70],[200,71],[210,73],[220,75],[230,77],[240,79],[250,81],[260,83],[270,85],[280,87],[290,89],[300,91],[310,93],[320,95],[330,97],[340,99],[350,100]],
+[[140,60],[150,62],[160,64],[170,66],[180,68],[190,70],[200,72],[210,74],[220,76],[230,78],[240,79],[250,82],[260,84],[270,86],[280,88],[290,90],[300,92],[310,93],[320,95],[330,97],[340,99],[350,100]],
+[[140,60],[150,62],[160,64],[170,66],[180,68],[190,70],[200,72],[210,74],[220,76],[230,78],[240,80],[250,82],[260,84],[270,86],[280,87],[290,89],[300,91],[310,93],[320,95],[330,97],[340,100]],
+[[140,60],[150,63],[160,65],[170,67],[180,70],[190,72],[200,74],[210,76],[220,78],[230,80],[240,82],[250,84],[260,86],[270,88],[280,90],[290,91],[300,93],[310,95],[320,97],[330,100]],
+];
+const HRP=[
+[[15,60],[17,61],[18,62],[19,63],[21,64],[22,65],[23,66],[24,67],[25,68],[26,69],[28,70],[29,72],[30,73],[32,75],[33,76],[34,77],[35,78],[36,79],[37,80],[38,81],[39,82],[40,84],[42,85],[43,86],[44,87],[45,88],[46,89],[47,91],[48,92],[49,93],[51,94],[52,95],[53,96],[54,97],[55,98],[58,100]],
+[[14,60],[15,61],[17,62],[18,63],[19,64],[21,65],[22,66],[23,67],[24,68],[25,69],[26,70],[27,71],[28,72],[29,73],[30,74],[31,75],[32,76],[34,77],[35,78],[36,79],[37,80],[38,81],[39,82],[40,83],[41,84],[42,85],[43,86],[44,87],[45,88],[46,89],[48,90],[49,91],[50,92],[51,93],[53,94],[55,95],[57,96],[59,97],[61,100]],
+[[14,60],[15,61],[17,62],[18,63],[20,64],[21,65],[22,66],[23,67],[24,68],[25,69],[26,70],[28,72],[29,73],[30,74],[31,75],[32,76],[33,77],[35,78],[36,79],[37,80],[38,81],[39,82],[41,83],[42,84],[43,85],[44,86],[45,87],[46,88],[47,89],[48,90],[49,91],[51,92],[53,93],[55,94],[57,95],[58,96],[60,97],[62,100]],
+[[13,60],[15,61],[16,62],[18,63],[19,64],[20,65],[21,66],[22,67],[24,68],[25,69],[26,70],[27,71],[28,72],[29,73],[30,74],[31,75],[32,76],[33,77],[34,78],[35,79],[36,80],[37,81],[39,82],[40,83],[41,84],[42,85],[43,86],[44,87],[45,88],[46,89],[47,90],[49,91],[51,92],[52,93],[53,94],[55,95],[57,96],[58,97],[60,100]],
+[[12,60],[14,61],[15,62],[17,63],[18,64],[19,65],[20,66],[21,67],[22,68],[23,69],[24,70],[25,71],[27,72],[28,73],[29,74],[30,75],[31,76],[32,77],[33,78],[34,79],[35,80],[36,81],[37,82],[38,83],[39,84],[40,85],[42,86],[43,87],[44,88],[45,89],[46,90],[47,91],[48,92],[49,93],[50,94],[51,95],[53,96],[54,97],[55,98],[57,99],[59,100]],
+[[11,60],[13,61],[15,62],[16,63],[17,64],[18,65],[19,66],[20,67],[21,68],[22,69],[23,70],[24,71],[25,72],[26,73],[28,74],[29,75],[30,76],[31,77],[32,78],[33,79],[34,80],[35,81],[36,82],[37,83],[38,84],[39,85],[40,86],[41,87],[42,88],[43,89],[44,90],[45,91],[46,92],[47,93],[48,94],[49,95],[51,96],[52,97],[53,98],[55,99],[57,100]],
+[[11,60],[12,61],[14,62],[15,63],[16,64],[17,65],[18,66],[19,67],[20,68],[21,69],[22,70],[23,71],[24,72],[25,73],[26,74],[27,75],[28,76],[29,77],[30,78],[31,79],[32,80],[33,81],[34,82],[35,83],[36,84],[37,85],[38,86],[39,87],[40,88],[41,89],[42,90],[43,91],[44,92],[45,93],[46,94],[48,95],[49,96],[50,97],[51,98],[53,99],[55,100]],
+[[10,60],[11,61],[13,62],[14,63],[15,64],[16,65],[17,66],[18,67],[19,68],[20,69],[21,70],[22,71],[23,72],[24,73],[25,74],[26,75],[27,76],[28,77],[29,78],[30,79],[31,80],[32,81],[33,82],[34,83],[35,84],[36,85],[37,86],[38,87],[39,88],[40,89],[41,90],[42,91],[43,92],[44,93],[45,94],[47,95],[48,96],[50,97],[51,100]],
+];
+const SDC=[
+[[89,100],[94,98],[97,95],[100,93],[103,90],[106,87],[109,84],[112,81],[115,78],[118,75],[121,72],[125,70],[129,68],[133,66],[137,64],[141,62],[148,60]],
+[[90,100],[93,98],[96,95],[99,93],[102,90],[105,87],[108,84],[111,81],[114,78],[117,75],[120,72],[125,70],[128,68],[131,66],[136,64],[141,62],[151,60]],
+[[90,100],[93,98],[96,95],[99,93],[102,90],[105,87],[108,84],[111,81],[114,78],[117,75],[120,72],[126,70],[130,68],[134,66],[138,64],[142,62],[152,60]],
+[[93,100],[96,98],[99,95],[102,93],[105,90],[108,87],[111,84],[114,81],[117,78],[120,75],[123,72],[127,70],[131,68],[135,66],[139,64],[143,62],[156,60]],
+[[96,100],[99,98],[102,95],[105,93],[108,90],[111,87],[114,84],[117,81],[120,78],[123,75],[126,72],[130,70],[134,68],[138,66],[142,64],[146,62],[161,60]],
+[[100,100],[103,98],[106,95],[109,93],[112,90],[115,87],[118,84],[121,81],[124,78],[128,75],[131,72],[135,70],[139,68],[143,66],[147,64],[151,62],[165,60]],
+[[105,100],[108,98],[111,95],[114,93],[117,90],[120,87],[123,84],[126,81],[129,78],[133,75],[136,72],[140,70],[144,68],[148,66],[152,64],[156,62],[173,60]],
+[[112,100],[115,98],[118,95],[121,93],[124,90],[127,87],[130,84],[133,81],[136,78],[140,75],[143,72],[147,70],[151,68],[155,66],[159,64],[163,62],[180,60]],
+];
+const PLK_MIN=[90,85,80,75,70,70,70,70];
+const PLK=[
+[[90,60],[99,65],[108,68],[120,71],[135,74],[150,78],[165,82],[180,86],[195,92],[210,100]],
+[[85,60],[94,65],[103,68],[115,71],[130,74],[145,78],[160,82],[175,86],[195,92],[215,100]],
+[[80,60],[89,65],[98,68],[110,71],[125,74],[140,78],[155,82],[170,86],[190,92],[215,100]],
+[[75,60],[84,65],[93,68],[105,71],[120,74],[135,78],[150,82],[165,86],[186,92],[213,100]],
+[[70,60],[79,65],[88,68],[100,71],[115,74],[130,78],[145,82],[160,86],[181,92],[210,100]],
+[[70,60],[79,65],[88,68],[100,71],[115,74],[130,78],[145,82],[160,86],[181,92],[207,100]],
+[[70,60],[79,65],[88,68],[100,71],[115,74],[130,78],[145,82],[160,86],[181,92],[203,100]],
+[[70,60],[79,65],[88,68],[100,71],[115,74],[130,78],[145,82],[160,86],[181,92],[198,100]],
+];
+const RUN=[
+[[802,100],[827,99],[844,98],[859,97],[872,96],[885,95],[896,94],[907,93],[918,92],[929,91],[939,90],[949,89],[959,88],[969,87],[979,86],[988,85],[998,84],[1008,83],[1017,82],[1027,81],[1033,80],[1037,79],[1045,78],[1054,77],[1063,76],[1072,75],[1080,74],[1089,73],[1098,72],[1107,71],[1115,70],[1125,69],[1134,68],[1143,67],[1153,66],[1163,65],[1173,64],[1183,63],[1194,62],[1197,60]],
+[[805,100],[827,99],[835,98],[852,97],[867,96],[881,95],[894,94],[905,93],[917,92],[928,91],[938,90],[949,89],[959,88],[969,87],[979,86],[989,85],[999,84],[1009,83],[1019,82],[1028,81],[1038,79],[1048,78],[1057,77],[1066,76],[1075,75],[1083,74],[1092,73],[1101,72],[1103,70],[1110,69],[1119,68],[1128,67],[1137,66],[1147,65],[1156,64],[1166,63],[1176,62],[1185,60]],
+[[805,100],[827,99],[835,98],[852,97],[867,96],[881,95],[894,94],[905,93],[917,92],[928,91],[938,90],[955,89],[965,88],[974,87],[984,86],[993,85],[1003,84],[1012,83],[1022,82],[1032,81],[1041,80],[1050,79],[1058,78],[1067,77],[1075,76],[1084,75],[1093,74],[1101,73],[1110,72],[1118,71],[1123,70],[1130,69],[1139,68],[1157,67],[1166,66],[1175,65],[1185,60]],
+[[822,100],[846,99],[863,98],[877,97],[889,96],[901,95],[912,94],[923,93],[933,92],[943,91],[950,90],[953,89],[962,88],[972,87],[981,86],[990,85],[1000,84],[1009,83],[1018,82],[1027,81],[1036,80],[1046,79],[1054,78],[1062,77],[1070,76],[1078,75],[1087,74],[1095,73],[1103,72],[1105,71],[1110,70],[1138,69],[1146,68],[1156,67],[1165,66],[1174,65],[1184,64],[1195,63],[1206,62],[1218,61],[1244,60]],
+[[822,100],[856,99],[872,98],[886,97],[899,96],[910,95],[921,94],[932,93],[942,92],[952,91],[961,90],[971,89],[980,88],[989,87],[999,86],[1008,85],[1017,84],[1026,83],[1035,82],[1044,81],[1053,80],[1061,79],[1070,78],[1078,77],[1086,76],[1094,75],[1102,74],[1112,73],[1120,72],[1128,71],[1135,70],[1147,69],[1164,68],[1173,67],[1182,66],[1191,65],[1201,64],[1211,63],[1224,62],[1244,60]],
+[[845,100],[869,99],[885,98],[899,97],[912,96],[924,95],[935,94],[945,93],[955,92],[965,91],[975,90],[984,89],[993,88],[1003,87],[1012,86],[1021,85],[1030,84],[1039,83],[1048,82],[1057,81],[1067,80],[1076,79],[1086,78],[1095,77],[1105,76],[1115,75],[1125,74],[1135,73],[1144,72],[1154,71],[1163,70],[1175,69],[1196,68],[1207,67],[1218,66],[1230,65],[1237,64],[1244,63],[1251,62],[1311,61],[1324,60]],
+[[870,100],[892,99],[908,98],[922,97],[935,96],[947,95],[958,94],[969,93],[979,92],[989,91],[999,90],[1008,89],[1018,88],[1027,87],[1036,86],[1045,85],[1055,84],[1064,83],[1073,82],[1082,81],[1092,80],[1101,79],[1111,78],[1121,77],[1130,76],[1140,75],[1150,74],[1160,73],[1170,72],[1180,71],[1190,70],[1201,69],[1213,68],[1224,67],[1236,66],[1248,65],[1260,64],[1272,63],[1324,60]],
+[[909,100],[938,99],[954,98],[968,97],[981,96],[993,95],[1004,94],[1015,93],[1025,92],[1035,91],[1045,90],[1055,89],[1065,88],[1074,87],[1083,86],[1093,85],[1102,84],[1112,83],[1121,82],[1130,81],[1140,80],[1150,79],[1159,78],[1169,77],[1179,76],[1189,75],[1199,74],[1207,73],[1214,72],[1222,71],[1230,70],[1238,69],[1247,68],[1255,67],[1263,66],[1271,65],[1279,64],[1289,63],[1370,60]],
+];
+const MDL_MIN=[150,150,150,140,140,140,140,140];
+const HRP_MIN=[15,14,14,13,12,11,11,10];
+const SDC_MAX=[148,151,152,156,161,165,173,180];
+const RUN_MAX=[1197,1185,1185,1244,1244,1324,1324,1370];
+
+// ── HELPERS ──
+function fmtTime(s){return Math.floor(s/60)+':'+(s%60<10?'0':'')+s%60;}
+function parseTime(str){str=(str||'').trim();if(str.includes(':')){const p=str.split(':');return parseInt(p[0]||0)*60+(parseInt(p[1]||0)||0);}return parseInt(str)||0;}
+function interp(table,val,hi,minT,maxT){
+  if(hi&&minT!=null&&val<minT)return 0;
+  if(!hi&&maxT!=null&&val>maxT)return 0;
+  const s=[...table].sort((a,b)=>hi?a[0]-b[0]:b[0]-a[0]);
+  if(hi&&val>=s[s.length-1][0])return s[s.length-1][1];
+  if(!hi&&val<=s[s.length-1][0])return s[s.length-1][1];
+  for(let i=0;i<s.length-1;i++){
+    if(hi&&val>=s[i][0]&&val<=s[i+1][0]){const t=(val-s[i][0])/(s[i+1][0]-s[i][0]);return Math.min(100,Math.max(0,Math.round(s[i][1]+t*(s[i+1][1]-s[i][1]))));}
+    if(!hi&&val<=s[i][0]&&val>=s[i+1][0]){const t=(s[i][0]-val)/(s[i][0]-s[i+1][0]);return Math.min(100,Math.max(0,Math.round(s[i][1]+t*(s[i+1][1]-s[i][1]))));}
+  }
+  return 0;
+}
+function getScore(id,val,ai){
+  if(id==='mdl')return interp(MDL[ai],val,true,MDL_MIN[ai],null);
+  if(id==='hrp')return interp(HRP[ai],val,true,HRP_MIN[ai],null);
+  if(id==='sdc')return interp(SDC[ai],val,false,null,SDC_MAX[ai]);
+  if(id==='plk')return interp(PLK[ai],val,true,PLK_MIN[ai],null);
+  if(id==='run')return interp(RUN[ai],val,false,null,RUN_MAX[ai]);
+  return 0;
+}
+// Reverse lookup — find performance value for target score
+function reverseInterp(table,targetPts,hi){
+  const s=[...table].sort((a,b)=>hi?a[0]-b[0]:b[0]-a[0]);
+  for(let i=0;i<s.length-1;i++){
+    if(s[i][1]<=targetPts&&s[i+1][1]>=targetPts){
+      const t=(targetPts-s[i][1])/(s[i+1][1]-s[i][1]);
+      return hi ? s[i][0]+t*(s[i+1][0]-s[i][0]) : s[i][0]-t*(s[i][0]-s[i+1][0]);
+    }
+  }
+  return hi ? s[s.length-1][0] : s[s.length-1][0];
+}
+function getPerf(id,targetPts,ai){
+  if(id==='mdl')return Math.round(reverseInterp(MDL[ai],targetPts,true));
+  if(id==='hrp')return Math.round(reverseInterp(HRP[ai],targetPts,true));
+  if(id==='sdc')return Math.round(reverseInterp(SDC[ai],targetPts,false));
+  if(id==='plk')return Math.round(reverseInterp(PLK[ai],targetPts,true));
+  if(id==='run')return Math.round(reverseInterp(RUN[ai],targetPts,false));
+}
+
+// ── EVENT DEFINITIONS ──
+const EVTS=[
+  {id:'mdl',label:'Max Deadlift',abbr:'MDL',isTime:false,unit:'lbs',min:60,max:400,step:10,def:240},
+  {id:'hrp',label:'Hand-Release Push-ups',abbr:'HRP',isTime:false,unit:'reps',min:1,max:65,step:1,def:35},
+  {id:'sdc',label:'Sprint-Drag-Carry',abbr:'SDC',isTime:true,min:88,max:230,step:1,def:135},
+  {id:'plk',label:'Plank',abbr:'PLK',isTime:true,min:30,max:220,step:1,def:120},
+  {id:'run',label:'2-Mile Run',abbr:'2MR',isTime:true,min:700,max:1560,step:1,def:1150},
+];
+const pc=p=>p>=90?'#3dab6b':p>=60?'#4a8acc':'#e04535';
+const vals={};EVTS.forEach(e=>vals[e.id]=e.def);
+
+// ── CHARTS ──
+let radarC=null, barC=null, gapC=null;
+
+function initCharts(){
+  radarC=new Chart(document.getElementById('radar-chart'),{
+    type:'radar',
+    data:{
+      labels:['MDL','HRP','SDC','PLK','2MR'],
+      datasets:[
+        {label:'Score',data:[0,0,0,0,0],borderColor:'#91b858',backgroundColor:'rgba(145,184,88,.12)',borderWidth:2,pointBackgroundColor:'#91b858',pointRadius:4},
+        {label:'100pt',data:[100,100,100,100,100],borderColor:'rgba(61,171,107,.2)',backgroundColor:'transparent',borderWidth:1,borderDash:[4,4],pointRadius:0},
+        {label:'60pt pass',data:[60,60,60,60,60],borderColor:'rgba(200,137,31,.3)',backgroundColor:'transparent',borderWidth:1,borderDash:[2,4],pointRadius:0},
+      ]
+    },
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{r:{min:0,max:110,grid:{color:'rgba(50,68,48,.6)'},angleLines:{color:'rgba(50,68,48,.6)'},ticks:{display:false},pointLabels:{color:'#6a806a',font:{family:"'Share Tech Mono'",size:11}}}}}
+  });
+
+  barC=new Chart(document.getElementById('bar-chart'),{
+    type:'bar',
+    data:{labels:['MDL','HRP','SDC','PLK','2MR'],
+      datasets:[
+        {label:'Score',data:[0,0,0,0,0],backgroundColor:['#2a5a2a','#2a5a2a','#2a5a2a','#2a5a2a','#2a5a2a']},
+        {label:'60pt line',data:[60,60,60,60,60],type:'line',borderColor:'rgba(200,137,31,.7)',backgroundColor:'transparent',borderWidth:1.5,borderDash:[5,4],pointRadius:0},
+        {label:'100pt line',data:[100,100,100,100,100],type:'line',borderColor:'rgba(61,171,107,.3)',backgroundColor:'transparent',borderWidth:1,borderDash:[3,5],pointRadius:0},
+      ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.dataset.label+': '+c.parsed.y+' pts'}}},
+      scales:{
+        x:{ticks:{color:'#6a806a',font:{family:"'Share Tech Mono'",size:10}},grid:{display:false}},
+        y:{min:0,max:110,ticks:{color:'#6a806a',font:{family:"'Share Tech Mono'",size:10}},grid:{color:'rgba(50,68,48,.4)'},
+          plugins:{annotation:{annotations:{passLine:{type:'line',yMin:60,yMax:60,borderColor:'rgba(200,137,31,.5)',borderWidth:1}}}}}}}
+  });
+
+  gapC=new Chart(document.getElementById('gap-chart'),{
+    type:'bar',
+    data:{labels:['To Pass (300)','To +10pts (350)','To +20pts (380)','To +30pts (400)'],
+      datasets:[{label:'Points needed',data:[0,0,0,0],backgroundColor:['#b83228','#6b4a0e','#3d5224','#2d7a4e']}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+Math.max(0,Math.round(c.parsed.x))+' pts needed'}}},
+      scales:{
+        x:{min:0,max:200,ticks:{color:'#6a806a',font:{family:"'Share Tech Mono'",size:10},callback:v=>v+' pts'},grid:{color:'rgba(50,68,48,.4)'}},
+        y:{ticks:{color:'#6a806a',font:{family:"'Share Tech Mono'",size:10}},grid:{display:false}}}}
+  });
+}
+
+// ── BUILD EVENT CARDS ──
+function buildGrid(){
+  const container=document.getElementById('ev-grid');
+  container.innerHTML='';
+  const ai=parseInt(document.getElementById('sel-age').value);
+  EVTS.forEach(ev=>{
+    const v=vals[ev.id];const pts=getScore(ev.id,v,ai);
+    const pass=pts>=60;const col=pc(pts);
+    const div=document.createElement('div');
+    div.className='ev-card '+(pts>0?pass?'pass':'fail':'neutral');
+    div.id='card-'+ev.id;
+    div.innerHTML=`
+      <div class="ev-hdr">
+        <div>
+          <div class="ev-name">${ev.label}</div>
+        </div>
+        <div class="ev-abbr">${ev.abbr}</div>
+      </div>
+      <div class="ev-body">
+        <div class="ev-score" id="sc-${ev.id}" style="color:${col}">${pts}</div>
+        <div class="ev-bar-bg">
+          <div class="ev-bar-fg" id="br-${ev.id}" style="width:${Math.min(pts,100)}%;background:${col};"></div>
+          <div class="ev-60mark"></div>
+        </div>
+        <div class="field">
+          <div class="field-lbl"><span>SLIDER</span><span class="fv" id="rd-${ev.id}">${ev.isTime?fmtTime(v):v}</span></div>
+          <div class="field-row">
+            <input type="range" id="rng-${ev.id}" min="${ev.min}" max="${ev.max}" step="${ev.step}" value="${v}">
+          </div>
+        </div>
+        <div class="field">
+          <div class="field-lbl"><span>${ev.isTime?'M:SS':ev.unit} (ENTER)</span></div>
+          <div class="field-row">
+            <input type="text" class="manual-in" id="txt-${ev.id}" value="${ev.isTime?fmtTime(v):v}" placeholder="${ev.isTime?'M:SS':ev.unit}" style="width:100%;">
+          </div>
+        </div>
+        <div class="ev-badge ${pts>0?pass?'pass':'fail':'neutral'}" id="bdg-${ev.id}">
+          ${pts>0?(pass?'✓ PASS':'✗ FAIL'):'—'}
+        </div>
+      </div>`;
+    container.appendChild(div);
+
+    div.querySelector('#rng-'+ev.id).addEventListener('input',function(){
+      vals[ev.id]=parseInt(this.value);
+      document.getElementById('rd-'+ev.id).textContent=ev.isTime?fmtTime(vals[ev.id]):vals[ev.id];
+      document.getElementById('txt-'+ev.id).value=ev.isTime?fmtTime(vals[ev.id]):vals[ev.id];
+      refreshCard(ev.id);updateAll();
+    });
+    const txt=div.querySelector('#txt-'+ev.id);
+    const commit=function(){
+      let v2=ev.isTime?parseTime(this.value):parseInt((this.value||'').replace(/[^0-9]/g,'')||ev.def);
+      v2=Math.max(ev.min,Math.min(ev.max,isNaN(v2)?ev.def:v2));
+      vals[ev.id]=v2;this.value=ev.isTime?fmtTime(v2):v2;
+      document.getElementById('rng-'+ev.id).value=v2;
+      document.getElementById('rd-'+ev.id).textContent=ev.isTime?fmtTime(v2):v2;
+      refreshCard(ev.id);updateAll();
+    };
+    txt.addEventListener('blur',commit);
+    txt.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();this.blur();}});
+  });
+}
+
+function refreshCard(id){
+  const ai=parseInt(document.getElementById('sel-age').value);
+  const pts=getScore(id,vals[id],ai);const col=pc(pts);const pass=pts>=60;
+  const sc=document.getElementById('sc-'+id);
+  const br=document.getElementById('br-'+id);
+  const card=document.getElementById('card-'+id);
+  const bdg=document.getElementById('bdg-'+id);
+  if(sc){sc.textContent=pts;sc.style.color=col;}
+  if(br){br.style.width=Math.min(pts,100)+'%';br.style.background=col;}
+  if(card){card.className='ev-card '+(pts>0?pass?'pass':'fail':'neutral');}
+  if(bdg){bdg.className='ev-badge '+(pts>0?pass?'pass':'fail':'neutral');bdg.textContent=pts>0?(pass?'✓ PASS':'✗ FAIL'):'—';}
+}
+
+function updateAll(){
+  const ai=parseInt(document.getElementById('sel-age').value);
+  const req=parseInt(document.getElementById('sel-std').value);
+  const scores={};EVTS.forEach(ev=>scores[ev.id]=getScore(ev.id,vals[ev.id],ai));
+  const total=Object.values(scores).reduce((a,b)=>a+b,0);
+  const anyFail=Object.values(scores).some(s=>s<60);
+  const pass=total>=req&&!anyFail;
+  const allEventsPassed=!anyFail;
+
+  // STATUS CARDS
+  document.getElementById('s-total').textContent=total;
+  document.getElementById('s-total').style.color=pass?'var(--green-l)':anyFail?'var(--red-l)':'var(--amber-l)';
+  document.getElementById('s-req').textContent=req;
+  document.getElementById('s-req-sub').textContent=req===300?'GENERAL STANDARD':'COMBAT MOS STANDARD';
+
+  const resultCard=document.getElementById('sc-result');
+  const resultVal=document.getElementById('s-result');
+  const resultSub=document.getElementById('s-result-sub');
+  if(!allEventsPassed){
+    resultCard.className='stat-card red';resultVal.style.color='var(--red-l)';
+    resultVal.textContent='FAIL';resultSub.textContent='EVENT BELOW 60 PTS';
+  } else if(!pass){
+    resultCard.className='stat-card amber';resultVal.style.color='var(--amber-l)';
+    resultVal.textContent='FAIL';resultSub.textContent='BELOW TOTAL MINIMUM';
+  } else if(total>=400){
+    resultCard.className='stat-card green';resultVal.style.color='var(--green-l)';
+    resultVal.textContent='PASS';resultSub.textContent='EXCELLENT — +30 PROMO PTS';
+  } else {
+    resultCard.className='stat-card green';resultVal.style.color='var(--green-l)';
+    resultVal.textContent='PASS';
+    resultSub.textContent=total>=380?'STRONG — +20 PROMO PTS':total>=350?'SOLID — +10 PROMO PTS':'MEETS STANDARD';
+  }
+
+  // PROMO POINTS
+  const promoPoints=pass?(total>=400?30:total>=380?20:total>=350?10:0):0;
+  document.getElementById('s-promo').textContent=pass?'+'+promoPoints:'—';
+  const ppTier=total>=400?'400+ TIER (MAX)':total>=380?'380-399 TIER':total>=350?'350-379 TIER':total>=req?'MET STANDARD':'BELOW MIN';
+  document.getElementById('pp-pts').textContent=pass?'+'+promoPoints:'0';
+  document.getElementById('pp-tier').textContent=ppTier;
+  document.getElementById('pp-tier').style.color=promoPoints===30?'var(--green-l)':promoPoints>0?'var(--olive-l)':'var(--text-dim)';
+  document.getElementById('pp-above').textContent=pass?'+'+(total-req)+' pts':'N/A';
+  document.getElementById('pp-above').style.color=pass?'var(--olive-l)':'var(--text-dim)';
+  const nextTiers=[350,380,400,500];const nextTier=nextTiers.find(t=>total<t);
+  document.getElementById('pp-next').textContent=nextTier?nextTier-total+' pts to '+nextTier:'MAX REACHED';
+  document.getElementById('pp-next').style.color=nextTier?'var(--text-dim)':'var(--green-l)';
+
+  // PROMO BAR HIGHLIGHT
+  ['white','base','10','20','30'].forEach(id=>{
+    const el=document.getElementById('pseg-'+id);
+    if(el)el.style.opacity='0.4';
+  });
+  if(!pass)document.getElementById('pseg-white').style.opacity='1';
+  else if(total<350){document.getElementById('pseg-base').style.opacity='1';}
+  else if(total<380){document.getElementById('pseg-10').style.opacity='1';}
+  else if(total<400){document.getElementById('pseg-20').style.opacity='1';}
+  else{document.getElementById('pseg-30').style.opacity='1';}
+
+  // LOWEST EVENT
+  const lowestId=EVTS.reduce((a,b)=>scores[a.id]<scores[b.id]?a:b).id;
+  const lowestPts=scores[lowestId];
+  document.getElementById('s-lowest').textContent=lowestId.toUpperCase()+' '+lowestPts;
+  document.getElementById('s-lowest').style.color=lowestPts>=60?'var(--blue-l)':'var(--red-l)';
+  document.getElementById('s-lowest-sub').textContent=lowestPts<60?'FAILING EVENT — FIX FIRST':'LOWEST SCORE';
+
+  // EXEMPTION STATUS
+  const allEighty=EVTS.every(ev=>scores[ev.id]>=80);
+  const exempt=allEventsPassed&&total>=465&&allEighty;
+  document.getElementById('exempt-status').textContent=exempt?'✓ EXEMPT FROM TAPE TEST':
+    !allEventsPassed?'✗ NEED ALL EVENTS ≥60 FIRST':
+    total<465?`✗ NEED ${465-total} MORE PTS (${total}/465)`:
+    !allEighty?'✗ NEED ALL EVENTS ≥80 PTS':'—';
+  document.getElementById('exempt-status').style.color=exempt?'var(--green-l)':'var(--red-l)';
+
+  // THRESHOLD TABLE — YOUR SCORES
+  const fmtPerf=(id,v)=>EVTS.find(e=>e.id===id).isTime?fmtTime(v):v;
+  document.getElementById('t-you-mdl').textContent=vals.mdl+' lbs';
+  document.getElementById('t-you-hrp').textContent=vals.hrp+' reps';
+  document.getElementById('t-you-sdc').textContent=fmtTime(vals.sdc);
+  document.getElementById('t-you-plk').textContent=fmtTime(vals.plk);
+  document.getElementById('t-you-run').textContent=fmtTime(vals.run);
+
+  // Threshold table — reference values at 60,70,80,100 pts
+  [60,70,80,100].forEach(tgt=>{
+    EVTS.forEach(ev=>{
+      const el=document.getElementById('t-'+ev.id+'-'+tgt);
+      if(el){
+        const perfVal=getPerf(ev.id,tgt,ai);
+        el.textContent=ev.isTime?fmtTime(Math.round(perfVal)):Math.round(perfVal)+(ev.unit==='lbs'?' lbs':' reps');
+      }
+    });
+  });
+
+  // CHARTS
+  const scoreArr=EVTS.map(ev=>scores[ev.id]);
+  const colors=EVTS.map(ev=>pc(scores[ev.id]));
+
+  radarC.data.datasets[0].data=scoreArr;
+  radarC.data.datasets[0].borderColor=pass?'#91b858':'#e04535';
+  radarC.data.datasets[0].backgroundColor=pass?'rgba(145,184,88,.1)':'rgba(224,69,53,.1)';
+  radarC.data.datasets[0].pointBackgroundColor=colors;
+  radarC.update('none');
+
+  barC.data.datasets[0].data=scoreArr;
+  barC.data.datasets[0].backgroundColor=colors;
+  barC.update('none');
+
+  // GAP CHART
+  const gaps=[req,350,380,400].map(t=>Math.max(0,t-total));
+  gapC.data.datasets[0].data=gaps;
+  gapC.data.datasets[0].backgroundColor=gaps.map((g,i)=>
+    g===0?'rgba(61,171,107,.5)':['#b83228','#6b4a0e','#3d5224','#2d7a4e'][i]);
+  gapC.update('none');
+}
+
+['sel-age','sel-std'].forEach(id=>document.getElementById(id).addEventListener('change',()=>{buildGrid();updateAll();}));
+initCharts();buildGrid();updateAll();
+</script>
+</body>
+</html>

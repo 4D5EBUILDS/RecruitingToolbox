@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Army Recruiting Toolbox | RSID 4D5E</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+:root{
+  --bg:#070b14;--s1:#0c1220;--s2:#111929;--s3:#172035;
+  --wire:#1c2d4a;--wire-b:#263d62;
+  --ice:#4da8e8;--ice-l:#7dc4f8;--ice-d:rgba(77,168,232,.10);
+  --gold:#d4902a;--gold-l:#f0b040;--gold-d:rgba(212,144,42,.08);
+  --text:#b8cde4;--text2:#6888a8;--text3:#3a5270;--white:#e8f4ff;
+  --green:#1fa85c;--green-l:#28d975;--green-d:rgba(31,168,92,.10);
+  --red:#cc2a3a;--red-l:#f04050;
+  --purple:#6840c8;--purple-l:#9870f8;--purple-d:rgba(104,64,200,.10);
+  --teal:#0a8878;--teal-l:#14c0aa;--teal-d:rgba(10,136,120,.10);
+  --ff-h:'Syne',sans-serif;--ff-b:'IBM Plex Sans',sans-serif;--ff-m:'IBM Plex Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--ff-b);background:var(--bg);color:var(--text);min-height:100vh;}
+
+/* Grid texture */
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:
+    linear-gradient(rgba(77,168,232,.02) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(77,168,232,.02) 1px,transparent 1px);
+  background-size:56px 56px;
+}
+
+/* ── HEADER ── */
+header{
+  position:relative;z-index:10;
+  background:linear-gradient(180deg,var(--s1) 0%,transparent 100%);
+  border-bottom:1px solid var(--wire);
+  padding:0 24px;
+}
+.hdr-inner{
+  max-width:1100px;margin:0 auto;
+  display:flex;align-items:center;gap:16px;
+  padding:16px 0;
+}
+.hdr-star{
+  width:44px;height:44px;flex-shrink:0;
+  background:linear-gradient(135deg,rgba(77,168,232,.15),rgba(77,168,232,.05));
+  border:1px solid var(--wire-b);border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;
+}
+.hdr-text{}
+.hdr-title{
+  font-family:var(--ff-h);font-size:17px;font-weight:800;
+  color:var(--white);letter-spacing:.04em;line-height:1.2;
+}
+.hdr-title span{color:var(--ice-l);}
+.hdr-sub{
+  font-family:var(--ff-m);font-size:9.5px;color:var(--text3);
+  letter-spacing:.08em;margin-top:2px;
+}
+.hdr-right{
+  margin-left:auto;
+  font-family:var(--ff-m);font-size:9px;color:var(--text3);
+  text-align:right;line-height:1.8;
+}
+.hdr-right strong{color:var(--ice-l);}
+
+/* ── HERO ── */
+.hero{
+  position:relative;z-index:1;
+  max-width:1100px;margin:0 auto;
+  padding:48px 24px 32px;
+}
+.hero-eyebrow{
+  font-family:var(--ff-m);font-size:10px;font-weight:500;
+  letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ice);margin-bottom:14px;
+  display:flex;align-items:center;gap:10px;
+}
+.hero-eyebrow::before{content:'';width:32px;height:1px;background:var(--ice);opacity:.5;}
+.hero-h1{
+  font-family:var(--ff-h);font-size:clamp(28px,4vw,44px);font-weight:800;
+  color:var(--white);line-height:1.15;margin-bottom:14px;
+  max-width:640px;
+}
+.hero-h1 em{color:var(--ice-l);font-style:normal;}
+.hero-p{
+  font-size:14px;color:var(--text2);line-height:1.7;
+  max-width:520px;margin-bottom:28px;
+}
+.hero-stats{
+  display:flex;gap:28px;flex-wrap:wrap;
+}
+.stat{
+  display:flex;flex-direction:column;gap:2px;
+}
+.stat-n{
+  font-family:var(--ff-h);font-size:22px;font-weight:800;
+  color:var(--ice-l);line-height:1;
+}
+.stat-l{font-family:var(--ff-m);font-size:9px;color:var(--text3);letter-spacing:.08em;}
+
+/* ── DIVIDER ── */
+.divider{
+  max-width:1100px;margin:0 auto;padding:0 24px;
+}
+.divider-line{
+  border:none;border-top:1px solid var(--wire);margin:0;
+}
+
+/* ── TOOLS GRID ── */
+.tools-section{
+  position:relative;z-index:1;
+  max-width:1100px;margin:0 auto;
+  padding:32px 24px 56px;
+}
+.section-label{
+  font-family:var(--ff-m);font-size:9px;font-weight:600;
+  letter-spacing:.16em;text-transform:uppercase;
+  color:var(--text3);margin-bottom:20px;
+  display:flex;align-items:center;gap:10px;
+}
+.section-label::after{content:'';flex:1;height:1px;background:var(--wire);}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+  gap:14px;
+}
+
+/* ── TOOL CARD ── */
+.card{
+  background:var(--s1);border:1px solid var(--wire);
+  border-radius:8px;overflow:hidden;
+  transition:border-color .2s,transform .2s,box-shadow .2s;
+  text-decoration:none;display:flex;flex-direction:column;
+  position:relative;
+}
+.card:hover{
+  border-color:var(--wire-b);
+  transform:translateY(-2px);
+  box-shadow:0 8px 32px rgba(0,0,0,.4),0 0 0 1px rgba(77,168,232,.06);
+}
+.card-accent{
+  height:3px;width:100%;
+}
+.card-body{padding:18px 18px 14px;flex:1;display:flex;flex-direction:column;}
+.card-top{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;}
+.card-icon{
+  width:38px;height:38px;border-radius:7px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;border:1px solid;
+}
+.card-meta{}
+.card-title{
+  font-family:var(--ff-h);font-size:13.5px;font-weight:700;
+  color:var(--white);line-height:1.3;margin-bottom:3px;
+}
+.card-desc{
+  font-size:11.5px;color:var(--text2);line-height:1.65;flex:1;
+  margin-bottom:14px;
+}
+.card-footer{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 18px;
+  background:rgba(0,0,0,.2);border-top:1px solid var(--wire);
+}
+.card-tags{display:flex;gap:5px;flex-wrap:wrap;}
+.tag{
+  font-family:var(--ff-m);font-size:8px;padding:2px 7px;
+  border-radius:2px;border:1px solid;
+}
+.card-arrow{
+  font-size:14px;color:var(--text3);transition:color .15s,transform .15s;
+}
+.card:hover .card-arrow{color:var(--white);transform:translateX(3px);}
+
+/* Card color themes */
+.theme-blue .card-accent{background:linear-gradient(90deg,var(--ice),#2563eb);}
+.theme-blue .card-icon{background:var(--ice-d);border-color:rgba(77,168,232,.3);color:var(--ice-l);}
+.theme-blue .tag{color:var(--ice-l);border-color:rgba(77,168,232,.3);background:var(--ice-d);}
+
+.theme-gold .card-accent{background:linear-gradient(90deg,var(--gold),#b45309);}
+.theme-gold .card-icon{background:var(--gold-d);border-color:rgba(212,144,42,.3);color:var(--gold-l);}
+.theme-gold .tag{color:var(--gold-l);border-color:rgba(212,144,42,.3);background:var(--gold-d);}
+
+.theme-green .card-accent{background:linear-gradient(90deg,var(--green),#15803d);}
+.theme-green .card-icon{background:var(--green-d);border-color:rgba(31,168,92,.3);color:var(--green-l);}
+.theme-green .tag{color:var(--green-l);border-color:rgba(31,168,92,.3);background:var(--green-d);}
+
+.theme-purple .card-accent{background:linear-gradient(90deg,var(--purple),#4c1d95);}
+.theme-purple .card-icon{background:var(--purple-d);border-color:rgba(104,64,200,.3);color:var(--purple-l);}
+.theme-purple .tag{color:var(--purple-l);border-color:rgba(104,64,200,.3);background:var(--purple-d);}
+
+.theme-teal .card-accent{background:linear-gradient(90deg,var(--teal),#0f766e);}
+.theme-teal .card-icon{background:var(--teal-d);border-color:rgba(10,136,120,.3);color:var(--teal-l);}
+.theme-teal .tag{color:var(--teal-l);border-color:rgba(10,136,120,.3);background:var(--teal-d);}
+
+.theme-red .card-accent{background:linear-gradient(90deg,var(--red),#7f1d1d);}
+.theme-red .card-icon{background:rgba(204,42,58,.08);border-color:rgba(204,42,58,.3);color:var(--red-l);}
+.theme-red .tag{color:var(--red-l);border-color:rgba(204,42,58,.3);background:rgba(204,42,58,.08);}
+
+/* Coming soon card */
+.card.coming-soon{opacity:.5;pointer-events:none;}
+.coming-badge{
+  position:absolute;top:12px;right:12px;
+  font-family:var(--ff-m);font-size:8px;font-weight:600;
+  letter-spacing:.1em;padding:2px 8px;
+  background:rgba(55,65,81,.6);border:1px solid var(--wire-b);
+  color:var(--text3);border-radius:2px;
+}
+
+/* ── FOOTER ── */
+footer{
+  position:relative;z-index:1;
+  border-top:1px solid var(--wire);
+  padding:20px 24px;
+  background:var(--s1);
+}
+.footer-inner{
+  max-width:1100px;margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:10px;
+}
+.footer-left{
+  font-family:var(--ff-m);font-size:9px;color:var(--text3);
+  line-height:1.8;letter-spacing:.06em;
+}
+.footer-left strong{color:var(--text2);}
+.footer-warning{
+  font-family:var(--ff-m);font-size:8px;font-weight:600;
+  letter-spacing:.08em;padding:3px 9px;
+  border:1px solid rgba(204,42,58,.3);color:var(--red-l);
+  border-radius:2px;background:rgba(204,42,58,.05);
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hdr-inner">
+    <div class="hdr-star">⭐</div>
+    <div class="hdr-text">
+      <div class="hdr-title">Army <span>Recruiting Toolbox</span></div>
+      <div class="hdr-sub">RSID 4D5E · LINCOLN, NE · MOS 79R · U.S. ARMY RECRUITING COMMAND</div>
+    </div>
+    <div class="hdr-right">
+      <strong>USAREC</strong><br>
+      Lincoln, Nebraska<br>
+      Updated Mar 2026
+    </div>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="hero-eyebrow">Recruiter Resource Suite</div>
+  <h1 class="hero-h1">Every tool you need.<br><em>One place. Any device.</em></h1>
+  <p class="hero-p">
+    Professional reference tools built for the daily recruiting mission —
+    medical eligibility, MOS qualification, fitness standards, and more.
+    Open any tool on your phone, tablet, or desktop. No login required.
+  </p>
+  <div class="hero-stats">
+    <div class="stat"><span class="stat-n">6</span><span class="stat-l">TOOLS AVAILABLE</span></div>
+    <div class="stat"><span class="stat-n">200+</span><span class="stat-l">DQ CONDITIONS</span></div>
+    <div class="stat"><span class="stat-n">500+</span><span class="stat-l">ICD-10 CODES</span></div>
+    <div class="stat"><span class="stat-n">All</span><span class="stat-l">MOS COVERED</span></div>
+  </div>
+</div>
+
+<div class="divider"><hr class="divider-line"></div>
+
+<div class="tools-section">
+  <div class="section-label">Available Tools</div>
+  <div class="grid">
+
+    <!-- MEDICAL DQ -->
+    <a class="card theme-red" href="medical_v6.html">
+      <div class="card-accent"></div>
+      <div class="card-body">
+        <div class="card-top">
+          <div class="card-icon">⚕</div>
+          <div class="card-meta">
+            <div class="card-title">Medical DQ & Waiver Reference</div>
+          </div>
+        </div>
+        <div class="card-desc">
+          Complete accession medical disqualification and waiver guidance. 200+ conditions
+          with ICD-10 codes, DQ standards, waiver criteria, required documents, and
+          AR 40-501 cross-references. Full-text search across all conditions.
+          Includes waiver process workflow and recruiter field tips.
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-tags">
+          <span class="tag">DoWI 6130.03-V1 CH6</span>
+          <span class="tag">AR 40-501</span>
+          <span class="tag">SWA 5/2/24</span>
+        </div>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <!-- ASVAB -->
+    <a class="card theme-blue" href="asvab_mos_tool_v2.html">
+      <div class="card-accent"></div>
+      <div class="card-body">
+        <div class="card-top">
+          <div class="card-icon">📋</div>
+          <div class="card-meta">
+            <div class="card-title">ASVAB MOS Qualifier</div>
+          </div>
+        </div>
+        <div class="card-desc">
+          Enter all 10 ASVAB line scores and instantly see which MOS an applicant
+          qualifies for across the entire Army. Filter by CMF branch, clearance level,
+          OPAT category. Shows AIT location, length, enlistment terms, and ACASP flags.
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-tags">
+          <span class="tag">DA Pam 611-25</span>
+          <span class="tag">Feb 2026</span>
+        </div>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <!-- BMI -->
+    <a class="card theme-green" href="bmi_calculator.html">
+      <div class="card-accent"></div>
+      <div class="card-body">
+        <div class="card-top">
+          <div class="card-icon">📏</div>
+          <div class="card-meta">
+            <div class="card-title">BMI & Body Fat Calculator</div>
+          </div>
+        </div>
+        <div class="card-desc">
+          Height, weight, and Army body fat tape measurement calculator.
+          Instant pass/fail against AR 600-9 standards by age and gender.
+          Flags ARMS program eligibility and provides guidance on requirements.
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-tags">
+          <span class="tag">AR 600-9</span>
+          <span class="tag">H&W Standards</span>
+        </div>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <!-- OPAT -->
+    <a class="card theme-teal" href="opat_calculator.html">
+      <div class="card-accent"></div>
+      <div class="card-body">
+        <div class="card-top">
+          <div class="card-icon">💪</div>
+          <div class="card-meta">
+            <div class="card-title">OPAT Calculator</div>
+          </div>
+        </div>
+        <div class="card-desc">
+          Occupational Physical Assessment Test score calculator.
+          Enter scores for Standing Long Jump, Seated Power Throw, Sprint-Drag-Carry,
+          and Interval Aerobic Run to determine PDC category and MOS eligibility.
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-tags">
+          <span class="tag">OPAT PDC</span>
+          <span class="tag">MOS Physical Req</span>
+        </div>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <!-- AFT -->
+    <a class="card theme-purple" href="aft_score_app.html">
+      <div class="card-accent"></div>
+      <div class="card-body">
+        <div class="card-top">
+          <div class="card-icon">🏃</div>
+          <div class="card-meta">
+            <div class="card-title">ACFT Score Calculator</div>
+          </div>
+        </div>
+        <div class="card-desc">
+          Army Combat Fitness Test scoring tool. Enter raw scores for all six events
+          and get total ACFT score with pass/fail by age group and gender.
+          Useful for DEP soldier tracking and fitness counseling.
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-tags">
+          <span class="tag">ACFT</span>
+          <span class="tag">FM 7-22</span>
+        </div>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <!-- COMING SOON: DEP DASHBOARD -->
+    <div class="card theme-gold coming-soon">
+      <div class="coming-badge">COMING SOON</div>
+      <div class="card-accent"></div>
+      <div class="card-body">
+        <div class="card-top">
+          <div class="card-icon">📊</div>
+          <div class="card-meta">
+            <div class="card-title">DEP Management Dashboard</div>
+          </div>
+        </div>
+        <div class="card-desc">
+          Track all Future Soldiers by recruiter, ship date, MOS, and ARMS status.
+          Auto-generates 1SG briefing format. Color-coded risk flags.
+          One-click export for command briefings.
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-tags">
+          <span class="tag">DEP</span>
+          <span class="tag">Future Soldiers</span>
+        </div>
+        <span class="card-arrow">→</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-left">
+      <strong>Army Recruiting Toolbox</strong> · RSID 4D5E · Lincoln, Nebraska<br>
+      Sources: AR 601-210 (Nov 2023) · DoWI 6130.03-V1 Ch6 (Feb 2026) · AR 40-501 (2019) · SWA Guidance (5/2/24) · DA Pam 611-25 (Feb 2026)
+    </div>
+    <div class="footer-warning">⚠ NOT LEGAL OR MEDICAL ADVICE — FOR RECRUITER REFERENCE ONLY</div>
+  </div>
+</footer>
+
+</body>
+</html>
