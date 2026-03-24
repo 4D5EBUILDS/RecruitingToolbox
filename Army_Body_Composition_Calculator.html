@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>U.S. Army Body Composition Calculator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@400;500;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #0d0f0b;
+  --surface:  #141810;
+  --surface2: #1c2116;
+  --surface3: #232a1d;
+  --border:   #2e3828;
+  --border2:  #3d4a35;
+  --olive:    #7a8c4e;
+  --olive-l:  #a3b86a;
+  --amber:    #c8922a;
+  --amber-l:  #e8b050;
+  --red:      #c0392b;
+  --red-l:    #e74c3c;
+  --green:    #2d7a4e;
+  --green-l:  #3dab6b;
+  --text:     #d4dcc8;
+  --text-dim: #8a9680;
+  --text-dimmer: #566050;
+  --white:    #eef2e8;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Barlow', sans-serif;
+  font-size: 15px;
+  min-height: 100vh;
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(46,56,40,0.3) 39px, rgba(46,56,40,0.3) 40px),
+    repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(46,56,40,0.15) 39px, rgba(46,56,40,0.15) 40px);
+}
+
+/* HEADER */
+header {
+  background: var(--surface);
+  border-bottom: 2px solid var(--olive);
+  padding: 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.header-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.star-badge {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+}
+.header-titles h1 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--white);
+  line-height: 1;
+}
+.header-titles p {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: var(--olive-l);
+  letter-spacing: 0.08em;
+  margin-top: 3px;
+}
+.header-badge {
+  margin-left: auto;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--amber);
+  border: 1px solid var(--amber);
+  padding: 3px 8px;
+}
+
+/* MAIN */
+main {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+@media (max-width: 680px) {
+  main { grid-template-columns: 1fr; padding: 16px; }
+}
+
+/* PANEL */
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+.panel::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--olive);
+}
+.panel-full { grid-column: 1 / -1; }
+.panel-header {
+  padding: 12px 16px 10px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.panel-num {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: var(--amber);
+  background: rgba(200,146,42,0.1);
+  border: 1px solid rgba(200,146,42,0.3);
+  padding: 2px 7px;
+  letter-spacing: 0.05em;
+}
+.panel-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--white);
+}
+.panel-body { padding: 16px; }
+
+/* STANDARD TOGGLE */
+.std-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border: 1px solid var(--border2);
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+.std-btn {
+  padding: 10px 8px;
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all .15s;
+  text-align: center;
+  position: relative;
+}
+.std-btn.active {
+  background: var(--olive);
+  color: var(--bg);
+}
+.std-btn:not(:last-child) { border-right: 1px solid var(--border2); }
+
+/* GENDER TOGGLE */
+.gender-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border: 1px solid var(--border2);
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+.gender-btn {
+  padding: 8px;
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all .15s;
+}
+.gender-btn.active { background: var(--surface3); color: var(--olive-l); }
+.gender-btn:not(:last-child) { border-right: 1px solid var(--border2); }
+
+/* FIELD */
+.field { margin-bottom: 14px; }
+.field-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.field-label .val {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 14px;
+  color: var(--olive-l);
+  letter-spacing: 0.03em;
+}
+.field-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.field-row input[type=range] {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 3px;
+  background: var(--border2);
+  outline: none;
+  border-radius: 0;
+}
+.field-row input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  background: var(--olive-l);
+  cursor: pointer;
+  border-radius: 0;
+  border: 2px solid var(--bg);
+  box-shadow: 0 0 0 1px var(--olive-l);
+}
+.field-row input[type=range]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  background: var(--olive-l);
+  cursor: pointer;
+  border-radius: 0;
+  border: 2px solid var(--bg);
+}
+.field-row input[type=number] {
+  width: 68px;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  color: var(--olive-l);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 14px;
+  padding: 5px 8px;
+  text-align: center;
+  outline: none;
+  border-radius: 0;
+}
+.field-row input[type=number]:focus { border-color: var(--olive); }
+.ht-sub {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: var(--text-dimmer);
+  margin-top: 3px;
+}
+
+/* INFO BOX */
+.info-box {
+  background: var(--surface2);
+  border-left: 3px solid var(--amber);
+  padding: 9px 12px;
+  margin-bottom: 14px;
+  font-size: 12px;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+.info-box strong { color: var(--amber-l); }
+
+/* RESULT CARDS */
+.result-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.rcard {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  padding: 10px 10px 8px;
+  position: relative;
+}
+.rcard-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dimmer);
+  margin-bottom: 4px;
+}
+.rcard-val {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 18px;
+  color: var(--text);
+  line-height: 1;
+}
+.rcard-sub {
+  font-size: 10px;
+  color: var(--text-dimmer);
+  margin-top: 3px;
+  font-family: 'Barlow Condensed', sans-serif;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.rcard.pass { border-color: var(--green); }
+.rcard.pass .rcard-val { color: var(--green-l); }
+.rcard.fail { border-color: var(--red); }
+.rcard.fail .rcard-val { color: var(--red-l); }
+.rcard.warn { border-color: var(--amber); }
+.rcard.warn .rcard-val { color: var(--amber-l); }
+.rcard.neutral { border-color: var(--border2); }
+
+/* BAR */
+.bar-wrap { margin: 4px 0 10px; }
+.bar-labels {
+  display: flex;
+  justify-content: space-between;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: var(--text-dimmer);
+  margin-bottom: 4px;
+}
+.bar-track {
+  height: 6px;
+  background: var(--surface3);
+  border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+.bar-fill {
+  height: 100%;
+  transition: width .4s ease, background .3s;
+  background: var(--olive);
+}
+.bar-limit {
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 2px;
+  background: var(--amber);
+  opacity: 0.7;
+}
+
+/* OVERALL RESULT */
+.overall-result {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  padding: 16px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.overall-result::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.03;
+  background: repeating-linear-gradient(
+    45deg,
+    transparent, transparent 4px,
+    rgba(255,255,255,1) 4px, rgba(255,255,255,1) 5px
+  );
+  pointer-events: none;
+}
+.overall-status {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.overall-sub {
+  font-size: 13px;
+  color: var(--text-dim);
+  line-height: 1.4;
+}
+.overall-pass .overall-status { color: var(--green-l); }
+.overall-fail .overall-status { color: var(--red-l); }
+.overall-warn .overall-status { color: var(--amber-l); }
+.overall-pass { border-color: var(--green); }
+.overall-fail { border-color: var(--red); }
+.overall-warn { border-color: var(--amber); }
+
+/* STANDARDS NOTE */
+.standards-note {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  padding: 10px 12px;
+  font-size: 11px;
+  color: var(--text-dimmer);
+  line-height: 1.6;
+  font-family: 'Barlow Condensed', sans-serif;
+  letter-spacing: 0.04em;
+}
+.standards-note span { color: var(--olive-l); font-weight: 600; }
+
+/* FOOTER */
+footer {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 12px 24px 32px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: var(--text-dimmer);
+  letter-spacing: 0.04em;
+  border-top: 1px solid var(--border);
+}
+
+/* DIVIDER */
+.divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 14px 0;
+}
+
+/* HIDDEN */
+.hidden { display: none !important; }
+
+/* ANIMATE IN */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.panel { animation: fadeUp .3s ease both; }
+.panel:nth-child(2) { animation-delay: .05s; }
+.panel:nth-child(3) { animation-delay: .10s; }
+.panel:nth-child(4) { animation-delay: .15s; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <svg class="star-badge" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="22,2 26.5,16 41,16 29.5,25 33.5,39 22,30.5 10.5,39 14.5,25 3,16 17.5,16" fill="#7a8c4e" stroke="#a3b86a" stroke-width="1.2"/>
+      <polygon points="22,8 25,17.5 35,17.5 27.5,23 30.5,33 22,27.5 13.5,33 16.5,23 9,17.5 19,17.5" fill="#141810"/>
+    </svg>
+    <div class="header-titles">
+      <h1>Army Body Composition</h1>
+      <p>AR 600-9 &amp; AR 40-501 &nbsp;·&nbsp; ONE-SITE TAPE TEST &nbsp;·&nbsp; EFFECTIVE JUN 2023</p>
+    </div>
+    <div class="header-badge">Unofficial</div>
+  </div>
+</header>
+
+<main>
+
+  <!-- PANEL 1: CONFIGURATION -->
+  <div class="panel">
+    <div class="panel-header">
+      <span class="panel-num">01</span>
+      <span class="panel-title">Configuration</span>
+    </div>
+    <div class="panel-body">
+
+      <div class="field">
+        <div class="field-label"><span>Standard</span></div>
+        <div class="std-toggle">
+          <button class="std-btn active" id="btn-ps" onclick="setStandard('ps')">📋 Prior Service<br><small style="font-size:9px;font-weight:400;letter-spacing:0.05em;">AR 600-9</small></button>
+          <button class="std-btn" id="btn-nps" onclick="setStandard('nps')">🎖 Non-Prior Service<br><small style="font-size:9px;font-weight:400;letter-spacing:0.05em;">AR 40-501 (Accession)</small></button>
+        </div>
+      </div>
+
+      <div id="ps-note" class="info-box">
+        <strong>Active Duty / Prior Service:</strong> Over screening weight → tape test required. AFT ≥465 with ≥80pts/event = body fat exempt.
+      </div>
+      <div id="nps-note" class="info-box hidden">
+        <strong>Non-Prior Service / Recruiting:</strong> Stricter weight tables, higher BF% ceilings. Exceeding = disqualified for enlistment.
+      </div>
+
+      <div class="field">
+        <div class="field-label"><span>Gender</span></div>
+        <div class="gender-toggle">
+          <button class="gender-btn active" id="btn-m" onclick="setGender('M')">♂ Male</button>
+          <button class="gender-btn" id="btn-f" onclick="setGender('F')">♀ Female</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="field-label">
+          <span>Height (inches)</span>
+          <span class="val" id="val-ht-ft">5'10"</span>
+        </div>
+        <div class="field-row">
+          <input type="range" id="rng-ht" min="58" max="80" step="1" value="70">
+          <input type="number" id="txt-ht" value="70" min="58" max="80">
+        </div>
+        <div class="ht-sub" id="ht-sub">Range: 58–80 in &nbsp;|&nbsp; Add 6 lbs/in for M above 80"</div>
+      </div>
+
+      <div class="field">
+        <div class="field-label">
+          <span>Weight (lbs)</span>
+          <span class="val" id="val-wt">185</span>
+        </div>
+        <div class="field-row">
+          <input type="range" id="rng-wt" min="91" max="320" step="1" value="185">
+          <input type="number" id="txt-wt" value="185" min="80" max="350">
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="field-label">
+          <span>Age</span>
+          <span class="val" id="val-age">35</span>
+        </div>
+        <div class="field-row">
+          <input type="range" id="rng-age" min="17" max="65" step="1" value="35">
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- PANEL 2: H/W SCREENING -->
+  <div class="panel">
+    <div class="panel-header">
+      <span class="panel-num">02</span>
+      <span class="panel-title">H/W Screening</span>
+    </div>
+    <div class="panel-body">
+
+      <div class="result-grid">
+        <div class="rcard neutral" id="card-min">
+          <div class="rcard-label">Min Weight</div>
+          <div class="rcard-val" id="val-min">—</div>
+          <div class="rcard-sub">lbs</div>
+        </div>
+        <div class="rcard neutral" id="card-max">
+          <div class="rcard-label">Max Weight</div>
+          <div class="rcard-val" id="val-max">—</div>
+          <div class="rcard-sub" id="sub-max">lbs / age</div>
+        </div>
+        <div class="rcard neutral" id="card-hw">
+          <div class="rcard-label">H/W Status</div>
+          <div class="rcard-val" id="val-hw" style="font-size:14px;">—</div>
+          <div class="rcard-sub" id="sub-hw"></div>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="standards-note" id="std-table-note">
+        <span>AR 600-9 Table B-1</span> — Soldiers under max weight pass with no tape test. Over max → body fat assessment required. Under min → medical eval required.
+      </div>
+
+      <hr class="divider">
+
+      <!-- TAPE TEST -->
+      <div class="field-label" style="margin-bottom:8px;"><span>One-Site Tape Test (if over screening wt)</span></div>
+      <div class="info-box" style="margin-bottom:12px;">
+        Measure <strong>abdomen at navel</strong>, relaxed, normal exhale. Average 3 readings → round to nearest 0.5".
+      </div>
+
+      <div class="field">
+        <div class="field-label">
+          <span>Abdomen circ. (in) — at navel</span>
+          <span class="val" id="val-abd">36.0"</span>
+        </div>
+        <div class="field-row">
+          <input type="range" id="rng-abd" min="24" max="60" step="0.5" value="36">
+          <input type="number" id="txt-abd" value="36" step="0.5">
+        </div>
+      </div>
+
+      <div class="result-grid">
+        <div class="rcard neutral" id="card-bf">
+          <div class="rcard-label">Est. Body Fat %</div>
+          <div class="rcard-val" id="val-bf">—</div>
+        </div>
+        <div class="rcard neutral" id="card-bfmax">
+          <div class="rcard-label">Max Allowed %</div>
+          <div class="rcard-val" id="val-bfmax">—</div>
+        </div>
+        <div class="rcard neutral" id="card-tape">
+          <div class="rcard-label">Tape Status</div>
+          <div class="rcard-val" id="val-tape" style="font-size:14px;">—</div>
+          <div class="rcard-sub" id="sub-tape"></div>
+        </div>
+      </div>
+
+      <div class="bar-wrap">
+        <div class="bar-labels">
+          <span>0%</span>
+          <span id="bar-label-mid">—</span>
+          <span>50%</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill" id="bf-bar" style="width:0%;"></div>
+          <div class="bar-limit" id="bf-limit" style="left:0%;"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- PANEL 3: OVERALL RESULT (full width) -->
+  <div class="panel panel-full">
+    <div class="panel-header">
+      <span class="panel-num">03</span>
+      <span class="panel-title">Overall Assessment</span>
+    </div>
+    <div class="panel-body">
+      <div class="overall-result overall-warn" id="overall-card">
+        <div class="overall-status" id="overall-status">—</div>
+        <div class="overall-sub" id="overall-sub">Enter your measurements above.</div>
+      </div>
+
+      <hr class="divider">
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px;">
+        <div class="standards-note">
+          <span>MAX BODY FAT — PRIOR SERVICE (AR 600-9):</span><br>
+          Age 17–20: M 20% · F 30%<br>
+          Age 21–27: M 22% · F 32%<br>
+          Age 28–39: M 24% · F 34%<br>
+          Age 40+: M 26% · F 36%
+        </div>
+        <div class="standards-note">
+          <span>MAX BODY FAT — ACCESSION (AR 40-501):</span><br>
+          Age 17–27: M 26% · F 32%<br>
+          Age 28–39: M 28% · F 34%<br>
+          Age 40+: M 30% · F 36%<br>
+          <span style="color:var(--amber);font-size:10px;">Exceed = disqualified for enlistment</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  AR 600-9 (TABLE B-1, B-2) · AR 40-501 (TABLE 2-1, 2-2) · ARMY DIRECTIVE 2023-11 (ONE-SITE TAPE) · ARMY DIRECTIVE 2025-17 (AFT EXEMPTION)
+  &nbsp;&nbsp;|&nbsp;&nbsp; ONE-SITE FORMULA: MALE BF% = −26.97 − (0.12 × WT) + (1.99 × ABD) &nbsp;·&nbsp; FEMALE BF% = −9.15 − (0.015 × WT) + (1.27 × ABD)
+  &nbsp;&nbsp;|&nbsp;&nbsp; NOT FOR OFFICIAL USE
+</footer>
+
+<script>
+// ── DATA TABLES ────────────────────────────────────────────────────────────
+const PS_M={60:[132,136,139,141],61:[136,140,144,146],62:[141,144,148,150],63:[145,149,153,155],64:[150,154,158,160],65:[155,159,163,165],66:[160,163,168,170],67:[165,169,174,176],68:[170,174,179,181],69:[175,179,184,186],70:[180,185,189,192],71:[185,189,194,197],72:[190,195,200,203],73:[195,200,205,208],74:[201,206,211,214],75:[206,212,217,220],76:[212,217,223,226],77:[218,223,229,232],78:[223,229,235,238],79:[229,235,241,244],80:[234,240,247,250]};
+const PS_F={58:[119,121,122,124],59:[124,125,126,128],60:[128,129,131,133],61:[132,134,135,137],62:[136,138,140,142],63:[141,143,144,146],64:[145,147,149,151],65:[150,152,154,156],66:[155,156,158,161],67:[159,161,163,166],68:[164,166,168,171],69:[169,171,173,176],70:[174,176,178,181],71:[179,181,183,186],72:[184,186,188,191],73:[189,191,194,197],74:[194,197,199,202],75:[200,202,204,208],76:[205,207,210,213],77:[210,213,215,219],78:[216,218,221,225],79:[221,224,227,230],80:[227,230,233,236]};
+const NPS_M={60:[139,141,143,146],61:[144,146,148,151],62:[148,150,153,156],63:[153,155,158,161],64:[158,160,163,166],65:[163,165,168,171],66:[168,170,173,177],67:[174,176,179,182],68:[179,181,184,187],69:[184,186,189,193],70:[189,192,195,199],71:[194,197,201,204],72:[200,203,206,210],73:[205,208,212,216],74:[211,214,218,222],75:[217,220,224,228],76:[223,226,230,234],77:[229,232,236,240],78:[235,238,242,247],79:[241,244,248,253],80:[247,250,255,259]};
+const NPS_F={58:[122,124,126,127],59:[127,128,130,131],60:[132,134,135,136],61:[136,137,139,141],62:[140,141,144,145],63:[145,147,148,149],64:[149,151,153,154],65:[154,156,158,160],66:[160,160,162,165],67:[163,166,168,169],68:[168,171,173,174],69:[173,176,178,180],70:[178,181,183,185],71:[183,186,188,191],72:[189,191,194,196],73:[194,196,200,202],74:[199,203,204,206],75:[205,208,210,212],76:[210,213,215,216],77:[216,219,221,223],78:[222,224,227,229],79:[227,230,234,236],80:[233,236,240,241]};
+const MIN_WT={58:91,59:94,60:97,61:100,62:104,63:107,64:110,65:114,66:117,67:121,68:125,69:128,70:132,71:136,72:140,73:144,74:148,75:152,76:156,77:160,78:164,79:168,80:173};
+const PS_BF_M={17:20,21:22,28:24,40:26};
+const PS_BF_F={17:30,21:32,28:34,40:36};
+const NPS_BF_M={17:26,21:26,28:28,40:30};
+const NPS_BF_F={17:32,21:32,28:34,40:36};
+
+// ── STATE ──────────────────────────────────────────────────────────────────
+let S={gender:'M',standard:'ps',ht:70,wt:185,age:35,abd:36};
+
+function getAgeIdx(a){return a<=20?0:a<=27?1:a<=39?2:3;}
+function getMaxBF(age,g,std){
+  const t=std==='ps'?(g==='M'?PS_BF_M:PS_BF_F):(g==='M'?NPS_BF_M:NPS_BF_F);
+  return age>=40?t[40]:age>=28?t[28]:age>=21?t[21]:t[17];
+}
+function getMaxWt(ht,age,g,std){
+  const t=std==='ps'?(g==='M'?PS_M:PS_F):(g==='M'?NPS_M:NPS_F);
+  const h=Math.max(58,Math.min(80,ht));
+  const row=t[h]; if(!row||row[0]===null) return null;
+  let w=row[getAgeIdx(age)];
+  if(ht>80) w+=(ht-80)*(g==='M'?6:5);
+  return w;
+}
+function calcBF(g,wt,abd){
+  if(g==='M') return Math.round(10*(-26.97-0.12*wt+1.99*abd))/10;
+  return Math.round(10*(-9.15-0.015*wt+1.27*abd))/10;
+}
+function htFt(i){return Math.floor(i/12)+"'"+(i%12)+'"';}
+
+function setCard(id, cls, val, sub){
+  const el=document.getElementById('card-'+id);
+  el.className='rcard '+cls;
+  document.getElementById('val-'+id).textContent=val;
+  const subEl=document.getElementById('sub-'+id);
+  if(subEl) subEl.textContent=sub||'';
+}
+
+function render(){
+  const{gender,standard,ht,wt,age,abd}=S;
+  // sync inputs
+  document.getElementById('rng-ht').value=ht;
+  document.getElementById('txt-ht').value=ht;
+  document.getElementById('val-ht-ft').textContent=htFt(ht);
+  document.getElementById('rng-wt').value=wt;
+  document.getElementById('txt-wt').value=wt;
+  document.getElementById('val-wt').textContent=wt+' lbs';
+  document.getElementById('val-age').textContent=age;
+  document.getElementById('rng-abd').value=abd;
+  document.getElementById('txt-abd').value=abd;
+  document.getElementById('val-abd').textContent=abd+'"';
+
+  const minWt=MIN_WT[Math.min(80,Math.max(58,ht))]||91;
+  const maxWt=getMaxWt(ht,age,gender,standard);
+  const maxBF=getMaxBF(age,gender,standard);
+  const bf=calcBF(gender,wt,abd);
+
+  // Min
+  document.getElementById('val-min').textContent=minWt;
+  document.getElementById('card-min').className='rcard '+(wt<minWt?'fail':'neutral');
+
+  // Max
+  document.getElementById('val-max').textContent=maxWt||'—';
+  document.getElementById('card-max').className='rcard neutral';
+
+  // HW status
+  let hwCls, hwVal, hwSub;
+  if(wt<minWt){hwCls='fail';hwVal='UNDER';hwSub='Medical eval req.';}
+  else if(maxWt&&wt<=maxWt){hwCls='pass';hwVal='PASS';hwSub='No tape needed';}
+  else{hwCls='warn';hwVal='OVER +'+(wt-(maxWt||0));hwSub='Tape test required';}
+  document.getElementById('card-hw').className='rcard '+hwCls;
+  document.getElementById('val-hw').textContent=hwVal;
+  document.getElementById('sub-hw').textContent=hwSub;
+
+  // BF
+  const bfPct=Math.max(0,Math.min(50,bf));
+  const limitPct=(maxBF/50)*100;
+  document.getElementById('val-bf').textContent=bf>0?bf.toFixed(1)+'%':'—';
+  document.getElementById('val-bfmax').textContent=maxBF+'%';
+  document.getElementById('bf-bar').style.width=(bfPct*2)+'%';
+  document.getElementById('bf-bar').style.background=bf>maxBF?'#c0392b':bf>maxBF-2?'#c8922a':'#3dab6b';
+  document.getElementById('bf-limit').style.left=limitPct+'%';
+  document.getElementById('bar-label-mid').textContent=bf.toFixed(1)+'% (max: '+maxBF+'%)';
+
+  // Tape card
+  let tapeCls, tapeVal, tapeSub;
+  if(bf<=maxBF){tapeCls='pass';tapeVal='PASS';tapeSub=(maxBF-bf).toFixed(1)+'% below max';}
+  else{tapeCls='fail';tapeVal='FAIL';tapeSub=(bf-maxBF).toFixed(1)+'% over max';}
+  document.getElementById('card-bf').className='rcard '+(bf>maxBF?'fail':bf>maxBF-2?'warn':'pass');
+  document.getElementById('card-bfmax').className='rcard neutral';
+  document.getElementById('card-tape').className='rcard '+tapeCls;
+  document.getElementById('val-tape').textContent=tapeVal;
+  document.getElementById('sub-tape').textContent=tapeSub;
+
+  // Overall
+  const oc=document.getElementById('overall-card');
+  const os=document.getElementById('overall-status');
+  const osub=document.getElementById('overall-sub');
+  const underWt=wt<minWt;
+  const hwPass=!underWt&&maxWt&&wt<=maxWt;
+  const tapePass=bf<=maxBF;
+  if(underWt){
+    oc.className='overall-result overall-warn';
+    os.textContent='⚠ UNDERWEIGHT';
+    osub.textContent='Below minimum — commander must refer for immediate medical evaluation per AR 600-9.';
+  } else if(hwPass){
+    oc.className='overall-result overall-pass';
+    os.textContent='✓ MEETS STANDARD';
+    osub.textContent='Height/weight within limits — no tape test required.';
+  } else if(tapePass){
+    oc.className='overall-result overall-pass';
+    os.textContent='✓ MEETS STANDARD (TAPE)';
+    osub.textContent='Over screening weight but body fat % is within authorized limits per '+( standard==='ps'?'AR 600-9':'AR 40-501')+'.';
+  } else {
+    oc.className='overall-result overall-fail';
+    os.textContent='✗ DOES NOT MEET STANDARD';
+    osub.textContent=standard==='ps'
+      ?'Flag action initiated. Enroll in ABCP. May request supplemental assessment via DXA / InBody 770 / Bod Pod® if reasonably available.'
+      :'DISQUALIFIED from accession. Body fat exceeds maximum allowable standard under AR 40-501.';
+  }
+
+  // Standards note
+  document.getElementById('std-table-note').innerHTML=standard==='ps'
+    ?'<span>AR 600-9 Table B-1</span> — Prior Service screening table. Soldiers under max weight pass without tape. Over max → body fat assessment. Under min → medical eval.'
+    :'<span>AR 40-501 Table 2-1/2-2</span> — Accession standards. Higher weight ceilings than AR 600-9. Exceeding max weight triggers body fat assessment. Exceeding body fat = disqualified.';
+}
+
+function setStandard(s){
+  S.standard=s;
+  document.getElementById('btn-ps').classList.toggle('active',s==='ps');
+  document.getElementById('btn-nps').classList.toggle('active',s==='nps');
+  document.getElementById('ps-note').classList.toggle('hidden',s!=='ps');
+  document.getElementById('nps-note').classList.toggle('hidden',s!=='nps');
+  render();
+}
+function setGender(g){
+  S.gender=g;
+  document.getElementById('btn-m').classList.toggle('active',g==='M');
+  document.getElementById('btn-f').classList.toggle('active',g==='F');
+  render();
+}
+
+// Events
+document.getElementById('rng-ht').addEventListener('input',function(){S.ht=parseInt(this.value);render();});
+document.getElementById('txt-ht').addEventListener('change',function(){S.ht=Math.max(58,Math.min(80,parseInt(this.value)||70));render();});
+document.getElementById('rng-wt').addEventListener('input',function(){S.wt=parseInt(this.value);render();});
+document.getElementById('txt-wt').addEventListener('change',function(){S.wt=Math.max(80,Math.min(350,parseInt(this.value)||185));render();});
+document.getElementById('rng-age').addEventListener('input',function(){S.age=parseInt(this.value);render();});
+document.getElementById('rng-abd').addEventListener('input',function(){S.abd=parseFloat(this.value);render();});
+document.getElementById('txt-abd').addEventListener('change',function(){S.abd=Math.max(24,Math.min(60,parseFloat(this.value)||36));render();});
+
+render();
+</script>
+</body>
+</html>
