@@ -683,6 +683,7 @@ footer {
             </optgroup>
             <optgroup label="Warrant"><option>WO1</option><option>CW2</option><option>CW3</option><option>CW4</option><option>CW5</option></optgroup>
             <optgroup label="Officer"><option>2LT</option><option>1LT</option><option>CPT</option><option>MAJ</option><option>LTC</option><option>COL</option></optgroup>
+            <optgroup label="Civilian"><option>CIV</option></optgroup>
           </select>
         </div>
         <div class="field" style="margin-bottom:0;">
@@ -715,11 +716,39 @@ footer {
         </div>
       </div>
 
-      <div style="display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:16px;">
-        <div class="field" style="margin-bottom:0;">
-          <div class="field-label"><span>Remarks (optional)</span></div>
-          <input type="text" id="f-remarks" placeholder="Optional remarks…"
-            style="width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:4px;color:var(--white);font-family:inherit;font-size:14px;padding:8px 10px;">
+      <div style="margin-bottom:16px;">
+        <div class="field-label" style="margin-bottom:6px;"><span>Remarks</span></div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-family:inherit;font-size:13px;color:var(--text-dim);white-space:nowrap;min-width:80px;">a. Max. BF-</span>
+            <input type="text" id="f-remarks-a" placeholder="e.g. 20%"
+              style="flex:1;background:var(--surface2);border:1px solid var(--border2);border-radius:4px;color:var(--white);font-family:inherit;font-size:13px;padding:6px 10px;">
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-family:inherit;font-size:13px;color:var(--text-dim);white-space:nowrap;min-width:80px;">b. Actual BF-</span>
+            <input type="text" id="f-remarks-b" placeholder="Auto-filled from calculation"
+              style="flex:1;background:var(--surface2);border:1px solid var(--border2);border-radius:4px;color:var(--white);font-family:inherit;font-size:13px;padding:6px 10px;">
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-family:inherit;font-size:13px;color:var(--text-dim);white-space:nowrap;min-width:80px;">c. AFQT-</span>
+            <input type="text" id="f-remarks-c" placeholder="e.g. 72"
+              style="flex:1;background:var(--surface2);border:1px solid var(--border2);border-radius:4px;color:var(--white);font-family:inherit;font-size:13px;padding:6px 10px;">
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-family:inherit;font-size:13px;color:var(--text-dim);white-space:nowrap;min-width:80px;">d. TAPAS WD-</span>
+            <input type="text" id="f-remarks-d" placeholder="e.g. Pass / N/A"
+              style="flex:1;background:var(--surface2);border:1px solid var(--border2);border-radius:4px;color:var(--white);font-family:inherit;font-size:13px;padding:6px 10px;">
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-family:inherit;font-size:13px;color:var(--text-dim);white-space:nowrap;min-width:80px;">e. Prior Service-</span>
+            <input type="text" id="f-remarks-e" placeholder="Y / N"
+              style="flex:1;background:var(--surface2);border:1px solid var(--border2);border-radius:4px;color:var(--white);font-family:inherit;font-size:13px;padding:6px 10px;">
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-family:inherit;font-size:13px;color:var(--text-dim);white-space:nowrap;min-width:80px;">f. ENLIST/SHIP-</span>
+            <input type="text" id="f-remarks-f" placeholder="ENLIST / SHIP"
+              style="flex:1;background:var(--surface2);border:1px solid var(--border2);border-radius:4px;color:var(--white);font-family:inherit;font-size:13px;padding:6px 10px;">
+          </div>
         </div>
       </div>
 
@@ -924,20 +953,27 @@ function update5500Panel() {
 }
 
 function toggle5500() {
-  const body = document.getElementById('panel-5500-body');
+  const body  = document.getElementById('panel-5500-body');
   const arrow = document.getElementById('toggle-arrow');
-  const open = body.style.display === '';
+  const open  = body.style.display === '';
   body.style.display = open ? 'none' : '';
-  arrow.textContent = open ? '▼ EXPAND' : '▲ COLLAPSE';
+  arrow.textContent  = open ? '▼ EXPAND' : '▲ COLLAPSE';
   if (!open) updateFormSummary();
 }
 
 function updateFormSummary() {
-  const {gender, ht, wt, age, abd} = S;
-  const abdAvg = parseFloat(document.getElementById('txt-abd').value) || abd;
-  const bf = calcBF(gender, wt, abdAvg);
-  const bfStd = getMaxBF(age, gender, S.standard);
-  const pass = bf <= bfStd;
+  const {gender, ht, wt, age} = S;
+  const abdAvg = parseFloat(document.getElementById('txt-abd').value) || S.abd;
+  const bf     = calcBF(gender, wt, abdAvg);
+  const bfStd  = getMaxBF(age, gender, S.standard);
+  const pass   = bf <= bfStd;
+
+  // Auto-fill Max BF and Actual BF if still empty
+  const fieldA = document.getElementById('f-remarks-a');
+  const fieldB = document.getElementById('f-remarks-b');
+  if (fieldA && fieldA.value === '') fieldA.value = bfStd + '%';
+  if (fieldB && fieldB.value === '') fieldB.value = bf > 0 ? bf.toFixed(1) + '%' : '';
+
   document.getElementById('form-summary').innerHTML =
     `<strong>Will fill:</strong> Height ${ht}", Weight ${wt} lbs, Age ${age}, ` +
     `Abdomen avg ${abdAvg}", BF% ${bf > 0 ? bf.toFixed(1) : '—'} ` +
@@ -950,15 +986,14 @@ function updateFormSummary() {
     const d = new Date();
     dateField.value = d.getFullYear() + String(d.getMonth()+1).padStart(2,'0') + String(d.getDate()).padStart(2,'0');
   }
-  // Update generate button label
-  document.getElementById('gen-btn').textContent = `⬇  GENERATE DA FORM ${gender === 'M' ? '5500 (MALE)' : '5501 (FEMALE)'}`;
+  document.getElementById('gen-btn').textContent =
+    `⬇  GENERATE DA FORM ${gender === 'M' ? '5500 (MALE)' : '5501 (FEMALE)'}`;
 }
 
 // ── PDF GENERATION ────────────────────────────────────────────────────────────
 async function generateForm() {
   const {gender, ht, wt, age} = S;
-  const abdAvg = parseFloat(document.getElementById('txt-abd').value) || S.abd;
-
+  const abdAvg   = parseFloat(document.getElementById('txt-abd').value) || S.abd;
   const name     = document.getElementById('f-name').value.trim();
   const rank     = document.getElementById('f-rank').value.trim();
   const date     = document.getElementById('f-date').value.trim();
@@ -966,15 +1001,28 @@ async function generateForm() {
   const prepRank = document.getElementById('f-prep-rank').value.trim();
   const apprName = document.getElementById('f-appr-name').value.trim();
   const apprRank = document.getElementById('f-appr-rank').value.trim();
-  const remarks  = document.getElementById('f-remarks').value.trim();
+
+  // Build remarks from 5 labeled lines
+  const ra  = document.getElementById('f-remarks-a').value.trim();
+  const rb  = document.getElementById('f-remarks-b').value.trim();
+  const rc  = document.getElementById('f-remarks-c').value.trim();
+  const rd  = document.getElementById('f-remarks-d').value.trim();
+  const re  = document.getElementById('f-remarks-e').value.trim();
+  const rf  = document.getElementById('f-remarks-f').value.trim();
+  const remarks = [
+    'a. Max. BF- '        + (ra || ''),
+    'b. Actual BF- '      + (rb || ''),
+    'c. AFQT- '           + (rc || ''),
+    'd. TAPAS WD- '       + (rd || ''),
+    'e. Prior Service- '  + (re || ''),
+    'f. ENLIST/SHIP- '    + (rf || ''),
+  ].join('\n');
 
   if (!name || !rank) { alert('Please enter applicant name and rank.'); return; }
 
-  const bf     = calcBF(gender, wt, abdAvg);
-  const bfStd  = getMaxBF(age, gender, S.standard);
-  const pass   = bf <= bfStd;
-
-  // Tape readings — read from sliders
+  const bf    = calcBF(gender, wt, abdAvg);
+  const bfStd = getMaxBF(age, gender, S.standard);
+  const pass  = bf <= bfStd;
   const abdVal = abdAvg.toFixed(1);
 
   const btn = document.getElementById('gen-btn');
@@ -984,47 +1032,63 @@ async function generateForm() {
   try {
     const b64 = gender === 'M' ? DA5500_B64 : DA5501_B64;
     const bytes = base64ToBytes(b64);
-    const { PDFDocument } = window.PDFLib;
+    const { PDFDocument, StandardFonts } = window.PDFLib;
     const pdfDoc = await PDFDocument.load(bytes, { ignoreEncryption: true });
     const form = pdfDoc.getForm();
+    const timesFont = await pdfDoc.embedFont(StandardFonts.TimesRoman);
 
     function setTF(n, v) {
-      try { form.getTextField(n).setText(String(v)); } catch(e) {}
+      try {
+        const field = form.getTextField(n);
+        field.setText(String(v));
+        field.updateAppearances(timesFont);
+      } catch(e) {}
     }
 
-    setTF('form1[0].Page1[0].Name[0]', name);
-    setTF('form1[0].Page1[0].Rank[0]', rank);
-    setTF('form1[0].Page1[0].Age[0]', String(age));
-    setTF('form1[0].Page1[0].Height[0]', String(ht));
-    setTF('form1[0].Page1[0].Weight[0]', String(wt));
-    setTF('form1[0].Page1[0].Abdomen_1st[0]', abdVal);
-    setTF('form1[0].Page1[0].Abdomen_2nd[0]', abdVal);
-    setTF('form1[0].Page1[0].Abdomen_3rd[0]', abdVal);
-    setTF('form1[0].Page1[0].Abdomen_Average[0]', abdVal);
-    setTF('form1[0].Page1[0].Abdominal_Circumference[0]', abdVal);
-    setTF('form1[0].Page1[0].Weight2[0]', String(wt));
+    setTF('form1[0].Page1[0].Name[0]',                   name);
+    setTF('form1[0].Page1[0].Rank[0]',                   rank);
+    setTF('form1[0].Page1[0].Age[0]',                    String(age));
+    setTF('form1[0].Page1[0].Height[0]',                 String(ht));
+    setTF('form1[0].Page1[0].Weight[0]',                 String(wt));
+    setTF('form1[0].Page1[0].Abdomen_1st[0]',            abdVal);
+    setTF('form1[0].Page1[0].Abdomen_2nd[0]',            abdVal);
+    setTF('form1[0].Page1[0].Abdomen_3rd[0]',            abdVal);
+    setTF('form1[0].Page1[0].Abdomen_Average[0]',        abdVal);
+    setTF('form1[0].Page1[0].Abdominal_Circumference[0]',abdVal);
+    setTF('form1[0].Page1[0].Weight2[0]',                String(wt));
     setTF('form1[0].Page1[0].Item_4_Percentage_Body_Fat[0]', bf > 0 ? bf.toFixed(1) : '');
-    setTF('form1[0].Page1[0].Item_5_Percentage_Body_Fat[0]', String(bfStd));
-    if (prepName) setTF('form1[0].Page1[0].Name_Prepared_By[0]', prepName);
-    if (prepRank) setTF('form1[0].Page1[0].Rank_Prepared_By[0]', prepRank);
-    if (apprName) setTF('form1[0].Page1[0].Name_Approved_By[0]', apprName);
-    if (apprRank) setTF('form1[0].Page1[0].Rank_Approved_By[0]', apprRank);
-    if (date)     setTF('form1[0].Page1[0].Prepared_By_Date[0]', date);
-    if (date)     setTF('form1[0].Page1[0].Approved_By_Date[0]', date);
-    if (remarks)  setTF('form1[0].Page1[0].Remarks[0]', remarks);
+    // Box 5 = Supplemental BF Assessment only — leave blank for standard tape test
+    // setTF('form1[0].Page1[0].Item_5_Percentage_Body_Fat[0]', String(bfStd));
+    if (prepName) setTF('form1[0].Page1[0].Name_Prepared_By[0]',  prepName);
+    if (prepRank) setTF('form1[0].Page1[0].Rank_Prepared_By[0]',  prepRank);
+    if (apprName) setTF('form1[0].Page1[0].Name_Approved_By[0]',  apprName);
+    if (apprRank) setTF('form1[0].Page1[0].Rank_Approved_By[0]',  apprRank);
+    if (date)     setTF('form1[0].Page1[0].Prepared_By_Date[0]',  date);
+    if (date)     setTF('form1[0].Page1[0].Approved_By_Date[0]',  date);
 
+    // Remarks — multiline
     try {
-      if (pass) form.getCheckBox('form1[0].Page1[0].Is_Compliance[0]').check();
-      else form.getCheckBox('form1[0].Page1[0].Is_Not_Compliance[0]').check();
+      const rf = form.getTextField('form1[0].Page1[0].Remarks[0]');
+      rf.enableMultiline();
+      rf.setText(remarks);
+      rf.updateAppearances(timesFont);
     } catch(e) {}
 
+    // Compliance checkboxes
+    try {
+      if (pass) form.getCheckBox('form1[0].Page1[0].Is_Compliance[0]').check();
+      else      form.getCheckBox('form1[0].Page1[0].Is_Not_Compliance[0]').check();
+    } catch(e) {}
+
+    // Force all fields to use Times New Roman before flattening
+    try { form.updateFieldAppearances(timesFont); } catch(e) {}
     form.flatten();
     const pdfBytes = await pdfDoc.save();
     const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
     const safeName = name.replace(/[^A-Z0-9]/gi, '_').toUpperCase();
-    a.href = url;
+    a.href     = url;
     a.download = `DA${gender === 'M' ? '5500' : '5501'}_${safeName}_${date || 'UNDATED'}.pdf`;
     a.click();
     URL.revokeObjectURL(url);
@@ -1036,6 +1100,7 @@ async function generateForm() {
   btn.disabled = false;
   btn.textContent = `⬇  GENERATE DA FORM ${gender === 'M' ? '5500 (MALE)' : '5501 (FEMALE)'}`;
 }
+
 
 function base64ToBytes(b64) {
   const bin = atob(b64);
