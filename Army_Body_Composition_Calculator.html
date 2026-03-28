@@ -968,11 +968,11 @@ function updateFormSummary() {
   const bfStd  = getMaxBF(age, gender, S.standard);
   const pass   = bf <= bfStd;
 
-  // Auto-fill Max BF and Actual BF if still empty
+  // Always sync Max BF and Actual BF to current calculation
   const fieldA = document.getElementById('f-remarks-a');
   const fieldB = document.getElementById('f-remarks-b');
-  if (fieldA && fieldA.value === '') fieldA.value = bfStd + '%';
-  if (fieldB && fieldB.value === '') fieldB.value = bf > 0 ? bf.toFixed(1) + '%' : '';
+  if (fieldA) fieldA.value = bfStd + '%';
+  if (fieldB) fieldB.value = bf > 0 ? bf.toFixed(1) + '%' : '';
 
   document.getElementById('form-summary').innerHTML =
     `<strong>Will fill:</strong> Height ${ht}", Weight ${wt} lbs, Age ${age}, ` +
