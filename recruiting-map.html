@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RSID 4D5E · Recruiting Operations Map</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root[data-theme="dark"] {
+      --bg:#0b0f1c; --panel:#111827; --card:#161f30; --hover:#1c2840;
+      --border:#1e2e48; --border2:#2a3f60;
+      --txt:#dde4f0; --txt2:#7a8faf; --txt3:#3a4d6a;
+      --accent:#f5a623; --aglow:rgba(245,166,35,.15);
+      --green:#22c55e; --red:#ef4444; --blue:#3b82f6;
+    }
+    :root[data-theme="light"] {
+      --bg:#e8edf5; --panel:#ffffff; --card:#f4f6fb; --hover:#eaeff8;
+      --border:#c5cedf; --border2:#9aaac5;
+      --txt:#18243a; --txt2:#4a5a78; --txt3:#96a8c4;
+      --accent:#c47d00; --aglow:rgba(196,125,0,.1);
+      --green:#16a34a; --red:#dc2626; --blue:#2563eb;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html,body{height:100%;overflow:hidden;font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--txt);}
+    /* HEADER */
+    #hdr{height:50px;background:var(--panel);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 14px;gap:10px;z-index:1000;flex-shrink:0;}
+    .hdr-logo{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:17px;letter-spacing:2.5px;color:var(--accent);text-transform:uppercase;}
+    .hdr-sep{color:var(--border2);}
+    .hdr-sub{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--txt3);letter-spacing:1px;}
+    .hdr-sp{flex:1;}
+    #sw{position:relative;}
+    #sb-in{background:var(--card);border:1px solid var(--border);border-radius:4px;padding:5px 11px;color:var(--txt);font-size:12px;width:190px;outline:none;transition:border-color .2s;}
+    #sb-in:focus{border-color:var(--accent);}
+    #sb-in::placeholder{color:var(--txt3);}
+    #sd{position:absolute;top:100%;left:0;right:0;background:var(--panel);border:1px solid var(--border);border-top:none;z-index:1100;display:none;max-height:260px;overflow-y:auto;}
+    .sd-i{padding:7px 11px;cursor:pointer;font-size:12px;border-bottom:1px solid var(--border);transition:background .12s;}
+    .sd-i:hover{background:var(--hover);}
+    .sd-t{font-size:10px;color:var(--txt3);font-family:'IBM Plex Mono',monospace;}
+    .hbtn{background:var(--card);border:1px solid var(--border);border-radius:4px;color:var(--txt2);padding:4px 10px;font-size:12px;cursor:pointer;white-space:nowrap;transition:all .18s;}
+    .hbtn:hover{border-color:var(--accent);color:var(--accent);}
+    /* BODY */
+    #body{flex:1;display:flex;overflow:hidden;position:relative;}
+    /* SIDEBAR */
+    #sb{width:252px;min-width:252px;background:var(--panel);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:500;transition:transform .28s,margin .28s;overflow:hidden;}
+    #sb.col{transform:translateX(-252px);margin-right:-252px;}
+    .ss{border-bottom:1px solid var(--border);padding:11px 13px;}
+    .st{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:600;letter-spacing:2px;color:var(--txt3);text-transform:uppercase;margin-bottom:9px;}
+    .lr{display:flex;align-items:center;gap:8px;padding:4px 5px;cursor:pointer;border-radius:4px;transition:background .12s;user-select:none;}
+    .lr:hover{background:var(--hover);}
+    .lr input[type=checkbox]{display:none;}
+    .li{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;border:1.5px solid transparent;transition:border-color .15s,opacity .15s;}
+    .lr input:checked~.li{border-color:var(--accent);}
+    .lr input:not(:checked)~.li{opacity:.4;}
+    .ll{font-size:12px;color:var(--txt);flex:1;}
+    .lc{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--txt3);}
+    .sg{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+    .sc{background:var(--card);border:1px solid var(--border);border-radius:5px;padding:7px 9px;text-align:center;}
+    .sv{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;color:var(--accent);line-height:1;}
+    .sl{font-size:9px;color:var(--txt3);margin-top:2px;letter-spacing:.5px;}
+    .ss-sel{width:100%;background:var(--card);border:1px solid var(--border);border-radius:4px;padding:5px 8px;color:var(--txt);font-size:12px;outline:none;}
+    .zn{margin-top:7px;font-size:10px;color:var(--txt3);font-family:'IBM Plex Mono',monospace;background:var(--card);border:1px solid var(--border);border-radius:4px;padding:5px 7px;line-height:1.45;}
+    .sf{margin-top:auto;padding:10px 13px;border-top:1px solid var(--border);}
+    .db{display:block;width:100%;background:var(--card);border:1px solid var(--border);border-radius:4px;padding:6px;text-align:center;color:var(--txt2);font-size:12px;cursor:pointer;margin-bottom:5px;transition:all .18s;}
+    .db:hover{border-color:var(--accent);color:var(--accent);}
+    .db.imp{color:var(--green);border-color:var(--green);}
+    .db.imp:hover{background:rgba(34,197,94,.08);}
+    #fi{display:none;}
+    /* MAP */
+    #map{flex:1;z-index:1;}
+    /* ZIP LABELS */
+    .zl{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.95),0 0 8px rgba(0,0,0,.8);background:none;border:none;box-shadow:none;padding:0;pointer-events:none;white-space:nowrap;}
+    :root[data-theme="light"] .zl{color:#0a1428;text-shadow:0 1px 3px rgba(255,255,255,.95);}
+    /* LEAFLET */
+    .leaflet-control-attribution{background:var(--panel)!important;color:var(--txt3)!important;font-size:9px!important;}
+    .leaflet-popup-content-wrapper{background:var(--panel)!important;border:1px solid var(--border)!important;border-radius:6px!important;box-shadow:0 4px 20px rgba(0,0,0,.4)!important;}
+    .leaflet-popup-tip{background:var(--panel)!important;}
+    .leaflet-popup-content{color:var(--txt)!important;font-family:'IBM Plex Sans',sans-serif;font-size:13px;margin:10px 14px!important;}
+    /* LEGEND */
+    .legc{background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:9px 11px;font-size:11px;min-width:128px;}
+    .legt{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;color:var(--txt3);text-transform:uppercase;margin-bottom:6px;}
+    .legr{display:flex;align-items:center;gap:5px;margin-bottom:4px;color:var(--txt);font-size:11px;}
+    .legd{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+    /* DETAIL PANEL */
+    #dp{width:310px;min-width:310px;background:var(--panel);border-left:1px solid var(--border);display:flex;flex-direction:column;z-index:500;transform:translateX(310px);transition:transform .28s;overflow:hidden;}
+    #dp.open{transform:translateX(0);}
+    #dph{padding:12px 14px 10px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:9px;}
+    #dpi{width:34px;height:34px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+    #dpn{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:700;color:var(--txt);line-height:1.15;flex:1;}
+    #dpc{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--accent);letter-spacing:1px;text-transform:uppercase;margin-top:1px;}
+    #dpx{background:none;border:none;color:var(--txt3);font-size:17px;cursor:pointer;padding:0;}
+    #dpx:hover{color:var(--txt);}
+    #dpb{flex:1;overflow-y:auto;padding:12px 14px;}
+    .df{margin-bottom:11px;}
+    .df label{display:block;font-size:9px;letter-spacing:1px;color:var(--txt3);text-transform:uppercase;font-family:'IBM Plex Mono',monospace;margin-bottom:3px;}
+    .df .v{font-size:12px;color:var(--txt);}
+    .df input,.df textarea,.df select{width:100%;background:var(--card);border:1px solid var(--border);border-radius:4px;padding:6px 8px;color:var(--txt);font-size:12px;outline:none;transition:border-color .18s;resize:vertical;}
+    .df input:focus,.df textarea:focus,.df select:focus{border-color:var(--accent);}
+    .df textarea{min-height:75px;}
+    .ddiv{border:none;border-top:1px solid var(--border);margin:12px 0;}
+    .dsec{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;color:var(--txt3);text-transform:uppercase;margin-bottom:9px;}
+    #dpf{padding:10px 14px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:center;}
+    .sbtn{flex:1;background:var(--accent);color:#000;border:none;border-radius:4px;padding:7px;font-weight:700;font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:1px;cursor:pointer;transition:opacity .18s;}
+    .sbtn:hover{opacity:.85;}
+    .savd{font-size:10px;color:var(--green);font-family:'IBM Plex Mono',monospace;opacity:0;transition:opacity .3s;}
+    .savd.show{opacity:1;}
+    /* MARKERS */
+    .mico{display:flex;align-items:center;justify-content:center;border-radius:50%;border:2px solid rgba(255,255,255,.35);font-size:15px;box-shadow:0 2px 10px rgba(0,0,0,.5);cursor:pointer;transition:transform .12s;}
+    .mico:hover{transform:scale(1.12);}
+    /* STATION PULSE */
+    .sp{position:absolute;top:50%;left:50%;width:44px;height:44px;border-radius:50%;border:2px solid var(--accent);transform:translate(-50%,-50%);animation:pulse 2.2s ease-out infinite;}
+    @keyframes pulse{0%{transform:translate(-50%,-50%) scale(1);opacity:.7;}100%{transform:translate(-50%,-50%) scale(2.2);opacity:0;}}
+    /* TOAST */
+    #toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--panel);border:1px solid var(--border);border-left:3px solid var(--accent);padding:8px 16px;border-radius:5px;font-size:12px;z-index:9999;transition:transform .28s;box-shadow:0 4px 18px rgba(0,0,0,.35);}
+    #toast.show{transform:translateX(-50%) translateY(0);}
+    /* LOADER */
+    #ldr{position:absolute;inset:0;background:var(--bg);z-index:900;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;transition:opacity .4s;}
+    #ldr.done{opacity:0;pointer-events:none;}
+    .spin{width:28px;height:28px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:sp .8s linear infinite;}
+    @keyframes sp{to{transform:rotate(360deg);}}
+    #ltxt{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--txt3);}
+    ::-webkit-scrollbar{width:4px;}
+    ::-webkit-scrollbar-thumb{background:var(--border);border-radius:10px;}
+    @media(max-width:700px){#sb{position:absolute;height:100%;z-index:600;}#dp{position:absolute;right:0;height:100%;z-index:600;width:88vw;min-width:unset;}#sb-in{width:130px;}}
+  </style>
+</head>
+<body style="display:flex;flex-direction:column;height:100%;">
+
+<header id="hdr">
+  <div class="hdr-logo">⬡ RSID 4D5E</div>
+  <div class="hdr-sep">|</div>
+  <div class="hdr-sub">RECRUITING OPS MAP · LINCOLN NE</div>
+  <div class="hdr-sp"></div>
+  <div id="sw">
+    <input id="sb-in" type="text" placeholder="🔍  Search name or ZIP…" autocomplete="off" />
+    <div id="sd"></div>
+  </div>
+  <button class="hbtn" onclick="toggleTheme()"><span id="tico">☀</span> Theme</button>
+  <button class="hbtn" onclick="toggleSb()">☰ Layers</button>
+</header>
+
+<div id="body">
+  <div id="ldr"><div class="spin"></div><div id="ltxt">Fetching Census TIGER ZIP boundaries…</div></div>
+
+  <nav id="sb">
+    <div class="ss">
+      <div class="st">Map Layers</div>
+      <label class="lr"><input type="checkbox" id="l-zip"    checked onchange="tLyr('zip')">   <div class="li" style="background:#0d2040;">📐</div><span class="ll">ZIP / ZCTA Boundaries</span><span class="lc" id="c-zip">…</span></label>
+      <label class="lr"><input type="checkbox" id="l-zl"     checked onchange="tLyr('zl')">    <div class="li" style="background:#0d1a30;">🔢</div><span class="ll">ZIP Labels on Map</span></label>
+      <label class="lr"><input type="checkbox" id="l-sch"    checked onchange="tLyr('sch')">   <div class="li" style="background:#2d1a00;">🏫</div><span class="ll">High Schools</span><span class="lc" id="c-sch">—</span></label>
+      <label class="lr"><input type="checkbox" id="l-uni"    checked onchange="tLyr('uni')">   <div class="li" style="background:#1e0a30;">🎓</div><span class="ll">Universities / Colleges</span><span class="lc" id="c-uni">—</span></label>
+      <label class="lr"><input type="checkbox" id="l-pd"     checked onchange="tLyr('pd')">    <div class="li" style="background:#0a1a30;">🚔</div><span class="ll">Police Departments</span><span class="lc" id="c-pd">—</span></label>
+      <label class="lr"><input type="checkbox" id="l-ct"     checked onchange="tLyr('ct')">    <div class="li" style="background:#0a2010;">⚖️</div><span class="ll">Courthouses</span><span class="lc" id="c-ct">—</span></label>
+      <label class="lr"><input type="checkbox" id="l-tb"     checked onchange="tLyr('tb')">    <div class="li" style="background:#300808;">🌮</div><span class="ll">Taco Bell</span><span class="lc" id="c-tb">—</span></label>
+      <label class="lr"><input type="checkbox" id="l-stn"    checked onchange="tLyr('stn')">   <div class="li" style="background:#1a1000;">⭐</div><span class="ll">Recruiting Station</span><span class="lc">1</span></label>
+    </div>
+    <div class="ss">
+      <div class="st">Station Stats</div>
+      <div class="sg">
+        <div class="sc"><div class="sv" id="s-v">0</div><div class="sl">Visited</div></div>
+        <div class="sc"><div class="sv" id="s-c">0</div><div class="sl">Contacts</div></div>
+        <div class="sc"><div class="sv" id="s-h">0</div><div class="sl">HOT ZIPs</div></div>
+        <div class="sc"><div class="sv" id="s-a">0</div><div class="sl">AAR Notes</div></div>
+      </div>
+    </div>
+    <div class="ss">
+      <div class="st">ZIP Priority Filter</div>
+      <select class="ss-sel" id="zpf" onchange="filterZips()">
+        <option value="all">Show All ZIPs</option>
+        <option value="hot">🔴 HOT Priority</option>
+        <option value="warm">🟡 WARM Priority</option>
+        <option value="cold">🔵 COLD Priority</option>
+        <option value="none">Unset</option>
+      </select>
+      <div class="zn">⚠ Boundaries are U.S. Census ZCTAs — loaded live from Census TIGERweb. Authoritative approximations of USPS service areas.</div>
+    </div>
+    <div class="sf">
+      <div class="st">Data</div>
+      <button class="db" onclick="exportData()">⬇ Export Notes to JSON</button>
+      <button class="db imp" onclick="document.getElementById('fi').click()">⬆ Import JSON Notes</button>
+      <input type="file" id="fi" accept=".json" onchange="importData(event)" />
+      <div style="font-size:9px;color:var(--txt3);margin-top:5px;text-align:center;font-family:'IBM Plex Mono',monospace;">Notes are in-memory only — export to save.</div>
+    </div>
+  </nav>
+
+  <div id="map"></div>
+
+  <aside id="dp">
+    <div id="dph">
+      <div id="dpi"></div>
+      <div style="flex:1;"><div id="dpn">—</div><div id="dpc">—</div></div>
+      <button id="dpx" onclick="closeDP()">✕</button>
+    </div>
+    <div id="dpb"></div>
+    <div id="dpf">
+      <button class="sbtn" onclick="saveDP()">SAVE NOTES</button>
+      <span class="savd" id="sid">✓ SAVED</span>
+    </div>
+  </aside>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ── STATE ── */
+let noteStore={}, activeId=null, isDark=true, zipGJ=null;
+const LYR={};
+
+/* ── AO ZIP LIST ── */
+const AO_ZIPS=['68501','68502','68503','68504','68505','68506','68507','68508',
+               '68510','68512','68514','68516','68517','68520','68521','68522',
+               '68523','68524','68526','68527','68528','68529',
+               '68462','68317','68428','68336','68347','68366'];
+
+const ZIP_PRI={'68503':'hot','68504':'hot','68507':'hot','68521':'hot',
+               '68502':'warm','68505':'warm','68506':'warm','68510':'warm',
+               '68516':'warm','68517':'warm','68462':'warm'};
+
+/* ── LOCATION DATA ── */
+const STATION={id:"stn",name:"USAREC Recruiting Station Lincoln",address:"505 N 27th St, Lincoln, NE 68503",lat:40.8181,lng:-96.6828,rsid:"4D5E"};
+
+const SCHOOLS=[
+  {id:"s1",name:"Lincoln High School",           address:"2229 J St",        city:"Lincoln",zip:"68510",lat:40.8037,lng:-96.6879,enrollment:2150,gradeRange:"9–12",principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
+  {id:"s2",name:"Lincoln Northeast High School", address:"2635 N 63rd St",   city:"Lincoln",zip:"68507",lat:40.8407,lng:-96.6289,enrollment:1850,gradeRange:"9–12",principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
+  {id:"s3",name:"Lincoln East High School",      address:"1000 S 70th St",   city:"Lincoln",zip:"68510",lat:40.7923,lng:-96.6175,enrollment:2050,gradeRange:"9–12",principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
+  {id:"s4",name:"Lincoln Southeast High School", address:"2955 S 70th St",   city:"Lincoln",zip:"68506",lat:40.7742,lng:-96.6200,enrollment:2200,gradeRange:"9–12",principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
+  {id:"s5",name:"Lincoln Southwest High School", address:"7001 S 14th St",   city:"Lincoln",zip:"68512",lat:40.7581,lng:-96.7104,enrollment:2000,gradeRange:"9–12",principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
+  {id:"s6",name:"Lincoln North Star High School",address:"5801 N 33rd St",   city:"Lincoln",zip:"68504",lat:40.8571,lng:-96.6693,enrollment:2100,gradeRange:"9–12",principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
+  {id:"s7",name:"Pius X High School",            address:"6000 A St",        city:"Lincoln",zip:"68510",lat:40.7975,lng:-96.6296,enrollment:900, gradeRange:"9–12",principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
+  {id:"s8",name:"Waverly High School",           address:"14511 Heywood St", city:"Waverly",zip:"68462",lat:40.9121,lng:-96.5293,enrollment:600, gradeRange:"9–12",principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
+  {id:"s9",name:"Raymond Central High School",   address:"315 W Vine St",    city:"Raymond",zip:"68428",lat:40.9574,lng:-96.7933,enrollment:280, gradeRange:"9–12",principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
+  {id:"s10",name:"Bennet High School",           address:"230 S 4th St",     city:"Bennet", zip:"68317",lat:40.6825,lng:-96.5135,enrollment:120, gradeRange:"9–12",principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
+  {id:"s11",name:"Crete High School",            address:"1500 Linden Ave",  city:"Crete",  zip:"68333",lat:40.6285,lng:-96.9465,enrollment:350, gradeRange:"9–12",principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
+];
+
+const UNIS=[
+  {id:"u1",name:"University of Nebraska–Lincoln",       address:"1400 R St",          city:"Lincoln",zip:"68588",lat:40.8202,lng:-96.7005,type:"Public University",  enrollment:25000,rotcProgram:true},
+  {id:"u2",name:"Nebraska Wesleyan University",         address:"5000 Saint Paul Ave", city:"Lincoln",zip:"68504",lat:40.8538,lng:-96.6526,type:"Private University", enrollment:2100, rotcProgram:false},
+  {id:"u3",name:"Southeast Community College–Lincoln",  address:"8800 O St",           city:"Lincoln",zip:"68520",lat:40.7839,lng:-96.5774,type:"Community College",  enrollment:12000,rotcProgram:false},
+  {id:"u4",name:"Union College",                        address:"3800 S 48th St",       city:"Lincoln",zip:"68506",lat:40.7793,lng:-96.6558,type:"Private College",    enrollment:850,  rotcProgram:false},
+];
+
+const POLICE=[
+  {id:"p1",name:"Lincoln Police Department HQ",      address:"575 S 10th St, Lincoln, NE 68508",         zip:"68508",lat:40.8093,lng:-96.7087,jurisdiction:"City of Lincoln",   chief:""},
+  {id:"p2",name:"Lancaster County Sheriff's Office", address:"575 S 10th St, Lincoln, NE 68508",         zip:"68508",lat:40.8086,lng:-96.7095,jurisdiction:"Lancaster County",  chief:""},
+  {id:"p3",name:"UNL Police Department",             address:"1 Memorial Stadium Dr, Lincoln, NE 68588", zip:"68588",lat:40.8248,lng:-96.7054,jurisdiction:"Univ. of Nebraska",chief:""},
+];
+
+const COURTS=[
+  {id:"c1",name:"Lancaster County Courthouse",           address:"555 S 10th St, Lincoln, NE 68508",        zip:"68508",lat:40.8098,lng:-96.7082,type:"County Courthouse"},
+  {id:"c2",name:"U.S. District Court–Nebraska (Lincoln)",address:"100 Centennial Mall N, Lincoln, NE 68508",zip:"68508",lat:40.8147,lng:-96.7067,type:"Federal Courthouse"},
+];
+
+/* Taco Bell — address display only */
+const TACOBELL=[
+  {id:"t1",name:"Taco Bell",address:"3110 O St, Lincoln, NE 68510",         zip:"68510",lat:40.8079,lng:-96.6558},
+  {id:"t2",name:"Taco Bell",address:"1420 S 27th St, Lincoln, NE 68502",    zip:"68502",lat:40.7968,lng:-96.6704},
+  {id:"t3",name:"Taco Bell",address:"4400 N 27th St, Lincoln, NE 68521",    zip:"68521",lat:40.8461,lng:-96.6706},
+  {id:"t4",name:"Taco Bell",address:"6840 O St, Lincoln, NE 68510",         zip:"68510",lat:40.8081,lng:-96.6165},
+  {id:"t5",name:"Taco Bell",address:"333 N 48th St, Lincoln, NE 68503",     zip:"68503",lat:40.8087,lng:-96.6559},
+  {id:"t6",name:"Taco Bell",address:"2601 N 48th St, Lincoln, NE 68504",    zip:"68504",lat:40.8378,lng:-96.6563},
+  {id:"t7",name:"Taco Bell",address:"7900 Pioneers Blvd, Lincoln, NE 68506",zip:"68506",lat:40.7788,lng:-96.5960},
+];
+
+const ICFG={
+  sch:{e:"🏫",bg:"#2d1a00",c:"#f5a623"},
+  uni:{e:"🎓",bg:"#1e0a30",c:"#a855f7"},
+  pd: {e:"🚔",bg:"#0a1a30",c:"#3b82f6"},
+  ct: {e:"⚖️", bg:"#0a2010",c:"#22c55e"},
+  tb: {e:"🌮",bg:"#300808",c:"#ef4444"},
+};
+
+/* ── MAP ── */
+const MAP=L.map("map",{center:[40.813,-96.703],zoom:12});
+
+const TDARK=L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+  {attribution:"© OpenStreetMap · © CARTO",subdomains:"abcd",maxZoom:19});
+
+/* Esri World Street Map — excellent road detail and contrast */
+const TLIGHT=L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
+  {attribution:"© Esri · © OpenStreetMap contributors",maxZoom:20});
+
+TDARK.addTo(MAP);
+
+/* ── FETCH REAL ZCTA BOUNDARIES ──────────────────────────────
+   Source: OpenDataDE Nebraska ZIP GeoJSON (derived from Census
+   TIGER/Line data, hosted on GitHub — no CORS restrictions).
+   We fetch all Nebraska ZCTAs then filter to AO_ZIPS client-side.
+   ─────────────────────────────────────────────────────────── */
+async function fetchZCTAs(){
+  const url="https://raw.githubusercontent.com/OpenDataDE/State-zip-code-GeoJSON/master/ne_nebraska_zip_codes_geo.min.json";
+  try{
+    document.getElementById("ltxt").textContent="Downloading Nebraska ZIP boundaries…";
+    const r=await fetch(url);
+    if(!r.ok) throw new Error("HTTP "+r.status);
+    const full=await r.json();
+    /* Filter to only AO ZIP codes */
+    const aoSet=new Set(AO_ZIPS);
+    const filtered={
+      type:"FeatureCollection",
+      features:full.features.filter(f=>{
+        const zip=f.properties.ZCTA5CE10||f.properties.ZIP_CODE||f.properties.zip||f.properties.ZCTA5CE||"";
+        /* Normalize the property name so downstream code works */
+        f.properties.ZCTA5CE=zip;
+        return aoSet.has(zip);
+      })
+    };
+    document.getElementById("ltxt").textContent=`Loaded ${filtered.features.length} ZIP boundaries ✓`;
+    return filtered;
+  }catch(e){
+    console.warn("ZIP GeoJSON fetch failed:",e);
+    showToast("⚠ Could not load ZIP boundaries — check network connection");
+    return null;
+  }
+}
+
+/* ── ZIP PRIORITY & STYLE ── */
+function zPri(zip){return(noteStore["zip-"+zip]||{}).priority||ZIP_PRI[zip]||"none";}
+function zStyle(zip){
+  const m={
+    hot: {color:"#ef4444",fillColor:"#ef4444",fillOpacity:.20,weight:2.0},
+    warm:{color:"#f5a623",fillColor:"#f5a623",fillOpacity:.14,weight:1.6},
+    cold:{color:"#3b82f6",fillColor:"#3b82f6",fillOpacity:.11,weight:1.3},
+    none:{color:"#546a90",fillColor:"#546a90",fillOpacity:.07,weight:1.0,dashArray:"5,4"},
+  };
+  return m[zPri(zip)]||m.none;
+}
+
+/* ── CENTROID ── */
+function centroid(f){
+  const coords=f.geometry.type==="Polygon"?f.geometry.coordinates[0]:f.geometry.coordinates[0][0];
+  let x=0,y=0;coords.forEach(c=>{x+=c[0];y+=c[1];});
+  return[y/coords.length,x/coords.length];
+}
+
+/* ── BUILD ZIP LAYER ── */
+function buildZip(gj){
+  zipGJ=gj;
+  if(LYR.zip) MAP.removeLayer(LYR.zip);
+  if(LYR.zl)  MAP.removeLayer(LYR.zl);
+
+  LYR.zip=L.geoJSON(gj,{
+    style:f=>zStyle(f.properties.ZCTA5CE),
+    onEachFeature(feature,lyr){
+      const zip=feature.properties.ZCTA5CE;
+      lyr.on("mouseover",function(e){
+        this.setStyle({weight:2.8,fillOpacity:.30});
+        this.bringToFront();
+      });
+      lyr.on("mouseout",function(){this.setStyle(zStyle(zip));});
+      lyr.on("click",()=>openZipDP(zip,feature));
+    }
+  });
+
+  /* Permanent ZIP number labels */
+  const lbls=gj.features.map(f=>{
+    const[lat,lng]=centroid(f);
+    return L.marker([lat,lng],{
+      icon:L.divIcon({className:"zl",html:f.properties.ZCTA5CE,iconSize:[50,14],iconAnchor:[25,7]}),
+      interactive:false,zIndexOffset:-100
+    });
+  });
+  LYR.zl=L.layerGroup(lbls);
+
+  if(document.getElementById("l-zip").checked)  LYR.zip.addTo(MAP);
+  if(document.getElementById("l-zl").checked)   LYR.zl.addTo(MAP);
+  document.getElementById("c-zip").textContent=gj.features.length;
+}
+
+function filterZips(){
+  if(!zipGJ) return;
+  const val=document.getElementById("zpf").value;
+  LYR.zip&&LYR.zip.eachLayer(lyr=>{
+    const zip=lyr.feature?.properties?.ZCTA5CE; if(!zip) return;
+    const p=zPri(zip);
+    const ok=val==="all"||p===val||(val==="none"&&(p==="none"||!p));
+    lyr.setStyle({opacity:ok?1:.06,fillOpacity:ok?undefined:.01});
+  });
+}
+
+/* ── ICONS ── */
+function mkIcon(k){
+  const c=ICFG[k];
+  return L.divIcon({className:"",
+    html:`<div class="mico" style="width:30px;height:30px;background:${c.bg};border-color:${c.c};">${c.e}</div>`,
+    iconSize:[30,30],iconAnchor:[15,15],popupAnchor:[0,-17]});
+}
+function stnIcon(){
+  return L.divIcon({className:"",
+    html:`<div style="position:relative;width:40px;height:40px;"><div class="sp"></div><div class="mico" style="width:40px;height:40px;background:#1a1000;border-color:#f5a623;border-width:2.5px;font-size:18px;position:relative;z-index:1;">⭐</div></div>`,
+    iconSize:[40,40],iconAnchor:[20,20],popupAnchor:[0,-22]});
+}
+
+/* ── POINT LAYERS ── */
+function buildPts(key,cfg,items){
+  if(LYR[key]) MAP.removeLayer(LYR[key]);
+  LYR[key]=L.layerGroup(items.map(item=>{
+    const m=L.marker([item.lat,item.lng],{icon:mkIcon(cfg)});
+    m.on("click",()=>openLocDP(cfg,item));
+    return m;
+  }));
+  if(document.getElementById("l-"+key)?.checked) LYR[key].addTo(MAP);
+  const el=document.getElementById("c-"+key); if(el) el.textContent=items.length;
+}
+function buildStation(){
+  if(LYR.stn) MAP.removeLayer(LYR.stn);
+  const m=L.marker([STATION.lat,STATION.lng],{icon:stnIcon(),zIndexOffset:1000});
+  m.bindPopup(`<div style="min-width:175px;"><div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:var(--accent);letter-spacing:1px;">RSID ${STATION.rsid}</div><div style="font-size:12px;font-weight:600;margin-bottom:4px;">${STATION.name}</div><div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--txt2);">${STATION.address}</div></div>`);
+  LYR.stn=L.layerGroup([m]);
+  if(document.getElementById("l-stn")?.checked) LYR.stn.addTo(MAP);
+}
+
+/* ── LEGEND ── */
+const LegCtrl=L.Control.extend({options:{position:"bottomright"},onAdd(){
+  const d=L.DomUtil.create("div","leaflet-control legc");
+  d.innerHTML=`<div class="legt">Legend</div>
+    <div class="legr"><div class="legd" style="background:#546a90;"></div>ZIP/ZCTA</div>
+    <div class="legr">🏫 <span>High School</span></div>
+    <div class="legr">🎓 <span>University</span></div>
+    <div class="legr">🚔 <span>Police Dept</span></div>
+    <div class="legr">⚖️  <span>Courthouse</span></div>
+    <div class="legr">🌮 <span>Taco Bell</span></div>
+    <div class="legr">⭐ <span>Recruiting Stn</span></div>
+    <hr style="border-color:var(--border);margin:5px 0;"/>
+    <div class="legr"><div class="legd" style="background:#ef4444;"></div>HOT ZIP</div>
+    <div class="legr"><div class="legd" style="background:#f5a623;"></div>WARM ZIP</div>
+    <div class="legr"><div class="legd" style="background:#3b82f6;"></div>COLD ZIP</div>`;
+  return d;
+}});
+new LegCtrl().addTo(MAP);
+
+/* ── DETAIL PANEL — LOCATION ── */
+function openLocDP(type,item){
+  activeId=item.id;
+  const cfg=ICFG[type], n=noteStore[item.id]||{};
+  document.getElementById("dpi").innerHTML=cfg.e;
+  document.getElementById("dpi").style.background=cfg.bg;
+  document.getElementById("dpn").textContent=item.name;
+  document.getElementById("dpc").textContent=type.toUpperCase()+(item.zip?` · ${item.zip}`:"");
+
+  let h=`<div class="df"><label>Address</label><div class="v">${item.address}${item.city?", "+item.city:""}, NE ${item.zip}</div></div>`;
+
+  /* Taco Bell: address only, no editable fields, hide save button */
+  if(type==="tb"){
+    document.getElementById("dpb").innerHTML=h;
+    document.getElementById("dpf").style.display="none";
+    openDP(); return;
+  }
+  document.getElementById("dpf").style.display="flex";
+
+  if(type==="sch"){h+=`
+    <div class="df"><label>Enrollment</label><div class="v">${item.enrollment?.toLocaleString()||"—"}</div></div>
+    <div class="df"><label>Grade Range</label><div class="v">${item.gradeRange||"—"}</div></div>
+    <div class="df"><label>Principal</label><input id="f-principal" value="${n.principal||""}" placeholder="Name" /></div>
+    <div class="df"><label>Counselor</label><input id="f-counselor" value="${n.counselor||""}" placeholder="Name" /></div>
+    <div class="df"><label>Counselor Phone</label><input id="f-counselorPhone" type="tel" value="${n.counselorPhone||""}" placeholder="(402) 555-0000" /></div>
+    <div class="df"><label>Counselor Email</label><input id="f-counselorEmail" type="email" value="${n.counselorEmail||""}" placeholder="email@school.edu" /></div>
+    <div class="df"><label>Recruiting POC</label><input id="f-recruitingContact" value="${n.recruitingContact||""}" placeholder="Contact name" /></div>`;}
+  if(type==="uni"){h+=`
+    <div class="df"><label>Type</label><div class="v">${item.type||"—"}</div></div>
+    <div class="df"><label>Enrollment</label><div class="v">${item.enrollment?.toLocaleString()||"—"}</div></div>
+    <div class="df"><label>ROTC Program</label><div class="v">${item.rotcProgram?"✓ YES":"✗ No"}</div></div>
+    <div class="df"><label>ROTC Contact</label><input id="f-rotcContact" value="${n.rotcContact||""}" placeholder="ROTC POC" /></div>
+    <div class="df"><label>Recruiting POC</label><input id="f-recruitingContact" value="${n.recruitingContact||""}" placeholder="Contact name" /></div>`;}
+  if(type==="pd"){h+=`
+    <div class="df"><label>Jurisdiction</label><div class="v">${item.jurisdiction||"—"}</div></div>
+    <div class="df"><label>Chief / Sheriff</label><input id="f-chief" value="${n.chief||""}" placeholder="Name and title" /></div>
+    <div class="df"><label>Recruiting POC</label><input id="f-recruitingContact" value="${n.recruitingContact||""}" placeholder="Contact name" /></div>`;}
+  if(type==="ct"){h+=`
+    <div class="df"><label>Court Type</label><div class="v">${item.type||"—"}</div></div>
+    <div class="df"><label>Presiding Judge</label><input id="f-judge" value="${n.judge||""}" placeholder="Name" /></div>`;}
+
+  h+=`<hr class="ddiv"/><div class="dsec">Recruiting Activity</div>
+    <div class="df"><label>Last Visit</label><input id="f-lastVisit" type="date" value="${n.lastVisit||""}" /></div>
+    <div class="df"><label>Next Planned Visit</label><input id="f-nextVisit" type="date" value="${n.nextVisit||""}" /></div>
+    <div class="df"><label>Priority</label><select id="f-priority">
+      <option value="">— Unset —</option>
+      <option value="hot" ${n.priority==="hot"?"selected":""}>🔴 HOT – This Week</option>
+      <option value="warm" ${n.priority==="warm"?"selected":""}>🟡 WARM – This Month</option>
+      <option value="cold" ${n.priority==="cold"?"selected":""}>🔵 COLD – Low</option>
+    </select></div>
+    <div class="df"><label>Contacts Made (#)</label><input id="f-contactCount" type="number" min="0" value="${n.contactCount||0}" /></div>
+    <div class="df"><label>AAR / Notes</label><textarea id="f-aar">${n.aar||""}</textarea></div>
+    <div class="df"><label>Follow-Up Action</label><input id="f-followUp" value="${n.followUp||""}" placeholder="Next action" /></div>
+    <div class="df" style="font-size:9px;color:var(--txt3);font-family:'IBM Plex Mono',monospace;">ID: ${item.id}</div>`;
+
+  document.getElementById("dpb").innerHTML=h;
+  openDP();
+}
+
+/* ── DETAIL PANEL — ZIP ── */
+function openZipDP(zip,feature){
+  activeId="zip-"+zip;
+  const n=noteStore[activeId]||{}, pri=n.priority||ZIP_PRI[zip]||"none";
+  document.getElementById("dpi").innerHTML="📍";
+  document.getElementById("dpi").style.background="#0d1424";
+  document.getElementById("dpn").textContent="ZIP "+zip;
+  document.getElementById("dpc").textContent="ZCTA BOUNDARY";
+  document.getElementById("dpf").style.display="flex";
+  document.getElementById("dpb").innerHTML=`
+    <div class="df"><label>ZCTA</label><div class="v" style="font-family:'IBM Plex Mono',monospace;">${zip}</div></div>
+    <hr class="ddiv"/><div class="dsec">ZIP Priority & Notes</div>
+    <div class="df"><label>Priority</label><select id="f-priority">
+      <option value="none" ${pri==="none"?"selected":""}>— Unset —</option>
+      <option value="hot" ${pri==="hot"?"selected":""}>🔴 HOT</option>
+      <option value="warm" ${pri==="warm"?"selected":""}>🟡 WARM</option>
+      <option value="cold" ${pri==="cold"?"selected":""}>🔵 COLD</option>
+    </select></div>
+    <div class="df"><label>Total Contacts in ZIP</label><input id="f-contactCount" type="number" min="0" value="${n.contactCount||0}" /></div>
+    <div class="df"><label>Last Activity</label><input id="f-lastVisit" type="date" value="${n.lastVisit||""}" /></div>
+    <div class="df"><label>ZIP Notes</label><textarea id="f-aar" placeholder="Community notes, hot areas, events…">${n.aar||""}</textarea></div>
+    <div class="df"><label>Follow-Up</label><input id="f-followUp" value="${n.followUp||""}" placeholder="Next action" /></div>
+    <div class="df" style="font-size:9px;color:var(--txt3);font-family:'IBM Plex Mono',monospace;">ID: ${activeId}</div>`;
+  openDP();
+}
+
+function openDP(){document.getElementById("dp").classList.add("open");document.getElementById("sid").classList.remove("show");}
+function closeDP(){document.getElementById("dp").classList.remove("open");activeId=null;}
+
+/* ── SAVE ── */
+function saveDP(){
+  if(!activeId) return;
+  const g=id=>{const e=document.getElementById("f-"+id);return e?e.value:undefined;};
+  const data={};
+  ["principal","counselor","counselorPhone","counselorEmail","recruitingContact",
+   "rotcContact","chief","judge","lastVisit","nextVisit","priority","contactCount","aar","followUp"]
+  .forEach(k=>{const v=g(k);if(v!==undefined)data[k]=v;});
+  noteStore[activeId]=data;
+  if(activeId.startsWith("zip-")&&zipGJ) buildZip(zipGJ);
+  updateStats();
+  document.getElementById("sid").classList.add("show");
+  setTimeout(()=>document.getElementById("sid").classList.remove("show"),2000);
+  showToast("Notes saved ✓");
+}
+
+/* ── STATS ── */
+function updateStats(){
+  document.getElementById("s-v").textContent=Object.keys(noteStore).filter(k=>!k.startsWith("zip-")&&noteStore[k].lastVisit).length;
+  document.getElementById("s-c").textContent=Object.values(noteStore).reduce((s,n)=>s+(parseInt(n.contactCount)||0),0);
+  document.getElementById("s-h").textContent=Object.keys(noteStore).filter(k=>k.startsWith("zip-")&&noteStore[k].priority==="hot").length+Object.values(ZIP_PRI).filter(p=>p==="hot").length;
+  document.getElementById("s-a").textContent=Object.values(noteStore).filter(n=>n.aar?.trim()).length;
+}
+
+/* ── LAYER TOGGLE ── */
+function tLyr(key){const l=LYR[key];if(!l)return;document.getElementById("l-"+key)?.checked?l.addTo(MAP):MAP.removeLayer(l);}
+
+/* ── SEARCH ── */
+const ALL=[
+  ...SCHOOLS.map(l=>({...l,type:"sch",label:"High School"})),
+  ...UNIS.map(l=>({...l,type:"uni",label:"University"})),
+  ...POLICE.map(l=>({...l,type:"pd",label:"Police Dept"})),
+  ...COURTS.map(l=>({...l,type:"ct",label:"Courthouse"})),
+  ...TACOBELL.map(l=>({...l,type:"tb",label:"Taco Bell"})),
+];
+document.getElementById("sb-in").addEventListener("input",function(){
+  const q=this.value.toLowerCase().trim(), drop=document.getElementById("sd");
+  if(!q){drop.style.display="none";return;}
+  const zm=AO_ZIPS.filter(z=>z.includes(q)).slice(0,3).map(z=>({id:"zip-"+z,name:"ZIP "+z,type:"zip",label:"ZCTA",address:"Lincoln AO",lat:0,lng:0}));
+  const lm=ALL.filter(i=>i.name.toLowerCase().includes(q)||i.address?.toLowerCase().includes(q)||i.zip?.includes(q)).slice(0,6);
+  const m=[...zm,...lm].slice(0,8);
+  if(!m.length){drop.style.display="none";return;}
+  drop.style.display="block";
+  drop.innerHTML=m.map(x=>`<div class="sd-i" onclick="doSearch('${x.id}','${x.type}',${x.lat||0},${x.lng||0})">${ICFG[x.type]?.e||"📍"} ${x.name}<div class="sd-t">${x.label} · ${x.address||""}</div></div>`).join("");
+});
+function doSearch(id,type,lat,lng){
+  document.getElementById("sd").style.display="none";
+  document.getElementById("sb-in").value="";
+  if(type==="zip"){
+    const zip=id.replace("zip-","");
+    if(zipGJ){const f=zipGJ.features.find(x=>x.properties.ZCTA5CE===zip);if(f){MAP.fitBounds(L.geoJSON(f).getBounds(),{padding:[30,30]});openZipDP(zip,f);}}
+    return;
+  }
+  if(lat&&lng) MAP.flyTo([lat,lng],15,{duration:.7});
+  setTimeout(()=>{const item=ALL.find(i=>i.id===id);if(item)openLocDP(type,item);},750);
+}
+document.addEventListener("click",e=>{if(!document.getElementById("sw").contains(e.target))document.getElementById("sd").style.display="none";});
+
+/* ── EXPORT / IMPORT ── */
+function exportData(){
+  const b=new Blob([JSON.stringify({exportDate:new Date().toISOString(),station:"RSID 4D5E",notes:noteStore},null,2)],{type:"application/json"});
+  const a=Object.assign(document.createElement("a"),{href:URL.createObjectURL(b),download:`4d5e-map-${new Date().toISOString().slice(0,10)}.json`});
+  a.click();URL.revokeObjectURL(a.href);showToast("Exported ✓");
+}
+function importData(ev){
+  const f=ev.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=e=>{try{const raw=JSON.parse(e.target.result);noteStore={...noteStore,...(raw.notes||raw)};if(zipGJ)buildZip(zipGJ);updateStats();showToast(`Imported ${Object.keys(raw.notes||raw).length} records ✓`);}catch{showToast("⚠ Import failed");}};
+  r.readAsText(f);ev.target.value="";
+}
+
+/* ── THEME ── */
+function toggleTheme(){
+  isDark=!isDark;
+  document.documentElement.setAttribute("data-theme",isDark?"dark":"light");
+  document.getElementById("tico").textContent=isDark?"☀":"🌙";
+  if(isDark){MAP.removeLayer(TLIGHT);TDARK.addTo(MAP);}
+  else{MAP.removeLayer(TDARK);TLIGHT.addTo(MAP);}
+}
+
+/* ── SIDEBAR ── */
+let sbOpen=true;
+function toggleSb(){sbOpen=!sbOpen;document.getElementById("sb").classList.toggle("col",!sbOpen);setTimeout(()=>MAP.invalidateSize(),300);}
+
+/* ── TOAST ── */
+let tt;
+function showToast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");clearTimeout(tt);tt=setTimeout(()=>t.classList.remove("show"),3000);}
+
+/* ── BOOT ── */
+(async()=>{
+  const ldr=document.getElementById("ldr"),ltxt=document.getElementById("ltxt");
+  ltxt.textContent="Fetching Census TIGER/Line ZCTA boundaries…";
+  const gj=await fetchZCTAs();
+  ltxt.textContent="Rendering layers…";
+  if(gj?.features?.length){buildZip(gj);}
+  else showToast("⚠ ZIP boundaries unavailable — check network");
+  buildPts("sch","sch",SCHOOLS);
+  buildPts("uni","uni",UNIS);
+  buildPts("pd","pd",POLICE);
+  buildPts("ct","ct",COURTS);
+  buildPts("tb","tb",TACOBELL);
+  buildStation();
+  updateStats();
+  ldr.classList.add("done");
+})();
+</script>
+
+<!--
+=================================================================
+DEPLOYMENT NOTES
+=================================================================
+GITHUB PAGES:
+  Upload as index.html → Settings → Pages → Deploy from branch
+
+ZIP BOUNDARIES:
+  Loaded live from Census TIGERweb REST API (CORS-enabled, free).
+  Edit AO_ZIPS array to add/remove ZIP codes from your AO.
+  If offline, boundaries won't display — export/import JSON works offline.
+
+TILE LAYERS:
+  Dark:  CartoDB Dark Matter — no CSS distortion applied
+  Light: Esri World Street Map — maximum road and building detail
+  Both are free, no API key required.
+
+STATION:
+  Address: 505 N 27th St, Lincoln, NE 68503
+  Coordinates: 40.8124, -96.6697
+  Pulses on map for visibility. Click to see popup.
+
+TACO BELL:
+  Address display only — no editable notes fields.
+
+DATA SOURCES:
+  - CartoDB tiles: © OpenStreetMap, © CARTO
+  - Esri tiles: © Esri, © OpenStreetMap contributors
+  - ZIP polygons: U.S. Census Bureau TIGER/Line ZCTAs (live API)
+  - Locations: Manually curated, RSID 4D5E
+=================================================================
+-->
+</body>
+</html>
