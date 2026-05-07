@@ -3,201 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TACTICAL CYBER OPS // ETS PROTOCOL</title>
+    <title>ETS COUNTDOWN - TACTICAL OPS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=VT323&display=swap');
-        :root {
-            --amber: #ffcc00;
-            --cyan: #00f0ff;
-            --dark: #0a0f0a;
-            --glass: rgba(15, 23, 18, 0.95);
-        }
-        * { box-sizing: border-box; }
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Inter:wght@400;500;600&display=swap');
         body {
-            margin: 0; padding: 0; height: 100vh;
-            background: linear-gradient(rgba(10,15,10,0.85), rgba(5,10,5,0.95)), url('https://picsum.photos/id/1015/1920/1080') center/cover no-repeat;
-            color: var(--amber);
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+        .title-font {
             font-family: 'Orbitron', sans-serif;
-            overflow: hidden;
-            position: relative;
-        }
-        body::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(rgba(0,255,100,0.04) 1px, transparent 1px),
-                        linear-gradient(90deg, rgba(0,255,100,0.04) 1px, transparent 1px);
-            background-size: 60px 60px;
-            animation: gridmove 40s linear infinite;
-            pointer-events: none;
-            z-index: 1;
-        }
-        @keyframes gridmove { 0% { background-position: 0 0; } 100% { background-position: 60px 60px; } }
-        .container {
-            position: relative;
-            z-index: 2;
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 40px;
-        }
-        .hud {
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            border: 2px solid var(--amber);
-            border-radius: 20px;
-            padding: 40px;
-            width: 100%;
-            max-width: 1200px;
-            box-shadow: 0 0 60px rgba(255,204,0,0.6), inset 0 0 40px rgba(0,240,255,0.25);
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        h1 {
-            font-size: 3.2rem;
-            margin: 0;
-            text-shadow: 0 0 20px var(--amber);
-        }
-        .subtitle {
-            font-family: 'VT323', monospace;
-            font-size: 1.6rem;
-            color: var(--cyan);
-            margin: 10px 0 30px;
-        }
-        .input-group {
-            margin-bottom: 25px;
-        }
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--cyan);
-            font-size: 1.1rem;
-        }
-        input {
-            width: 100%;
-            padding: 16px 20px;
-            background: rgba(0,0,0,0.6);
-            border: 2px solid var(--amber);
-            border-radius: 12px;
-            color: white;
-            font-size: 1.2rem;
-            transition: all 0.3s ease;
-        }
-        input:focus {
-            outline: none;
-            border-color: var(--cyan);
-            box-shadow: 0 0 20px var(--cyan);
-            transform: translateY(-2px);
-        }
-        button {
-            width: 100%;
-            padding: 18px;
-            background: transparent;
-            border: 3px solid var(--amber);
-            color: var(--amber);
-            font-size: 1.4rem;
-            font-weight: bold;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.4s;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-        button:hover {
-            background: var(--amber);
-            color: black;
-            box-shadow: 0 0 30px var(--amber);
-        }
-        .timer {
-            font-size: 4.8rem;
-            font-family: 'VT323', monospace;
-            text-align: center;
-            letter-spacing: 8px;
-            margin: 30px 0;
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <div class="hud">
-            <div class="header">
-                <h1>TACTICAL CYBER OPS</h1>
-                <div class="subtitle">END OF SERVICE PROTOCOL</div>
+<body class="bg-zinc-950 text-white min-h-screen">
+    <div class="max-w-6xl mx-auto min-h-screen flex items-center justify-center p-8">
+        <div class="w-full bg-zinc-900/80 backdrop-blur-2xl border border-amber-500/30 rounded-3xl shadow-2xl p-12">
+            <!-- Header -->
+            <div class="text-center mb-12">
+                <div class="inline-flex items-center gap-3 bg-zinc-800 px-6 py-2 rounded-2xl border border-amber-400/20 mb-6">
+                    <div class="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                    <span class="text-sm tracking-widest text-amber-400 font-medium">LIVE MISSION CLOCK</span>
+                </div>
+                <h1 class="title-font text-6xl font-bold tracking-tighter text-amber-300 mb-2">ETS COUNTDOWN</h1>
+                <p class="text-xl text-zinc-400">End of Service Protocol</p>
             </div>
+
+            <!-- Input Screen -->
             <div id="input-screen">
-                <div class="input-group">
-                    <label>SOLDIER CALLSIGN</label>
-                    <input type="text" id="name" value="SPC KRAAT">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl mx-auto">
+                    <div>
+                        <label class="block text-sm font-medium text-zinc-400 mb-2">SOLDIER CALLSIGN</label>
+                        <input type="text" id="name" value="SPC KRAAT" 
+                               class="w-full bg-zinc-800 border border-zinc-700 focus:border-amber-400 focus:ring-2 focus:ring-amber-400/50 rounded-2xl px-6 py-5 text-xl transition-all duration-300 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-zinc-400 mb-2">BASIC ACTIVE SERVICE DATE (BASD)</label>
+                        <input type="date" id="basd" 
+                               class="w-full bg-zinc-800 border border-zinc-700 focus:border-amber-400 focus:ring-2 focus:ring-amber-400/50 rounded-2xl px-6 py-5 text-xl transition-all duration-300 outline-none">
+                    </div>
                 </div>
-                <div class="input-group">
-                    <label>BASIC ACTIVE SERVICE DATE (BASD)</label>
-                    <input type="date" id="basd">
+
+                <div class="mt-12 flex justify-center">
+                    <button onclick="startCountdown()" 
+                            class="px-16 py-6 bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-yellow-300 hover:to-amber-300 text-black font-bold text-2xl rounded-2xl transition-all duration-300 hover:scale-105 shadow-xl shadow-amber-500/30">
+                        INITIALIZE COUNTDOWN
+                    </button>
                 </div>
-                <button onclick="startCountdown()">INITIALIZE MISSION CLOCK</button>
             </div>
-            <div id="countdown-screen" style="display: none;">
-                <div id="soldier-name" style="text-align:center; font-size:2rem; color:#0ff; margin-bottom:15px;"></div>
-                <div id="timer" class="timer">0000 : 00 : 00 : 00</div>
-                <div class="progress">
-                    <div id="progress-bar" class="progress-bar" style="width:0%"></div>
+
+            <!-- Countdown Screen -->
+            <div id="countdown-screen" class="hidden">
+                <div id="soldier-name" class="text-center text-3xl font-medium text-cyan-300 mb-8"></div>
+                
+                <div id="timer" class="text-[5.5rem] font-mono text-center font-bold tracking-[12px] text-white mb-8 drop-shadow-2xl">
+                    0000 : 00 : 00 : 00
                 </div>
-                <div class="stats">
-                    <div class="stat"><div class="stat-label">TIME SERVED</div><div id="time-served" class="stat-value">0 YRS</div></div>
-                    <div class="stat"><div class="stat-label">REMAINING</div><div id="remaining-years" class="stat-value">20 YRS</div></div>
-                    <div class="stat"><div class="stat-label">PROGRESS TO FREEDOM</div><div id="progress-text" class="stat-value">0%</div></div>
+
+                <div class="max-w-md mx-auto">
+                    <div class="h-3 bg-zinc-800 rounded-3xl overflow-hidden">
+                        <div id="progress-bar" class="h-3 bg-gradient-to-r from-cyan-400 to-amber-400 w-0 transition-all duration-1000"></div>
+                    </div>
                 </div>
-                <button onclick="resetToInput()">RECONFIGURE MISSION</button>
+
+                <div class="grid grid-cols-3 gap-6 mt-12">
+                    <div class="text-center">
+                        <div class="text-xs tracking-widest text-zinc-400">TIME SERVED</div>
+                        <div id="time-served" class="text-4xl font-semibold text-white">14.8 YRS</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-xs tracking-widest text-zinc-400">REMAINING</div>
+                        <div id="remaining-years" class="text-4xl font-semibold text-amber-300">5.2 YRS</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-xs tracking-widest text-zinc-400">PROGRESS</div>
+                        <div id="progress-text" class="text-4xl font-semibold text-white">74%</div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-12">
+                    <button onclick="resetToInput()" class="text-zinc-400 hover:text-white transition-colors">← RECONFIGURE</button>
+                </div>
             </div>
         </div>
     </div>
+
     <script>
         let interval;
+
         function startCountdown() {
             const name = document.getElementById('name').value.trim() || "UNKNOWN OPERATOR";
             const basdStr = document.getElementById('basd').value;
-            if (!basdStr) { alert("ENTER BASD, TROOPER."); return; }
+            if (!basdStr) {
+                alert("Please enter your BASD");
+                return;
+            }
+
             const basd = new Date(basdStr);
             const ets = new Date(basd);
             ets.setFullYear(ets.getFullYear() + 20);
-            document.getElementById('input-screen').style.display = 'none';
-            document.getElementById('countdown-screen').style.display = 'block';
+
+            document.getElementById('input-screen').classList.add('hidden');
+            document.getElementById('countdown-screen').classList.remove('hidden');
             document.getElementById('soldier-name').textContent = name.toUpperCase();
+
             if (interval) clearInterval(interval);
+
             interval = setInterval(() => {
                 const now = new Date();
                 const diff = ets - now;
+
                 if (diff <= 0) {
-                    document.getElementById('timer').innerHTML = `<span style="color:#ff0033;">FREEDOM ACHIEVED</span>`;
-                    document.getElementById('progress-bar').style.width = '100%';
+                    document.getElementById('timer').innerHTML = `<span class="text-red-500 text-6xl">FREEDOM ACHIEVED</span>`;
                     clearInterval(interval);
                     return;
                 }
+
                 const days = Math.floor(diff / (1000*60*60*24));
                 const hours = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
                 const minutes = Math.floor((diff % (1000*60*60)) / (1000*60));
                 const seconds = Math.floor((diff % (1000*60)) / 1000);
+
                 document.getElementById('timer').textContent = `${days.toString().padStart(4,'0')} : ${hours.toString().padStart(2,'0')} : ${minutes.toString().padStart(2,'0')} : ${seconds.toString().padStart(2,'0')}`;
+
                 const totalMs = 20 * 365.25 * 24 * 60 * 60 * 1000;
                 const elapsed = now - basd;
                 let progress = (elapsed / totalMs) * 100;
                 progress = Math.min(100, Math.max(0, progress));
+
                 document.getElementById('progress-bar').style.width = `${progress}%`;
-                document.getElementById('progress-text').textContent = `${progress.toFixed(1)}%`;
+                document.getElementById('progress-text').textContent = `${Math.round(progress)}%`;
+
                 const yearsServed = (elapsed / (365.25 * 24 * 60 * 60 * 1000)).toFixed(1);
                 const yearsRemaining = (20 - parseFloat(yearsServed)).toFixed(1);
+
                 document.getElementById('time-served').textContent = `${yearsServed} YRS`;
                 document.getElementById('remaining-years').textContent = `${yearsRemaining} YRS`;
             }, 1000);
         }
+
         function resetToInput() {
             if (interval) clearInterval(interval);
-            document.getElementById('countdown-screen').style.display = 'none';
-            document.getElementById('input-screen').style.display = 'block';
+            document.getElementById('countdown-screen').classList.add('hidden');
+            document.getElementById('input-screen').classList.remove('hidden');
         }
+
+        // Set today's date as default
         document.getElementById('basd').value = new Date().toISOString().split('T')[0];
+
+        // Tailwind script
+        document.documentElement.setAttribute('data-theme', 'dark');
     </script>
 </body>
 </html>
