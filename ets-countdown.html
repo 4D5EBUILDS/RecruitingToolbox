@@ -3,102 +3,289 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TACTICAL CYBER OPS // ETS PROTOCOL</title>
+    <title>ETS COUNTDOWN | TACTICAL OPS</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=VT323&display=swap');
-        :root { --amber: #ffcc00; --cyan: #00f0ff; --red: #ff0033; }
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Inter:wght@400;500&display=swap');
+
+        :root {
+            --amber: #ffcc00;
+            --cyan: #00f0ff;
+            --dark: #0a0f0a;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            margin:0; padding:0; height:100vh;
-            background: linear-gradient(rgba(5,10,5,0.92), rgba(10,20,10,0.92)), url('https://picsum.photos/id/1015/1920/1080') center/cover;
-            color: var(--amber); font-family: 'Orbitron', sans-serif; overflow:hidden; position:relative;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0f0a 0%, #1a2a1f 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
         }
+
+        /* Background Grid */
         body::before {
-            content:''; position:absolute; inset:0;
-            background: linear-gradient(rgba(0,255,100,0.05) 1px, transparent 1px),
-                        linear-gradient(90deg, rgba(0,255,100,0.05) 1px, transparent 1px);
-            background-size:50px 50px; animation:gridmove 30s linear infinite; pointer-events:none; z-index:1;
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+            z-index: 1;
         }
-        @keyframes gridmove { 0%{background-position:0 0} 100%{background-position:50px 50px} }
-        .container { position:relative; z-index:10; height:100vh; display:flex; align-items:center; justify-content:center; padding:20px; }
-        .hud {
-            background:rgba(10,20,15,0.95); backdrop-filter:blur(16px); border:3px solid var(--amber); border-radius:16px;
-            padding:30px; width:100%; max-width:1100px; box-shadow:0 0 80px rgba(255,204,0,0.8), inset 0 0 50px rgba(0,240,255,0.3);
+
+        .main-container {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 1280px;
+            margin: 40px;
+            background: rgba(15, 23, 18, 0.95);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--amber);
+            border-radius: 20px;
+            box-shadow: 0 0 80px rgba(255, 204, 0, 0.4),
+                        inset 0 0 60px rgba(0, 240, 255, 0.15);
+            overflow: hidden;
         }
-        .header-img { height:220px; background:url('https://picsum.photos/id/866/1200/300') center/cover; border:2px solid var(--cyan); border-radius:8px; margin-bottom:25px; box-shadow:0 0 40px var(--cyan); }
-        h1 { font-size:3.4rem; text-align:center; text-shadow:0 0 30px var(--amber), 0 0 70px var(--cyan); letter-spacing:8px; margin-bottom:5px; }
-        .subtitle { text-align:center; font-family:'VT323',monospace; font-size:1.8rem; color:var(--cyan); margin-bottom:30px; }
-        .input-section, .countdown-section { background:rgba(0,0,0,0.7); border:2px solid var(--cyan); padding:25px; border-radius:10px; margin-bottom:25px; }
-        label { display:block; margin:15px 0 8px; color:var(--cyan); font-size:1.2rem; }
-        input { width:100%; padding:14px; background:#111; border:2px solid var(--amber); color:white; font-size:1.2rem; border-radius:6px; }
+
+        .header {
+            background: linear-gradient(to right, #111, #1a2a1f);
+            padding: 30px 40px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,204,0,0.3);
+        }
+
+        .header h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.2rem;
+            letter-spacing: 6px;
+            color: var(--amber);
+            text-shadow: 0 0 30px var(--amber);
+        }
+
+        .header p {
+            font-size: 1.4rem;
+            color: var(--cyan);
+            margin-top: 8px;
+        }
+
+        .content {
+            padding: 50px 60px;
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 60px;
+        }
+
+        .input-panel {
+            background: rgba(0,0,0,0.6);
+            padding: 40px;
+            border-radius: 12px;
+            border: 1px solid var(--cyan);
+        }
+
+        .countdown-panel {
+            background: rgba(0,0,0,0.6);
+            padding: 40px;
+            border-radius: 12px;
+            border: 1px solid var(--cyan);
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--cyan);
+            font-size: 1.1rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 16px;
+            background: #111;
+            border: 2px solid #444;
+            border-radius: 8px;
+            color: white;
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+        }
+
         button {
-            margin-top:20px; padding:16px 50px; background:transparent; border:3px solid var(--amber); color:var(--amber);
-            font-size:1.5rem; cursor:pointer; width:100%; text-transform:uppercase; letter-spacing:3px;
+            width: 100%;
+            padding: 18px;
+            background: transparent;
+            border: 3px solid var(--amber);
+            color: var(--amber);
+            font-size: 1.4rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 8px;
         }
-        button:hover { background:var(--amber); color:black; box-shadow:0 0 40px var(--amber); transform:scale(1.03); }
-        .timer { font-size:5.2rem; font-family:'VT323',monospace; text-align:center; color:var(--amber); text-shadow:0 0 40px var(--amber), 0 0 90px var(--red); letter-spacing:12px; margin:20px 0; }
-        .progress { height:22px; background:#111; border:2px solid var(--cyan); margin:25px 0; overflow:hidden; }
-        .progress-bar { height:100%; background:linear-gradient(90deg, var(--cyan), var(--amber)); transition:width 1s linear; box-shadow:0 0 30px var(--cyan); }
-        .stats { display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:15px; }
-        .stat { background:rgba(0,0,0,0.8); padding:15px; border:1px solid var(--cyan); text-align:center; box-shadow:0 0 20px rgba(0,240,255,0.3); }
+
+        button:hover {
+            background: var(--amber);
+            color: #000;
+            transform: translateY(-2px);
+        }
+
+        .timer {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 4.8rem;
+            letter-spacing: 12px;
+            color: var(--amber);
+            text-shadow: 0 0 40px var(--amber);
+            margin: 30px 0;
+        }
+
+        .progress-container {
+            margin: 40px 0;
+        }
+
+        .progress {
+            height: 26px;
+            background: #222;
+            border-radius: 50px;
+            overflow: hidden;
+            border: 2px solid var(--cyan);
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--cyan), var(--amber));
+            transition: width 0.8s ease;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-label {
+            color: var(--cyan);
+            font-size: 0.95rem;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 25px;
+            color: #666;
+            font-size: 0.95rem;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="hud">
-            <div class="header-img"></div>
-            <h1>TACTICAL CYBER OPS</h1>
-            <div class="subtitle">END OF SERVICE COUNTDOWN PROTOCOL</div>
+    <div class="main-container">
+        <div class="header">
+            <h1>TACTICAL OPS</h1>
+            <p>END OF SERVICE COUNTDOWN PROTOCOL</p>
+        </div>
 
-            <div id="input-screen" class="input-section">
+        <div class="content">
+            <!-- Input Panel -->
+            <div class="input-panel" id="input-screen">
+                <h2 style="margin-bottom: 25px; color: var(--amber);">MISSION PARAMETERS</h2>
+                
                 <label>SOLDIER CALLSIGN</label>
                 <input type="text" id="name" value="SPC KRAAT">
+
                 <label>BASIC ACTIVE SERVICE DATE (BASD)</label>
                 <input type="date" id="basd">
-                <button onclick="startCountdown()">INITIALIZE MISSION CLOCK</button>
+
+                <button onclick="startCountdown()">ACTIVATE COUNTDOWN</button>
             </div>
 
-            <div id="countdown-screen" class="countdown-section" style="display:none;">
-                <div id="soldier-name" style="text-align:center;font-size:2rem;color:#0ff;margin-bottom:15px;"></div>
+            <!-- Countdown Panel -->
+            <div class="countdown-panel" id="countdown-screen" style="display: none;">
+                <div id="soldier-name" style="font-size: 1.8rem; color: var(--cyan); margin-bottom: 15px;"></div>
                 <div id="timer" class="timer">0000 : 00 : 00 : 00</div>
-                <div class="progress"><div id="progress-bar" class="progress-bar" style="width:0%"></div></div>
-                <div class="stats">
-                    <div class="stat"><div class="stat-label">TIME SERVED</div><div id="time-served" class="stat-value">0 YRS</div></div>
-                    <div class="stat"><div class="stat-label">REMAINING</div><div id="remaining-years" class="stat-value">20 YRS</div></div>
-                    <div class="stat"><div class="stat-label">PROGRESS TO FREEDOM</div><div id="progress-text" class="stat-value">0%</div></div>
+
+                <div class="progress-container">
+                    <div class="progress">
+                        <div id="progress-bar" class="progress-bar" style="width: 0%"></div>
+                    </div>
                 </div>
-                <button onclick="resetToInput()">RECONFIGURE MISSION</button>
+
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-label">TIME SERVED</div>
+                        <div id="time-served" class="stat-value">0 YRS</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">REMAINING</div>
+                        <div id="remaining-years" class="stat-value">20 YRS</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">PROGRESS</div>
+                        <div id="progress-text" class="stat-value">0%</div>
+                    </div>
+                </div>
+
+                <button onclick="resetToInput()" style="margin-top: 40px;">RECONFIGURE MISSION</button>
             </div>
+        </div>
+
+        <div class="footer">
+            UNITED STATES ARMY • RECRUITING COMMAND
         </div>
     </div>
 
     <script>
         let interval;
+
         function startCountdown() {
             const name = document.getElementById('name').value.trim() || "UNKNOWN OPERATOR";
             const basdStr = document.getElementById('basd').value;
-            if (!basdStr) { alert("ENTER BASD, TROOPER."); return; }
+            if (!basdStr) {
+                alert("ENTER BASD, TROOPER.");
+                return;
+            }
 
             const basd = new Date(basdStr);
-            const ets = new Date(basd); ets.setFullYear(ets.getFullYear() + 20);
+            const ets = new Date(basd);
+            ets.setFullYear(ets.getFullYear() + 20);
 
             document.getElementById('input-screen').style.display = 'none';
             document.getElementById('countdown-screen').style.display = 'block';
             document.getElementById('soldier-name').textContent = name.toUpperCase();
 
             if (interval) clearInterval(interval);
+
             interval = setInterval(() => {
                 const now = new Date();
                 const diff = ets - now;
+
                 if (diff <= 0) {
-                    document.getElementById('timer').innerHTML = `<span style="color:#ff0033;">FREEDOM ACHIEVED</span>`;
+                    document.getElementById('timer').innerHTML = `<span style="color:#ff0033; font-size:3.5rem;">FREEDOM ACHIEVED</span>`;
                     document.getElementById('progress-bar').style.width = '100%';
-                    clearInterval(interval); return;
+                    clearInterval(interval);
+                    return;
                 }
 
                 const days = Math.floor(diff / (1000*60*60*24));
                 const hours = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
                 const minutes = Math.floor((diff % (1000*60*60)) / (1000*60));
                 const seconds = Math.floor((diff % (1000*60)) / 1000);
+
                 document.getElementById('timer').textContent = `${days.toString().padStart(4,'0')} : ${hours.toString().padStart(2,'0')} : ${minutes.toString().padStart(2,'0')} : ${seconds.toString().padStart(2,'0')}`;
 
                 const totalMs = 20 * 365.25 * 24 * 60 * 60 * 1000;
@@ -122,6 +309,7 @@
             document.getElementById('input-screen').style.display = 'block';
         }
 
+        // Set default date
         document.getElementById('basd').value = new Date().toISOString().split('T')[0];
     </script>
 </body>
