@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ETS Countdown — U.S. Army</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700&family=Archivo+Black&display=swap" rel="stylesheet">
+<style>
+
+/* ============================================================
+   U.S. ARMY DESIGN SYSTEM — ETS COUNTDOWN
+   Follows U.S. Army Brand Guidelines V1.1 (May 2023)
+   Primary palette: Army Black / Army Gold / Army Green / White
+   Typeface: Archivo Black (G.I. fallback for web)
+   ============================================================ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  hyphens: none;
+}
+
+:root {
+  --black:    #221F20;
+  --gold:     #FFCC01;
+  --green:    #2F372F;
+  --white:    #FFFFFF;
+  --f01:      #3F4B36;
+  --gray:     #A8A6A2;
+  --gray-d:   #6E6C68;
+  --hi-grn:   #4F7942;
+  --hi-red:   #A02E2E;
+
+  --fd: 'Archivo Black', 'Arial Black', system-ui, sans-serif;
+  --fb: 'Archivo', Arial, system-ui, sans-serif;
+
+  --ease-s: cubic-bezier(0.2, 0.6, 0, 1);
+  --ease-d: cubic-bezier(0.85, 0, 0.15, 1);
+}
+
+html, body {
+  min-height: 100%;
+  background: var(--black);
+  color: var(--white);
+  font-family: var(--fb);
+  font-weight: 500;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+
+/* ──────────────────────────────────────────────────────────────
+   SETUP SCREEN
+   ────────────────────────────────────────────────────────────── */
+
+#setup-screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.setup-topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px clamp(24px, 6vw, 80px);
+  border-bottom: 1px solid var(--green);
+}
+
+.army-star {
+  fill: var(--gold);
+  flex-shrink: 0;
+}
+
+.wordmark {
+  font-family: var(--fd);
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--white);
+}
+
+.setup-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 48px clamp(24px, 6vw, 80px) 80px;
+}
+
+.setup-eyebrow {
+  font-family: var(--fb);
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 16px;
+}
+
+.setup-display {
+  font-family: var(--fd);
+  font-size: clamp(64px, 11vw, 128px);
+  text-transform: uppercase;
+  line-height: 0.92;
+  color: var(--gold);
+  margin-bottom: 16px;
+  letter-spacing: -0.01em;
+}
+
+.setup-sub {
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gray);
+  padding-bottom: 40px;
+  border-bottom: 2px solid var(--green);
+  margin-bottom: 40px;
+  max-width: 560px;
+}
+
+.setup-form {
+  max-width: 480px;
+  width: 100%;
+}
+
+.field-group {
+  margin-bottom: 24px;
+}
+
+.field-label {
+  display: block;
+  font-family: var(--fb);
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 8px;
+}
+
+.field-input {
+  width: 100%;
+  background: var(--green);
+  border: 1px solid var(--gray-d);
+  color: var(--white);
+  font-family: var(--fb);
+  font-size: 16px;
+  font-weight: 500;
+  padding: 14px 16px;
+  outline: none;
+  border-radius: 0;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: border-color 120ms var(--ease-s);
+}
+
+.field-input:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 2px var(--gold);
+}
+
+.field-input::placeholder {
+  color: var(--gray-d);
+  font-weight: 400;
+}
+
+.field-input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  opacity: 0.45;
+  cursor: pointer;
+}
+
+.field-hint {
+  font-size: 11px;
+  color: var(--gray-d);
+  margin-top: 6px;
+  letter-spacing: 0.04em;
+}
+
+.error-msg {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--hi-red);
+  margin-top: 6px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  display: none;
+}
+
+.btn-launch {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background: var(--gold);
+  border: none;
+  color: var(--black);
+  font-family: var(--fd);
+  font-size: 17px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 18px 24px;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background 120ms var(--ease-s);
+}
+
+.btn-launch:hover  { background: #ffe033; }
+.btn-launch:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+
+.btn-arrow { font-size: 20px; line-height: 1; }
+
+.setup-footnote {
+  margin-top: 20px;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--gray-d);
+  text-transform: uppercase;
+}
+
+.setup-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px clamp(24px, 6vw, 80px);
+  border-top: 1px solid var(--green);
+  margin-top: auto;
+}
+
+.footer-tagline {
+  font-family: var(--fd);
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  color: var(--gray-d);
+  text-transform: uppercase;
+}
+
+.footer-star {
+  color: var(--gold);
+  font-size: 18px;
+  line-height: 1;
+}
+
+
+/* ──────────────────────────────────────────────────────────────
+   COUNTDOWN SCREEN
+   ────────────────────────────────────────────────────────────── */
+
+#countdown-screen {
+  display: none;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--black);
+}
+
+#countdown-screen.active {
+  display: flex;
+  animation: slide-in 280ms var(--ease-d) both;
+}
+
+@keyframes slide-in {
+  from { transform: translateY(12px); }
+  to   { transform: translateY(0); }
+}
+
+/* Top bar */
+.cd-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px clamp(24px, 6vw, 80px);
+  border-bottom: 1px solid var(--green);
+  flex-shrink: 0;
+}
+
+.cd-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cd-wordmark {
+  font-family: var(--fd);
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--white);
+}
+
+.cd-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--fb);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  background: var(--hi-grn);
+  /* Square — Army is decisive, not round */
+  animation: blink 2.4s step-end infinite;
+}
+
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.15} }
+
+.cd-clock {
+  font-family: var(--fb);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gray);
+}
+
+/* Hero */
+.cd-hero {
+  padding: 40px clamp(24px, 6vw, 80px) 36px;
+  border-bottom: 1px solid var(--green);
+  flex-shrink: 0;
+}
+
+.cd-eyebrow {
+  font-family: var(--fb);
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 8px;
+}
+
+.cd-headline {
+  font-family: var(--fd);
+  font-size: clamp(48px, 8vw, 96px);
+  text-transform: uppercase;
+  line-height: 0.94;
+  color: var(--gold);
+  margin-bottom: 14px;
+  letter-spacing: -0.01em;
+}
+
+.cd-meta {
+  font-family: var(--fb);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gray);
+}
+
+/* Progress */
+.cd-progress-section {
+  padding: 20px clamp(24px, 6vw, 80px);
+  border-bottom: 1px solid var(--green);
+  flex-shrink: 0;
+}
+
+.cd-progress-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.cd-progress-label {
+  font-family: var(--fb);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gray);
+}
+
+.cd-progress-pct {
+  font-family: var(--fd);
+  font-size: 18px;
+  color: var(--gold);
+  letter-spacing: 0.02em;
+}
+
+.cd-progress-track {
+  width: 100%;
+  height: 6px;
+  background: var(--green);
+  border: 1px solid var(--f01);
+  position: relative;
+  overflow: hidden;
+}
+
+.cd-progress-fill {
+  height: 100%;
+  background: var(--gold);
+  transition: width 1s var(--ease-s);
+}
+
+.cd-progress-dates {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+
+.cd-progress-date {
+  font-family: var(--fb);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gray-d);
+}
+
+/* Countdown blocks — exposed grid device */
+.cd-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-bottom: 1px solid var(--green);
+  flex-shrink: 0;
+}
+
+.cd-unit {
+  padding: 28px clamp(16px, 3vw, 40px) 24px;
+  border-right: 1px solid var(--green);
+  position: relative;
+}
+
+.cd-unit:last-child { border-right: none; }
+
+/* Gold top-stroke on each unit — exposed grid accent */
+.cd-unit::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--gold);
+}
+
+.cd-unit-label {
+  display: block;
+  font-family: var(--fb);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gray);
+  margin-bottom: 10px;
+}
+
+.cd-unit-value {
+  display: block;
+  font-family: var(--fd);
+  font-size: clamp(44px, 6.5vw, 80px);
+  color: var(--gold);
+  line-height: 1;
+  will-change: transform;
+}
+
+@keyframes tick-up {
+  0%   { transform: translateY(0); }
+  35%  { transform: translateY(-5px); }
+  100% { transform: translateY(0); }
+}
+
+.cd-unit-value.tick { animation: tick-up 200ms var(--ease-d) both; }
+
+/* Stats — exposed grid, 3-column */
+.cd-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  flex: 1;
+}
+
+.cd-stat {
+  padding: 20px clamp(16px, 3vw, 40px);
+  border-right: 1px solid var(--green);
+  border-bottom: 1px solid var(--green);
+  position: relative;
+}
+
+.cd-stat:nth-child(3n) { border-right: none; }
+
+/* Left gold stroke per stat */
+.cd-stat::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 3px;
+  height: 100%;
+  background: var(--gold);
+}
+
+.cd-stat-label {
+  font-family: var(--fb);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gray);
+  margin-bottom: 8px;
+}
+
+.cd-stat-value {
+  font-family: var(--fd);
+  font-size: clamp(18px, 2.5vw, 24px);
+  color: var(--white);
+  line-height: 1;
+}
+
+.cd-stat-value.gold  { color: var(--gold); }
+.cd-stat-value.green { color: var(--hi-grn); }
+
+/* Bottom bar */
+.cd-bottombar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px clamp(24px, 6vw, 80px);
+  border-top: 1px solid var(--green);
+  margin-top: auto;
+  flex-shrink: 0;
+}
+
+.cd-live {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--fb);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gray);
+}
+
+.cd-bottom-tagline {
+  font-family: var(--fd);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gray-d);
+}
+
+.btn-reset {
+  background: transparent;
+  border: 1px solid var(--gray-d);
+  color: var(--gray);
+  font-family: var(--fb);
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: border-color 120ms var(--ease-s), color 120ms var(--ease-s);
+}
+
+.btn-reset:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+
+/* ──────────────────────────────────────────────────────────────
+   FREEDOM SCREEN
+   Gold background, maximum impact, Army brand inversion
+   ────────────────────────────────────────────────────────────── */
+
+#freedom-screen {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: var(--gold);
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding: clamp(24px, 6vw, 80px);
+  z-index: 500;
+}
+
+#freedom-screen.active { display: flex; }
+
+.freedom-star {
+  position: absolute;
+  top: clamp(24px, 6vw, 80px);
+  left: clamp(24px, 6vw, 80px);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.freedom-wordmark {
+  font-family: var(--fd);
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--black);
+}
+
+.freedom-display {
+  font-family: var(--fd);
+  font-size: clamp(80px, 17vw, 200px);
+  text-transform: uppercase;
+  line-height: 0.88;
+  color: var(--black);
+  margin-bottom: 24px;
+}
+
+.freedom-sub {
+  font-family: var(--fb);
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--black);
+  opacity: 0.65;
+  margin-bottom: 40px;
+}
+
+.btn-freedom-reset {
+  background: var(--black);
+  border: none;
+  color: var(--gold);
+  font-family: var(--fd);
+  font-size: 15px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 16px 32px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: opacity 120ms var(--ease-s);
+}
+
+.btn-freedom-reset:hover { opacity: 0.85; }
+
+
+/* ──────────────────────────────────────────────────────────────
+   RESPONSIVE
+   ────────────────────────────────────────────────────────────── */
+
+@media (max-width: 620px) {
+  .cd-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .cd-unit:nth-child(2)  { border-right: none; }
+  .cd-unit:nth-child(3)  { border-top: 1px solid var(--green); }
+  .cd-unit:nth-child(4)  { border-top: 1px solid var(--green); }
+
+  .cd-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .cd-stat:nth-child(3n)  { border-right: 1px solid var(--green); }
+  .cd-stat:nth-child(2n)  { border-right: none; }
+  .cd-stat:last-child { grid-column: span 2; }
+
+  .cd-bottom-tagline { display: none; }
+}
+
+@media (max-width: 400px) {
+  .setup-display { font-size: 56px; }
+  .cd-stats { grid-template-columns: 1fr; }
+  .cd-stat  { border-right: none !important; }
+  .cd-stat:last-child { grid-column: 1; }
+}
+
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════
+     SETUP SCREEN
+     ══════════════════════════════════════════════════════════ -->
+<div id="setup-screen">
+
+  <div class="setup-topbar">
+    <svg class="army-star" width="22" height="22" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="60,4 73,42 113,42 81,65 93,102 60,79 27,102 39,65 7,42 47,42"/>
+    </svg>
+    <span class="wordmark">U.S. Army</span>
+  </div>
+
+  <div class="setup-body">
+    <div class="setup-eyebrow">U.S. Army // Active Duty</div>
+    <div class="setup-display">ETS<br>Countdown.</div>
+    <div class="setup-sub">20 years of service — calculate your separation date.</div>
+
+    <div class="setup-form">
+
+      <div class="field-group">
+        <label class="field-label" for="input-name">Your Name / Rank</label>
+        <input class="field-input" type="text" id="input-name"
+               placeholder="e.g. SFC Smith" maxlength="40" autocomplete="off" />
+        <div class="error-msg" id="err-name">Enter your name or rank.</div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="input-basd">Basic Active Service Date (BASD)</label>
+        <input class="field-input" type="date" id="input-basd" />
+        <div class="field-hint">Found on your ERB / ORB under "Basic Active Service Date"</div>
+        <div class="error-msg" id="err-basd">Enter a valid BASD in the past.</div>
+      </div>
+
+      <button class="btn-launch" id="btn-launch">
+        <span>Generate Countdown</span>
+        <span class="btn-arrow">→</span>
+      </button>
+
+      <div class="setup-footnote">ETS = BASD + 20 years &nbsp;·&nbsp; No data stored or transmitted</div>
+    </div>
+  </div>
+
+  <div class="setup-footer">
+    <span class="footer-tagline">Be All You Can Be.</span>
+    <span class="footer-star">★</span>
+  </div>
+
+</div><!-- /setup-screen -->
+
+
+<!-- ══════════════════════════════════════════════════════════
+     COUNTDOWN SCREEN
+     ══════════════════════════════════════════════════════════ -->
+<div id="countdown-screen">
+
+  <div class="cd-topbar">
+    <div class="cd-logo">
+      <svg class="army-star" width="20" height="20" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="60,4 73,42 113,42 81,65 93,102 60,79 27,102 39,65 7,42 47,42"/>
+      </svg>
+      <span class="cd-wordmark">U.S. Army</span>
+    </div>
+    <div class="cd-status">
+      <div class="status-dot"></div>
+      <span>Active Duty</span>
+    </div>
+    <div class="cd-clock" id="current-date">--</div>
+  </div>
+
+  <div class="cd-hero">
+    <div class="cd-eyebrow" id="rank-line">--</div>
+    <div class="cd-headline">ETS Countdown.</div>
+    <div class="cd-meta" id="subtitle">--</div>
+  </div>
+
+  <div class="cd-progress-section">
+    <div class="cd-progress-header">
+      <span class="cd-progress-label">Service Progress</span>
+      <span class="cd-progress-pct" id="progress-pct">--%</span>
+    </div>
+    <div class="cd-progress-track">
+      <div class="cd-progress-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+    <div class="cd-progress-dates">
+      <span class="cd-progress-date" id="prog-start">--</span>
+      <span class="cd-progress-date" id="prog-end">--</span>
+    </div>
+  </div>
+
+  <div class="cd-grid">
+    <div class="cd-unit">
+      <span class="cd-unit-label">Days</span>
+      <span class="cd-unit-value" id="cd-days">--</span>
+    </div>
+    <div class="cd-unit">
+      <span class="cd-unit-label">Hours</span>
+      <span class="cd-unit-value" id="cd-hours">--</span>
+    </div>
+    <div class="cd-unit">
+      <span class="cd-unit-label">Minutes</span>
+      <span class="cd-unit-value" id="cd-mins">--</span>
+    </div>
+    <div class="cd-unit">
+      <span class="cd-unit-label">Seconds</span>
+      <span class="cd-unit-value" id="cd-secs">--</span>
+    </div>
+  </div>
+
+  <div class="cd-stats">
+    <div class="cd-stat">
+      <div class="cd-stat-label">Time Served</div>
+      <div class="cd-stat-value gold" id="served">--</div>
+    </div>
+    <div class="cd-stat">
+      <div class="cd-stat-label">Years Remaining</div>
+      <div class="cd-stat-value" id="yrs-left">--</div>
+    </div>
+    <div class="cd-stat">
+      <div class="cd-stat-label">Days Served</div>
+      <div class="cd-stat-value green" id="days-served">--</div>
+    </div>
+    <div class="cd-stat">
+      <div class="cd-stat-label">Weeks Remaining</div>
+      <div class="cd-stat-value" id="weeks-left">--</div>
+    </div>
+    <div class="cd-stat">
+      <div class="cd-stat-label">Hours Served</div>
+      <div class="cd-stat-value" id="hours-served">--</div>
+    </div>
+    <div class="cd-stat">
+      <div class="cd-stat-label">Total Service Days</div>
+      <div class="cd-stat-value gold" id="total-days">7,305</div>
+    </div>
+  </div>
+
+  <div class="cd-bottombar">
+    <div class="cd-live">
+      <div class="status-dot"></div>
+      <span id="local-time">--</span>
+    </div>
+    <span class="cd-bottom-tagline">Be All You Can Be.</span>
+    <button class="btn-reset" id="btn-reset">← Start Over</button>
+  </div>
+
+</div><!-- /countdown-screen -->
+
+
+<!-- ══════════════════════════════════════════════════════════
+     FREEDOM SCREEN — triggered when timer hits zero
+     ══════════════════════════════════════════════════════════ -->
+<div id="freedom-screen">
+
+  <div class="freedom-star">
+    <svg class="army-star" width="22" height="22" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="60,4 73,42 113,42 81,65 93,102 60,79 27,102 39,65 7,42 47,42" fill="#221F20"/>
+    </svg>
+    <span class="freedom-wordmark">U.S. Army</span>
+  </div>
+
+  <div class="freedom-display">FREEDOM.</div>
+  <div class="freedom-sub">Your service is complete. ★</div>
+
+  <button class="btn-freedom-reset" id="btn-freedom-reset">
+    <span>←</span>
+    <span>Start Over</span>
+  </button>
+
+</div><!-- /freedom-screen -->
+
+
+<script>
+/* ============================================================
+   ETS COUNTDOWN — Logic
+   ============================================================ */
+
+let ENLIST, ETS, TOTAL_MS, lastSec = -1, ticker = null;
+
+function pad(n)    { return String(Math.floor(n)).padStart(2, '0'); }
+function commas(n) { return Math.floor(n).toLocaleString(); }
+
+function servedString(ms) {
+  const totalDays = ms / 86400000;
+  const years  = Math.floor(totalDays / 365.25);
+  const remDays = totalDays - years * 365.25;
+  const months = Math.floor(remDays / 30.44);
+  const days   = Math.floor(remDays - months * 30.44);
+  return years + 'Y ' + months + 'M ' + days + 'D';
+}
+
+function fmtDate(d) {
+  return d.toLocaleDateString('en-US', {
+    month: 'short', day: 'numeric', year: 'numeric'
+  }).toUpperCase();
+}
+
+function validate() {
+  let ok = true;
+
+  const name    = document.getElementById('input-name').value.trim();
+  const errName = document.getElementById('err-name');
+  if (!name) { errName.style.display = 'block'; ok = false; }
+  else        { errName.style.display = 'none';  }
+
+  const basdVal = document.getElementById('input-basd').value;
+  const errBasd = document.getElementById('err-basd');
+  if (!basdVal) {
+    errBasd.style.display = 'block'; ok = false;
+  } else {
+    const basd = new Date(basdVal + 'T00:00:00');
+    if (isNaN(basd) || basd >= new Date()) {
+      errBasd.style.display = 'block'; ok = false;
+    } else {
+      errBasd.style.display = 'none';
+    }
+  }
+  return ok;
+}
+
+/* ── Launch ─────────────────────────────────────────────────── */
+document.getElementById('btn-launch').addEventListener('click', function () {
+  if (!validate()) return;
+
+  const name    = document.getElementById('input-name').value.trim();
+  const basdVal = document.getElementById('input-basd').value;
+
+  ENLIST   = new Date(basdVal + 'T00:00:00');
+  ETS      = new Date(ENLIST);
+  ETS.setFullYear(ETS.getFullYear() + 20);
+  TOTAL_MS = ETS - ENLIST;
+
+  document.getElementById('rank-line').textContent  = name + ' // BASD: ' + fmtDate(ENLIST);
+  document.getElementById('subtitle').textContent   = 'Target ETS: ' + fmtDate(ETS);
+  document.getElementById('prog-start').textContent = fmtDate(ENLIST);
+  document.getElementById('prog-end').textContent   = fmtDate(ETS);
+  document.getElementById('total-days').textContent = commas(TOTAL_MS / 86400000);
+
+  document.getElementById('setup-screen').style.display    = 'none';
+  document.getElementById('countdown-screen').classList.add('active');
+
+  if (ticker) clearInterval(ticker);
+  lastSec = -1;
+  tick();
+  ticker = setInterval(tick, 1000);
+});
+
+/* ── Reset ──────────────────────────────────────────────────── */
+function doReset() {
+  if (ticker) clearInterval(ticker);
+  document.getElementById('countdown-screen').classList.remove('active');
+  document.getElementById('freedom-screen').classList.remove('active');
+  document.getElementById('setup-screen').style.display = '';
+}
+
+document.getElementById('btn-reset').addEventListener('click', doReset);
+document.getElementById('btn-freedom-reset').addEventListener('click', doReset);
+
+/* ── Enter key shortcut ─────────────────────────────────────── */
+['input-name', 'input-basd'].forEach(function (id) {
+  document.getElementById(id).addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') document.getElementById('btn-launch').click();
+  });
+});
+
+/* ── Tick ───────────────────────────────────────────────────── */
+function tick() {
+  var now    = new Date();
+  var served = now - ENLIST;
+  var left   = ETS - now;
+
+  if (left <= 0) {
+    clearInterval(ticker);
+    document.getElementById('countdown-screen').classList.remove('active');
+    document.getElementById('freedom-screen').classList.add('active');
+    return;
+  }
+
+  var totalSecs = left / 1000;
+  var secs  = totalSecs % 60;
+  var mins  = (totalSecs / 60) % 60;
+  var hours = (totalSecs / 3600) % 24;
+  var days  = totalSecs / 86400;
+
+  /* Tick animation on seconds change */
+  var curSec = Math.floor(secs);
+  var secEl  = document.getElementById('cd-secs');
+  if (curSec !== lastSec) {
+    lastSec = curSec;
+    secEl.classList.remove('tick');
+    void secEl.offsetWidth;   /* force reflow to restart animation */
+    secEl.classList.add('tick');
+  }
+
+  document.getElementById('cd-days').textContent  = commas(days);
+  document.getElementById('cd-hours').textContent = pad(hours);
+  document.getElementById('cd-mins').textContent  = pad(mins);
+  document.getElementById('cd-secs').textContent  = pad(secs);
+
+  var pct = Math.min((served / TOTAL_MS) * 100, 100);
+  document.getElementById('progress-fill').style.width  = pct.toFixed(3) + '%';
+  document.getElementById('progress-pct').textContent   = pct.toFixed(2) + '%';
+
+  var servedDays = served / 86400000;
+  document.getElementById('served').textContent       = servedString(served);
+  document.getElementById('days-served').textContent  = commas(servedDays) + ' days';
+  document.getElementById('hours-served').textContent = commas(served / 3600000) + ' hrs';
+
+  var leftYears = left / (1000 * 60 * 60 * 24 * 365.25);
+  var leftWeeks = left / (1000 * 60 * 60 * 24 * 7);
+  document.getElementById('yrs-left').textContent   = leftYears.toFixed(2) + ' yrs';
+  document.getElementById('weeks-left').textContent = commas(leftWeeks) + ' wks';
+
+  var dateStr = now.toLocaleDateString('en-US', {
+    year: 'numeric', month: 'short', day: 'numeric'
+  }).toUpperCase();
+  var timeStr = now.toLocaleTimeString('en-US', { hour12: false });
+  document.getElementById('current-date').textContent = dateStr;
+  document.getElementById('local-time').textContent   = timeStr;
+}
+</script>
+
+</body>
+</html>

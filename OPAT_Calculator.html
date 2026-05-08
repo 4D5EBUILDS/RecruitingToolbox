@@ -1,0 +1,1369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OPAT — Occupational Physical Assessment Test</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root {
+  --bg:        #080a07;
+  --surface:   #0f1410;
+  --surface2:  #161d15;
+  --surface3:  #1e2820;
+  --border:    #253022;
+  --border2:   #344530;
+  --olive:     #6b8c3e;
+  --olive-l:   #91b858;
+  --olive-dim: #3d5224;
+  --amber:     #c4891f;
+  --amber-l:   #e8b040;
+  --amber-dim: #6b4a0e;
+  --red:       #b83228;
+  --red-l:     #e04535;
+  --gold:      #c8a830;
+  --gold-l:    #e8cc60;
+  --gray-c:    #5a7060;
+  --gray-l:    #7a9878;
+  --black-c:   #c0c8b8;
+  --white-c:   #3a4a38;
+  --text:      #b8c8a8;
+  --text-dim:  #6a806a;
+  --text-dimmer: #3d503d;
+  --white:     #e8f0d8;
+  --scan: rgba(140,200,80,0.03);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 15px;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Scanline overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    var(--scan) 2px,
+    var(--scan) 4px
+  );
+  pointer-events: none;
+  z-index: 999;
+}
+
+/* Grid texture */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 32px 32px;
+  opacity: 0.25;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* HEADER */
+header {
+  position: relative;
+  z-index: 10;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border2);
+  padding: 0;
+}
+.header-top {
+  background: var(--olive-dim);
+  padding: 4px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.header-top-left {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: var(--olive-l);
+  letter-spacing: 0.12em;
+}
+.header-top-right {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: var(--olive-l);
+  letter-spacing: 0.08em;
+}
+.header-main {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 16px 24px;
+}
+.header-emblem {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+}
+.header-text h1 {
+  font-family: 'Oswald', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--white);
+  line-height: 1;
+}
+.header-text h2 {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: var(--olive-l);
+  letter-spacing: 0.1em;
+  margin-top: 4px;
+  font-weight: 400;
+}
+.header-right {
+  margin-left: auto;
+  text-align: right;
+}
+.version-tag {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: var(--amber);
+  border: 1px solid var(--amber-dim);
+  padding: 4px 10px;
+  display: inline-block;
+  letter-spacing: 0.1em;
+}
+.class-tag {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 0.08em;
+  margin-top: 6px;
+}
+
+/* MAIN LAYOUT */
+.main-wrap {
+  position: relative;
+  z-index: 1;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px 20px 40px;
+}
+
+/* STATUS BAR */
+.status-bar {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-left: 4px solid var(--olive);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--olive);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%,100%{opacity:1;} 50%{opacity:.3;}
+}
+.status-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 0.06em;
+}
+.status-value {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--white);
+  letter-spacing: 0.04em;
+}
+
+/* RESULT HERO */
+.result-hero {
+  background: var(--surface);
+  border: 2px solid var(--border2);
+  padding: 20px 24px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  position: relative;
+  overflow: hidden;
+}
+.result-hero::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--olive) 0%, var(--amber) 100%);
+}
+.result-hero-left {}
+.result-hero-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: var(--text-dimmer);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.result-hero-grade {
+  font-family: 'Oswald', sans-serif;
+  font-size: 52px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+.result-hero-sub {
+  font-size: 13px;
+  color: var(--text-dim);
+  margin-top: 6px;
+  letter-spacing: 0.04em;
+}
+.mos-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  flex: 1;
+  justify-content: flex-end;
+}
+.mos-tag {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  padding: 4px 10px;
+  border: 1px solid;
+  letter-spacing: 0.08em;
+}
+.mos-tag.eligible   { border-color: var(--olive);  color: var(--olive-l);  background: rgba(107,140,62,0.1); }
+.mos-tag.ineligible { border-color: var(--red);    color: var(--red-l);    background: rgba(184,50,40,0.1); }
+
+/* GRADE COLORS */
+.grade-black { color: var(--black-c); }
+.grade-gray  { color: var(--gray-l); }
+.grade-gold  { color: var(--gold-l); }
+.grade-white { color: var(--red-l); }
+
+/* 3-COL GRID */
+.grid {
+  display: grid;
+  gap: 16px;
+}
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-12 { grid-template-columns: 1fr 2fr; }
+@media(max-width:800px){
+  .grid-3,.grid-2,.grid-12{grid-template-columns:1fr;}
+}
+
+/* EVENT CARD */
+.event-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.event-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; bottom: 0;
+  width: 3px;
+}
+.event-card.black::after { background: var(--black-c); }
+.event-card.gray::after  { background: var(--gray-l); }
+.event-card.gold::after  { background: var(--gold-l); }
+.event-card.white::after { background: var(--red-l); }
+.event-card.none::after  { background: var(--border2); }
+
+.event-header {
+  padding: 10px 14px 8px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.event-num {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px;
+  color: var(--text-dimmer);
+  letter-spacing: 0.1em;
+}
+.event-name {
+  font-family: 'Oswald', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--white);
+}
+.event-abbr {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: var(--amber);
+  border: 1px solid var(--amber-dim);
+  padding: 2px 6px;
+  letter-spacing: 0.08em;
+}
+.event-body {
+  padding: 14px 14px 14px 16px;
+  flex: 1;
+}
+
+/* FIELD */
+.field { margin-bottom: 12px; }
+.field-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+.field-label .fval {
+  font-size: 13px;
+  color: var(--olive-l);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  font-family: 'Rajdhani', sans-serif;
+}
+.field-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.field-row input[type=range] {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 2px;
+  background: var(--border2);
+  outline: none;
+}
+.field-row input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  background: var(--olive-l);
+  cursor: pointer;
+  clip-path: polygon(50% 0%,100% 50%,50% 100%,0% 50%);
+  border: none;
+}
+.field-row input[type=range]::-moz-range-thumb {
+  width: 16px; height: 16px;
+  background: var(--olive-l);
+  cursor: pointer;
+  border-radius: 0;
+  border: none;
+  clip-path: polygon(50% 0%,100% 50%,50% 100%,0% 50%);
+}
+.field-row input[type=number] {
+  width: 74px;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  color: var(--olive-l);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 13px;
+  padding: 4px 6px;
+  text-align: center;
+  outline: none;
+}
+.field-row input[type=number]:focus { border-color: var(--olive); }
+/* IAR special input */
+.iar-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.iar-field { }
+.iar-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px;
+  color: var(--text-dimmer);
+  letter-spacing: 0.1em;
+  margin-bottom: 4px;
+}
+.iar-inputs input[type=number] {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  color: var(--olive-l);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 15px;
+  padding: 7px 8px;
+  text-align: center;
+  outline: none;
+}
+.iar-inputs input[type=number]:focus { border-color: var(--olive); }
+
+/* GRADE BADGE */
+.grade-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid;
+  margin-top: 8px;
+}
+.grade-badge.black { border-color: var(--black-c); background: rgba(192,200,184,0.08); }
+.grade-badge.gray  { border-color: var(--gray-l);  background: rgba(122,152,120,0.1); }
+.grade-badge.gold  { border-color: var(--gold-l);  background: rgba(200,168,48,0.08); }
+.grade-badge.white { border-color: var(--red-l);   background: rgba(184,50,40,0.1); }
+.grade-badge.none  { border-color: var(--border2); background: transparent; }
+.grade-badge-icon { font-size: 14px; }
+.grade-badge-text {
+  font-family: 'Oswald', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+.grade-badge-sub {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px;
+  color: var(--text-dim);
+  letter-spacing: 0.06em;
+  margin-top: 2px;
+}
+
+/* THRESHOLD BARS */
+.thresh-track {
+  height: 6px;
+  background: var(--surface3);
+  border: 1px solid var(--border);
+  position: relative;
+  margin: 10px 0 4px;
+  overflow: visible;
+}
+.thresh-fill {
+  position: absolute;
+  top: 0; left: 0; bottom: 0;
+  transition: width .4s ease, background .3s;
+}
+.thresh-marker {
+  position: absolute;
+  top: -4px;
+  width: 2px;
+  height: 14px;
+}
+.thresh-marker.gold-m  { background: var(--gold-l);  opacity: 0.7; }
+.thresh-marker.gray-m  { background: var(--gray-l);  opacity: 0.7; }
+.thresh-marker.black-m { background: var(--black-c); opacity: 0.7; }
+.thresh-labels {
+  display: flex;
+  justify-content: space-between;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px;
+  color: var(--text-dimmer);
+  letter-spacing: 0.06em;
+}
+
+/* CHART PANEL */
+.chart-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 0;
+}
+.chart-header {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.chart-title {
+  font-family: 'Oswald', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--white);
+}
+.chart-body {
+  padding: 14px;
+}
+
+/* THRESHOLD TABLE */
+.thresh-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+}
+.thresh-table th {
+  padding: 6px 10px;
+  text-align: left;
+  color: var(--text-dimmer);
+  letter-spacing: 0.1em;
+  font-weight: 400;
+  border-bottom: 1px solid var(--border);
+}
+.thresh-table td {
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--border);
+  letter-spacing: 0.04em;
+}
+.thresh-table tr:last-child td { border-bottom: none; }
+.thresh-table tr.row-black td { color: var(--black-c); }
+.thresh-table tr.row-gray  td { color: var(--gray-l); }
+.thresh-table tr.row-gold  td { color: var(--gold-l); }
+.thresh-table tr.row-white td { color: var(--red-l); }
+.thresh-table td.you { font-weight: 700; color: var(--amber-l) !important; }
+.thresh-table tr.current-row { background: rgba(200,137,31,0.07); }
+
+/* MOS PANEL */
+.mos-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+.mos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 0;
+}
+.mos-item {
+  padding: 8px 12px;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.mos-item:nth-child(3n){ border-right: none; }
+.mos-code {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  color: var(--text-dim);
+  letter-spacing: 0.04em;
+}
+.mos-title {
+  font-size: 12px;
+  color: var(--text);
+  letter-spacing: 0.02em;
+  flex: 1;
+}
+.mos-dot {
+  width: 8px; height: 8px;
+  flex-shrink: 0;
+}
+.mos-dot.black { background: var(--black-c); }
+.mos-dot.gray  { background: var(--gray-l); }
+.mos-dot.gold  { background: var(--gold-l); }
+
+/* DIVIDER */
+.section-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: var(--text-dimmer);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 16px 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* RADAR CHART container */
+.radar-wrap {
+  position: relative;
+  height: 260px;
+  width: 100%;
+}
+
+/* FOOTER */
+footer {
+  position: relative;
+  z-index: 1;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 12px 20px 32px;
+  border-top: 1px solid var(--border);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: var(--text-dimmer);
+  letter-spacing: 0.06em;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* ANIMATE */
+@keyframes fadeUp {
+  from{opacity:0;transform:translateY(10px);}
+  to{opacity:1;transform:translateY(0);}
+}
+.event-card{animation:fadeUp .35s ease both;}
+.event-card:nth-child(2){animation-delay:.06s;}
+.event-card:nth-child(3){animation-delay:.12s;}
+.event-card:nth-child(4){animation-delay:.18s;}
+.result-hero{animation:fadeUp .25s ease both;}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-top">
+    <span class="header-top-left">TRADOC // ARMY RECRUITING COMMAND // OPAT SCORING SYSTEM</span>
+    <span class="header-top-right" id="timestamp">LOADING...</span>
+  </div>
+  <div class="header-main">
+    <svg class="header-emblem" viewBox="0 0 56 56" fill="none">
+      <circle cx="28" cy="28" r="27" stroke="#6b8c3e" stroke-width="1.5"/>
+      <circle cx="28" cy="28" r="22" stroke="#3d5224" stroke-width="1"/>
+      <polygon points="28,6 32,20 47,20 35.5,29 39.5,43 28,34.5 16.5,43 20.5,29 9,20 24,20" fill="#3d5224" stroke="#91b858" stroke-width="1.2"/>
+      <polygon points="28,12 30.8,21 40,21 32.8,26.5 35.5,36 28,30.5 20.5,36 23.2,26.5 16,21 25.2,21" fill="#0f1410"/>
+      <text x="28" y="52" font-family="Share Tech Mono,monospace" font-size="5" fill="#6b8c3e" text-anchor="middle" letter-spacing="1">PHYSICAL READINESS</text>
+    </svg>
+    <div class="header-text">
+      <h1>OPAT</h1>
+      <h2>OCCUPATIONAL PHYSICAL ASSESSMENT TEST &nbsp;·&nbsp; GENDER &amp; AGE NEUTRAL &nbsp;·&nbsp; FM 7-22</h2>
+    </div>
+    <div class="header-right">
+      <div class="version-tag">UPDATED OCT 2021</div>
+      <div class="class-tag">FOR OFFICIAL USE ONLY — UNOFFICIAL TOOL</div>
+    </div>
+  </div>
+</header>
+
+<div class="main-wrap">
+
+<!-- STATUS BAR -->
+<div class="status-bar">
+  <div class="status-item">
+    <div class="status-dot"></div>
+    <span class="status-label">OVERALL GRADE</span>
+    <span class="status-value" id="sb-grade">—</span>
+  </div>
+  <div class="status-item">
+    <span class="status-label">LOWEST EVENT</span>
+    <span class="status-value" id="sb-lowest">—</span>
+  </div>
+  <div class="status-item">
+    <span class="status-label">PDC QUALIFIED</span>
+    <span class="status-value" id="sb-pdc">—</span>
+  </div>
+  <div class="status-item" style="margin-left:auto;">
+    <span class="status-label">NOTE:</span>
+    <span class="status-label" style="color:var(--text-dim);">OVERALL GRADE = LOWEST EVENT SCORE</span>
+  </div>
+</div>
+
+<!-- RESULT HERO -->
+<div class="result-hero">
+  <div class="result-hero-left">
+    <div class="result-hero-label">// PHYSICAL DEMAND CATEGORY //</div>
+    <div class="result-hero-grade grade-white" id="hero-grade">—</div>
+    <div class="result-hero-sub" id="hero-sub">Enter scores below to calculate</div>
+  </div>
+  <div class="mos-tags" id="hero-mos"></div>
+</div>
+
+<!-- EVENTS -->
+<div class="section-label">01 // EVENT INPUTS &amp; SCORING</div>
+
+<div class="grid grid-2" style="margin-bottom:16px;">
+
+  <!-- SLJ -->
+  <div class="event-card none" id="card-slj">
+    <div class="event-header">
+      <div>
+        <div class="event-num">EVENT 01 / 04</div>
+        <div class="event-name">Standing Long Jump</div>
+      </div>
+      <div class="event-abbr">SLJ</div>
+    </div>
+    <div class="event-body">
+      <div class="field">
+        <div class="field-label">
+          <span>Jump Distance</span>
+          <span class="fval" id="val-slj">—</span>
+        </div>
+        <div class="field-row">
+          <input type="range" id="rng-slj" min="20" max="110" step="1" value="55">
+          <input type="number" id="txt-slj" value="55" min="20" max="110">
+        </div>
+        <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text-dimmer);margin-top:3px;">
+          INCHES &nbsp;|&nbsp; RANGE: 20–110 IN
+        </div>
+      </div>
+      <div class="thresh-track">
+        <div class="thresh-fill" id="fill-slj" style="width:0%;background:var(--border2);"></div>
+        <div class="thresh-marker gold-m"  style="left:30.43%;"></div><!-- 47" = gold: (47-20)/(110-20)=30% -->
+        <div class="thresh-marker gray-m"  style="left:58.69%;"></div><!-- 55" = gray -->
+        <div class="thresh-marker black-m" style="left:73.91%;"></div><!-- 63" = black -->
+      </div>
+      <div class="thresh-labels">
+        <span>20"</span>
+        <span>GOLD 47"</span>
+        <span>GRAY 55"</span>
+        <span>BLACK 63"</span>
+        <span>110"</span>
+      </div>
+      <div class="grade-badge none" id="badge-slj">
+        <span class="grade-badge-icon">—</span>
+        <div>
+          <div class="grade-badge-text" id="badge-slj-text">NO SCORE</div>
+          <div class="grade-badge-sub">LOWER BODY POWER</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SPT -->
+  <div class="event-card none" id="card-spt">
+    <div class="event-header">
+      <div>
+        <div class="event-num">EVENT 02 / 04</div>
+        <div class="event-name">Seated Power Throw</div>
+      </div>
+      <div class="event-abbr">SPT</div>
+    </div>
+    <div class="event-body">
+      <div class="field">
+        <div class="field-label">
+          <span>Throw Distance (cm)</span>
+          <span class="fval" id="val-spt">—</span>
+        </div>
+        <div class="field-row">
+          <input type="range" id="rng-spt" min="150" max="700" step="10" value="400">
+          <input type="number" id="txt-spt" value="400" min="150" max="700" step="10">
+        </div>
+        <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text-dimmer);margin-top:3px;">
+          CENTIMETERS &nbsp;|&nbsp; 4.4 LB MEDICINE BALL &nbsp;|&nbsp; RANGE: 150–700 CM
+        </div>
+      </div>
+      <div class="thresh-track">
+        <div class="thresh-fill" id="fill-spt" style="width:0%;background:var(--border2);"></div>
+        <div class="thresh-marker gold-m"  style="left:36.36%;"></div><!-- 350cm -->
+        <div class="thresh-marker gray-m"  style="left:45.45%;"></div><!-- 400cm -->
+        <div class="thresh-marker black-m" style="left:54.55%;"></div><!-- 450cm -->
+      </div>
+      <div class="thresh-labels">
+        <span>150</span>
+        <span>GOLD 350</span>
+        <span>GRAY 400</span>
+        <span>BLACK 450</span>
+        <span>700</span>
+      </div>
+      <div class="grade-badge none" id="badge-spt">
+        <span class="grade-badge-icon">—</span>
+        <div>
+          <div class="grade-badge-text" id="badge-spt-text">NO SCORE</div>
+          <div class="grade-badge-sub">UPPER BODY POWER</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SDL -->
+  <div class="event-card none" id="card-sdl">
+    <div class="event-header">
+      <div>
+        <div class="event-num">EVENT 03 / 04</div>
+        <div class="event-name">Strength Deadlift</div>
+      </div>
+      <div class="event-abbr">SDL</div>
+    </div>
+    <div class="event-body">
+      <div class="field">
+        <div class="field-label">
+          <span>Max Lift (lbs)</span>
+          <span class="fval" id="val-sdl">—</span>
+        </div>
+        <div class="field-row">
+          <input type="range" id="rng-sdl" min="60" max="220" step="20" value="140">
+          <input type="number" id="txt-sdl" value="140" min="60" max="220" step="20">
+        </div>
+        <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text-dimmer);margin-top:3px;">
+          POUNDS (HEX BAR) &nbsp;|&nbsp; LADDER: 60, 120, 140, 160, 180, 190, 200, 210, 220 LBS
+        </div>
+      </div>
+      <!-- Weight ladder visual -->
+      <div style="display:flex;gap:4px;margin:8px 0;flex-wrap:wrap;">
+        <div id="sdl-60"  class="sdl-step" data-w="60"  style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:3px 6px;border:1px solid var(--border);color:var(--text-dimmer);cursor:pointer;letter-spacing:.04em;">60</div>
+        <div id="sdl-120" class="sdl-step" data-w="120" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:3px 6px;border:1px solid var(--border);color:var(--text-dimmer);cursor:pointer;letter-spacing:.04em;">120</div>
+        <div id="sdl-140" class="sdl-step" data-w="140" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:3px 6px;border:1px solid var(--gold-l);color:var(--gold-l);cursor:pointer;letter-spacing:.04em;">140★</div>
+        <div id="sdl-160" class="sdl-step" data-w="160" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:3px 6px;border:1px solid var(--border);color:var(--text-dimmer);cursor:pointer;letter-spacing:.04em;">160★</div>
+        <div id="sdl-180" class="sdl-step" data-w="180" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:3px 6px;border:1px solid var(--border);color:var(--text-dimmer);cursor:pointer;letter-spacing:.04em;">180</div>
+        <div id="sdl-190" class="sdl-step" data-w="190" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:3px 6px;border:1px solid var(--border);color:var(--text-dimmer);cursor:pointer;letter-spacing:.04em;">190</div>
+        <div id="sdl-200" class="sdl-step" data-w="200" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:3px 6px;border:1px solid var(--border);color:var(--text-dimmer);cursor:pointer;letter-spacing:.04em;">200</div>
+        <div id="sdl-210" class="sdl-step" data-w="210" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:3px 6px;border:1px solid var(--border);color:var(--text-dimmer);cursor:pointer;letter-spacing:.04em;">210</div>
+        <div id="sdl-220" class="sdl-step" data-w="220" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:3px 6px;border:1px solid var(--border);color:var(--text-dimmer);cursor:pointer;letter-spacing:.04em;">220</div>
+      </div>
+      <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text-dimmer);margin-bottom:8px;">★ = THRESHOLD WEIGHT (CLICK TO SELECT)</div>
+      <div class="thresh-track">
+        <div class="thresh-fill" id="fill-sdl" style="width:0%;background:var(--border2);"></div>
+        <div class="thresh-marker gold-m"  style="left:37.5%;"></div><!-- 120 of 60-220 -->
+        <div class="thresh-marker gray-m"  style="left:50%;"></div>
+        <div class="thresh-marker black-m" style="left:62.5%;"></div>
+      </div>
+      <div class="thresh-labels">
+        <span>60</span><span>GOLD 120</span><span>GRAY 140</span><span>BLACK 160</span><span>220</span>
+      </div>
+      <div class="grade-badge none" id="badge-sdl">
+        <span class="grade-badge-icon">—</span>
+        <div>
+          <div class="grade-badge-text" id="badge-sdl-text">NO SCORE</div>
+          <div class="grade-badge-sub">LOWER BODY STRENGTH</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- IAR -->
+  <div class="event-card none" id="card-iar">
+    <div class="event-header">
+      <div>
+        <div class="event-num">EVENT 04 / 04</div>
+        <div class="event-name">Interval Aerobic Run</div>
+      </div>
+      <div class="event-abbr">IAR</div>
+    </div>
+    <div class="event-body">
+      <div class="iar-inputs">
+        <div class="iar-field">
+          <div class="iar-label">LEVEL (1–10+)</div>
+          <input type="number" id="txt-iar-lvl" value="5" min="1" max="15" step="1" oninput="syncIAR()">
+        </div>
+        <div class="iar-field">
+          <div class="iar-label">SHUTTLE (1–13)</div>
+          <input type="number" id="txt-iar-sht" value="8" min="1" max="13" step="1" oninput="syncIAR()">
+        </div>
+      </div>
+      <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text-dimmer);margin-bottom:10px;">
+        TOTAL SHUTTLES: <span id="iar-total" style="color:var(--olive-l);font-weight:700;">—</span> &nbsp;|&nbsp; BEEP TEST / 20M SHUTTLE RUN
+      </div>
+      <!-- Level thresholds visual -->
+      <div style="margin-bottom:8px;">
+        <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text-dimmer);margin-bottom:4px;">THRESHOLDS:</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;">
+          <div style="padding:5px 8px;border:1px solid var(--gold-l);background:rgba(200,168,48,0.05);">
+            <div style="font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--gold-l);">GOLD</div>
+            <div style="font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;color:var(--gold-l);">LVL 5-4</div>
+            <div style="font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--text-dimmer);">36 SHUTTLES</div>
+          </div>
+          <div style="padding:5px 8px;border:1px solid var(--gray-l);background:rgba(122,152,120,0.05);">
+            <div style="font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--gray-l);">GRAY</div>
+            <div style="font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;color:var(--gray-l);">LVL 5-8</div>
+            <div style="font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--text-dimmer);">40 SHUTTLES</div>
+          </div>
+          <div style="padding:5px 8px;border:1px solid var(--black-c);background:rgba(192,200,184,0.05);">
+            <div style="font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--black-c);">BLACK</div>
+            <div style="font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;color:var(--black-c);">LVL 6-2</div>
+            <div style="font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--text-dimmer);">43 SHUTTLES</div>
+          </div>
+        </div>
+      </div>
+      <div class="grade-badge none" id="badge-iar">
+        <span class="grade-badge-icon">—</span>
+        <div>
+          <div class="grade-badge-text" id="badge-iar-text">NO SCORE</div>
+          <div class="grade-badge-sub">AEROBIC CAPACITY</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /grid -->
+
+<!-- CHARTS + TABLE -->
+<div class="section-label">02 // PERFORMANCE ANALYSIS</div>
+
+<div class="grid grid-12" style="margin-bottom:16px;">
+
+  <!-- RADAR CHART -->
+  <div class="chart-panel">
+    <div class="chart-header">
+      <span class="chart-title">Event Profile</span>
+      <span style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text-dimmer);">RADAR / PERFORMANCE</span>
+    </div>
+    <div class="chart-body">
+      <div class="radar-wrap">
+        <canvas id="radar-chart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- THRESHOLD TABLE -->
+  <div class="chart-panel">
+    <div class="chart-header">
+      <span class="chart-title">Scoring Thresholds</span>
+      <span style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--amber);">YOUR SCORE HIGHLIGHTED</span>
+    </div>
+    <div class="chart-body" style="padding:0;">
+      <table class="thresh-table">
+        <thead>
+          <tr>
+            <th>PDC</th>
+            <th>SLJ (in)</th>
+            <th>SPT (cm)</th>
+            <th>SDL (lbs)</th>
+            <th>IAR</th>
+            <th>STATUS</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="row-black">
+            <td>⬛ BLACK</td><td>63"</td><td>450</td><td>160</td><td>6-2 (43)</td><td id="td-black">—</td>
+          </tr>
+          <tr class="row-gray">
+            <td>▪️ GRAY</td><td>55"</td><td>400</td><td>140</td><td>5-8 (40)</td><td id="td-gray">—</td>
+          </tr>
+          <tr class="row-gold">
+            <td>🟡 GOLD</td><td>47"</td><td>350</td><td>120</td><td>5-4 (36)</td><td id="td-gold">—</td>
+          </tr>
+          <tr class="row-white">
+            <td>⬜ WHITE</td><td colspan="4">BELOW GOLD MINIMUM (any event)</td><td id="td-white">—</td>
+          </tr>
+          <tr style="background:rgba(200,137,31,0.1);">
+            <td style="color:var(--amber-l);font-family:'Share Tech Mono',monospace;">▶ YOUR SCORE</td>
+            <td class="you" id="td-you-slj">—</td>
+            <td class="you" id="td-you-spt">—</td>
+            <td class="you" id="td-you-sdl">—</td>
+            <td class="you" id="td-you-iar">—</td>
+            <td class="you" id="td-you-grade">—</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- BAR CHART -->
+<div class="chart-panel" style="margin-bottom:16px;">
+  <div class="chart-header">
+    <span class="chart-title">Event vs. Thresholds</span>
+    <span style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text-dimmer);">NORMALIZED 0–100%</span>
+  </div>
+  <div class="chart-body">
+    <div style="position:relative;height:200px;">
+      <canvas id="bar-chart"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- MOS REFERENCE -->
+<div class="section-label">03 // MOS PHYSICAL DEMAND CATEGORIES</div>
+<div class="mos-panel" style="margin-bottom:16px;">
+  <div class="chart-header">
+    <span class="chart-title">MOS Reference — Physical Demand Categories</span>
+    <span style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text-dimmer);">⬛ HEAVY (BLACK) &nbsp; ▪ SIGNIFICANT (GRAY) &nbsp; 🟡 MODERATE (GOLD)</span>
+  </div>
+  <div class="mos-grid">
+    <div class="mos-item"><span class="mos-code">11A/B/C</span><span class="mos-title">Infantry</span><div class="mos-dot black"></div></div>
+    <div class="mos-item"><span class="mos-code">12B</span><span class="mos-title">Combat Engineer</span><div class="mos-dot black"></div></div>
+    <div class="mos-item"><span class="mos-code">13B</span><span class="mos-title">Field Artillery</span><div class="mos-dot black"></div></div>
+    <div class="mos-item"><span class="mos-code">13F</span><span class="mos-title">Fire Support</span><div class="mos-dot black"></div></div>
+    <div class="mos-item"><span class="mos-code">19D</span><span class="mos-title">Cavalry Scout</span><div class="mos-dot black"></div></div>
+    <div class="mos-item"><span class="mos-code">19K</span><span class="mos-title">Armor Crewman</span><div class="mos-dot black"></div></div>
+    <div class="mos-item"><span class="mos-code">68W</span><span class="mos-title">Combat Medic</span><div class="mos-dot black"></div></div>
+    <div class="mos-item"><span class="mos-code">11Z</span><span class="mos-title">Inf. Senior SGT</span><div class="mos-dot black"></div></div>
+    <div class="mos-item"><span class="mos-code">31A/B</span><span class="mos-title">Military Police</span><div class="mos-dot gray"></div></div>
+    <div class="mos-item"><span class="mos-code">25U</span><span class="mos-title">Signal Support</span><div class="mos-dot gray"></div></div>
+    <div class="mos-item"><span class="mos-code">92F</span><span class="mos-title">Petroleum Supply</span><div class="mos-dot gray"></div></div>
+    <div class="mos-item"><span class="mos-code">79R</span><span class="mos-title">Recruiter</span><div class="mos-dot gray"></div></div>
+    <div class="mos-item"><span class="mos-code">17C/E</span><span class="mos-title">Cyber</span><div class="mos-dot gold"></div></div>
+    <div class="mos-item"><span class="mos-code">35T</span><span class="mos-title">MI Systems</span><div class="mos-dot gold"></div></div>
+    <div class="mos-item"><span class="mos-code">42A</span><span class="mos-title">HR Specialist</span><div class="mos-dot gold"></div></div>
+    <div class="mos-item"><span class="mos-code">25B</span><span class="mos-title">IT Specialist</span><div class="mos-dot gold"></div></div>
+    <div class="mos-item"><span class="mos-code">68A</span><span class="mos-title">Biomedical</span><div class="mos-dot gold"></div></div>
+    <div class="mos-item"><span class="mos-code">09W</span><span class="mos-title">Warrant Off. Cand.</span><div class="mos-dot gold"></div></div>
+  </div>
+</div>
+
+</div><!-- /main-wrap -->
+
+<footer>
+  <span>SOURCE: FM 7-22 · TRADOC PAM 350-70-14 · ARMY.MIL/OPAT · MILSPOT.COM — OPAT GRADING STANDARDS (OCT 2021)</span>
+  <span>NOT FOR OFFICIAL USE — EDUCATIONAL/TRAINING REFERENCE ONLY</span>
+</footer>
+
+<script>
+// ── TIMESTAMP ──────────────────────────────────────────────────────────────
+function tick(){
+  const now = new Date();
+  document.getElementById('timestamp').textContent =
+    now.toISOString().replace('T',' ').substring(0,19)+' UTC // SYSTEM ACTIVE';
+}
+tick(); setInterval(tick, 1000);
+
+// ── SCORING FUNCTIONS ──────────────────────────────────────────────────────
+function gradeEvent(event, val) {
+  const T = {
+    slj: {black:63, gray:55, gold:47},
+    spt: {black:450,gray:400,gold:350},
+    sdl: {black:160,gray:140,gold:120},
+  };
+  if (event === 'iar') return null; // handled separately
+  const t = T[event];
+  if (val >= t.black) return 'black';
+  if (val >= t.gray)  return 'gray';
+  if (val >= t.gold)  return 'gold';
+  return 'white';
+}
+
+// IAR: cumulative shuttles per level
+// Level 1: 7 shuttles, Level 2: 8, Level 3: 8, Level 4: 9, Level 5: 9, Level 6: 10, Level 7: 10, ...
+// Total shuttles to end of each level:
+const IAR_SHUTTLES_PER_LEVEL = [0,7,8,8,9,9,10,10,11,11,12]; // index=level, value=shuttles in that level
+function iarTotalShuttles(level, shuttle) {
+  let total = 0;
+  for (let l = 1; l < level; l++) {
+    total += IAR_SHUTTLES_PER_LEVEL[l] || (l < 5 ? 7 : l < 8 ? 9 : 10);
+  }
+  total += shuttle;
+  return total;
+}
+function gradeIAR(total) {
+  if (total >= 43) return 'black';
+  if (total >= 40) return 'gray';
+  if (total >= 36) return 'gold';
+  return 'white';
+}
+
+const GRADE_INFO = {
+  black: { label:'BLACK',  sub:'Heavy PDC — Combat Arms eligible', color:'var(--black-c)', icon:'⬛', mos:'Combat Arms (11B, 19D, 12B, 13F...)' },
+  gray:  { label:'GRAY',   sub:'Significant PDC — Support MOS eligible', color:'var(--gray-l)',  icon:'▪️', mos:'Significant (31A, 25U, 92F...)' },
+  gold:  { label:'GOLD',   sub:'Moderate PDC — Minimum qualified', color:'var(--gold-l)', icon:'🟡', mos:'Moderate (17C, 42A, 25B...)' },
+  white: { label:'WHITE',  sub:'Not qualified — BELOW minimum standard', color:'var(--red-l)',  icon:'❌', mos:'NOT QUALIFIED' },
+};
+const GRADE_ORDER = {black:4, gray:3, gold:2, white:1};
+
+function lowestGrade(grades) {
+  return grades.reduce((a,b) => GRADE_ORDER[a] <= GRADE_ORDER[b] ? a : b);
+}
+
+// ── STATE ──────────────────────────────────────────────────────────────────
+let S = { slj:55, spt:400, sdl:140, iarLvl:5, iarSht:8 };
+
+// ── CHART INSTANCES ────────────────────────────────────────────────────────
+let radarChart = null, barChart = null;
+
+function initCharts() {
+  // RADAR
+  radarChart = new Chart(document.getElementById('radar-chart'), {
+    type: 'radar',
+    data: {
+      labels: ['SLJ\n(Long Jump)', 'SPT\n(Power Throw)', 'SDL\n(Deadlift)', 'IAR\n(Aerobic Run)'],
+      datasets: [
+        {
+          label: 'Your Score',
+          data: [0,0,0,0],
+          borderColor: '#91b858',
+          backgroundColor: 'rgba(145,184,88,0.15)',
+          borderWidth: 2,
+          pointBackgroundColor: '#91b858',
+          pointRadius: 4,
+        },
+        {
+          label: 'BLACK threshold',
+          data: [100,100,100,100],
+          borderColor: 'rgba(192,200,184,0.3)',
+          backgroundColor: 'rgba(192,200,184,0.04)',
+          borderWidth: 1,
+          borderDash: [4,4],
+          pointRadius: 0,
+        },
+        {
+          label: 'GOLD threshold',
+          data: [40,40,40,40],
+          borderColor: 'rgba(200,168,48,0.3)',
+          backgroundColor: 'rgba(200,168,48,0.04)',
+          borderWidth: 1,
+          borderDash: [2,4],
+          pointRadius: 0,
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        r: {
+          min: 0, max: 110,
+          grid: { color: 'rgba(50,68,48,0.6)' },
+          angleLines: { color: 'rgba(50,68,48,0.6)' },
+          ticks: { display: false },
+          pointLabels: {
+            color: '#6a806a',
+            font: { family: "'Share Tech Mono'", size: 10 }
+          }
+        }
+      }
+    }
+  });
+
+  // BAR
+  barChart = new Chart(document.getElementById('bar-chart'), {
+    type: 'bar',
+    data: {
+      labels: ['SLJ', 'SPT', 'SDL', 'IAR'],
+      datasets: [
+        { label: 'Your Score %', data: [0,0,0,0], backgroundColor: ['#3d5224','#3d5224','#3d5224','#3d5224'], borderWidth: 0 },
+        { label: 'BLACK min', data: [100,100,100,100], type: 'line', borderColor: 'rgba(192,200,184,0.5)', backgroundColor: 'transparent', borderWidth: 1, borderDash: [5,5], pointRadius: 0 },
+        { label: 'GOLD min', data: [40,40,40,40], type: 'line', borderColor: 'rgba(200,168,48,0.5)', backgroundColor: 'transparent', borderWidth: 1, borderDash: [3,4], pointRadius: 0 },
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ' '+c.dataset.label+': '+Math.round(c.parsed.y)+'%' } } },
+      scales: {
+        x: { ticks: { color: '#6a806a', font: { family: "'Share Tech Mono'", size: 11 } }, grid: { display: false } },
+        y: { min: 0, max: 120, ticks: { color: '#6a806a', font: { family: "'Share Tech Mono'", size: 10 }, callback: v => v+'%' }, grid: { color: 'rgba(50,68,48,0.4)' } }
+      }
+    }
+  });
+}
+
+// Normalize scores to 0-110% for charts
+// black=100%, gold=40%, white=0%
+function normalize(event, val) {
+  const maxes = {slj:110, spt:700, sdl:220};
+  const blacks = {slj:63, spt:450, sdl:160};
+  const golds  = {slj:47, spt:350, sdl:120};
+  if (event === 'iar') {
+    const total = val;
+    if (total <= 0) return 0;
+    // gold=36 → 40%, black=43 → 100%, above → up to 110%
+    if (total < 36) return (total / 36) * 40;
+    if (total <= 43) return 40 + ((total - 36) / (43 - 36)) * 60;
+    return Math.min(110, 100 + ((total - 43) / 10) * 10);
+  }
+  if (val <= 0) return 0;
+  const g = golds[event], b = blacks[event], m = maxes[event];
+  if (val < g) return (val / g) * 40;
+  if (val <= b) return 40 + ((val - g) / (b - g)) * 60;
+  return Math.min(110, 100 + ((val - b) / (m - b)) * 10);
+}
+
+// ── RENDER ─────────────────────────────────────────────────────────────────
+function render() {
+  const { slj, spt, sdl, iarLvl, iarSht } = S;
+  const iarTotal = iarTotalShuttles(iarLvl, iarSht);
+
+  // Sync inputs
+  document.getElementById('rng-slj').value = slj;
+  document.getElementById('txt-slj').value = slj;
+  document.getElementById('rng-spt').value = spt;
+  document.getElementById('txt-spt').value = spt;
+  document.getElementById('rng-sdl').value = sdl;
+  document.getElementById('txt-sdl').value = sdl;
+
+  // Event grades
+  const gSlj = gradeEvent('slj', slj);
+  const gSpt = gradeEvent('spt', spt);
+  const gSdl = gradeEvent('sdl', sdl);
+  const gIar = gradeIAR(iarTotal);
+  const grades = [gSlj, gSpt, gSdl, gIar];
+  const overall = lowestGrade(grades);
+
+  // Value displays
+  document.getElementById('val-slj').textContent = slj+'" ('+Math.floor(slj/12)+"'"+slj%12+'")';
+  document.getElementById('val-spt').textContent = spt+' cm ('+(spt/30.48).toFixed(1)+"')";
+  document.getElementById('val-sdl').textContent = sdl+' lbs';
+  document.getElementById('iar-total').textContent = iarTotal+' total shuttles';
+
+  // Update event cards and badges
+  function updateCard(id, grade, text) {
+    const card = document.getElementById('card-'+id);
+    const badge = document.getElementById('badge-'+id);
+    const badgeText = document.getElementById('badge-'+id+'-text');
+    const fill = document.getElementById('fill-'+id);
+    card.className = 'event-card '+(grade||'none');
+    badge.className = 'grade-badge '+(grade||'none');
+    badgeText.textContent = grade ? GRADE_INFO[grade].label : 'NO SCORE';
+    if(grade) {
+      const g = GRADE_INFO[grade];
+      badge.querySelector('.grade-badge-icon').textContent = g.icon;
+      badge.querySelector('.grade-badge-text').style.color = g.color;
+    }
+  }
+
+  // Fill bars
+  function pct(event, val, max, min){
+    return Math.max(0, Math.min(100, ((val-min)/(max-min))*100));
+  }
+  document.getElementById('fill-slj').style.width = pct('slj',slj,110,20)+'%';
+  document.getElementById('fill-slj').style.background = gSlj==='black'?'var(--black-c)':gSlj==='gray'?'var(--gray-l)':gSlj==='gold'?'var(--gold-l)':'var(--red-l)';
+  document.getElementById('fill-spt').style.width = pct('spt',spt,700,150)+'%';
+  document.getElementById('fill-spt').style.background = gSpt==='black'?'var(--black-c)':gSpt==='gray'?'var(--gray-l)':gSpt==='gold'?'var(--gold-l)':'var(--red-l)';
+  document.getElementById('fill-sdl').style.width = pct('sdl',sdl,220,60)+'%';
+  document.getElementById('fill-sdl').style.background = gSdl==='black'?'var(--black-c)':gSdl==='gray'?'var(--gray-l)':gSdl==='gold'?'var(--gold-l)':'var(--red-l)';
+
+  updateCard('slj', gSlj);
+  updateCard('spt', gSpt);
+  updateCard('sdl', gSdl);
+  updateCard('iar', gIar);
+
+  // SDL ladder highlight
+  document.querySelectorAll('.sdl-step').forEach(el => {
+    const w = parseInt(el.dataset.w);
+    const isActive = w === sdl;
+    if(isActive){
+      el.style.background = 'rgba(145,184,88,0.2)';
+      el.style.color = 'var(--olive-l)';
+      el.style.borderColor = 'var(--olive-l)';
+    } else if(w === 120){
+      el.style.background='transparent'; el.style.color='var(--gold-l)'; el.style.borderColor='var(--gold-l)';
+    } else if(w === 140){
+      el.style.background='transparent'; el.style.color='var(--gray-l)'; el.style.borderColor='var(--gray-l)';
+    } else if(w === 160){
+      el.style.background='transparent'; el.style.color='var(--black-c)'; el.style.borderColor='var(--black-c)';
+    } else {
+      el.style.background='transparent'; el.style.color='var(--text-dimmer)'; el.style.borderColor='var(--border)';
+    }
+  });
+
+  // IAR badge
+  const iarBadge = document.getElementById('badge-iar');
+  const iarBadgeText = document.getElementById('badge-iar-text');
+  iarBadge.className = 'grade-badge '+(gIar||'none');
+  iarBadgeText.textContent = gIar ? GRADE_INFO[gIar].label : 'NO SCORE';
+  if(gIar){
+    const g = GRADE_INFO[gIar];
+    iarBadge.querySelector('.grade-badge-icon').textContent = g.icon;
+    iarBadge.querySelector('.grade-badge-text').style.color = g.color;
+  }
+
+  // RESULT HERO
+  const info = GRADE_INFO[overall];
+  const hero = document.getElementById('hero-grade');
+  hero.textContent = info.label;
+  hero.className = 'result-hero-grade grade-'+overall;
+  document.getElementById('hero-sub').textContent = info.sub;
+
+  // MOS tags
+  const mosTags = document.getElementById('hero-mos');
+  const mosData = [
+    {label:'⬛ BLACK: Heavy PDC', eligible: GRADE_ORDER[overall] >= GRADE_ORDER['black'], mos:'Combat Arms'},
+    {label:'▪️ GRAY: Significant PDC', eligible: GRADE_ORDER[overall] >= GRADE_ORDER['gray'],  mos:'Support MOS'},
+    {label:'🟡 GOLD: Moderate PDC', eligible: GRADE_ORDER[overall] >= GRADE_ORDER['gold'],  mos:'Moderate MOS'},
+  ];
+  mosTags.innerHTML = mosData.map(m =>
+    `<div class="mos-tag ${m.eligible?'eligible':'ineligible'}">${m.eligible?'✓':'✗'} ${m.label}</div>`
+  ).join('');
+
+  // STATUS BAR
+  const lowestEvent = ['SLJ','SPT','SDL','IAR'][grades.indexOf(overall)] || '—';
+  document.getElementById('sb-grade').textContent = info.label;
+  document.getElementById('sb-grade').style.color = info.color;
+  document.getElementById('sb-lowest').textContent = lowestEvent;
+  document.getElementById('sb-pdc').textContent = overall==='white' ? 'NOT QUALIFIED' : info.label + ' AND BELOW';
+
+  // TABLE row highlights
+  const checkGrade = (req) => GRADE_ORDER[overall] >= GRADE_ORDER[req] ? '✓ QUALIFIED' : '✗';
+  document.getElementById('td-black').textContent = checkGrade('black');
+  document.getElementById('td-gray').textContent  = checkGrade('gray');
+  document.getElementById('td-gold').textContent  = checkGrade('gold');
+  document.getElementById('td-white').textContent = overall==='white' ? '⬅ YOUR RESULT' : '';
+  document.getElementById('td-you-slj').textContent = slj+'"';
+  document.getElementById('td-you-spt').textContent = spt+' cm';
+  document.getElementById('td-you-sdl').textContent = sdl+' lbs';
+  document.getElementById('td-you-iar').textContent = iarLvl+'-'+iarSht+' ('+iarTotal+')';
+  document.getElementById('td-you-grade').textContent = info.label;
+
+  // CHARTS
+  const nSlj = normalize('slj', slj);
+  const nSpt = normalize('spt', spt);
+  const nSdl = normalize('sdl', sdl);
+  const nIar = normalize('iar', iarTotal);
+
+  const COLORS = {
+    black:'rgba(192,200,184,0.8)', gray:'rgba(122,152,120,0.8)',
+    gold:'rgba(200,168,48,0.8)',   white:'rgba(224,69,53,0.8)'
+  };
+
+  radarChart.data.datasets[0].data = [nSlj, nSpt, nSdl, nIar];
+  radarChart.data.datasets[0].borderColor = COLORS[overall];
+  radarChart.data.datasets[0].backgroundColor = COLORS[overall].replace('0.8','0.12');
+  radarChart.data.datasets[0].pointBackgroundColor = COLORS[overall];
+  radarChart.update('none');
+
+  barChart.data.datasets[0].data = [nSlj, nSpt, nSdl, nIar];
+  barChart.data.datasets[0].backgroundColor = [
+    COLORS[gSlj], COLORS[gSpt], COLORS[gSdl], COLORS[gIar]
+  ];
+  barChart.update('none');
+}
+
+// ── EVENT LISTENERS ────────────────────────────────────────────────────────
+document.getElementById('rng-slj').addEventListener('input',function(){S.slj=parseInt(this.value);render();});
+document.getElementById('txt-slj').addEventListener('change',function(){S.slj=Math.max(20,Math.min(110,parseInt(this.value)||55));render();});
+document.getElementById('rng-spt').addEventListener('input',function(){S.spt=parseInt(this.value);render();});
+document.getElementById('txt-spt').addEventListener('change',function(){S.spt=Math.max(150,Math.min(700,parseInt(this.value)||400));render();});
+document.getElementById('rng-sdl').addEventListener('input',function(){
+  // Snap to ladder values
+  const ladder=[60,120,140,160,180,190,200,210,220];
+  const v=parseInt(this.value);
+  S.sdl=ladder.reduce((a,b)=>Math.abs(b-v)<Math.abs(a-v)?b:a);
+  render();
+});
+document.getElementById('txt-sdl').addEventListener('change',function(){
+  const ladder=[60,120,140,160,180,190,200,210,220];
+  const v=parseInt(this.value)||140;
+  S.sdl=ladder.reduce((a,b)=>Math.abs(b-v)<Math.abs(a-v)?b:a);
+  render();
+});
+// SDL ladder click
+document.querySelectorAll('.sdl-step').forEach(el=>{
+  el.addEventListener('click',function(){
+    S.sdl=parseInt(this.dataset.w);
+    document.getElementById('rng-sdl').value=S.sdl;
+    render();
+  });
+});
+
+window.syncIAR=function(){
+  S.iarLvl=Math.max(1,Math.min(15,parseInt(document.getElementById('txt-iar-lvl').value)||5));
+  S.iarSht=Math.max(1,Math.min(13,parseInt(document.getElementById('txt-iar-sht').value)||8));
+  render();
+};
+
+// ── INIT ───────────────────────────────────────────────────────────────────
+initCharts();
+render();
+</script>
+</body>
+</html>
