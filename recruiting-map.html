@@ -131,7 +131,7 @@
   <div class="hdr-sub">RECRUITING OPS MAP · LINCOLN NE</div>
   <div class="hdr-sp"></div>
   <div id="sw">
-    <input id="sb-in" type="text" placeholder="🔍  Search name or ZIP…" autocomplete="off" />
+    <input id="sb-in" type="text" placeholder="Search name or ZIP…" autocomplete="off" />
     <div id="sd"></div>
   </div>
   <button class="hbtn" onclick="toggleSb()">LAYERS</button>
@@ -195,17 +195,17 @@
       <div class="st">ZIP Priority Filter</div>
       <select class="ss-sel" id="zpf" onchange="filterZips()">
         <option value="all">Show All ZIPs</option>
-        <option value="hot">🔴 HOT Priority</option>
-        <option value="warm">🟡 WARM Priority</option>
-        <option value="cold">🔵 COLD Priority</option>
+        <option value="hot">HOT Priority</option>
+        <option value="warm">WARM Priority</option>
+        <option value="cold">COLD Priority</option>
         <option value="none">Unset</option>
       </select>
       <div class="zn">⚠ Boundaries are U.S. Census ZCTAs — loaded live from Census TIGERweb. Authoritative approximations of USPS service areas.</div>
     </div>
     <div class="sf">
       <div class="st">Data</div>
-      <button class="db" onclick="exportData()">⬇ Export Notes to JSON</button>
-      <button class="db imp" onclick="document.getElementById('fi').click()">⬆ Import JSON Notes</button>
+      <button class="db" onclick="exportData()">Export Notes to JSON</button>
+      <button class="db imp" onclick="document.getElementById('fi').click()">Import JSON Notes</button>
       <input type="file" id="fi" accept=".json" onchange="importData(event)" />
       <div style="font-size:9px;color:var(--txt3);margin-top:5px;text-align:center;font-family:'GI','Arial',sans-serif;">Notes are in-memory only — export to save.</div>
     </div>
@@ -639,13 +639,13 @@ MAP.on('click',function(e){
 const LegCtrl=L.Control.extend({options:{position:"bottomright"},onAdd(){
   const d=L.DomUtil.create("div","leaflet-control legc");
   d.innerHTML=`<div class="legt">Legend</div>
-    <div class="legr"><div class="legd" style="background:#546a90;"></div>ZIP/ZCTA</div>
-    <div class="legr">🏫 <span>High School</span></div>
-    <div class="legr">🎓 <span>University</span></div>
-    <div class="legr">🚔 <span>Police Dept</span></div>
-    <div class="legr">⚖️  <span>Courthouse</span></div>
-    <div class="legr">🌮 <span>Taco Bell</span></div>
-    <div class="legr">⭐ <span>Recruiting Stn</span></div>
+    <div class="legr"><div class="legd" style="background:var(--txt3);"></div>ZIP/ZCTA</div>
+    <div class="legr"><div class="legd" style="background:#221F20;border:1.5px solid #FFCC01;border-radius:0;"></div>High School</div>
+    <div class="legr"><div class="legd" style="background:#2F372F;border:1.5px solid #FFCC01;border-radius:0;"></div>University</div>
+    <div class="legr"><div class="legd" style="background:#1a2a4a;border:1.5px solid #FFFFFF;border-radius:0;"></div>Police Dept</div>
+    <div class="legr"><div class="legd" style="background:#2F372F;border:1.5px solid #FFFFFF;border-radius:0;"></div>Courthouse</div>
+    <div class="legr"><div class="legd" style="background:#CF0000;border:1.5px solid #FFFFFF;border-radius:0;"></div>Taco Bell</div>
+    <div class="legr"><div class="legd" style="background:#FFCC01;border:1.5px solid #221F20;border-radius:0;"></div>Recruiting Stn</div>
     <hr style="border-color:var(--border);margin:5px 0;"/>
     <div class="legr"><div class="legd" style="background:#FFCC01;"></div>HOT ZIP</div>
     <div class="legr"><div class="legd" style="background:#F16521;"></div>WARM ZIP</div>
@@ -738,9 +738,9 @@ function openLocDP(type,item){
     <div class="df"><label>Next Planned Visit</label><input id="f-nextVisit" type="date" value="${n.nextVisit||""}" /></div>
     <div class="df"><label>Priority</label><select id="f-priority">
       <option value="">— Unset —</option>
-      <option value="hot" ${n.priority==="hot"?"selected":""}>🔴 HOT – This Week</option>
-      <option value="warm" ${n.priority==="warm"?"selected":""}>🟡 WARM – This Month</option>
-      <option value="cold" ${n.priority==="cold"?"selected":""}>🔵 COLD – Low</option>
+      <option value="hot" ${n.priority==="hot"?"selected":""}>HOT – This Week</option>
+      <option value="warm" ${n.priority==="warm"?"selected":""}>WARM – This Month</option>
+      <option value="cold" ${n.priority==="cold"?"selected":""}>COLD – Low</option>
     </select></div>
     <div class="df"><label>Contacts Made (#)</label><input id="f-contactCount" type="number" min="0" value="${n.contactCount||0}" /></div>
     <div class="df"><label>AAR / Notes</label><textarea id="f-aar">${n.aar||""}</textarea></div>
@@ -764,7 +764,7 @@ function openZipDP(zip,feature){
   const rank=ranked.findIndex(([z])=>z===zip)+1;
 
   document.getElementById('dpi').textContent='◈';
-  document.getElementById('dpi').style.cssText='width:34px;height:34px;display:flex;align-items:center;justify-content:center;background:#1a1718;font-size:18px;color:var(--accent);flex-shrink:0;';
+  document.getElementById('dpi').style.cssText='width:34px;height:34px;display:flex;align-items:center;justify-content:center;background:var(--panel);font-size:18px;color:var(--accent);flex-shrink:0;';
   document.getElementById('dpn').textContent='ZIP '+zip;
   document.getElementById('dpc').textContent='ZCTA BOUNDARY';
   document.getElementById('dpf').style.display='flex';
