@@ -1,44 +1,45 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>RSID 4D5E · Recruiting Operations Map</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <style>
-    :root[data-theme="dark"] {
-      --bg:#0b0f1c; --panel:#111827; --card:#161f30; --hover:#1c2840;
-      --border:#1e2e48; --border2:#2a3f60;
-      --txt:#dde4f0; --txt2:#7a8faf; --txt3:#3a4d6a;
-      --accent:#f5a623; --aglow:rgba(245,166,35,.15);
-      --green:#22c55e; --red:#ef4444; --blue:#3b82f6;
-    }
-    :root[data-theme="light"] {
-      --bg:#e8edf5; --panel:#ffffff; --card:#f4f6fb; --hover:#eaeff8;
-      --border:#c5cedf; --border2:#9aaac5;
-      --txt:#18243a; --txt2:#4a5a78; --txt3:#96a8c4;
-      --accent:#c47d00; --aglow:rgba(196,125,0,.1);
-      --green:#16a34a; --red:#dc2626; --blue:#2563eb;
+    @font-face { font-family:'GI'; src:url('fonts/G.I.-400.ttf') format('truetype'); font-weight:400; font-style:normal; font-display:swap; }
+    @font-face { font-family:'GI'; src:url('fonts/G.I.-400Italic.ttf') format('truetype'); font-weight:400; font-style:italic; font-display:swap; }
+    @font-face { font-family:'GI'; src:url('fonts/G.I.-530.ttf') format('truetype'); font-weight:500; font-style:normal; font-display:swap; }
+    @font-face { font-family:'GI'; src:url('fonts/G.I.-530Italic.ttf') format('truetype'); font-weight:500; font-style:italic; font-display:swap; }
+    @font-face { font-family:'GI'; src:url('fonts/G.I.-750.ttf') format('truetype'); font-weight:700; font-style:normal; font-display:swap; }
+    @font-face { font-family:'GI'; src:url('fonts/G.I.-750Italic.ttf') format('truetype'); font-weight:700; font-style:italic; font-display:swap; }
+  </style>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    :root {
+      --army-black:#221F20; --army-gold:#FFCC01; --army-green:#2F372F;
+      --field:#727365; --red:#CF0000; --green:#2DAA27;
+      --bg:#221F20; --panel:#1a1718; --card:#2F372F;
+      --hover:#3a4535; --border:#3d3830; --border2:#57514a;
+      --txt:#FFFFFF; --txt2:#D5D5D7; --txt3:#727365;
+      --accent:#FFCC01; --aglow:rgba(255,204,1,.12);
     }
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    html,body{height:100%;overflow:hidden;font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--txt);}
+    html,body{height:100%;overflow:hidden;font-family:'GI','Arial',sans-serif;background:var(--bg);color:var(--txt);}
     /* HEADER */
     #hdr{height:50px;background:var(--panel);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 14px;gap:10px;z-index:1000;flex-shrink:0;}
-    .hdr-logo{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:17px;letter-spacing:2.5px;color:var(--accent);text-transform:uppercase;}
+    .hdr-logo{font-family:'GI','Arial Black',sans-serif;font-weight:700;font-size:17px;letter-spacing:2.5px;color:var(--accent);text-transform:uppercase;}
     .hdr-sep{color:var(--border2);}
-    .hdr-sub{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--txt3);letter-spacing:1px;}
+    .hdr-sub{font-family:'GI','Arial',sans-serif;font-size:10px;color:var(--txt3);letter-spacing:1px;}
     .hdr-sp{flex:1;}
     #sw{position:relative;}
-    #sb-in{background:var(--card);border:1px solid var(--border);border-radius:4px;padding:5px 11px;color:var(--txt);font-size:12px;width:190px;outline:none;transition:border-color .2s;}
+    #sb-in{background:var(--card);border:1px solid var(--border);border-radius:0;padding:5px 11px;color:var(--txt);font-size:12px;width:190px;outline:none;transition:border-color .2s;}
     #sb-in:focus{border-color:var(--accent);}
     #sb-in::placeholder{color:var(--txt3);}
     #sd{position:absolute;top:100%;left:0;right:0;background:var(--panel);border:1px solid var(--border);border-top:none;z-index:1100;display:none;max-height:260px;overflow-y:auto;}
     .sd-i{padding:7px 11px;cursor:pointer;font-size:12px;border-bottom:1px solid var(--border);transition:background .12s;}
     .sd-i:hover{background:var(--hover);}
-    .sd-t{font-size:10px;color:var(--txt3);font-family:'IBM Plex Mono',monospace;}
-    .hbtn{background:var(--card);border:1px solid var(--border);border-radius:4px;color:var(--txt2);padding:4px 10px;font-size:12px;cursor:pointer;white-space:nowrap;transition:all .18s;}
+    .sd-t{font-size:10px;color:var(--txt3);font-family:'GI','Arial',sans-serif;}
+    .hbtn{background:var(--card);border:1px solid var(--border);border-radius:0;color:var(--txt2);padding:4px 10px;font-size:12px;cursor:pointer;white-space:nowrap;transition:all .18s;}
     .hbtn:hover{border-color:var(--accent);color:var(--accent);}
     /* BODY */
     #body{flex:1;display:flex;overflow:hidden;position:relative;}
@@ -46,23 +47,23 @@
     #sb{width:252px;min-width:252px;background:var(--panel);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:500;transition:transform .28s,margin .28s;overflow:hidden;}
     #sb.col{transform:translateX(-252px);margin-right:-252px;}
     .ss{border-bottom:1px solid var(--border);padding:11px 13px;}
-    .st{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:600;letter-spacing:2px;color:var(--txt3);text-transform:uppercase;margin-bottom:9px;}
-    .lr{display:flex;align-items:center;gap:8px;padding:4px 5px;cursor:pointer;border-radius:4px;transition:background .12s;user-select:none;}
+    .st{font-family:'GI','Arial Black',sans-serif;font-size:10px;font-weight:600;letter-spacing:2px;color:var(--txt3);text-transform:uppercase;margin-bottom:9px;}
+    .lr{display:flex;align-items:center;gap:8px;padding:4px 5px;cursor:pointer;border-radius:0;transition:background .12s;user-select:none;}
     .lr:hover{background:var(--hover);}
     .lr input[type=checkbox]{display:none;}
-    .li{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;border:1.5px solid transparent;transition:border-color .15s,opacity .15s;}
+    .li{width:26px;height:26px;border-radius:0;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;border:1.5px solid transparent;transition:border-color .15s,opacity .15s;}
     .lr input:checked~.li{border-color:var(--accent);}
     .lr input:not(:checked)~.li{opacity:.4;}
     .ll{font-size:12px;color:var(--txt);flex:1;}
-    .lc{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--txt3);}
+    .lc{font-family:'GI','Arial',sans-serif;font-size:10px;color:var(--txt3);}
     .sg{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
-    .sc{background:var(--card);border:1px solid var(--border);border-radius:5px;padding:7px 9px;text-align:center;}
-    .sv{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;color:var(--accent);line-height:1;}
+    .sc{background:var(--card);border:1px solid var(--border);border-radius:0;padding:7px 9px;text-align:center;}
+    .sv{font-family:'GI','Arial Black',sans-serif;font-size:22px;font-weight:700;color:var(--accent);line-height:1;}
     .sl{font-size:9px;color:var(--txt3);margin-top:2px;letter-spacing:.5px;}
-    .ss-sel{width:100%;background:var(--card);border:1px solid var(--border);border-radius:4px;padding:5px 8px;color:var(--txt);font-size:12px;outline:none;}
-    .zn{margin-top:7px;font-size:10px;color:var(--txt3);font-family:'IBM Plex Mono',monospace;background:var(--card);border:1px solid var(--border);border-radius:4px;padding:5px 7px;line-height:1.45;}
+    .ss-sel{width:100%;background:var(--card);border:1px solid var(--border);border-radius:0;padding:5px 8px;color:var(--txt);font-size:12px;outline:none;}
+    .zn{margin-top:7px;font-size:10px;color:var(--txt3);font-family:'GI','Arial',sans-serif;background:var(--card);border:1px solid var(--border);border-radius:0;padding:5px 7px;line-height:1.45;}
     .sf{margin-top:auto;padding:10px 13px;border-top:1px solid var(--border);}
-    .db{display:block;width:100%;background:var(--card);border:1px solid var(--border);border-radius:4px;padding:6px;text-align:center;color:var(--txt2);font-size:12px;cursor:pointer;margin-bottom:5px;transition:all .18s;}
+    .db{display:block;width:100%;background:var(--card);border:1px solid var(--border);border-radius:0;padding:6px;text-align:center;color:var(--txt2);font-size:12px;cursor:pointer;margin-bottom:5px;transition:all .18s;}
     .db:hover{border-color:var(--accent);color:var(--accent);}
     .db.imp{color:var(--green);border-color:var(--green);}
     .db.imp:hover{background:rgba(34,197,94,.08);}
@@ -70,58 +71,55 @@
     /* MAP */
     #map{flex:1;z-index:1;}
     /* ZIP LABELS */
-    .zl{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.95),0 0 8px rgba(0,0,0,.8);background:none;border:none;box-shadow:none;padding:0;pointer-events:none;white-space:nowrap;}
-    :root[data-theme="light"] .zl{color:#0a1428;text-shadow:0 1px 3px rgba(255,255,255,.95);}
+    .zl{font-family:'GI','Arial',sans-serif;font-size:11px;font-weight:500;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.95),0 0 8px rgba(0,0,0,.8);background:none;border:none;box-shadow:none;padding:0;pointer-events:none;white-space:nowrap;}
     /* LEAFLET */
     .leaflet-control-attribution{background:var(--panel)!important;color:var(--txt3)!important;font-size:9px!important;}
-    .leaflet-popup-content-wrapper{background:var(--panel)!important;border:1px solid var(--border)!important;border-radius:6px!important;box-shadow:0 4px 20px rgba(0,0,0,.4)!important;}
+    .leaflet-popup-content-wrapper{background:var(--panel)!important;border:1px solid var(--border)!important;border-radius:6px!important;}
     .leaflet-popup-tip{background:var(--panel)!important;}
-    .leaflet-popup-content{color:var(--txt)!important;font-family:'IBM Plex Sans',sans-serif;font-size:13px;margin:10px 14px!important;}
+    .leaflet-popup-content{color:var(--txt)!important;font-family:'GI','Arial',sans-serif;font-size:13px;margin:10px 14px!important;}
     /* LEGEND */
-    .legc{background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:9px 11px;font-size:11px;min-width:128px;}
-    .legt{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;color:var(--txt3);text-transform:uppercase;margin-bottom:6px;}
+    .legc{background:var(--panel);border:1px solid var(--border);border-radius:0;padding:9px 11px;font-size:11px;min-width:128px;}
+    .legt{font-family:'GI','Arial Black',sans-serif;font-size:10px;letter-spacing:2px;color:var(--txt3);text-transform:uppercase;margin-bottom:6px;}
     .legr{display:flex;align-items:center;gap:5px;margin-bottom:4px;color:var(--txt);font-size:11px;}
     .legd{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
     /* DETAIL PANEL */
     #dp{width:310px;min-width:310px;background:var(--panel);border-left:1px solid var(--border);display:flex;flex-direction:column;z-index:500;transform:translateX(310px);transition:transform .28s;overflow:hidden;}
     #dp.open{transform:translateX(0);}
     #dph{padding:12px 14px 10px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:9px;}
-    #dpi{width:34px;height:34px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
-    #dpn{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:700;color:var(--txt);line-height:1.15;flex:1;}
-    #dpc{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--accent);letter-spacing:1px;text-transform:uppercase;margin-top:1px;}
+    #dpi{width:34px;height:34px;border-radius:0;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+    #dpn{font-family:'GI','Arial Black',sans-serif;font-size:17px;font-weight:700;color:var(--txt);line-height:1.15;flex:1;}
+    #dpc{font-family:'GI','Arial',sans-serif;font-size:9px;color:var(--accent);letter-spacing:1px;text-transform:uppercase;margin-top:1px;}
     #dpx{background:none;border:none;color:var(--txt3);font-size:17px;cursor:pointer;padding:0;}
     #dpx:hover{color:var(--txt);}
     #dpb{flex:1;overflow-y:auto;padding:12px 14px;}
     .df{margin-bottom:11px;}
-    .df label{display:block;font-size:9px;letter-spacing:1px;color:var(--txt3);text-transform:uppercase;font-family:'IBM Plex Mono',monospace;margin-bottom:3px;}
+    .df label{display:block;font-size:9px;letter-spacing:1px;color:var(--txt3);text-transform:uppercase;font-family:'GI','Arial',sans-serif;margin-bottom:3px;}
     .df .v{font-size:12px;color:var(--txt);}
-    .df input,.df textarea,.df select{width:100%;background:var(--card);border:1px solid var(--border);border-radius:4px;padding:6px 8px;color:var(--txt);font-size:12px;outline:none;transition:border-color .18s;resize:vertical;}
+    .df input,.df textarea,.df select{width:100%;background:var(--card);border:1px solid var(--border);border-radius:0;padding:6px 8px;color:var(--txt);font-size:12px;outline:none;transition:border-color .18s;resize:vertical;}
     .df input:focus,.df textarea:focus,.df select:focus{border-color:var(--accent);}
     .df textarea{min-height:75px;}
     .ddiv{border:none;border-top:1px solid var(--border);margin:12px 0;}
-    .dsec{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;color:var(--txt3);text-transform:uppercase;margin-bottom:9px;}
+    .dsec{font-family:'GI','Arial Black',sans-serif;font-size:10px;letter-spacing:2px;color:var(--txt3);text-transform:uppercase;margin-bottom:9px;}
     #dpf{padding:10px 14px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:center;}
-    .sbtn{flex:1;background:var(--accent);color:#000;border:none;border-radius:4px;padding:7px;font-weight:700;font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:1px;cursor:pointer;transition:opacity .18s;}
+    .sbtn{flex:1;background:var(--accent);color:#000;border:none;border-radius:0;padding:7px;font-weight:700;font-family:'GI','Arial Black',sans-serif;font-size:14px;letter-spacing:1px;cursor:pointer;transition:opacity .18s;}
     .sbtn:hover{opacity:.85;}
-    .savd{font-size:10px;color:var(--green);font-family:'IBM Plex Mono',monospace;opacity:0;transition:opacity .3s;}
+    .savd{font-size:10px;color:var(--green);font-family:'GI','Arial',sans-serif;opacity:0;transition:opacity .3s;}
     .savd.show{opacity:1;}
-    /* MARKERS */
-    .mico{display:flex;align-items:center;justify-content:center;border-radius:50%;border:2px solid rgba(255,255,255,.35);font-size:15px;box-shadow:0 2px 10px rgba(0,0,0,.5);cursor:pointer;transition:transform .12s;}
-    .mico:hover{transform:scale(1.12);}
+    /* MARKERS — old .mico styles removed; pins use inline styles */
     /* STATION PULSE */
     .sp{position:absolute;top:50%;left:50%;width:44px;height:44px;border-radius:50%;border:2px solid var(--accent);transform:translate(-50%,-50%);animation:pulse 2.2s ease-out infinite;}
     @keyframes pulse{0%{transform:translate(-50%,-50%) scale(1);opacity:.7;}100%{transform:translate(-50%,-50%) scale(2.2);opacity:0;}}
     /* TOAST */
-    #toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--panel);border:1px solid var(--border);border-left:3px solid var(--accent);padding:8px 16px;border-radius:5px;font-size:12px;z-index:9999;transition:transform .28s;box-shadow:0 4px 18px rgba(0,0,0,.35);}
+    #toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--panel);border:1px solid var(--border);border-left:3px solid var(--accent);padding:8px 16px;border-radius:0;font-size:12px;z-index:9999;transition:transform .28s;}
     #toast.show{transform:translateX(-50%) translateY(0);}
     /* LOADER */
     #ldr{position:absolute;inset:0;background:var(--bg);z-index:900;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;transition:opacity .4s;}
     #ldr.done{opacity:0;pointer-events:none;}
     .spin{width:28px;height:28px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:sp .8s linear infinite;}
     @keyframes sp{to{transform:rotate(360deg);}}
-    #ltxt{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--txt3);}
+    #ltxt{font-family:'GI','Arial',sans-serif;font-size:12px;color:var(--txt3);}
     ::-webkit-scrollbar{width:4px;}
-    ::-webkit-scrollbar-thumb{background:var(--border);border-radius:10px;}
+    ::-webkit-scrollbar-thumb{background:var(--border);border-radius:0;}
     @media(max-width:700px){#sb{position:absolute;height:100%;z-index:600;}#dp{position:absolute;right:0;height:100%;z-index:600;width:88vw;min-width:unset;}#sb-in{width:130px;}}
   </style>
 </head>
@@ -133,11 +131,10 @@
   <div class="hdr-sub">RECRUITING OPS MAP · LINCOLN NE</div>
   <div class="hdr-sp"></div>
   <div id="sw">
-    <input id="sb-in" type="text" placeholder="🔍  Search name or ZIP…" autocomplete="off" />
+    <input id="sb-in" type="text" placeholder="Search name or ZIP…" autocomplete="off" />
     <div id="sd"></div>
   </div>
-  <button class="hbtn" onclick="toggleTheme()"><span id="tico">☀</span> Theme</button>
-  <button class="hbtn" onclick="toggleSb()">☰ Layers</button>
+  <button class="hbtn" onclick="toggleSb()">LAYERS</button>
 </header>
 
 <div id="body">
@@ -145,16 +142,46 @@
 
   <nav id="sb">
     <div class="ss">
-      <div class="st">Map Layers</div>
-      <label class="lr"><input type="checkbox" id="l-zip"    checked onchange="tLyr('zip')">   <div class="li" style="background:#0d2040;">📐</div><span class="ll">ZIP / ZCTA Boundaries</span><span class="lc" id="c-zip">…</span></label>
-      <label class="lr"><input type="checkbox" id="l-zl"     checked onchange="tLyr('zl')">    <div class="li" style="background:#0d1a30;">🔢</div><span class="ll">ZIP Labels on Map</span></label>
-      <label class="lr"><input type="checkbox" id="l-sch"    checked onchange="tLyr('sch')">   <div class="li" style="background:#2d1a00;">🏫</div><span class="ll">High Schools</span><span class="lc" id="c-sch">—</span></label>
-      <label class="lr"><input type="checkbox" id="l-uni"    checked onchange="tLyr('uni')">   <div class="li" style="background:#1e0a30;">🎓</div><span class="ll">Universities / Colleges</span><span class="lc" id="c-uni">—</span></label>
-      <label class="lr"><input type="checkbox" id="l-pd"     checked onchange="tLyr('pd')">    <div class="li" style="background:#0a1a30;">🚔</div><span class="ll">Police Departments</span><span class="lc" id="c-pd">—</span></label>
-      <label class="lr"><input type="checkbox" id="l-ct"     checked onchange="tLyr('ct')">    <div class="li" style="background:#0a2010;">⚖️</div><span class="ll">Courthouses</span><span class="lc" id="c-ct">—</span></label>
-      <label class="lr"><input type="checkbox" id="l-tb"     checked onchange="tLyr('tb')">    <div class="li" style="background:#300808;">🌮</div><span class="ll">Taco Bell</span><span class="lc" id="c-tb">—</span></label>
-      <label class="lr"><input type="checkbox" id="l-stn"    checked onchange="tLyr('stn')">   <div class="li" style="background:#1a1000;">⭐</div><span class="ll">Recruiting Station</span><span class="lc">1</span></label>
-    </div>
+  <div class="st">MAP LAYERS</div>
+  <label class="lr"><input type="checkbox" id="l-zip" checked onchange="tLyr('zip')">
+    <div class="li" style="background:#221F20;border-color:#FFCC01;"><svg viewBox="0 0 16 16" width="12" height="12" stroke="#FFCC01" stroke-width="1.5" fill="none"><rect x="2" y="2" width="12" height="12"/><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></div>
+    <span class="ll">ZIP Boundaries</span><span class="lc" id="c-zip">…</span></label>
+  <label class="lr"><input type="checkbox" id="l-zl" checked onchange="tLyr('zl')">
+    <div class="li" style="background:#221F20;border-color:#57514a;"><svg viewBox="0 0 16 16" width="12" height="12" fill="#727365"><rect x="2" y="5" width="12" height="2"/><rect x="2" y="9" width="8" height="2"/></svg></div>
+    <span class="ll">ZIP Labels</span></label>
+  <label class="lr"><input type="checkbox" id="l-demo" onchange="toggleDemo()">
+    <div class="li" style="background:linear-gradient(135deg,#2F372F,#FFCC01);border-color:#FFCC01;"><svg viewBox="0 0 16 16" width="12" height="12" fill="white"><rect x="1" y="10" width="3" height="5"/><rect x="6" y="6" width="3" height="9"/><rect x="11" y="2" width="3" height="13"/></svg></div>
+    <span class="ll">17–24 Population</span></label>
+  <label class="lr"><input type="checkbox" id="l-sch" checked onchange="tLyr('sch')">
+    <div class="li" style="background:#221F20;border-color:#FFCC01;"><svg viewBox="0 0 16 16" width="12" height="12" fill="#FFCC01"><polygon points="8,2 15,6 8,10 1,6"/></svg></div>
+    <span class="ll">High Schools</span><span class="lc" id="c-sch">—</span></label>
+  <label class="lr"><input type="checkbox" id="l-uni" checked onchange="tLyr('uni')">
+    <div class="li" style="background:#2F372F;border-color:#FFCC01;"><svg viewBox="0 0 16 16" width="12" height="12" fill="#FFCC01"><rect x="1" y="11" width="14" height="2"/><rect x="2.5" y="5" width="2" height="6"/><rect x="7" y="5" width="2" height="6"/><rect x="11.5" y="5" width="2" height="6"/></svg></div>
+    <span class="ll">Universities</span><span class="lc" id="c-uni">—</span></label>
+  <label class="lr"><input type="checkbox" id="l-pd" checked onchange="tLyr('pd')">
+    <div class="li" style="background:#1a2a4a;border-color:#FFFFFF;"><svg viewBox="0 0 16 16" width="12" height="12" fill="white"><path d="M8,1 L15,4 L15,9 Q15,14 8,15 Q1,14 1,9 L1,4 Z"/></svg></div>
+    <span class="ll">Police Depts</span><span class="lc" id="c-pd">—</span></label>
+  <label class="lr"><input type="checkbox" id="l-ct" checked onchange="tLyr('ct')">
+    <div class="li" style="background:#2F372F;border-color:#FFFFFF;"><svg viewBox="0 0 16 16" width="12" height="12" stroke="white" stroke-width="1.5" fill="none"><line x1="8" y1="2" x2="8" y2="14"/><line x1="2" y1="5" x2="14" y2="5"/></svg></div>
+    <span class="ll">Courthouses</span><span class="lc" id="c-ct">—</span></label>
+  <label class="lr"><input type="checkbox" id="l-tb" checked onchange="tLyr('tb')">
+    <div class="li" style="background:#CF0000;border-color:#FFFFFF;"><svg viewBox="0 0 16 16" width="12" height="12" fill="white"><path d="M8,2 Q13,2 13,8 L13,12 L3,12 L3,8 Q3,2 8,2 Z"/></svg></div>
+    <span class="ll">Taco Bell</span><span class="lc" id="c-tb">—</span></label>
+  <label class="lr"><input type="checkbox" id="l-stn" checked onchange="tLyr('stn')">
+    <div class="li" style="background:#FFCC01;border-color:#221F20;"><svg viewBox="0 0 16 16" width="12" height="12" fill="#221F20"><polygon points="8,1 9.9,6.2 15.5,6.5 11.2,9.9 12.6,15.4 8,12.3 3.4,15.4 4.8,9.9 0.5,6.5 6.1,6.2"/></svg></div>
+    <span class="ll">Recruiting Station</span><span class="lc">1</span></label>
+</div>
+    <div class="ss">
+  <div class="st">MAP TILE</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
+    <button class="tile-btn" data-tile="dark"   onclick="setTile('dark')"
+      style="background:var(--accent);color:#221F20;border:1px solid var(--border);padding:7px 2px;font-family:'GI',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;cursor:pointer;text-transform:uppercase;">DARK</button>
+    <button class="tile-btn" data-tile="street" onclick="setTile('street')"
+      style="background:var(--card);color:var(--txt2);border:1px solid var(--border);padding:7px 2px;font-family:'GI',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;cursor:pointer;text-transform:uppercase;">STREET</button>
+    <button class="tile-btn" data-tile="sat"    onclick="setTile('sat')"
+      style="background:var(--card);color:var(--txt2);border:1px solid var(--border);padding:7px 2px;font-family:'GI',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;cursor:pointer;text-transform:uppercase;">SAT</button>
+  </div>
+</div>
     <div class="ss">
       <div class="st">Station Stats</div>
       <div class="sg">
@@ -168,19 +195,19 @@
       <div class="st">ZIP Priority Filter</div>
       <select class="ss-sel" id="zpf" onchange="filterZips()">
         <option value="all">Show All ZIPs</option>
-        <option value="hot">🔴 HOT Priority</option>
-        <option value="warm">🟡 WARM Priority</option>
-        <option value="cold">🔵 COLD Priority</option>
+        <option value="hot">HOT Priority</option>
+        <option value="warm">WARM Priority</option>
+        <option value="cold">COLD Priority</option>
         <option value="none">Unset</option>
       </select>
       <div class="zn">⚠ Boundaries are U.S. Census ZCTAs — loaded live from Census TIGERweb. Authoritative approximations of USPS service areas.</div>
     </div>
     <div class="sf">
       <div class="st">Data</div>
-      <button class="db" onclick="exportData()">⬇ Export Notes to JSON</button>
-      <button class="db imp" onclick="document.getElementById('fi').click()">⬆ Import JSON Notes</button>
+      <button class="db" onclick="exportData()">Export Notes to JSON</button>
+      <button class="db imp" onclick="document.getElementById('fi').click()">Import JSON Notes</button>
       <input type="file" id="fi" accept=".json" onchange="importData(event)" />
-      <div style="font-size:9px;color:var(--txt3);margin-top:5px;text-align:center;font-family:'IBM Plex Mono',monospace;">Notes are in-memory only — export to save.</div>
+      <div style="font-size:9px;color:var(--txt3);margin-top:5px;text-align:center;font-family:'GI','Arial',sans-serif;">Notes are in-memory only — export to save.</div>
     </div>
   </nav>
 
@@ -200,18 +227,86 @@
   </aside>
 </div>
 
+<div id="zip-tip" style="position:fixed;background:var(--panel);border:1px solid var(--border2);padding:6px 10px;font-family:'GI',sans-serif;font-size:11px;color:var(--txt);pointer-events:none;display:none;z-index:8000;text-transform:uppercase;letter-spacing:.5px;"></div>
 <div id="toast"></div>
 
 <script>
 /* ── STATE ── */
-let noteStore={}, activeId=null, isDark=true, zipGJ=null;
+let noteStore={}, activeId=null, zipGJ=null;
+let customPins=[], pinMode=false;
 const LYR={};
 
 /* ── AO ZIP LIST ── */
-const AO_ZIPS=['68501','68502','68503','68504','68505','68506','68507','68508',
-               '68510','68512','68514','68516','68517','68520','68521','68522',
-               '68523','68524','68526','68527','68528','68529',
-               '68462','68317','68428','68336','68347','68366'];
+const AO_ZIPS=[
+  // Lincoln city
+  '68501','68502','68503','68504','68505','68506','68507','68508',
+  '68510','68512','68514','68516','68517','68520','68521','68522',
+  '68523','68524','68526','68527','68528','68529','68532','68588',
+  // Surrounding AO
+  '68317','68333','68336','68347','68366','68428','68462'
+];
+
+const ZIP_DEMO={
+  '68501':{pop1724:285, popTotal:2100},
+  '68502':{pop1724:1980,popTotal:14200},
+  '68503':{pop1724:3150,popTotal:20800},
+  '68504':{pop1724:2640,popTotal:19500},
+  '68505':{pop1724:2020,popTotal:15800},
+  '68506':{pop1724:1820,popTotal:14600},
+  '68507':{pop1724:2380,popTotal:17200},
+  '68508':{pop1724:2880,popTotal:18900},
+  '68510':{pop1724:2240,popTotal:17800},
+  '68512':{pop1724:1580,popTotal:13200},
+  '68514':{pop1724:380, popTotal:2800},
+  '68516':{pop1724:1360,popTotal:11400},
+  '68517':{pop1724:1080,popTotal:9200},
+  '68520':{pop1724:1480,popTotal:13600},
+  '68521':{pop1724:2060,popTotal:16400},
+  '68522':{pop1724:1280,popTotal:10800},
+  '68523':{pop1724:860, popTotal:7200},
+  '68524':{pop1724:1180,popTotal:10400},
+  '68526':{pop1724:1540,popTotal:13800},
+  '68527':{pop1724:680, popTotal:5800},
+  '68528':{pop1724:1380,popTotal:12200},
+  '68529':{pop1724:760, popTotal:6400},
+  '68532':{pop1724:580, popTotal:5200},
+  '68588':{pop1724:7840,popTotal:10200},
+  '68317':{pop1724:195, popTotal:1600},
+  '68333':{pop1724:480, popTotal:4200},
+  '68336':{pop1724:142, popTotal:1100},
+  '68347':{pop1724:285, popTotal:2400},
+  '68366':{pop1724:238, popTotal:1900},
+  '68428':{pop1724:192, popTotal:1600},
+  '68462':{pop1724:592, popTotal:5200},
+};
+
+function haversine(lat1,lng1,lat2,lng2){
+  const R=3958.8,dLat=(lat2-lat1)*Math.PI/180,dLng=(lng2-lng1)*Math.PI/180;
+  const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
+  return(R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a))).toFixed(1);
+}
+
+let _demoMin=null,_demoMax=null;
+function demoMinMax(){
+  if(_demoMin!==null)return;
+  const vals=Object.values(ZIP_DEMO).map(d=>d.pop1724);
+  _demoMin=Math.min(...vals);_demoMax=Math.max(...vals);
+}
+function demoColor(zip){
+  demoMinMax();
+  const d=ZIP_DEMO[zip]; if(!d)return'#2F372F';
+  const t=Math.max(0,Math.min(1,(d.pop1724-_demoMin)/(_demoMax-_demoMin)));
+  const r=Math.round(0x2F+t*(0xFF-0x2F));
+  const g=Math.round(0x37+t*(0xCC-0x37));
+  const b=Math.round(0x2F+t*(0x01-0x2F));
+  return`rgb(${r},${g},${b})`;
+}
+
+let showDemo=false;
+function toggleDemo(){
+  showDemo=document.getElementById('l-demo').checked;
+  if(zipGJ)buildZip(zipGJ);
+}
 
 const ZIP_PRI={'68503':'hot','68504':'hot','68507':'hot','68521':'hot',
                '68502':'warm','68505':'warm','68506':'warm','68510':'warm',
@@ -221,17 +316,32 @@ const ZIP_PRI={'68503':'hot','68504':'hot','68507':'hot','68521':'hot',
 const STATION={id:"stn",name:"USAREC Recruiting Station Lincoln",address:"505 N 27th St, Lincoln, NE 68503",lat:40.8181,lng:-96.6828,rsid:"4D5E"};
 
 const SCHOOLS=[
-  {id:"s1",name:"Lincoln High School",           address:"2229 J St",        city:"Lincoln",zip:"68510",lat:40.8037,lng:-96.6879,enrollment:2150,gradeRange:"9–12",principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
-  {id:"s2",name:"Lincoln Northeast High School", address:"2635 N 63rd St",   city:"Lincoln",zip:"68507",lat:40.8407,lng:-96.6289,enrollment:1850,gradeRange:"9–12",principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
-  {id:"s3",name:"Lincoln East High School",      address:"1000 S 70th St",   city:"Lincoln",zip:"68510",lat:40.7923,lng:-96.6175,enrollment:2050,gradeRange:"9–12",principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
-  {id:"s4",name:"Lincoln Southeast High School", address:"2955 S 70th St",   city:"Lincoln",zip:"68506",lat:40.7742,lng:-96.6200,enrollment:2200,gradeRange:"9–12",principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
-  {id:"s5",name:"Lincoln Southwest High School", address:"7001 S 14th St",   city:"Lincoln",zip:"68512",lat:40.7581,lng:-96.7104,enrollment:2000,gradeRange:"9–12",principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
-  {id:"s6",name:"Lincoln North Star High School",address:"5801 N 33rd St",   city:"Lincoln",zip:"68504",lat:40.8571,lng:-96.6693,enrollment:2100,gradeRange:"9–12",principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
-  {id:"s7",name:"Pius X High School",            address:"6000 A St",        city:"Lincoln",zip:"68510",lat:40.7975,lng:-96.6296,enrollment:900, gradeRange:"9–12",principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
-  {id:"s8",name:"Waverly High School",           address:"14511 Heywood St", city:"Waverly",zip:"68462",lat:40.9121,lng:-96.5293,enrollment:600, gradeRange:"9–12",principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
-  {id:"s9",name:"Raymond Central High School",   address:"315 W Vine St",    city:"Raymond",zip:"68428",lat:40.9574,lng:-96.7933,enrollment:280, gradeRange:"9–12",principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
-  {id:"s10",name:"Bennet High School",           address:"230 S 4th St",     city:"Bennet", zip:"68317",lat:40.6825,lng:-96.5135,enrollment:120, gradeRange:"9–12",principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
-  {id:"s11",name:"Crete High School",            address:"1500 Linden Ave",  city:"Crete",  zip:"68333",lat:40.6285,lng:-96.9465,enrollment:350, gradeRange:"9–12",principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
+  {id:"s1", name:"Lincoln High School",           address:"2229 J St",          city:"Lincoln",zip:"68510",lat:40.8037,lng:-96.6879,enrollment:2150,gradeRange:"9-12",
+   principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
+  {id:"s2", name:"Lincoln Northeast High School", address:"2635 N 63rd St",     city:"Lincoln",zip:"68507",lat:40.8407,lng:-96.6289,enrollment:1850,gradeRange:"9-12",
+   principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
+  {id:"s3", name:"Lincoln East High School",      address:"1000 S 70th St",     city:"Lincoln",zip:"68510",lat:40.7923,lng:-96.6175,enrollment:2050,gradeRange:"9-12",
+   principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
+  {id:"s4", name:"Lincoln Southeast High School", address:"2955 S 70th St",     city:"Lincoln",zip:"68506",lat:40.7742,lng:-96.6200,enrollment:2200,gradeRange:"9-12",
+   principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
+  {id:"s5", name:"Lincoln Southwest High School", address:"7001 S 14th St",     city:"Lincoln",zip:"68512",lat:40.7581,lng:-96.7104,enrollment:2000,gradeRange:"9-12",
+   principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
+  {id:"s6", name:"Lincoln North Star High School",address:"5801 N 33rd St",     city:"Lincoln",zip:"68504",lat:40.8571,lng:-96.6693,enrollment:2100,gradeRange:"9-12",
+   principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
+  {id:"s7", name:"Pius X High School",            address:"6000 A St",          city:"Lincoln",zip:"68510",lat:40.7975,lng:-96.6296,enrollment:900, gradeRange:"9-12",
+   principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
+  {id:"s8", name:"Lincoln Christian High School", address:"5901 N 14th St",     city:"Lincoln",zip:"68521",lat:40.8652,lng:-96.7103,enrollment:480, gradeRange:"K-12",
+   principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
+  {id:"s9", name:"Parkview Christian School",     address:"8701 Yankee Hill Rd",city:"Lincoln",zip:"68526",lat:40.7632,lng:-96.5938,enrollment:320, gradeRange:"K-12",
+   principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
+  {id:"s10",name:"Waverly High School",           address:"14511 Heywood St",   city:"Waverly",zip:"68462",lat:40.9121,lng:-96.5293,enrollment:600, gradeRange:"9-12",
+   principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
+  {id:"s11",name:"Raymond Central High School",   address:"315 W Vine St",      city:"Raymond",zip:"68428",lat:40.9574,lng:-96.7933,enrollment:280, gradeRange:"9-12",
+   principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
+  {id:"s12",name:"Bennet High School",            address:"230 S 4th St",       city:"Bennet", zip:"68317",lat:40.6825,lng:-96.5135,enrollment:120, gradeRange:"9-12",
+   principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
+  {id:"s13",name:"Crete High School",             address:"1500 Linden Ave",    city:"Crete",  zip:"68333",lat:40.6285,lng:-96.9465,enrollment:350, gradeRange:"9-12",
+   principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
 ];
 
 const UNIS=[
@@ -263,25 +373,61 @@ const TACOBELL=[
   {id:"t7",name:"Taco Bell",address:"7900 Pioneers Blvd, Lincoln, NE 68506",zip:"68506",lat:40.7788,lng:-96.5960},
 ];
 
-const ICFG={
-  sch:{e:"🏫",bg:"#2d1a00",c:"#f5a623"},
-  uni:{e:"🎓",bg:"#1e0a30",c:"#a855f7"},
-  pd: {e:"🚔",bg:"#0a1a30",c:"#3b82f6"},
-  ct: {e:"⚖️", bg:"#0a2010",c:"#22c55e"},
-  tb: {e:"🌮",bg:"#300808",c:"#ef4444"},
+const SVGS={
+  sch:`<svg viewBox="0 0 16 16" width="16" height="16" fill="#FFCC01"><polygon points="8,2 15,6 8,10 1,6"/><path d="M4,7.5 L4,12 Q8,14.5 12,12 L12,7.5" fill="#FFCC01"/><rect x="12.5" y="6" width="1" height="3.5" fill="#FFCC01"/><circle cx="13" cy="10" r="1" fill="#FFCC01"/></svg>`,
+  uni:`<svg viewBox="0 0 16 16" width="16" height="16" fill="#FFCC01"><rect x="1" y="11" width="14" height="2"/><rect x="1" y="3" width="14" height="2"/><rect x="2.5" y="5" width="2" height="6"/><rect x="7" y="5" width="2" height="6"/><rect x="11.5" y="5" width="2" height="6"/></svg>`,
+  pd:`<svg viewBox="0 0 16 16" width="16" height="16" fill="white"><path d="M8,1 L15,4 L15,9 Q15,14 8,15 Q1,14 1,9 L1,4 Z"/></svg>`,
+  ct:`<svg viewBox="0 0 16 16" width="16" height="16" stroke="white" stroke-width="1.2" fill="none"><line x1="8" y1="2" x2="8" y2="14"/><line x1="2" y1="5" x2="14" y2="5"/><path d="M2,5 Q2,9 5,9 Q8,9 8,5"/><path d="M8,5 Q8,9 11,9 Q14,9 14,5"/><rect x="5" y="13" width="6" height="1.5" fill="white" stroke="none"/></svg>`,
+  tb:`<svg viewBox="0 0 16 16" width="16" height="16" fill="white"><path d="M8,2 Q13,2 13,8 L13,12 L3,12 L3,8 Q3,2 8,2 Z"/><circle cx="8" cy="2" r="1.5"/><rect x="6" y="12" width="4" height="2" rx="1"/></svg>`,
+  custom:`<svg viewBox="0 0 16 16" width="16" height="16" stroke="#221F20" stroke-width="1.5" fill="none"><circle cx="8" cy="8" r="3"/><line x1="8" y1="1" x2="8" y2="5"/><line x1="8" y1="11" x2="8" y2="15"/><line x1="1" y1="8" x2="5" y2="8"/><line x1="11" y1="8" x2="15" y2="8"/></svg>`,
 };
+
+const PIN_CFG={
+  sch:{bg:'#221F20',border:'#FFCC01',svg:'sch'},
+  uni:{bg:'#2F372F',border:'#FFCC01',svg:'uni'},
+  pd: {bg:'#1a2a4a',border:'#FFFFFF',svg:'pd'},
+  ct: {bg:'#2F372F',border:'#FFFFFF',svg:'ct'},
+  tb: {bg:'#CF0000',border:'#FFFFFF',svg:'tb'},
+  custom:{bg:'#FFFFFF',border:'#221F20',svg:'custom'},
+};
+
+function mkPin(cfg,badgeHtml=''){
+  const c=PIN_CFG[cfg];
+  return `<div style="position:relative;width:34px;height:42px;display:flex;flex-direction:column;align-items:center;filter:drop-shadow(0 2px 4px rgba(0,0,0,.6));">
+    <div style="width:34px;height:34px;background:${c.bg};border:2px solid ${c.border};display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;">
+      ${SVGS[c.svg]}${badgeHtml}
+    </div>
+    <div style="width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;border-top:10px solid ${c.border};"></div>
+  </div>`;
+}
+
+function mkIcon(key,badgeHtml=''){
+  return L.divIcon({className:'',html:mkPin(key,badgeHtml),iconSize:[34,42],iconAnchor:[17,42],popupAnchor:[0,-44]});
+}
 
 /* ── MAP ── */
 const MAP=L.map("map",{center:[40.813,-96.703],zoom:12});
 
-const TDARK=L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
-  {attribution:"© OpenStreetMap · © CARTO",subdomains:"abcd",maxZoom:19});
+const TILES={
+  dark: L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+    {attribution:'© OpenStreetMap · © CARTO',subdomains:'abcd',maxZoom:19}),
+  street: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
+    {attribution:'© Esri · © OpenStreetMap contributors',maxZoom:20}),
+  sat: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    {attribution:'© Esri',maxZoom:19}),
+};
+let activeTile='dark';
+TILES.dark.addTo(MAP);
 
-/* Esri World Street Map — excellent road detail and contrast */
-const TLIGHT=L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
-  {attribution:"© Esri · © OpenStreetMap contributors",maxZoom:20});
-
-TDARK.addTo(MAP);
+function setTile(key){
+  Object.values(TILES).forEach(t=>MAP.removeLayer(t));
+  TILES[key].addTo(MAP);
+  activeTile=key;
+  document.querySelectorAll('.tile-btn').forEach(b=>{
+    b.style.background=b.dataset.tile===key?'var(--accent)':'var(--card)';
+    b.style.color=b.dataset.tile===key?'var(--army-black)':'var(--txt2)';
+  });
+}
 
 /* ── FETCH REAL ZCTA BOUNDARIES ──────────────────────────────
    Source: OpenDataDE Nebraska ZIP GeoJSON (derived from Census
@@ -318,11 +464,15 @@ async function fetchZCTAs(){
 /* ── ZIP PRIORITY & STYLE ── */
 function zPri(zip){return(noteStore["zip-"+zip]||{}).priority||ZIP_PRI[zip]||"none";}
 function zStyle(zip){
+  if(showDemo){
+    const col=demoColor(zip);
+    return{color:col,fillColor:col,fillOpacity:.45,weight:1.5};
+  }
   const m={
-    hot: {color:"#ef4444",fillColor:"#ef4444",fillOpacity:.20,weight:2.0},
-    warm:{color:"#f5a623",fillColor:"#f5a623",fillOpacity:.14,weight:1.6},
-    cold:{color:"#3b82f6",fillColor:"#3b82f6",fillOpacity:.11,weight:1.3},
-    none:{color:"#546a90",fillColor:"#546a90",fillOpacity:.07,weight:1.0,dashArray:"5,4"},
+    hot: {color:'#FFCC01',fillColor:'#FFCC01',fillOpacity:.22,weight:2.0},
+    warm:{color:'#F16521',fillColor:'#F16521',fillOpacity:.16,weight:1.6},
+    cold:{color:'#727365',fillColor:'#727365',fillOpacity:.11,weight:1.2},
+    none:{color:'#57514a',fillColor:'#57514a',fillOpacity:.07,weight:1.0,dashArray:'5,4'},
   };
   return m[zPri(zip)]||m.none;
 }
@@ -344,11 +494,26 @@ function buildZip(gj){
     style:f=>zStyle(f.properties.ZCTA5CE),
     onEachFeature(feature,lyr){
       const zip=feature.properties.ZCTA5CE;
-      lyr.on("mouseover",function(e){
-        this.setStyle({weight:2.8,fillOpacity:.30});
+      lyr.on('mouseover',function(e){
+        this.setStyle({weight:2.5,fillOpacity:.38});
         this.bringToFront();
+        const [clat,clng]=centroid(feature);
+        const dist=haversine(STATION.lat,STATION.lng,clat,clng);
+        const tip=document.getElementById('zip-tip');
+        tip.textContent=zip+' · ~'+dist+' mi from station';
+        tip.style.display='block';
+        tip.style.left=(e.originalEvent.clientX+14)+'px';
+        tip.style.top=(e.originalEvent.clientY-10)+'px';
       });
-      lyr.on("mouseout",function(){this.setStyle(zStyle(zip));});
+      lyr.on('mousemove',function(e){
+        const tip=document.getElementById('zip-tip');
+        tip.style.left=(e.originalEvent.clientX+14)+'px';
+        tip.style.top=(e.originalEvent.clientY-10)+'px';
+      });
+      lyr.on('mouseout',function(){
+        this.setStyle(zStyle(zip));
+        document.getElementById('zip-tip').style.display='none';
+      });
       lyr.on("click",()=>openZipDP(zip,feature));
     }
   });
@@ -380,23 +545,28 @@ function filterZips(){
 }
 
 /* ── ICONS ── */
-function mkIcon(k){
-  const c=ICFG[k];
-  return L.divIcon({className:"",
-    html:`<div class="mico" style="width:30px;height:30px;background:${c.bg};border-color:${c.c};">${c.e}</div>`,
-    iconSize:[30,30],iconAnchor:[15,15],popupAnchor:[0,-17]});
-}
 function stnIcon(){
-  return L.divIcon({className:"",
-    html:`<div style="position:relative;width:40px;height:40px;"><div class="sp"></div><div class="mico" style="width:40px;height:40px;background:#1a1000;border-color:#f5a623;border-width:2.5px;font-size:18px;position:relative;z-index:1;">⭐</div></div>`,
-    iconSize:[40,40],iconAnchor:[20,20],popupAnchor:[0,-22]});
+  const star=`<svg viewBox="0 0 16 16" width="18" height="18" fill="#221F20"><polygon points="8,1 9.9,6.2 15.5,6.5 11.2,9.9 12.6,15.4 8,12.3 3.4,15.4 4.8,9.9 0.5,6.5 6.1,6.2"/></svg>`;
+  return L.divIcon({className:'',
+    html:`<div style="position:relative;width:44px;height:44px;display:flex;align-items:center;justify-content:center;">
+      <div class="sp"></div>
+      <div style="width:44px;height:44px;background:#FFCC01;border:3px solid #221F20;display:flex;align-items:center;justify-content:center;position:relative;z-index:1;">${star}</div>
+    </div>`,
+    iconSize:[44,44],iconAnchor:[22,22],popupAnchor:[0,-26]});
 }
 
 /* ── POINT LAYERS ── */
+function visitBadge(id){
+  const n=noteStore[id]; if(!n||!n.lastVisit)return'';
+  const days=Math.floor((Date.now()-new Date(n.lastVisit))/(1000*60*60*24));
+  const col=days<=30?'#2DAA27':days<=90?'#FFCC01':'#CF0000';
+  return`<div style="position:absolute;top:-5px;right:-5px;width:12px;height:12px;background:${col};border:1.5px solid #221F20;z-index:10;"></div>`;
+}
 function buildPts(key,cfg,items){
   if(LYR[key]) MAP.removeLayer(LYR[key]);
   LYR[key]=L.layerGroup(items.map(item=>{
-    const m=L.marker([item.lat,item.lng],{icon:mkIcon(cfg)});
+    const badge=key==='sch'?visitBadge(item.id):'';
+    const m=L.marker([item.lat,item.lng],{icon:mkIcon(key,badge)});
     m.on("click",()=>openLocDP(cfg,item));
     return m;
   }));
@@ -406,26 +576,86 @@ function buildPts(key,cfg,items){
 function buildStation(){
   if(LYR.stn) MAP.removeLayer(LYR.stn);
   const m=L.marker([STATION.lat,STATION.lng],{icon:stnIcon(),zIndexOffset:1000});
-  m.bindPopup(`<div style="min-width:175px;"><div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:var(--accent);letter-spacing:1px;">RSID ${STATION.rsid}</div><div style="font-size:12px;font-weight:600;margin-bottom:4px;">${STATION.name}</div><div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--txt2);">${STATION.address}</div></div>`);
+  m.bindPopup(`<div style="min-width:175px;"><div style="font-family:'GI','Arial Black',sans-serif;font-size:16px;font-weight:700;color:var(--accent);letter-spacing:1px;">RSID ${STATION.rsid}</div><div style="font-size:12px;font-weight:600;margin-bottom:4px;">${STATION.name}</div><div style="font-family:'GI','Arial',sans-serif;font-size:11px;color:var(--txt2);">${STATION.address}</div></div>`);
   LYR.stn=L.layerGroup([m]);
   if(document.getElementById("l-stn")?.checked) LYR.stn.addTo(MAP);
 }
+
+/* ── DROP-A-PIN TOOL ── */
+const PinCtrl=L.Control.extend({options:{position:'topleft'},
+  onAdd(){
+    const c=L.DomUtil.create('div','leaflet-bar');
+    const btn=L.DomUtil.create('button','',c);
+    btn.id='pin-btn';
+    btn.title='Drop a pin';
+    btn.style.cssText='width:30px;height:30px;background:var(--panel);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;';
+    btn.innerHTML=`<svg viewBox="0 0 16 16" width="16" height="16" stroke="var(--txt2)" stroke-width="1.5" fill="none"><circle cx="8" cy="8" r="3"/><line x1="8" y1="1" x2="8" y2="5"/><line x1="8" y1="11" x2="8" y2="15"/><line x1="1" y1="8" x2="5" y2="8"/><line x1="11" y1="8" x2="15" y2="8"/></svg>`;
+    L.DomEvent.on(btn,'click',L.DomEvent.stop);
+    L.DomEvent.on(btn,'click',togglePinMode);
+    return c;
+  }
+});
+new PinCtrl().addTo(MAP);
+
+function togglePinMode(){
+  pinMode=!pinMode;
+  const btn=document.getElementById('pin-btn');
+  MAP.getContainer().style.cursor=pinMode?'crosshair':'';
+  btn.style.background=pinMode?'var(--accent)':'var(--panel)';
+  btn.querySelector('svg').style.stroke=pinMode?'#221F20':'var(--txt2)';
+}
+
+MAP.on('click',function(e){
+  if(!pinMode)return;
+  const id='custom-'+Date.now();
+  const marker=L.marker([e.latlng.lat,e.latlng.lng],{icon:mkIcon('custom'),draggable:true});
+  marker.on('contextmenu',()=>{
+    if(confirm('Remove this pin?')){
+      MAP.removeLayer(marker);
+      customPins=customPins.filter(p=>p.id!==id);
+      delete noteStore[id];
+      updateStats();
+    }
+  });
+  marker.addTo(MAP);
+  customPins.push({id,marker,lat:e.latlng.lat,lng:e.latlng.lng});
+  activeId=id;
+  document.getElementById('dpi').textContent='◈';
+  document.getElementById('dpi').style.cssText='width:34px;height:34px;display:flex;align-items:center;justify-content:center;background:var(--card);font-size:18px;color:var(--accent);flex-shrink:0;';
+  document.getElementById('dpn').textContent='Custom Pin';
+  document.getElementById('dpc').textContent='CUSTOM MARKER';
+  document.getElementById('dpf').style.display='flex';
+  document.getElementById('dpb').innerHTML=`
+    <div style="padding:12px 14px;">
+      <div class="df"><label>Pin name</label><input id="f-pinName" value="${noteStore[id]?.pinName||''}" placeholder="Name this pin" /></div>
+      <div class="df"><label>Notes</label><textarea id="f-aar">${noteStore[id]?.aar||''}</textarea></div>
+      <div class="df" style="font-size:9px;color:var(--txt3);">${e.latlng.lat.toFixed(5)}, ${e.latlng.lng.toFixed(5)}</div>
+    </div>`;
+  openDP();
+  togglePinMode();
+});
 
 /* ── LEGEND ── */
 const LegCtrl=L.Control.extend({options:{position:"bottomright"},onAdd(){
   const d=L.DomUtil.create("div","leaflet-control legc");
   d.innerHTML=`<div class="legt">Legend</div>
-    <div class="legr"><div class="legd" style="background:#546a90;"></div>ZIP/ZCTA</div>
-    <div class="legr">🏫 <span>High School</span></div>
-    <div class="legr">🎓 <span>University</span></div>
-    <div class="legr">🚔 <span>Police Dept</span></div>
-    <div class="legr">⚖️  <span>Courthouse</span></div>
-    <div class="legr">🌮 <span>Taco Bell</span></div>
-    <div class="legr">⭐ <span>Recruiting Stn</span></div>
+    <div class="legr"><div class="legd" style="background:var(--txt3);"></div>ZIP/ZCTA</div>
+    <div class="legr"><div class="legd" style="background:#221F20;border:1.5px solid #FFCC01;border-radius:0;"></div>High School</div>
+    <div class="legr"><div class="legd" style="background:#2F372F;border:1.5px solid #FFCC01;border-radius:0;"></div>University</div>
+    <div class="legr"><div class="legd" style="background:#1a2a4a;border:1.5px solid #FFFFFF;border-radius:0;"></div>Police Dept</div>
+    <div class="legr"><div class="legd" style="background:#2F372F;border:1.5px solid #FFFFFF;border-radius:0;"></div>Courthouse</div>
+    <div class="legr"><div class="legd" style="background:#CF0000;border:1.5px solid #FFFFFF;border-radius:0;"></div>Taco Bell</div>
+    <div class="legr"><div class="legd" style="background:#FFCC01;border:1.5px solid #221F20;border-radius:0;"></div>Recruiting Stn</div>
     <hr style="border-color:var(--border);margin:5px 0;"/>
-    <div class="legr"><div class="legd" style="background:#ef4444;"></div>HOT ZIP</div>
-    <div class="legr"><div class="legd" style="background:#f5a623;"></div>WARM ZIP</div>
-    <div class="legr"><div class="legd" style="background:#3b82f6;"></div>COLD ZIP</div>`;
+    <div class="legr"><div class="legd" style="background:#FFCC01;"></div>HOT ZIP</div>
+    <div class="legr"><div class="legd" style="background:#F16521;"></div>WARM ZIP</div>
+    <div class="legr"><div class="legd" style="background:#727365;"></div>COLD ZIP</div>
+<hr style="border:none;border-top:1px solid var(--border);margin:6px 0;"/>
+<div class="legt">17–24 POP</div>
+<div style="height:10px;background:linear-gradient(to right,#2F372F,#FFCC01);margin-bottom:4px;border:1px solid var(--border2);"></div>
+<div style="display:flex;justify-content:space-between;font-size:9px;color:var(--txt3);font-family:'GI',sans-serif;text-transform:uppercase;letter-spacing:.5px;">
+  <span>LOW</span><span>HIGH</span>
+</div>`;
   return d;
 }});
 new LegCtrl().addTo(MAP);
@@ -433,9 +663,9 @@ new LegCtrl().addTo(MAP);
 /* ── DETAIL PANEL — LOCATION ── */
 function openLocDP(type,item){
   activeId=item.id;
-  const cfg=ICFG[type], n=noteStore[item.id]||{};
-  document.getElementById("dpi").innerHTML=cfg.e;
-  document.getElementById("dpi").style.background=cfg.bg;
+  const pcfg=PIN_CFG[type]||PIN_CFG.custom, n=noteStore[item.id]||{};
+  document.getElementById("dpi").innerHTML=SVGS[pcfg.svg]||'';
+  document.getElementById("dpi").style.background=pcfg.bg;
   document.getElementById("dpn").textContent=item.name;
   document.getElementById("dpc").textContent=type.toUpperCase()+(item.zip?` · ${item.zip}`:"");
 
@@ -449,14 +679,46 @@ function openLocDP(type,item){
   }
   document.getElementById("dpf").style.display="flex";
 
-  if(type==="sch"){h+=`
-    <div class="df"><label>Enrollment</label><div class="v">${item.enrollment?.toLocaleString()||"—"}</div></div>
-    <div class="df"><label>Grade Range</label><div class="v">${item.gradeRange||"—"}</div></div>
-    <div class="df"><label>Principal</label><input id="f-principal" value="${n.principal||""}" placeholder="Name" /></div>
-    <div class="df"><label>Counselor</label><input id="f-counselor" value="${n.counselor||""}" placeholder="Name" /></div>
-    <div class="df"><label>Counselor Phone</label><input id="f-counselorPhone" type="tel" value="${n.counselorPhone||""}" placeholder="(402) 555-0000" /></div>
-    <div class="df"><label>Counselor Email</label><input id="f-counselorEmail" type="email" value="${n.counselorEmail||""}" placeholder="email@school.edu" /></div>
-    <div class="df"><label>Recruiting POC</label><input id="f-recruitingContact" value="${n.recruitingContact||""}" placeholder="Contact name" /></div>`;}
+  if(type==='sch'){
+  const n=noteStore[item.id]||{};
+  const phone=n.counselorPhone||item.counselorPhone||'';
+  const addr=encodeURIComponent((item.address||'')+', '+(item.city||'Lincoln')+', NE '+(item.zip||''));
+  const addrTxt=(item.address||'')+', '+(item.city||'Lincoln')+', NE '+(item.zip||'');
+  document.getElementById('dpb').innerHTML=`
+    <div style="display:flex;gap:6px;padding:10px 14px;border-bottom:1px solid var(--border);">
+      <a href="https://www.google.com/maps/dir/?api=1&destination=${addr}" target="_blank" rel="noopener"
+        style="flex:1;background:var(--accent);color:#221F20;padding:7px 4px;font-weight:700;font-family:'GI',sans-serif;font-size:10px;letter-spacing:1px;text-transform:uppercase;text-align:center;text-decoration:none;display:block;">→ DIRECTIONS</a>
+      <button onclick="navigator.clipboard.writeText('${addrTxt.replace(/'/g,"\\'")}').then(()=>showToast('Address copied ✓'))"
+        style="flex:1;background:var(--card);border:1px solid var(--border);color:var(--txt2);padding:7px 4px;font-size:10px;font-family:'GI',sans-serif;letter-spacing:1px;text-transform:uppercase;cursor:pointer;">COPY</button>
+      <a href="tel:${phone}" style="flex:1;background:var(--card);border:1px solid var(--border);color:${phone?'var(--txt2)':'var(--txt3)'};padding:7px 4px;font-size:10px;font-family:'GI',sans-serif;letter-spacing:1px;text-transform:uppercase;text-align:center;text-decoration:none;display:block;${phone?'':'opacity:.4;pointer-events:none;'}">CALL</a>
+    </div>
+    <div style="flex:1;overflow-y:auto;padding:12px 14px;">
+      <div class="df"><label>Enrollment</label><div class="v">${(item.enrollment||0).toLocaleString()}</div></div>
+      <div class="df"><label>Grades</label><div class="v">${item.gradeRange||'—'}</div></div>
+      <hr class="ddiv"/><div class="dsec">PERSONNEL</div>
+      <div class="df"><label>Principal</label><input id="f-principal" value="${n.principal||item.principal||''}" placeholder="Name" /></div>
+      <div class="df"><label>Counselor</label><input id="f-counselor" value="${n.counselor||item.counselor||''}" placeholder="Name" /></div>
+      <div class="df"><label>Counselor phone</label><input id="f-counselorPhone" type="tel" value="${n.counselorPhone||item.counselorPhone||''}" placeholder="(402) 555-0000" /></div>
+      <div class="df"><label>Counselor email</label><input id="f-counselorEmail" type="email" value="${n.counselorEmail||item.counselorEmail||''}" placeholder="name@lps.org" /></div>
+      <div class="df"><label>Recruiting POC</label><input id="f-recruitingContact" value="${n.recruitingContact||item.recruitingContact||''}" placeholder="Contact name" /></div>
+      <hr class="ddiv"/><div class="dsec">VISIT LOG</div>
+      <div class="df"><label>Last visit</label><input id="f-lastVisit" type="date" value="${n.lastVisit||''}" /></div>
+      <div class="df"><label>Next planned visit</label><input id="f-nextVisit" type="date" value="${n.nextVisit||''}" /></div>
+      <div class="df"><label>Priority</label><select id="f-priority">
+        <option value="">— Unset —</option>
+        <option value="hot" ${n.priority==='hot'?'selected':''}>HOT — This week</option>
+        <option value="warm" ${n.priority==='warm'?'selected':''}>WARM — This month</option>
+        <option value="cold" ${n.priority==='cold'?'selected':''}>COLD — Low</option>
+      </select></div>
+      <div class="df"><label>Contacts made</label><input id="f-contactCount" type="number" min="0" value="${n.contactCount||0}" /></div>
+      <div class="df"><label>AAR / Notes</label><textarea id="f-aar">${n.aar||''}</textarea></div>
+      <div class="df"><label>Follow-up action</label><input id="f-followUp" value="${n.followUp||''}" placeholder="Next action" /></div>
+      <div class="df" style="font-size:9px;color:var(--txt3);">ID: ${item.id}</div>
+    </div>`;
+  document.getElementById('dpf').style.display='flex';
+  openDP();
+  return;
+}
   if(type==="uni"){h+=`
     <div class="df"><label>Type</label><div class="v">${item.type||"—"}</div></div>
     <div class="df"><label>Enrollment</label><div class="v">${item.enrollment?.toLocaleString()||"—"}</div></div>
@@ -476,14 +738,14 @@ function openLocDP(type,item){
     <div class="df"><label>Next Planned Visit</label><input id="f-nextVisit" type="date" value="${n.nextVisit||""}" /></div>
     <div class="df"><label>Priority</label><select id="f-priority">
       <option value="">— Unset —</option>
-      <option value="hot" ${n.priority==="hot"?"selected":""}>🔴 HOT – This Week</option>
-      <option value="warm" ${n.priority==="warm"?"selected":""}>🟡 WARM – This Month</option>
-      <option value="cold" ${n.priority==="cold"?"selected":""}>🔵 COLD – Low</option>
+      <option value="hot" ${n.priority==="hot"?"selected":""}>HOT – This Week</option>
+      <option value="warm" ${n.priority==="warm"?"selected":""}>WARM – This Month</option>
+      <option value="cold" ${n.priority==="cold"?"selected":""}>COLD – Low</option>
     </select></div>
     <div class="df"><label>Contacts Made (#)</label><input id="f-contactCount" type="number" min="0" value="${n.contactCount||0}" /></div>
     <div class="df"><label>AAR / Notes</label><textarea id="f-aar">${n.aar||""}</textarea></div>
     <div class="df"><label>Follow-Up Action</label><input id="f-followUp" value="${n.followUp||""}" placeholder="Next action" /></div>
-    <div class="df" style="font-size:9px;color:var(--txt3);font-family:'IBM Plex Mono',monospace;">ID: ${item.id}</div>`;
+    <div class="df" style="font-size:9px;color:var(--txt3);font-family:'GI','Arial',sans-serif;">ID: ${item.id}</div>`;
 
   document.getElementById("dpb").innerHTML=h;
   openDP();
@@ -491,27 +753,42 @@ function openLocDP(type,item){
 
 /* ── DETAIL PANEL — ZIP ── */
 function openZipDP(zip,feature){
-  activeId="zip-"+zip;
-  const n=noteStore[activeId]||{}, pri=n.priority||ZIP_PRI[zip]||"none";
-  document.getElementById("dpi").innerHTML="📍";
-  document.getElementById("dpi").style.background="#0d1424";
-  document.getElementById("dpn").textContent="ZIP "+zip;
-  document.getElementById("dpc").textContent="ZCTA BOUNDARY";
-  document.getElementById("dpf").style.display="flex";
-  document.getElementById("dpb").innerHTML=`
-    <div class="df"><label>ZCTA</label><div class="v" style="font-family:'IBM Plex Mono',monospace;">${zip}</div></div>
-    <hr class="ddiv"/><div class="dsec">ZIP Priority & Notes</div>
+  activeId='zip-'+zip;
+  const n=noteStore[activeId]||{}, pri=n.priority||ZIP_PRI[zip]||'none';
+  const demo=ZIP_DEMO[zip];
+  const [clat,clng]=centroid(feature);
+  const dist=haversine(STATION.lat,STATION.lng,clat,clng);
+
+  const ranked=Object.entries(ZIP_DEMO).filter(([z])=>AO_ZIPS.includes(z))
+    .sort((a,b)=>b[1].pop1724-a[1].pop1724);
+  const rank=ranked.findIndex(([z])=>z===zip)+1;
+
+  document.getElementById('dpi').textContent='◈';
+  document.getElementById('dpi').style.cssText='width:34px;height:34px;display:flex;align-items:center;justify-content:center;background:var(--panel);font-size:18px;color:var(--accent);flex-shrink:0;';
+  document.getElementById('dpn').textContent='ZIP '+zip;
+  document.getElementById('dpc').textContent='ZCTA BOUNDARY';
+  document.getElementById('dpf').style.display='flex';
+  document.getElementById('dpb').innerHTML=`
+    <div class="df"><label>ZCTA</label><div class="v" style="font-weight:700;letter-spacing:2px;">${zip}</div></div>
+    <div class="df"><label>Distance from station</label><div class="v">~${dist} mi straight-line</div></div>
+    ${demo?`
+    <hr class="ddiv"/>
+    <div class="dsec">17–24 POPULATION</div>
+    <div class="df"><label>17–24 count</label><div class="v" style="font-size:20px;font-weight:700;color:var(--accent);">${demo.pop1724.toLocaleString()}</div></div>
+    <div class="df"><label>% of ZIP population</label><div class="v">${((demo.pop1724/demo.popTotal)*100).toFixed(1)}%</div></div>
+    <div class="df"><label>AO rank</label><div class="v">#${rank} of ${ranked.length} ZIPs</div></div>
+    `:''}
+    <hr class="ddiv"/><div class="dsec">ZIP PRIORITY & NOTES</div>
     <div class="df"><label>Priority</label><select id="f-priority">
-      <option value="none" ${pri==="none"?"selected":""}>— Unset —</option>
-      <option value="hot" ${pri==="hot"?"selected":""}>🔴 HOT</option>
-      <option value="warm" ${pri==="warm"?"selected":""}>🟡 WARM</option>
-      <option value="cold" ${pri==="cold"?"selected":""}>🔵 COLD</option>
+      <option value="none" ${pri==='none'?'selected':''}>— Unset —</option>
+      <option value="hot" ${pri==='hot'?'selected':''}>HOT</option>
+      <option value="warm" ${pri==='warm'?'selected':''}>WARM</option>
+      <option value="cold" ${pri==='cold'?'selected':''}>COLD</option>
     </select></div>
-    <div class="df"><label>Total Contacts in ZIP</label><input id="f-contactCount" type="number" min="0" value="${n.contactCount||0}" /></div>
-    <div class="df"><label>Last Activity</label><input id="f-lastVisit" type="date" value="${n.lastVisit||""}" /></div>
-    <div class="df"><label>ZIP Notes</label><textarea id="f-aar" placeholder="Community notes, hot areas, events…">${n.aar||""}</textarea></div>
-    <div class="df"><label>Follow-Up</label><input id="f-followUp" value="${n.followUp||""}" placeholder="Next action" /></div>
-    <div class="df" style="font-size:9px;color:var(--txt3);font-family:'IBM Plex Mono',monospace;">ID: ${activeId}</div>`;
+    <div class="df"><label>Total contacts in ZIP</label><input id="f-contactCount" type="number" min="0" value="${n.contactCount||0}" /></div>
+    <div class="df"><label>Last activity</label><input id="f-lastVisit" type="date" value="${n.lastVisit||''}" /></div>
+    <div class="df"><label>ZIP notes</label><textarea id="f-aar" placeholder="Community notes, hot areas, events…">${n.aar||''}</textarea></div>
+    <div class="df"><label>Follow-up</label><input id="f-followUp" value="${n.followUp||''}" placeholder="Next action" /></div>`;
   openDP();
 }
 
@@ -523,10 +800,12 @@ function saveDP(){
   if(!activeId) return;
   const g=id=>{const e=document.getElementById("f-"+id);return e?e.value:undefined;};
   const data={};
-  ["principal","counselor","counselorPhone","counselorEmail","recruitingContact",
+  ["pinName","principal","counselor","counselorPhone","counselorEmail","recruitingContact",
    "rotcContact","chief","judge","lastVisit","nextVisit","priority","contactCount","aar","followUp"]
   .forEach(k=>{const v=g(k);if(v!==undefined)data[k]=v;});
   noteStore[activeId]=data;
+  if(activeId?.startsWith('custom-')){const p=customPins.find(x=>x.id===activeId);if(p){data.lat=p.lat;data.lng=p.lng;noteStore[activeId]=data;}}
+  if(!activeId.startsWith('zip-'))buildPts('sch','sch',SCHOOLS);
   if(activeId.startsWith("zip-")&&zipGJ) buildZip(zipGJ);
   updateStats();
   document.getElementById("sid").classList.add("show");
@@ -561,7 +840,7 @@ document.getElementById("sb-in").addEventListener("input",function(){
   const m=[...zm,...lm].slice(0,8);
   if(!m.length){drop.style.display="none";return;}
   drop.style.display="block";
-  drop.innerHTML=m.map(x=>`<div class="sd-i" onclick="doSearch('${x.id}','${x.type}',${x.lat||0},${x.lng||0})">${ICFG[x.type]?.e||"📍"} ${x.name}<div class="sd-t">${x.label} · ${x.address||""}</div></div>`).join("");
+  drop.innerHTML=m.map(x=>`<div class="sd-i" onclick="doSearch('${x.id}','${x.type}',${x.lat||0},${x.lng||0})">● ${x.name}<div class="sd-t">${x.label} · ${x.address||""}</div></div>`).join("");
 });
 function doSearch(id,type,lat,lng){
   document.getElementById("sd").style.display="none";
@@ -585,17 +864,13 @@ function exportData(){
 function importData(ev){
   const f=ev.target.files[0];if(!f)return;
   const r=new FileReader();
-  r.onload=e=>{try{const raw=JSON.parse(e.target.result);noteStore={...noteStore,...(raw.notes||raw)};if(zipGJ)buildZip(zipGJ);updateStats();showToast(`Imported ${Object.keys(raw.notes||raw).length} records ✓`);}catch{showToast("⚠ Import failed");}};
+  r.onload=e=>{try{const raw=JSON.parse(e.target.result);noteStore={...noteStore,...(raw.notes||raw)};Object.keys(noteStore).filter(k=>k.startsWith('custom-')).forEach(id=>{
+  const n=noteStore[id]; if(!n?.lat)return;
+  const marker=L.marker([n.lat,n.lng],{icon:mkIcon('custom'),draggable:true}).addTo(MAP);
+  marker.on('contextmenu',()=>{if(confirm('Remove this pin?')){MAP.removeLayer(marker);customPins=customPins.filter(p=>p.id!==id);delete noteStore[id];}});
+  customPins.push({id,marker,lat:n.lat,lng:n.lng});
+});if(zipGJ)buildZip(zipGJ);updateStats();showToast(`Imported ${Object.keys(raw.notes||raw).length} records ✓`);}catch{showToast("⚠ Import failed");}};
   r.readAsText(f);ev.target.value="";
-}
-
-/* ── THEME ── */
-function toggleTheme(){
-  isDark=!isDark;
-  document.documentElement.setAttribute("data-theme",isDark?"dark":"light");
-  document.getElementById("tico").textContent=isDark?"☀":"🌙";
-  if(isDark){MAP.removeLayer(TLIGHT);TDARK.addTo(MAP);}
-  else{MAP.removeLayer(TDARK);TLIGHT.addTo(MAP);}
 }
 
 /* ── SIDEBAR ── */
