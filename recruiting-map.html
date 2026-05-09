@@ -197,6 +197,7 @@
   </aside>
 </div>
 
+<div id="zip-tip" style="position:fixed;background:var(--panel);border:1px solid var(--border2);padding:6px 10px;font-family:'GI',sans-serif;font-size:11px;color:var(--txt);pointer-events:none;display:none;z-index:8000;text-transform:uppercase;letter-spacing:.5px;"></div>
 <div id="toast"></div>
 
 <script>
@@ -463,11 +464,26 @@ function buildZip(gj){
     style:f=>zStyle(f.properties.ZCTA5CE),
     onEachFeature(feature,lyr){
       const zip=feature.properties.ZCTA5CE;
-      lyr.on("mouseover",function(e){
-        this.setStyle({weight:2.8,fillOpacity:.30});
+      lyr.on('mouseover',function(e){
+        this.setStyle({weight:2.5,fillOpacity:.38});
         this.bringToFront();
+        const [clat,clng]=centroid(feature);
+        const dist=haversine(STATION.lat,STATION.lng,clat,clng);
+        const tip=document.getElementById('zip-tip');
+        tip.textContent=zip+' · ~'+dist+' mi from station';
+        tip.style.display='block';
+        tip.style.left=(e.originalEvent.clientX+14)+'px';
+        tip.style.top=(e.originalEvent.clientY-10)+'px';
       });
-      lyr.on("mouseout",function(){this.setStyle(zStyle(zip));});
+      lyr.on('mousemove',function(e){
+        const tip=document.getElementById('zip-tip');
+        tip.style.left=(e.originalEvent.clientX+14)+'px';
+        tip.style.top=(e.originalEvent.clientY-10)+'px';
+      });
+      lyr.on('mouseout',function(){
+        this.setStyle(zStyle(zip));
+        document.getElementById('zip-tip').style.display='none';
+      });
       lyr.on("click",()=>openZipDP(zip,feature));
     }
   });
