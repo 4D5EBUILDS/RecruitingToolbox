@@ -248,6 +248,34 @@ const ZIP_DEMO={
   '68462':{pop1724:592, popTotal:5200},
 };
 
+function haversine(lat1,lng1,lat2,lng2){
+  const R=3958.8,dLat=(lat2-lat1)*Math.PI/180,dLng=(lng2-lng1)*Math.PI/180;
+  const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
+  return(R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a))).toFixed(1);
+}
+
+let _demoMin=null,_demoMax=null;
+function demoMinMax(){
+  if(_demoMin!==null)return;
+  const vals=Object.values(ZIP_DEMO).map(d=>d.pop1724);
+  _demoMin=Math.min(...vals);_demoMax=Math.max(...vals);
+}
+function demoColor(zip){
+  demoMinMax();
+  const d=ZIP_DEMO[zip]; if(!d)return'#2F372F';
+  const t=Math.max(0,Math.min(1,(d.pop1724-_demoMin)/(_demoMax-_demoMin)));
+  const r=Math.round(0x2F+t*(0xFF-0x2F));
+  const g=Math.round(0x37+t*(0xCC-0x37));
+  const b=Math.round(0x2F+t*(0x01-0x2F));
+  return`rgb(${r},${g},${b})`;
+}
+
+let showDemo=false;
+function toggleDemo(){
+  showDemo=document.getElementById('l-demo').checked;
+  if(zipGJ)buildZip(zipGJ);
+}
+
 const ZIP_PRI={'68503':'hot','68504':'hot','68507':'hot','68521':'hot',
                '68502':'warm','68505':'warm','68506':'warm','68510':'warm',
                '68516':'warm','68517':'warm','68462':'warm'};
@@ -404,11 +432,15 @@ async function fetchZCTAs(){
 /* ── ZIP PRIORITY & STYLE ── */
 function zPri(zip){return(noteStore["zip-"+zip]||{}).priority||ZIP_PRI[zip]||"none";}
 function zStyle(zip){
+  if(showDemo){
+    const col=demoColor(zip);
+    return{color:col,fillColor:col,fillOpacity:.45,weight:1.5};
+  }
   const m={
-    hot: {color:"#ef4444",fillColor:"#ef4444",fillOpacity:.20,weight:2.0},
-    warm:{color:"#f5a623",fillColor:"#f5a623",fillOpacity:.14,weight:1.6},
-    cold:{color:"#3b82f6",fillColor:"#3b82f6",fillOpacity:.11,weight:1.3},
-    none:{color:"#546a90",fillColor:"#546a90",fillOpacity:.07,weight:1.0,dashArray:"5,4"},
+    hot: {color:'#FFCC01',fillColor:'#FFCC01',fillOpacity:.22,weight:2.0},
+    warm:{color:'#F16521',fillColor:'#F16521',fillOpacity:.16,weight:1.6},
+    cold:{color:'#727365',fillColor:'#727365',fillOpacity:.11,weight:1.2},
+    none:{color:'#57514a',fillColor:'#57514a',fillOpacity:.07,weight:1.0,dashArray:'5,4'},
   };
   return m[zPri(zip)]||m.none;
 }
@@ -509,9 +541,15 @@ const LegCtrl=L.Control.extend({options:{position:"bottomright"},onAdd(){
     <div class="legr">🌮 <span>Taco Bell</span></div>
     <div class="legr">⭐ <span>Recruiting Stn</span></div>
     <hr style="border-color:var(--border);margin:5px 0;"/>
-    <div class="legr"><div class="legd" style="background:#ef4444;"></div>HOT ZIP</div>
-    <div class="legr"><div class="legd" style="background:#f5a623;"></div>WARM ZIP</div>
-    <div class="legr"><div class="legd" style="background:#3b82f6;"></div>COLD ZIP</div>`;
+    <div class="legr"><div class="legd" style="background:#FFCC01;"></div>HOT ZIP</div>
+    <div class="legr"><div class="legd" style="background:#F16521;"></div>WARM ZIP</div>
+    <div class="legr"><div class="legd" style="background:#727365;"></div>COLD ZIP</div>
+<hr style="border:none;border-top:1px solid var(--border);margin:6px 0;"/>
+<div class="legt">17–24 POP</div>
+<div style="height:10px;background:linear-gradient(to right,#2F372F,#FFCC01);margin-bottom:4px;border:1px solid var(--border2);"></div>
+<div style="display:flex;justify-content:space-between;font-size:9px;color:var(--txt3);font-family:'GI',sans-serif;text-transform:uppercase;letter-spacing:.5px;">
+  <span>LOW</span><span>HIGH</span>
+</div>`;
   return d;
 }});
 new LegCtrl().addTo(MAP);
