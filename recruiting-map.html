@@ -615,27 +615,42 @@ function openLocDP(type,item){
 
 /* ── DETAIL PANEL — ZIP ── */
 function openZipDP(zip,feature){
-  activeId="zip-"+zip;
-  const n=noteStore[activeId]||{}, pri=n.priority||ZIP_PRI[zip]||"none";
-  document.getElementById("dpi").innerHTML="📍";
-  document.getElementById("dpi").style.background="#0d1424";
-  document.getElementById("dpn").textContent="ZIP "+zip;
-  document.getElementById("dpc").textContent="ZCTA BOUNDARY";
-  document.getElementById("dpf").style.display="flex";
-  document.getElementById("dpb").innerHTML=`
-    <div class="df"><label>ZCTA</label><div class="v" style="font-family:'GI','Arial',sans-serif;">${zip}</div></div>
-    <hr class="ddiv"/><div class="dsec">ZIP Priority & Notes</div>
+  activeId='zip-'+zip;
+  const n=noteStore[activeId]||{}, pri=n.priority||ZIP_PRI[zip]||'none';
+  const demo=ZIP_DEMO[zip];
+  const [clat,clng]=centroid(feature);
+  const dist=haversine(STATION.lat,STATION.lng,clat,clng);
+
+  const ranked=Object.entries(ZIP_DEMO).filter(([z])=>AO_ZIPS.includes(z))
+    .sort((a,b)=>b[1].pop1724-a[1].pop1724);
+  const rank=ranked.findIndex(([z])=>z===zip)+1;
+
+  document.getElementById('dpi').textContent='◈';
+  document.getElementById('dpi').style.cssText='width:34px;height:34px;display:flex;align-items:center;justify-content:center;background:#1a1718;font-size:18px;color:var(--accent);flex-shrink:0;';
+  document.getElementById('dpn').textContent='ZIP '+zip;
+  document.getElementById('dpc').textContent='ZCTA BOUNDARY';
+  document.getElementById('dpf').style.display='flex';
+  document.getElementById('dpb').innerHTML=`
+    <div class="df"><label>ZCTA</label><div class="v" style="font-weight:700;letter-spacing:2px;">${zip}</div></div>
+    <div class="df"><label>Distance from station</label><div class="v">~${dist} mi straight-line</div></div>
+    ${demo?`
+    <hr class="ddiv"/>
+    <div class="dsec">17–24 POPULATION</div>
+    <div class="df"><label>17–24 count</label><div class="v" style="font-size:20px;font-weight:700;color:var(--accent);">${demo.pop1724.toLocaleString()}</div></div>
+    <div class="df"><label>% of ZIP population</label><div class="v">${((demo.pop1724/demo.popTotal)*100).toFixed(1)}%</div></div>
+    <div class="df"><label>AO rank</label><div class="v">#${rank} of ${ranked.length} ZIPs</div></div>
+    `:''}
+    <hr class="ddiv"/><div class="dsec">ZIP PRIORITY & NOTES</div>
     <div class="df"><label>Priority</label><select id="f-priority">
-      <option value="none" ${pri==="none"?"selected":""}>— Unset —</option>
-      <option value="hot" ${pri==="hot"?"selected":""}>🔴 HOT</option>
-      <option value="warm" ${pri==="warm"?"selected":""}>🟡 WARM</option>
-      <option value="cold" ${pri==="cold"?"selected":""}>🔵 COLD</option>
+      <option value="none" ${pri==='none'?'selected':''}>— Unset —</option>
+      <option value="hot" ${pri==='hot'?'selected':''}>HOT</option>
+      <option value="warm" ${pri==='warm'?'selected':''}>WARM</option>
+      <option value="cold" ${pri==='cold'?'selected':''}>COLD</option>
     </select></div>
-    <div class="df"><label>Total Contacts in ZIP</label><input id="f-contactCount" type="number" min="0" value="${n.contactCount||0}" /></div>
-    <div class="df"><label>Last Activity</label><input id="f-lastVisit" type="date" value="${n.lastVisit||""}" /></div>
-    <div class="df"><label>ZIP Notes</label><textarea id="f-aar" placeholder="Community notes, hot areas, events…">${n.aar||""}</textarea></div>
-    <div class="df"><label>Follow-Up</label><input id="f-followUp" value="${n.followUp||""}" placeholder="Next action" /></div>
-    <div class="df" style="font-size:9px;color:var(--txt3);font-family:'GI','Arial',sans-serif;">ID: ${activeId}</div>`;
+    <div class="df"><label>Total contacts in ZIP</label><input id="f-contactCount" type="number" min="0" value="${n.contactCount||0}" /></div>
+    <div class="df"><label>Last activity</label><input id="f-lastVisit" type="date" value="${n.lastVisit||''}" /></div>
+    <div class="df"><label>ZIP notes</label><textarea id="f-aar" placeholder="Community notes, hot areas, events…">${n.aar||''}</textarea></div>
+    <div class="df"><label>Follow-up</label><input id="f-followUp" value="${n.followUp||''}" placeholder="Next action" /></div>`;
   openDP();
 }
 
