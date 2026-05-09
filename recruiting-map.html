@@ -509,7 +509,12 @@ function stnIcon(){
 }
 
 /* ── POINT LAYERS ── */
-function visitBadge(id){ return ''; }
+function visitBadge(id){
+  const n=noteStore[id]; if(!n||!n.lastVisit)return'';
+  const days=Math.floor((Date.now()-new Date(n.lastVisit))/(1000*60*60*24));
+  const col=days<=30?'#2DAA27':days<=90?'#FFCC01':'#CF0000';
+  return`<div style="position:absolute;top:-5px;right:-5px;width:12px;height:12px;background:${col};border:1.5px solid #221F20;z-index:10;"></div>`;
+}
 function buildPts(key,cfg,items){
   if(LYR[key]) MAP.removeLayer(LYR[key]);
   LYR[key]=L.layerGroup(items.map(item=>{
@@ -573,14 +578,46 @@ function openLocDP(type,item){
   }
   document.getElementById("dpf").style.display="flex";
 
-  if(type==="sch"){h+=`
-    <div class="df"><label>Enrollment</label><div class="v">${item.enrollment?.toLocaleString()||"—"}</div></div>
-    <div class="df"><label>Grade Range</label><div class="v">${item.gradeRange||"—"}</div></div>
-    <div class="df"><label>Principal</label><input id="f-principal" value="${n.principal||""}" placeholder="Name" /></div>
-    <div class="df"><label>Counselor</label><input id="f-counselor" value="${n.counselor||""}" placeholder="Name" /></div>
-    <div class="df"><label>Counselor Phone</label><input id="f-counselorPhone" type="tel" value="${n.counselorPhone||""}" placeholder="(402) 555-0000" /></div>
-    <div class="df"><label>Counselor Email</label><input id="f-counselorEmail" type="email" value="${n.counselorEmail||""}" placeholder="email@school.edu" /></div>
-    <div class="df"><label>Recruiting POC</label><input id="f-recruitingContact" value="${n.recruitingContact||""}" placeholder="Contact name" /></div>`;}
+  if(type==='sch'){
+  const n=noteStore[item.id]||{};
+  const phone=n.counselorPhone||item.counselorPhone||'';
+  const addr=encodeURIComponent((item.address||'')+', '+(item.city||'Lincoln')+', NE '+(item.zip||''));
+  const addrTxt=(item.address||'')+', '+(item.city||'Lincoln')+', NE '+(item.zip||'');
+  document.getElementById('dpb').innerHTML=`
+    <div style="display:flex;gap:6px;padding:10px 14px;border-bottom:1px solid var(--border);">
+      <a href="https://www.google.com/maps/dir/?api=1&destination=${addr}" target="_blank" rel="noopener"
+        style="flex:1;background:var(--accent);color:#221F20;padding:7px 4px;font-weight:700;font-family:'GI',sans-serif;font-size:10px;letter-spacing:1px;text-transform:uppercase;text-align:center;text-decoration:none;display:block;">→ DIRECTIONS</a>
+      <button onclick="navigator.clipboard.writeText('${addrTxt.replace(/'/g,"\\'")}').then(()=>showToast('Address copied ✓'))"
+        style="flex:1;background:var(--card);border:1px solid var(--border);color:var(--txt2);padding:7px 4px;font-size:10px;font-family:'GI',sans-serif;letter-spacing:1px;text-transform:uppercase;cursor:pointer;">COPY</button>
+      <a href="tel:${phone}" style="flex:1;background:var(--card);border:1px solid var(--border);color:${phone?'var(--txt2)':'var(--txt3)'};padding:7px 4px;font-size:10px;font-family:'GI',sans-serif;letter-spacing:1px;text-transform:uppercase;text-align:center;text-decoration:none;display:block;${phone?'':'opacity:.4;pointer-events:none;'}">CALL</a>
+    </div>
+    <div style="flex:1;overflow-y:auto;padding:12px 14px;">
+      <div class="df"><label>Enrollment</label><div class="v">${(item.enrollment||0).toLocaleString()}</div></div>
+      <div class="df"><label>Grades</label><div class="v">${item.gradeRange||'—'}</div></div>
+      <hr class="ddiv"/><div class="dsec">PERSONNEL</div>
+      <div class="df"><label>Principal</label><input id="f-principal" value="${n.principal||item.principal||''}" placeholder="Name" /></div>
+      <div class="df"><label>Counselor</label><input id="f-counselor" value="${n.counselor||item.counselor||''}" placeholder="Name" /></div>
+      <div class="df"><label>Counselor phone</label><input id="f-counselorPhone" type="tel" value="${n.counselorPhone||item.counselorPhone||''}" placeholder="(402) 555-0000" /></div>
+      <div class="df"><label>Counselor email</label><input id="f-counselorEmail" type="email" value="${n.counselorEmail||item.counselorEmail||''}" placeholder="name@lps.org" /></div>
+      <div class="df"><label>Recruiting POC</label><input id="f-recruitingContact" value="${n.recruitingContact||item.recruitingContact||''}" placeholder="Contact name" /></div>
+      <hr class="ddiv"/><div class="dsec">VISIT LOG</div>
+      <div class="df"><label>Last visit</label><input id="f-lastVisit" type="date" value="${n.lastVisit||''}" /></div>
+      <div class="df"><label>Next planned visit</label><input id="f-nextVisit" type="date" value="${n.nextVisit||''}" /></div>
+      <div class="df"><label>Priority</label><select id="f-priority">
+        <option value="">— Unset —</option>
+        <option value="hot" ${n.priority==='hot'?'selected':''}>HOT — This week</option>
+        <option value="warm" ${n.priority==='warm'?'selected':''}>WARM — This month</option>
+        <option value="cold" ${n.priority==='cold'?'selected':''}>COLD — Low</option>
+      </select></div>
+      <div class="df"><label>Contacts made</label><input id="f-contactCount" type="number" min="0" value="${n.contactCount||0}" /></div>
+      <div class="df"><label>AAR / Notes</label><textarea id="f-aar">${n.aar||''}</textarea></div>
+      <div class="df"><label>Follow-up action</label><input id="f-followUp" value="${n.followUp||''}" placeholder="Next action" /></div>
+      <div class="df" style="font-size:9px;color:var(--txt3);">ID: ${item.id}</div>
+    </div>`;
+  document.getElementById('dpf').style.display='flex';
+  openDP();
+  return;
+}
   if(type==="uni"){h+=`
     <div class="df"><label>Type</label><div class="v">${item.type||"—"}</div></div>
     <div class="df"><label>Enrollment</label><div class="v">${item.enrollment?.toLocaleString()||"—"}</div></div>
@@ -666,6 +703,7 @@ function saveDP(){
    "rotcContact","chief","judge","lastVisit","nextVisit","priority","contactCount","aar","followUp"]
   .forEach(k=>{const v=g(k);if(v!==undefined)data[k]=v;});
   noteStore[activeId]=data;
+  if(!activeId.startsWith('zip-'))buildPts('sch','sch',SCHOOLS);
   if(activeId.startsWith("zip-")&&zipGJ) buildZip(zipGJ);
   updateStats();
   document.getElementById("sid").classList.add("show");
