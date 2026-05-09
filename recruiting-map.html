@@ -105,9 +105,7 @@
     .sbtn:hover{opacity:.85;}
     .savd{font-size:10px;color:var(--green);font-family:'GI','Arial',sans-serif;opacity:0;transition:opacity .3s;}
     .savd.show{opacity:1;}
-    /* MARKERS */
-    .mico{display:flex;align-items:center;justify-content:center;border-radius:50%;border:2px solid rgba(255,255,255,.35);font-size:15px;cursor:pointer;transition:transform .12s;}
-    .mico:hover{transform:scale(1.12);}
+    /* MARKERS — old .mico styles removed; pins use inline styles */
     /* STATION PULSE */
     .sp{position:absolute;top:50%;left:50%;width:44px;height:44px;border-radius:50%;border:2px solid var(--accent);transform:translate(-50%,-50%);animation:pulse 2.2s ease-out infinite;}
     @keyframes pulse{0%{transform:translate(-50%,-50%) scale(1);opacity:.7;}100%{transform:translate(-50%,-50%) scale(2.2);opacity:0;}}
@@ -315,13 +313,37 @@ const TACOBELL=[
   {id:"t7",name:"Taco Bell",address:"7900 Pioneers Blvd, Lincoln, NE 68506",zip:"68506",lat:40.7788,lng:-96.5960},
 ];
 
-const ICFG={
-  sch:{e:"🏫",bg:"#2d1a00",c:"#f5a623"},
-  uni:{e:"🎓",bg:"#1e0a30",c:"#a855f7"},
-  pd: {e:"🚔",bg:"#0a1a30",c:"#3b82f6"},
-  ct: {e:"⚖️", bg:"#0a2010",c:"#22c55e"},
-  tb: {e:"🌮",bg:"#300808",c:"#ef4444"},
+const SVGS={
+  sch:`<svg viewBox="0 0 16 16" width="16" height="16" fill="#FFCC01"><polygon points="8,2 15,6 8,10 1,6"/><path d="M4,7.5 L4,12 Q8,14.5 12,12 L12,7.5" fill="#FFCC01"/><rect x="12.5" y="6" width="1" height="3.5" fill="#FFCC01"/><circle cx="13" cy="10" r="1" fill="#FFCC01"/></svg>`,
+  uni:`<svg viewBox="0 0 16 16" width="16" height="16" fill="#FFCC01"><rect x="1" y="11" width="14" height="2"/><rect x="1" y="3" width="14" height="2"/><rect x="2.5" y="5" width="2" height="6"/><rect x="7" y="5" width="2" height="6"/><rect x="11.5" y="5" width="2" height="6"/></svg>`,
+  pd:`<svg viewBox="0 0 16 16" width="16" height="16" fill="white"><path d="M8,1 L15,4 L15,9 Q15,14 8,15 Q1,14 1,9 L1,4 Z"/></svg>`,
+  ct:`<svg viewBox="0 0 16 16" width="16" height="16" stroke="white" stroke-width="1.2" fill="none"><line x1="8" y1="2" x2="8" y2="14"/><line x1="2" y1="5" x2="14" y2="5"/><path d="M2,5 Q2,9 5,9 Q8,9 8,5"/><path d="M8,5 Q8,9 11,9 Q14,9 14,5"/><rect x="5" y="13" width="6" height="1.5" fill="white" stroke="none"/></svg>`,
+  tb:`<svg viewBox="0 0 16 16" width="16" height="16" fill="white"><path d="M8,2 Q13,2 13,8 L13,12 L3,12 L3,8 Q3,2 8,2 Z"/><circle cx="8" cy="2" r="1.5"/><rect x="6" y="12" width="4" height="2" rx="1"/></svg>`,
+  custom:`<svg viewBox="0 0 16 16" width="16" height="16" stroke="#221F20" stroke-width="1.5" fill="none"><circle cx="8" cy="8" r="3"/><line x1="8" y1="1" x2="8" y2="5"/><line x1="8" y1="11" x2="8" y2="15"/><line x1="1" y1="8" x2="5" y2="8"/><line x1="11" y1="8" x2="15" y2="8"/></svg>`,
 };
+
+const PIN_CFG={
+  sch:{bg:'#221F20',border:'#FFCC01',svg:'sch'},
+  uni:{bg:'#2F372F',border:'#FFCC01',svg:'uni'},
+  pd: {bg:'#1a2a4a',border:'#FFFFFF',svg:'pd'},
+  ct: {bg:'#2F372F',border:'#FFFFFF',svg:'ct'},
+  tb: {bg:'#CF0000',border:'#FFFFFF',svg:'tb'},
+  custom:{bg:'#FFFFFF',border:'#221F20',svg:'custom'},
+};
+
+function mkPin(cfg,badgeHtml=''){
+  const c=PIN_CFG[cfg];
+  return `<div style="position:relative;width:34px;height:42px;display:flex;flex-direction:column;align-items:center;filter:drop-shadow(0 2px 4px rgba(0,0,0,.6));">
+    <div style="width:34px;height:34px;background:${c.bg};border:2px solid ${c.border};display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;">
+      ${SVGS[c.svg]}${badgeHtml}
+    </div>
+    <div style="width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;border-top:10px solid ${c.border};"></div>
+  </div>`;
+}
+
+function mkIcon(key,badgeHtml=''){
+  return L.divIcon({className:'',html:mkPin(key,badgeHtml),iconSize:[34,42],iconAnchor:[17,42],popupAnchor:[0,-44]});
+}
 
 /* ── MAP ── */
 const MAP=L.map("map",{center:[40.813,-96.703],zoom:12});
@@ -444,23 +466,23 @@ function filterZips(){
 }
 
 /* ── ICONS ── */
-function mkIcon(k){
-  const c=ICFG[k];
-  return L.divIcon({className:"",
-    html:`<div class="mico" style="width:30px;height:30px;background:${c.bg};border-color:${c.c};">${c.e}</div>`,
-    iconSize:[30,30],iconAnchor:[15,15],popupAnchor:[0,-17]});
-}
 function stnIcon(){
-  return L.divIcon({className:"",
-    html:`<div style="position:relative;width:40px;height:40px;"><div class="sp"></div><div class="mico" style="width:40px;height:40px;background:#1a1000;border-color:#f5a623;border-width:2.5px;font-size:18px;position:relative;z-index:1;">⭐</div></div>`,
-    iconSize:[40,40],iconAnchor:[20,20],popupAnchor:[0,-22]});
+  const star=`<svg viewBox="0 0 16 16" width="18" height="18" fill="#221F20"><polygon points="8,1 9.9,6.2 15.5,6.5 11.2,9.9 12.6,15.4 8,12.3 3.4,15.4 4.8,9.9 0.5,6.5 6.1,6.2"/></svg>`;
+  return L.divIcon({className:'',
+    html:`<div style="position:relative;width:44px;height:44px;display:flex;align-items:center;justify-content:center;">
+      <div class="sp"></div>
+      <div style="width:44px;height:44px;background:#FFCC01;border:3px solid #221F20;display:flex;align-items:center;justify-content:center;position:relative;z-index:1;">${star}</div>
+    </div>`,
+    iconSize:[44,44],iconAnchor:[22,22],popupAnchor:[0,-26]});
 }
 
 /* ── POINT LAYERS ── */
+function visitBadge(id){ return ''; }
 function buildPts(key,cfg,items){
   if(LYR[key]) MAP.removeLayer(LYR[key]);
   LYR[key]=L.layerGroup(items.map(item=>{
-    const m=L.marker([item.lat,item.lng],{icon:mkIcon(cfg)});
+    const badge=key==='sch'?visitBadge(item.id):'';
+    const m=L.marker([item.lat,item.lng],{icon:mkIcon(key,badge)});
     m.on("click",()=>openLocDP(cfg,item));
     return m;
   }));
@@ -497,9 +519,9 @@ new LegCtrl().addTo(MAP);
 /* ── DETAIL PANEL — LOCATION ── */
 function openLocDP(type,item){
   activeId=item.id;
-  const cfg=ICFG[type], n=noteStore[item.id]||{};
-  document.getElementById("dpi").innerHTML=cfg.e;
-  document.getElementById("dpi").style.background=cfg.bg;
+  const pcfg=PIN_CFG[type]||PIN_CFG.custom, n=noteStore[item.id]||{};
+  document.getElementById("dpi").innerHTML=SVGS[pcfg.svg]||'';
+  document.getElementById("dpi").style.background=pcfg.bg;
   document.getElementById("dpn").textContent=item.name;
   document.getElementById("dpc").textContent=type.toUpperCase()+(item.zip?` · ${item.zip}`:"");
 
@@ -625,7 +647,7 @@ document.getElementById("sb-in").addEventListener("input",function(){
   const m=[...zm,...lm].slice(0,8);
   if(!m.length){drop.style.display="none";return;}
   drop.style.display="block";
-  drop.innerHTML=m.map(x=>`<div class="sd-i" onclick="doSearch('${x.id}','${x.type}',${x.lat||0},${x.lng||0})">${ICFG[x.type]?.e||"📍"} ${x.name}<div class="sd-t">${x.label} · ${x.address||""}</div></div>`).join("");
+  drop.innerHTML=m.map(x=>`<div class="sd-i" onclick="doSearch('${x.id}','${x.type}',${x.lat||0},${x.lng||0})">● ${x.name}<div class="sd-t">${x.label} · ${x.address||""}</div></div>`).join("");
 });
 function doSearch(id,type,lat,lng){
   document.getElementById("sd").style.display="none";
