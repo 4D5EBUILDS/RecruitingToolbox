@@ -1,44 +1,45 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>RSID 4D5E · Recruiting Operations Map</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <style>
-    :root[data-theme="dark"] {
-      --bg:#0b0f1c; --panel:#111827; --card:#161f30; --hover:#1c2840;
-      --border:#1e2e48; --border2:#2a3f60;
-      --txt:#dde4f0; --txt2:#7a8faf; --txt3:#3a4d6a;
-      --accent:#f5a623; --aglow:rgba(245,166,35,.15);
-      --green:#22c55e; --red:#ef4444; --blue:#3b82f6;
-    }
-    :root[data-theme="light"] {
-      --bg:#e8edf5; --panel:#ffffff; --card:#f4f6fb; --hover:#eaeff8;
-      --border:#c5cedf; --border2:#9aaac5;
-      --txt:#18243a; --txt2:#4a5a78; --txt3:#96a8c4;
-      --accent:#c47d00; --aglow:rgba(196,125,0,.1);
-      --green:#16a34a; --red:#dc2626; --blue:#2563eb;
+    @font-face { font-family:'GI'; src:url('fonts/G.I.-400.ttf') format('truetype'); font-weight:400; font-style:normal; font-display:swap; }
+    @font-face { font-family:'GI'; src:url('fonts/G.I.-400Italic.ttf') format('truetype'); font-weight:400; font-style:italic; font-display:swap; }
+    @font-face { font-family:'GI'; src:url('fonts/G.I.-530.ttf') format('truetype'); font-weight:500; font-style:normal; font-display:swap; }
+    @font-face { font-family:'GI'; src:url('fonts/G.I.-530Italic.ttf') format('truetype'); font-weight:500; font-style:italic; font-display:swap; }
+    @font-face { font-family:'GI'; src:url('fonts/G.I.-750.ttf') format('truetype'); font-weight:700; font-style:normal; font-display:swap; }
+    @font-face { font-family:'GI'; src:url('fonts/G.I.-750Italic.ttf') format('truetype'); font-weight:700; font-style:italic; font-display:swap; }
+  </style>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    :root {
+      --army-black:#221F20; --army-gold:#FFCC01; --army-green:#2F372F;
+      --field:#727365; --red:#CF0000; --green:#2DAA27;
+      --bg:#221F20; --panel:#1a1718; --card:#2F372F;
+      --hover:#3a4535; --border:#3d3830; --border2:#57514a;
+      --txt:#FFFFFF; --txt2:#D5D5D7; --txt3:#727365;
+      --accent:#FFCC01; --aglow:rgba(255,204,1,.12);
     }
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    html,body{height:100%;overflow:hidden;font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--txt);}
+    html,body{height:100%;overflow:hidden;font-family:'GI','Arial',sans-serif;background:var(--bg);color:var(--txt);}
     /* HEADER */
     #hdr{height:50px;background:var(--panel);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 14px;gap:10px;z-index:1000;flex-shrink:0;}
-    .hdr-logo{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:17px;letter-spacing:2.5px;color:var(--accent);text-transform:uppercase;}
+    .hdr-logo{font-family:'GI','Arial Black',sans-serif;font-weight:700;font-size:17px;letter-spacing:2.5px;color:var(--accent);text-transform:uppercase;}
     .hdr-sep{color:var(--border2);}
-    .hdr-sub{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--txt3);letter-spacing:1px;}
+    .hdr-sub{font-family:'GI','Arial',sans-serif;font-size:10px;color:var(--txt3);letter-spacing:1px;}
     .hdr-sp{flex:1;}
     #sw{position:relative;}
-    #sb-in{background:var(--card);border:1px solid var(--border);border-radius:4px;padding:5px 11px;color:var(--txt);font-size:12px;width:190px;outline:none;transition:border-color .2s;}
+    #sb-in{background:var(--card);border:1px solid var(--border);border-radius:0;padding:5px 11px;color:var(--txt);font-size:12px;width:190px;outline:none;transition:border-color .2s;}
     #sb-in:focus{border-color:var(--accent);}
     #sb-in::placeholder{color:var(--txt3);}
     #sd{position:absolute;top:100%;left:0;right:0;background:var(--panel);border:1px solid var(--border);border-top:none;z-index:1100;display:none;max-height:260px;overflow-y:auto;}
     .sd-i{padding:7px 11px;cursor:pointer;font-size:12px;border-bottom:1px solid var(--border);transition:background .12s;}
     .sd-i:hover{background:var(--hover);}
-    .sd-t{font-size:10px;color:var(--txt3);font-family:'IBM Plex Mono',monospace;}
-    .hbtn{background:var(--card);border:1px solid var(--border);border-radius:4px;color:var(--txt2);padding:4px 10px;font-size:12px;cursor:pointer;white-space:nowrap;transition:all .18s;}
+    .sd-t{font-size:10px;color:var(--txt3);font-family:'GI','Arial',sans-serif;}
+    .hbtn{background:var(--card);border:1px solid var(--border);border-radius:0;color:var(--txt2);padding:4px 10px;font-size:12px;cursor:pointer;white-space:nowrap;transition:all .18s;}
     .hbtn:hover{border-color:var(--accent);color:var(--accent);}
     /* BODY */
     #body{flex:1;display:flex;overflow:hidden;position:relative;}
@@ -46,23 +47,23 @@
     #sb{width:252px;min-width:252px;background:var(--panel);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:500;transition:transform .28s,margin .28s;overflow:hidden;}
     #sb.col{transform:translateX(-252px);margin-right:-252px;}
     .ss{border-bottom:1px solid var(--border);padding:11px 13px;}
-    .st{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:600;letter-spacing:2px;color:var(--txt3);text-transform:uppercase;margin-bottom:9px;}
-    .lr{display:flex;align-items:center;gap:8px;padding:4px 5px;cursor:pointer;border-radius:4px;transition:background .12s;user-select:none;}
+    .st{font-family:'GI','Arial Black',sans-serif;font-size:10px;font-weight:600;letter-spacing:2px;color:var(--txt3);text-transform:uppercase;margin-bottom:9px;}
+    .lr{display:flex;align-items:center;gap:8px;padding:4px 5px;cursor:pointer;border-radius:0;transition:background .12s;user-select:none;}
     .lr:hover{background:var(--hover);}
     .lr input[type=checkbox]{display:none;}
-    .li{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;border:1.5px solid transparent;transition:border-color .15s,opacity .15s;}
+    .li{width:26px;height:26px;border-radius:0;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;border:1.5px solid transparent;transition:border-color .15s,opacity .15s;}
     .lr input:checked~.li{border-color:var(--accent);}
     .lr input:not(:checked)~.li{opacity:.4;}
     .ll{font-size:12px;color:var(--txt);flex:1;}
-    .lc{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--txt3);}
+    .lc{font-family:'GI','Arial',sans-serif;font-size:10px;color:var(--txt3);}
     .sg{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
-    .sc{background:var(--card);border:1px solid var(--border);border-radius:5px;padding:7px 9px;text-align:center;}
-    .sv{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;color:var(--accent);line-height:1;}
+    .sc{background:var(--card);border:1px solid var(--border);border-radius:0;padding:7px 9px;text-align:center;}
+    .sv{font-family:'GI','Arial Black',sans-serif;font-size:22px;font-weight:700;color:var(--accent);line-height:1;}
     .sl{font-size:9px;color:var(--txt3);margin-top:2px;letter-spacing:.5px;}
-    .ss-sel{width:100%;background:var(--card);border:1px solid var(--border);border-radius:4px;padding:5px 8px;color:var(--txt);font-size:12px;outline:none;}
-    .zn{margin-top:7px;font-size:10px;color:var(--txt3);font-family:'IBM Plex Mono',monospace;background:var(--card);border:1px solid var(--border);border-radius:4px;padding:5px 7px;line-height:1.45;}
+    .ss-sel{width:100%;background:var(--card);border:1px solid var(--border);border-radius:0;padding:5px 8px;color:var(--txt);font-size:12px;outline:none;}
+    .zn{margin-top:7px;font-size:10px;color:var(--txt3);font-family:'GI','Arial',sans-serif;background:var(--card);border:1px solid var(--border);border-radius:0;padding:5px 7px;line-height:1.45;}
     .sf{margin-top:auto;padding:10px 13px;border-top:1px solid var(--border);}
-    .db{display:block;width:100%;background:var(--card);border:1px solid var(--border);border-radius:4px;padding:6px;text-align:center;color:var(--txt2);font-size:12px;cursor:pointer;margin-bottom:5px;transition:all .18s;}
+    .db{display:block;width:100%;background:var(--card);border:1px solid var(--border);border-radius:0;padding:6px;text-align:center;color:var(--txt2);font-size:12px;cursor:pointer;margin-bottom:5px;transition:all .18s;}
     .db:hover{border-color:var(--accent);color:var(--accent);}
     .db.imp{color:var(--green);border-color:var(--green);}
     .db.imp:hover{background:rgba(34,197,94,.08);}
@@ -70,58 +71,57 @@
     /* MAP */
     #map{flex:1;z-index:1;}
     /* ZIP LABELS */
-    .zl{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.95),0 0 8px rgba(0,0,0,.8);background:none;border:none;box-shadow:none;padding:0;pointer-events:none;white-space:nowrap;}
-    :root[data-theme="light"] .zl{color:#0a1428;text-shadow:0 1px 3px rgba(255,255,255,.95);}
+    .zl{font-family:'GI','Arial',sans-serif;font-size:11px;font-weight:500;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.95),0 0 8px rgba(0,0,0,.8);background:none;border:none;box-shadow:none;padding:0;pointer-events:none;white-space:nowrap;}
     /* LEAFLET */
     .leaflet-control-attribution{background:var(--panel)!important;color:var(--txt3)!important;font-size:9px!important;}
-    .leaflet-popup-content-wrapper{background:var(--panel)!important;border:1px solid var(--border)!important;border-radius:6px!important;box-shadow:0 4px 20px rgba(0,0,0,.4)!important;}
+    .leaflet-popup-content-wrapper{background:var(--panel)!important;border:1px solid var(--border)!important;border-radius:6px!important;}
     .leaflet-popup-tip{background:var(--panel)!important;}
-    .leaflet-popup-content{color:var(--txt)!important;font-family:'IBM Plex Sans',sans-serif;font-size:13px;margin:10px 14px!important;}
+    .leaflet-popup-content{color:var(--txt)!important;font-family:'GI','Arial',sans-serif;font-size:13px;margin:10px 14px!important;}
     /* LEGEND */
-    .legc{background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:9px 11px;font-size:11px;min-width:128px;}
-    .legt{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;color:var(--txt3);text-transform:uppercase;margin-bottom:6px;}
+    .legc{background:var(--panel);border:1px solid var(--border);border-radius:0;padding:9px 11px;font-size:11px;min-width:128px;}
+    .legt{font-family:'GI','Arial Black',sans-serif;font-size:10px;letter-spacing:2px;color:var(--txt3);text-transform:uppercase;margin-bottom:6px;}
     .legr{display:flex;align-items:center;gap:5px;margin-bottom:4px;color:var(--txt);font-size:11px;}
     .legd{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
     /* DETAIL PANEL */
     #dp{width:310px;min-width:310px;background:var(--panel);border-left:1px solid var(--border);display:flex;flex-direction:column;z-index:500;transform:translateX(310px);transition:transform .28s;overflow:hidden;}
     #dp.open{transform:translateX(0);}
     #dph{padding:12px 14px 10px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:9px;}
-    #dpi{width:34px;height:34px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
-    #dpn{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:700;color:var(--txt);line-height:1.15;flex:1;}
-    #dpc{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--accent);letter-spacing:1px;text-transform:uppercase;margin-top:1px;}
+    #dpi{width:34px;height:34px;border-radius:0;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+    #dpn{font-family:'GI','Arial Black',sans-serif;font-size:17px;font-weight:700;color:var(--txt);line-height:1.15;flex:1;}
+    #dpc{font-family:'GI','Arial',sans-serif;font-size:9px;color:var(--accent);letter-spacing:1px;text-transform:uppercase;margin-top:1px;}
     #dpx{background:none;border:none;color:var(--txt3);font-size:17px;cursor:pointer;padding:0;}
     #dpx:hover{color:var(--txt);}
     #dpb{flex:1;overflow-y:auto;padding:12px 14px;}
     .df{margin-bottom:11px;}
-    .df label{display:block;font-size:9px;letter-spacing:1px;color:var(--txt3);text-transform:uppercase;font-family:'IBM Plex Mono',monospace;margin-bottom:3px;}
+    .df label{display:block;font-size:9px;letter-spacing:1px;color:var(--txt3);text-transform:uppercase;font-family:'GI','Arial',sans-serif;margin-bottom:3px;}
     .df .v{font-size:12px;color:var(--txt);}
-    .df input,.df textarea,.df select{width:100%;background:var(--card);border:1px solid var(--border);border-radius:4px;padding:6px 8px;color:var(--txt);font-size:12px;outline:none;transition:border-color .18s;resize:vertical;}
+    .df input,.df textarea,.df select{width:100%;background:var(--card);border:1px solid var(--border);border-radius:0;padding:6px 8px;color:var(--txt);font-size:12px;outline:none;transition:border-color .18s;resize:vertical;}
     .df input:focus,.df textarea:focus,.df select:focus{border-color:var(--accent);}
     .df textarea{min-height:75px;}
     .ddiv{border:none;border-top:1px solid var(--border);margin:12px 0;}
-    .dsec{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;color:var(--txt3);text-transform:uppercase;margin-bottom:9px;}
+    .dsec{font-family:'GI','Arial Black',sans-serif;font-size:10px;letter-spacing:2px;color:var(--txt3);text-transform:uppercase;margin-bottom:9px;}
     #dpf{padding:10px 14px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:center;}
-    .sbtn{flex:1;background:var(--accent);color:#000;border:none;border-radius:4px;padding:7px;font-weight:700;font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:1px;cursor:pointer;transition:opacity .18s;}
+    .sbtn{flex:1;background:var(--accent);color:#000;border:none;border-radius:0;padding:7px;font-weight:700;font-family:'GI','Arial Black',sans-serif;font-size:14px;letter-spacing:1px;cursor:pointer;transition:opacity .18s;}
     .sbtn:hover{opacity:.85;}
-    .savd{font-size:10px;color:var(--green);font-family:'IBM Plex Mono',monospace;opacity:0;transition:opacity .3s;}
+    .savd{font-size:10px;color:var(--green);font-family:'GI','Arial',sans-serif;opacity:0;transition:opacity .3s;}
     .savd.show{opacity:1;}
     /* MARKERS */
-    .mico{display:flex;align-items:center;justify-content:center;border-radius:50%;border:2px solid rgba(255,255,255,.35);font-size:15px;box-shadow:0 2px 10px rgba(0,0,0,.5);cursor:pointer;transition:transform .12s;}
+    .mico{display:flex;align-items:center;justify-content:center;border-radius:50%;border:2px solid rgba(255,255,255,.35);font-size:15px;cursor:pointer;transition:transform .12s;}
     .mico:hover{transform:scale(1.12);}
     /* STATION PULSE */
     .sp{position:absolute;top:50%;left:50%;width:44px;height:44px;border-radius:50%;border:2px solid var(--accent);transform:translate(-50%,-50%);animation:pulse 2.2s ease-out infinite;}
     @keyframes pulse{0%{transform:translate(-50%,-50%) scale(1);opacity:.7;}100%{transform:translate(-50%,-50%) scale(2.2);opacity:0;}}
     /* TOAST */
-    #toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--panel);border:1px solid var(--border);border-left:3px solid var(--accent);padding:8px 16px;border-radius:5px;font-size:12px;z-index:9999;transition:transform .28s;box-shadow:0 4px 18px rgba(0,0,0,.35);}
+    #toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--panel);border:1px solid var(--border);border-left:3px solid var(--accent);padding:8px 16px;border-radius:0;font-size:12px;z-index:9999;transition:transform .28s;}
     #toast.show{transform:translateX(-50%) translateY(0);}
     /* LOADER */
     #ldr{position:absolute;inset:0;background:var(--bg);z-index:900;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;transition:opacity .4s;}
     #ldr.done{opacity:0;pointer-events:none;}
     .spin{width:28px;height:28px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:sp .8s linear infinite;}
     @keyframes sp{to{transform:rotate(360deg);}}
-    #ltxt{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--txt3);}
+    #ltxt{font-family:'GI','Arial',sans-serif;font-size:12px;color:var(--txt3);}
     ::-webkit-scrollbar{width:4px;}
-    ::-webkit-scrollbar-thumb{background:var(--border);border-radius:10px;}
+    ::-webkit-scrollbar-thumb{background:var(--border);border-radius:0;}
     @media(max-width:700px){#sb{position:absolute;height:100%;z-index:600;}#dp{position:absolute;right:0;height:100%;z-index:600;width:88vw;min-width:unset;}#sb-in{width:130px;}}
   </style>
 </head>
@@ -136,7 +136,6 @@
     <input id="sb-in" type="text" placeholder="🔍  Search name or ZIP…" autocomplete="off" />
     <div id="sd"></div>
   </div>
-  <button class="hbtn" onclick="toggleTheme()"><span id="tico">☀</span> Theme</button>
   <button class="hbtn" onclick="toggleSb()">☰ Layers</button>
 </header>
 
@@ -180,7 +179,7 @@
       <button class="db" onclick="exportData()">⬇ Export Notes to JSON</button>
       <button class="db imp" onclick="document.getElementById('fi').click()">⬆ Import JSON Notes</button>
       <input type="file" id="fi" accept=".json" onchange="importData(event)" />
-      <div style="font-size:9px;color:var(--txt3);margin-top:5px;text-align:center;font-family:'IBM Plex Mono',monospace;">Notes are in-memory only — export to save.</div>
+      <div style="font-size:9px;color:var(--txt3);margin-top:5px;text-align:center;font-family:'GI','Arial',sans-serif;">Notes are in-memory only — export to save.</div>
     </div>
   </nav>
 
@@ -204,7 +203,7 @@
 
 <script>
 /* ── STATE ── */
-let noteStore={}, activeId=null, isDark=true, zipGJ=null;
+let noteStore={}, activeId=null, zipGJ=null;
 const LYR={};
 
 /* ── AO ZIP LIST ── */
@@ -406,7 +405,7 @@ function buildPts(key,cfg,items){
 function buildStation(){
   if(LYR.stn) MAP.removeLayer(LYR.stn);
   const m=L.marker([STATION.lat,STATION.lng],{icon:stnIcon(),zIndexOffset:1000});
-  m.bindPopup(`<div style="min-width:175px;"><div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:var(--accent);letter-spacing:1px;">RSID ${STATION.rsid}</div><div style="font-size:12px;font-weight:600;margin-bottom:4px;">${STATION.name}</div><div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--txt2);">${STATION.address}</div></div>`);
+  m.bindPopup(`<div style="min-width:175px;"><div style="font-family:'GI','Arial Black',sans-serif;font-size:16px;font-weight:700;color:var(--accent);letter-spacing:1px;">RSID ${STATION.rsid}</div><div style="font-size:12px;font-weight:600;margin-bottom:4px;">${STATION.name}</div><div style="font-family:'GI','Arial',sans-serif;font-size:11px;color:var(--txt2);">${STATION.address}</div></div>`);
   LYR.stn=L.layerGroup([m]);
   if(document.getElementById("l-stn")?.checked) LYR.stn.addTo(MAP);
 }
@@ -483,7 +482,7 @@ function openLocDP(type,item){
     <div class="df"><label>Contacts Made (#)</label><input id="f-contactCount" type="number" min="0" value="${n.contactCount||0}" /></div>
     <div class="df"><label>AAR / Notes</label><textarea id="f-aar">${n.aar||""}</textarea></div>
     <div class="df"><label>Follow-Up Action</label><input id="f-followUp" value="${n.followUp||""}" placeholder="Next action" /></div>
-    <div class="df" style="font-size:9px;color:var(--txt3);font-family:'IBM Plex Mono',monospace;">ID: ${item.id}</div>`;
+    <div class="df" style="font-size:9px;color:var(--txt3);font-family:'GI','Arial',sans-serif;">ID: ${item.id}</div>`;
 
   document.getElementById("dpb").innerHTML=h;
   openDP();
@@ -499,7 +498,7 @@ function openZipDP(zip,feature){
   document.getElementById("dpc").textContent="ZCTA BOUNDARY";
   document.getElementById("dpf").style.display="flex";
   document.getElementById("dpb").innerHTML=`
-    <div class="df"><label>ZCTA</label><div class="v" style="font-family:'IBM Plex Mono',monospace;">${zip}</div></div>
+    <div class="df"><label>ZCTA</label><div class="v" style="font-family:'GI','Arial',sans-serif;">${zip}</div></div>
     <hr class="ddiv"/><div class="dsec">ZIP Priority & Notes</div>
     <div class="df"><label>Priority</label><select id="f-priority">
       <option value="none" ${pri==="none"?"selected":""}>— Unset —</option>
@@ -511,7 +510,7 @@ function openZipDP(zip,feature){
     <div class="df"><label>Last Activity</label><input id="f-lastVisit" type="date" value="${n.lastVisit||""}" /></div>
     <div class="df"><label>ZIP Notes</label><textarea id="f-aar" placeholder="Community notes, hot areas, events…">${n.aar||""}</textarea></div>
     <div class="df"><label>Follow-Up</label><input id="f-followUp" value="${n.followUp||""}" placeholder="Next action" /></div>
-    <div class="df" style="font-size:9px;color:var(--txt3);font-family:'IBM Plex Mono',monospace;">ID: ${activeId}</div>`;
+    <div class="df" style="font-size:9px;color:var(--txt3);font-family:'GI','Arial',sans-serif;">ID: ${activeId}</div>`;
   openDP();
 }
 
@@ -587,15 +586,6 @@ function importData(ev){
   const r=new FileReader();
   r.onload=e=>{try{const raw=JSON.parse(e.target.result);noteStore={...noteStore,...(raw.notes||raw)};if(zipGJ)buildZip(zipGJ);updateStats();showToast(`Imported ${Object.keys(raw.notes||raw).length} records ✓`);}catch{showToast("⚠ Import failed");}};
   r.readAsText(f);ev.target.value="";
-}
-
-/* ── THEME ── */
-function toggleTheme(){
-  isDark=!isDark;
-  document.documentElement.setAttribute("data-theme",isDark?"dark":"light");
-  document.getElementById("tico").textContent=isDark?"☀":"🌙";
-  if(isDark){MAP.removeLayer(TLIGHT);TDARK.addTo(MAP);}
-  else{MAP.removeLayer(TDARK);TLIGHT.addTo(MAP);}
 }
 
 /* ── SIDEBAR ── */
