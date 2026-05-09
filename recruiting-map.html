@@ -326,14 +326,26 @@ const ICFG={
 /* ── MAP ── */
 const MAP=L.map("map",{center:[40.813,-96.703],zoom:12});
 
-const TDARK=L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
-  {attribution:"© OpenStreetMap · © CARTO",subdomains:"abcd",maxZoom:19});
+const TILES={
+  dark: L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+    {attribution:'© OpenStreetMap · © CARTO',subdomains:'abcd',maxZoom:19}),
+  street: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
+    {attribution:'© Esri · © OpenStreetMap contributors',maxZoom:20}),
+  sat: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    {attribution:'© Esri',maxZoom:19}),
+};
+let activeTile='dark';
+TILES.dark.addTo(MAP);
 
-/* Esri World Street Map — excellent road detail and contrast */
-const TLIGHT=L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
-  {attribution:"© Esri · © OpenStreetMap contributors",maxZoom:20});
-
-TDARK.addTo(MAP);
+function setTile(key){
+  Object.values(TILES).forEach(t=>MAP.removeLayer(t));
+  TILES[key].addTo(MAP);
+  activeTile=key;
+  document.querySelectorAll('.tile-btn').forEach(b=>{
+    b.style.background=b.dataset.tile===key?'var(--accent)':'var(--card)';
+    b.style.color=b.dataset.tile===key?'var(--army-black)':'var(--txt2)';
+  });
+}
 
 /* ── FETCH REAL ZCTA BOUNDARIES ──────────────────────────────
    Source: OpenDataDE Nebraska ZIP GeoJSON (derived from Census
