@@ -149,126 +149,110 @@ body{
 /* ── CONTENT AREA ────────────────────────────────────────────────────────────── */
 .content-area{background:var(--army-green);padding:0 5% 64px;}
 
-/* ── EXPOSED GRID ────────────────────────────────────────────────────────────── */
-.exp-grid-2{
-  display:grid;grid-template-columns:1fr 1fr;
-  border:2px solid rgba(255,255,255,0.15);
+/* ── EVENT LIST ──────────────────────────────────────────────────────────────── */
+.event-list{
+  display:flex;flex-direction:column;
+  border:2px solid rgba(255,255,255,0.12);
   margin-bottom:32px;
 }
-.grid-cell{
-  border:1px solid rgba(255,255,255,0.1);
-  margin:-1px 0 0 -1px;
-  padding:28px 32px 32px;
+.event-card{
+  display:flex;align-items:center;gap:40px;
+  padding:36px 40px;
   background:var(--field-01);
+  border-bottom:2px solid rgba(255,255,255,0.07);
   animation:fadeUp 0.3s cubic-bezier(0.2,0.6,0,1) both;
 }
-.grid-cell:nth-child(2){animation-delay:.05s;}
-.grid-cell:nth-child(3){animation-delay:.10s;}
-.grid-cell:nth-child(4){animation-delay:.15s;}
-
-/* ── EVENT CELL ──────────────────────────────────────────────────────────────── */
-.event-eyebrow{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
-.event-num-lbl{font-size:10px;font-weight:530;letter-spacing:1px;color:var(--army-gold);text-transform:uppercase;}
-.event-abbr-badge{
-  font-size:10px;font-weight:750;letter-spacing:0.5px;color:var(--army-gold);
-  border:2px solid var(--army-gold);padding:2px 8px;text-transform:uppercase;
-}
-.event-title{font-weight:750;font-size:21px;letter-spacing:0.3px;text-transform:uppercase;color:var(--white);margin-bottom:14px;line-height:1.1;}
-.metric-row{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:5px;}
+.event-card:last-child{border-bottom:none;}
+.event-card:nth-child(2){animation-delay:.05s;}
+.event-card:nth-child(3){animation-delay:.10s;}
+.event-card:nth-child(4){animation-delay:.15s;}
+.event-info{flex:1;min-width:0;}
+.event-num-lbl{font-size:10px;font-weight:530;letter-spacing:1.5px;color:var(--army-gold);text-transform:uppercase;margin-bottom:4px;}
+.event-title{font-weight:750;font-size:22px;letter-spacing:0.3px;text-transform:uppercase;color:var(--white);margin-bottom:20px;line-height:1.1;}
+.metric-row{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px;}
 .metric-lbl{font-size:10px;font-weight:530;letter-spacing:0.5px;color:var(--gray-01);text-transform:uppercase;}
 .metric-val{font-size:13px;font-weight:530;color:var(--white);}
 
 /* ── INPUTS ──────────────────────────────────────────────────────────────────── */
-.input-row{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+.input-row{display:flex;align-items:center;gap:12px;margin-bottom:8px;}
 input[type=range]{
   flex:1;-webkit-appearance:none;appearance:none;
-  height:3px;background:var(--gray-02);outline:none;cursor:pointer;
+  height:4px;background:var(--gray-02);outline:none;cursor:pointer;
 }
 input[type=range]::-webkit-slider-thumb{
-  -webkit-appearance:none;width:14px;height:14px;
+  -webkit-appearance:none;width:16px;height:16px;
   background:var(--army-gold);cursor:pointer;border:none;border-radius:0;
 }
 input[type=range]::-moz-range-thumb{
-  width:14px;height:14px;background:var(--army-gold);
+  width:16px;height:16px;background:var(--army-gold);
   cursor:pointer;border-radius:0;border:none;
 }
 input[type=number]{
-  width:72px;background:var(--army-black);border:2px solid var(--army-gold);
-  color:var(--white);font-family:'G.I.',sans-serif;font-weight:400;font-size:15px;
-  padding:5px 8px;text-align:center;outline:none;
-  -moz-appearance:textfield;
+  width:76px;background:var(--army-black);border:2px solid var(--army-gold);
+  color:var(--white);font-family:'G.I.',sans-serif;font-weight:400;font-size:16px;
+  padding:6px 8px;text-align:center;outline:none;
+  -moz-appearance:textfield;flex-shrink:0;
 }
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0;}
 input[type=number]:focus{outline:3px solid var(--army-gold);outline-offset:3px;}
 .input-hint{
   font-size:9px;font-weight:530;letter-spacing:0.5px;
-  color:var(--gray-02);text-transform:uppercase;margin-bottom:10px;
+  color:var(--gray-02);text-transform:uppercase;margin-top:4px;
 }
 
-/* ── THRESHOLD TRACK ─────────────────────────────────────────────────────────── */
-.thresh-track{
-  height:4px;background:var(--gray-02);
-  position:relative;margin:4px 0 5px;overflow:visible;
+/* ── ZONE BAR ────────────────────────────────────────────────────────────────── */
+.zone-bar{
+  display:flex;height:20px;
+  margin:10px 0 6px;overflow:hidden;
+  border:1px solid rgba(255,255,255,0.08);
 }
-.thresh-fill{
-  position:absolute;top:0;left:0;bottom:0;
-  transition:width 0.3s cubic-bezier(0.85,0,0.15,1),background 0.2s;
+.zb-seg{
+  display:flex;align-items:center;justify-content:center;
+  font-size:8px;font-weight:530;letter-spacing:1px;text-transform:uppercase;
+  overflow:hidden;white-space:nowrap;
 }
-.thresh-marker{position:absolute;top:-5px;width:2px;height:14px;background:currentColor;}
-.thresh-marker.gold-m {color:var(--army-gold);opacity:0.85;}
-.thresh-marker.gray-m {color:var(--gray-01);opacity:0.85;}
-.thresh-marker.black-m{color:var(--white);opacity:0.6;}
-.thresh-labels{
-  display:flex;justify-content:space-between;
-  font-size:9px;font-weight:530;letter-spacing:0.5px;
-  color:var(--gray-02);text-transform:uppercase;margin-bottom:10px;
-}
+.zb-below{background:rgba(110,108,104,0.2);color:var(--gray-02);}
+.zb-gold {background:rgba(255,204,1,0.18);color:var(--army-gold);border-left:2px solid var(--army-gold);}
+.zb-gray {background:rgba(168,166,162,0.15);color:var(--gray-01);border-left:2px solid var(--gray-01);}
+.zb-black{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.55);border-left:2px solid rgba(255,255,255,0.3);}
 
-/* ── GRADE BADGE ─────────────────────────────────────────────────────────────── */
-.grade-badge{
-  display:inline-flex;align-items:center;gap:8px;
-  padding:7px 14px;border:2px solid var(--gray-02);
-  margin-top:6px;transition:border-color 0.2s,background 0.2s;
+/* ── EVENT GRADE COLUMN ──────────────────────────────────────────────────────── */
+.event-grade-col{
+  display:flex;flex-direction:column;align-items:center;
+  justify-content:center;min-width:110px;flex-shrink:0;text-align:center;
 }
-.grade-badge.black{border-color:var(--white);background:rgba(255,255,255,0.06);}
-.grade-badge.gray {border-color:var(--gray-01);background:rgba(168,166,162,0.08);}
-.grade-badge.gold {border-color:var(--army-gold);background:rgba(255,204,1,0.08);}
-.grade-badge.white{border-color:var(--hi-red);background:rgba(160,46,46,0.10);}
-.grade-badge.none {border-color:var(--gray-02);background:transparent;}
-.grade-badge-icon{font-size:14px;}
-.grade-badge-text{font-weight:750;font-size:15px;letter-spacing:0.5px;text-transform:uppercase;}
-.grade-badge-sub {font-size:9px;font-weight:530;letter-spacing:1px;color:var(--gray-01);text-transform:uppercase;margin-top:1px;}
+.grade-badge{transition:all 0.2s cubic-bezier(0.85,0,0.15,1);}
+.grade-badge-text{
+  font-family:'G.I.',sans-serif;font-weight:750;font-size:34px;
+  letter-spacing:0.5px;text-transform:uppercase;line-height:1;
+  color:var(--gray-02);transition:color 0.2s;
+}
+.grade-badge-sub{
+  font-size:9px;font-weight:530;letter-spacing:1px;
+  color:var(--gray-01);text-transform:uppercase;margin-top:6px;
+}
 
 /* ── SDL LADDER ──────────────────────────────────────────────────────────────── */
-.sdl-ladder{display:flex;gap:4px;flex-wrap:wrap;margin:8px 0 4px;}
+.sdl-ladder{display:flex;gap:5px;flex-wrap:wrap;margin:10px 0 6px;}
 .sdl-step{
-  font-size:10px;font-weight:530;padding:4px 8px;
+  font-size:10px;font-weight:530;padding:5px 10px;
   border:1px solid var(--gray-02);color:var(--gray-02);
   cursor:pointer;letter-spacing:0.5px;transition:all 0.15s;user-select:none;
 }
 .sdl-step:hover{border-color:var(--army-gold);color:var(--army-gold);}
 
 /* ── IAR INPUTS ──────────────────────────────────────────────────────────────── */
-.iar-inputs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
-.iar-field-lbl{font-size:10px;font-weight:530;letter-spacing:1px;color:var(--gray-01);text-transform:uppercase;margin-bottom:5px;}
-.iar-inputs input[type=number]{width:100%;font-size:22px;padding:10px 12px;}
+.iar-inputs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.iar-field-lbl{font-size:10px;font-weight:530;letter-spacing:1px;color:var(--gray-01);text-transform:uppercase;margin-bottom:6px;}
+.iar-inputs input[type=number]{width:100%;font-size:24px;padding:12px;}
 .iar-total-line{font-size:11px;font-weight:530;letter-spacing:0.5px;color:var(--gray-01);text-transform:uppercase;margin-bottom:10px;}
 .iar-total-line strong{color:var(--army-gold);font-weight:750;}
-.iar-thresholds{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:10px;}
-.iar-tc{padding:6px 10px;border:2px solid;}
-.iar-tc.gc{border-color:var(--army-gold);background:rgba(255,204,1,0.05);}
-.iar-tc.sc{border-color:var(--gray-01);background:rgba(168,166,162,0.05);}
-.iar-tc.bc{border-color:var(--white);background:rgba(255,255,255,0.04);}
-.iar-tb{font-size:9px;font-weight:530;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px;}
-.iar-tc.gc .iar-tb{color:var(--army-gold);}
-.iar-tc.sc .iar-tb{color:var(--gray-01);}
-.iar-tc.bc .iar-tb{color:var(--white);}
-.iar-tv{font-weight:750;font-size:16px;letter-spacing:0.3px;text-transform:uppercase;}
-.iar-tc.gc .iar-tv{color:var(--army-gold);}
-.iar-tc.sc .iar-tv{color:var(--gray-01);}
-.iar-tc.bc .iar-tv{color:var(--white);}
-.iar-ts{font-size:9px;color:var(--gray-02);letter-spacing:0.5px;margin-top:2px;}
+.iar-ref{display:flex;gap:16px;margin-bottom:8px;}
+.iar-ref-item{font-size:10px;font-weight:530;letter-spacing:0.5px;text-transform:uppercase;padding:4px 10px;border-left:3px solid;}
+.iar-ref-item.gc{border-color:var(--army-gold);color:var(--army-gold);}
+.iar-ref-item.sc{border-color:var(--gray-01);color:var(--gray-01);}
+.iar-ref-item.bc{border-color:var(--white);color:var(--white);}
 
 /* ── FOOTER ──────────────────────────────────────────────────────────────────── */
 .site-footer{
@@ -288,7 +272,9 @@ input[type=number]:focus{outline:3px solid var(--army-gold);outline-offset:3px;}
 
 /* ── RESPONSIVE ──────────────────────────────────────────────────────────────── */
 @media(max-width:800px){
-  .exp-grid-2{grid-template-columns:1fr;}
+  .event-card{flex-direction:column;align-items:flex-start;gap:20px;padding:28px 24px;}
+  .event-grade-col{flex-direction:row;align-items:center;gap:16px;min-width:unset;width:100%;}
+  .grade-badge-text{font-size:28px;}
   .pdc-panel{gap:24px;}
   .band-chips{min-width:unset;width:100%;}
   .pdc-grade{font-size:clamp(56px,16vw,96px);}
@@ -352,141 +338,138 @@ input[type=number]:focus{outline:3px solid var(--army-gold);outline-offset:3px;}
 <!-- SECTION 01: EVENT INPUTS -->
 <div class="section-hdr">01 &nbsp;// &nbsp;Event Inputs &amp; Scoring</div>
 
-<div class="exp-grid-2">
+<div class="event-list">
 
   <!-- SLJ -->
-  <div class="grid-cell event-card none" id="card-slj">
-    <div class="event-eyebrow">
-      <span class="event-num-lbl">Event 01 / SLJ</span>
-      <span class="event-abbr-badge">SLJ</span>
+  <div class="event-card none" id="card-slj">
+    <div class="event-info">
+      <div class="event-num-lbl">01 · Standing Long Jump</div>
+      <div class="event-title">SLJ</div>
+      <div class="metric-row">
+        <span class="metric-lbl">Jump Distance</span>
+        <span class="metric-val" id="val-slj">—</span>
+      </div>
+      <div class="input-row">
+        <input type="range" id="rng-slj" min="20" max="110" step="1" value="55">
+        <input type="number" id="txt-slj" value="55" min="20" max="110">
+      </div>
+      <div class="zone-bar">
+        <div class="zb-seg zb-below" style="flex:27"><span>Below</span></div>
+        <div class="zb-seg zb-gold"  style="flex:8"><span>Gold 47"</span></div>
+        <div class="zb-seg zb-gray"  style="flex:8"><span>Gray 55"</span></div>
+        <div class="zb-seg zb-black" style="flex:47"><span>Black 63"</span></div>
+      </div>
+      <div class="input-hint">Inches · Range: 20–110 in</div>
     </div>
-    <div class="event-title">Standing Long Jump</div>
-    <div class="metric-row">
-      <span class="metric-lbl">Jump Distance</span>
-      <span class="metric-val" id="val-slj">—</span>
-    </div>
-    <div class="input-row">
-      <input type="range" id="rng-slj" min="20" max="110" step="1" value="55">
-      <input type="number" id="txt-slj" value="55" min="20" max="110">
-    </div>
-    <div class="input-hint">Inches &nbsp;·&nbsp; Range: 20–110 in</div>
-    <div class="thresh-track">
-      <div class="thresh-fill" id="fill-slj" style="width:0%;background:var(--gray-02);"></div>
-      <div class="thresh-marker gold-m"  style="left:30.43%;"></div>
-      <div class="thresh-marker gray-m"  style="left:38.69%;"></div>
-      <div class="thresh-marker black-m" style="left:47.82%;"></div>
-    </div>
-    <div class="grade-badge none" id="badge-slj">
-      <span class="grade-badge-icon">—</span>
-      <div>
-        <div class="grade-badge-text" id="badge-slj-text">No Score</div>
+    <div class="event-grade-col">
+      <div class="grade-badge none" id="badge-slj">
+        <div class="grade-badge-text" id="badge-slj-text">—</div>
         <div class="grade-badge-sub">Lower Body Power</div>
       </div>
     </div>
+    <span id="fill-slj" style="display:none"></span>
   </div>
 
   <!-- SPT -->
-  <div class="grid-cell event-card none" id="card-spt">
-    <div class="event-eyebrow">
-      <span class="event-num-lbl">Event 02 / SPT</span>
-      <span class="event-abbr-badge">SPT</span>
+  <div class="event-card none" id="card-spt">
+    <div class="event-info">
+      <div class="event-num-lbl">02 · Seated Power Throw</div>
+      <div class="event-title">SPT</div>
+      <div class="metric-row">
+        <span class="metric-lbl">Throw Distance</span>
+        <span class="metric-val" id="val-spt">—</span>
+      </div>
+      <div class="input-row">
+        <input type="range" id="rng-spt" min="150" max="700" step="10" value="400">
+        <input type="number" id="txt-spt" value="400" min="150" max="700" step="10">
+      </div>
+      <div class="zone-bar">
+        <div class="zb-seg zb-below" style="flex:200"><span>Below</span></div>
+        <div class="zb-seg zb-gold"  style="flex:50"><span>Gold 350</span></div>
+        <div class="zb-seg zb-gray"  style="flex:50"><span>Gray 400</span></div>
+        <div class="zb-seg zb-black" style="flex:250"><span>Black 450</span></div>
+      </div>
+      <div class="input-hint">Centimeters · 4.4 lb medicine ball · Range: 150–700 cm</div>
     </div>
-    <div class="event-title">Seated Power Throw</div>
-    <div class="metric-row">
-      <span class="metric-lbl">Throw Distance</span>
-      <span class="metric-val" id="val-spt">—</span>
-    </div>
-    <div class="input-row">
-      <input type="range" id="rng-spt" min="150" max="700" step="10" value="400">
-      <input type="number" id="txt-spt" value="400" min="150" max="700" step="10">
-    </div>
-    <div class="input-hint">Centimeters &nbsp;·&nbsp; 4.4 lb medicine ball &nbsp;·&nbsp; Range: 150–700 cm</div>
-    <div class="thresh-track">
-      <div class="thresh-fill" id="fill-spt" style="width:0%;background:var(--gray-02);"></div>
-      <div class="thresh-marker gold-m"  style="left:36.36%;"></div>
-      <div class="thresh-marker gray-m"  style="left:45.45%;"></div>
-      <div class="thresh-marker black-m" style="left:54.55%;"></div>
-    </div>
-    <div class="grade-badge none" id="badge-spt">
-      <span class="grade-badge-icon">—</span>
-      <div>
-        <div class="grade-badge-text" id="badge-spt-text">No Score</div>
+    <div class="event-grade-col">
+      <div class="grade-badge none" id="badge-spt">
+        <div class="grade-badge-text" id="badge-spt-text">—</div>
         <div class="grade-badge-sub">Upper Body Power</div>
       </div>
     </div>
+    <span id="fill-spt" style="display:none"></span>
   </div>
 
   <!-- SDL -->
-  <div class="grid-cell event-card none" id="card-sdl">
-    <div class="event-eyebrow">
-      <span class="event-num-lbl">Event 03 / SDL</span>
-      <span class="event-abbr-badge">SDL</span>
+  <div class="event-card none" id="card-sdl">
+    <div class="event-info">
+      <div class="event-num-lbl">03 · Strength Deadlift</div>
+      <div class="event-title">SDL</div>
+      <div class="metric-row">
+        <span class="metric-lbl">Max Lift</span>
+        <span class="metric-val" id="val-sdl">—</span>
+      </div>
+      <div class="sdl-ladder">
+        <div class="sdl-step" data-w="60">60</div>
+        <div class="sdl-step" data-w="120">120 ★</div>
+        <div class="sdl-step" data-w="140">140 ★</div>
+        <div class="sdl-step" data-w="160">160 ★</div>
+        <div class="sdl-step" data-w="180">180</div>
+        <div class="sdl-step" data-w="190">190</div>
+        <div class="sdl-step" data-w="200">200</div>
+        <div class="sdl-step" data-w="210">210</div>
+        <div class="sdl-step" data-w="220">220</div>
+      </div>
+      <div class="zone-bar">
+        <div class="zb-seg zb-below" style="flex:60"><span>Below</span></div>
+        <div class="zb-seg zb-gold"  style="flex:20"><span>Gold 120</span></div>
+        <div class="zb-seg zb-gray"  style="flex:20"><span>Gray 140</span></div>
+        <div class="zb-seg zb-black" style="flex:60"><span>Black 160</span></div>
+      </div>
+      <div class="input-hint">Pounds (hex bar) · ★ = PDC threshold weight</div>
     </div>
-    <div class="event-title">Strength Deadlift</div>
-    <div class="metric-row">
-      <span class="metric-lbl">Max Lift</span>
-      <span class="metric-val" id="val-sdl">—</span>
-    </div>
-    <div class="input-row">
-      <input type="range" id="rng-sdl" min="60" max="220" step="20" value="140">
-      <input type="number" id="txt-sdl" value="140" min="60" max="220" step="20">
-    </div>
-    <div class="input-hint">Pounds (hex bar) &nbsp;·&nbsp; Ladder: 60, 120, 140, 160, 180, 190, 200, 210, 220</div>
-    <div class="sdl-ladder">
-      <div class="sdl-step" id="sdl-60"  data-w="60">60</div>
-      <div class="sdl-step" id="sdl-120" data-w="120">120</div>
-      <div class="sdl-step" id="sdl-140" data-w="140">140★</div>
-      <div class="sdl-step" id="sdl-160" data-w="160">160★</div>
-      <div class="sdl-step" id="sdl-180" data-w="180">180</div>
-      <div class="sdl-step" id="sdl-190" data-w="190">190</div>
-      <div class="sdl-step" id="sdl-200" data-w="200">200</div>
-      <div class="sdl-step" id="sdl-210" data-w="210">210</div>
-      <div class="sdl-step" id="sdl-220" data-w="220">220</div>
-    </div>
-    <div class="input-hint">★ = threshold weight (click to select)</div>
-    <div class="thresh-track">
-      <div class="thresh-fill" id="fill-sdl" style="width:0%;background:var(--gray-02);"></div>
-      <div class="thresh-marker gold-m"  style="left:37.5%;"></div>
-      <div class="thresh-marker gray-m"  style="left:50%;"></div>
-      <div class="thresh-marker black-m" style="left:62.5%;"></div>
-    </div>
-    <div class="grade-badge none" id="badge-sdl">
-      <span class="grade-badge-icon">—</span>
-      <div>
-        <div class="grade-badge-text" id="badge-sdl-text">No Score</div>
+    <div class="event-grade-col">
+      <div class="grade-badge none" id="badge-sdl">
+        <div class="grade-badge-text" id="badge-sdl-text">—</div>
         <div class="grade-badge-sub">Lower Body Strength</div>
       </div>
     </div>
+    <span id="fill-sdl" style="display:none"></span>
+    <input type="range" id="rng-sdl" min="60" max="220" step="20" value="140" style="display:none">
+    <input type="number" id="txt-sdl" value="140" min="60" max="220" style="display:none">
   </div>
 
   <!-- IAR -->
-  <div class="grid-cell event-card none" id="card-iar">
-    <div class="event-eyebrow">
-      <span class="event-num-lbl">Event 04 / IAR</span>
-      <span class="event-abbr-badge">IAR</span>
-    </div>
-    <div class="event-title">Interval Aerobic Run</div>
-    <div class="iar-inputs">
-      <div>
-        <div class="iar-field-lbl">Level (1–10+)</div>
-        <input type="number" id="txt-iar-lvl" value="5" min="1" max="15" step="1" oninput="syncIAR()">
+  <div class="event-card none" id="card-iar">
+    <div class="event-info">
+      <div class="event-num-lbl">04 · Interval Aerobic Run</div>
+      <div class="event-title">IAR</div>
+      <div class="iar-inputs">
+        <div>
+          <div class="iar-field-lbl">Level (1–10+)</div>
+          <input type="number" id="txt-iar-lvl" value="5" min="1" max="15" step="1" oninput="syncIAR()">
+        </div>
+        <div>
+          <div class="iar-field-lbl">Shuttle (1–13)</div>
+          <input type="number" id="txt-iar-sht" value="8" min="1" max="13" step="1" oninput="syncIAR()">
+        </div>
       </div>
-      <div>
-        <div class="iar-field-lbl">Shuttle (1–13)</div>
-        <input type="number" id="txt-iar-sht" value="8" min="1" max="13" step="1" oninput="syncIAR()">
+      <div class="iar-total-line">Total shuttles: <strong id="iar-total">—</strong></div>
+      <div class="iar-ref">
+        <div class="iar-ref-item gc">Gold · Lvl 5-4 · 36 shuttles</div>
+        <div class="iar-ref-item sc">Gray · Lvl 5-8 · 40 shuttles</div>
+        <div class="iar-ref-item bc">Black · Lvl 6-2 · 43 shuttles</div>
       </div>
     </div>
-    <div class="iar-total-line">Total shuttles: <strong id="iar-total">—</strong> &nbsp;·&nbsp; Beep test / 20m shuttle run</div>
-    <div class="grade-badge none" id="badge-iar">
-      <span class="grade-badge-icon">—</span>
-      <div>
-        <div class="grade-badge-text" id="badge-iar-text">No Score</div>
+    <div class="event-grade-col">
+      <div class="grade-badge none" id="badge-iar">
+        <div class="grade-badge-text" id="badge-iar-text">—</div>
         <div class="grade-badge-sub">Aerobic Capacity</div>
       </div>
     </div>
   </div>
 
-</div><!-- /exp-grid-2 -->
+</div><!-- /event-list -->
 
 
 </div><!-- /content-area -->
@@ -582,31 +565,19 @@ function render() {
   document.getElementById('iar-total').textContent = iarTotal+' total shuttles';
 
   // Update event cards and badges
-  function updateCard(id, grade, text) {
+  function updateCard(id, grade) {
     const card = document.getElementById('card-'+id);
     const badge = document.getElementById('badge-'+id);
     const badgeText = document.getElementById('badge-'+id+'-text');
-    const fill = document.getElementById('fill-'+id);
     card.className = 'event-card '+(grade||'none');
     badge.className = 'grade-badge '+(grade||'none');
-    badgeText.textContent = grade ? GRADE_INFO[grade].label : 'NO SCORE';
+    badgeText.textContent = grade ? GRADE_INFO[grade].label : '—';
     if(grade) {
-      const g = GRADE_INFO[grade];
-      badge.querySelector('.grade-badge-icon').textContent = g.icon;
-      badge.querySelector('.grade-badge-text').style.color = g.color;
+      badge.querySelector('.grade-badge-text').style.color = GRADE_INFO[grade].color;
+    } else {
+      badgeText.style.color = '';
     }
   }
-
-  // Fill bars
-  function pct(event, val, max, min){
-    return Math.max(0, Math.min(100, ((val-min)/(max-min))*100));
-  }
-  document.getElementById('fill-slj').style.width = pct('slj',slj,110,20)+'%';
-  document.getElementById('fill-slj').style.background = gSlj==='black'?'#FFFFFF':gSlj==='gray'?'#A8A6A2':gSlj==='gold'?'#FFCC01':'#A02E2E';
-  document.getElementById('fill-spt').style.width = pct('spt',spt,700,150)+'%';
-  document.getElementById('fill-spt').style.background = gSpt==='black'?'#FFFFFF':gSpt==='gray'?'#A8A6A2':gSpt==='gold'?'#FFCC01':'#A02E2E';
-  document.getElementById('fill-sdl').style.width = pct('sdl',sdl,220,60)+'%';
-  document.getElementById('fill-sdl').style.background = gSdl==='black'?'#FFFFFF':gSdl==='gray'?'#A8A6A2':gSdl==='gold'?'#FFCC01':'#A02E2E';
 
   updateCard('slj', gSlj);
   updateCard('spt', gSpt);
@@ -636,11 +607,11 @@ function render() {
   const iarBadge = document.getElementById('badge-iar');
   const iarBadgeText = document.getElementById('badge-iar-text');
   iarBadge.className = 'grade-badge '+(gIar||'none');
-  iarBadgeText.textContent = gIar ? GRADE_INFO[gIar].label : 'NO SCORE';
+  iarBadgeText.textContent = gIar ? GRADE_INFO[gIar].label : '—';
   if(gIar){
-    const g = GRADE_INFO[gIar];
-    iarBadge.querySelector('.grade-badge-icon').textContent = g.icon;
-    iarBadge.querySelector('.grade-badge-text').style.color = g.color;
+    iarBadge.querySelector('.grade-badge-text').style.color = GRADE_INFO[gIar].color;
+  } else {
+    iarBadgeText.style.color = '';
   }
 
   // RESULT HERO
