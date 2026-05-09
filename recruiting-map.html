@@ -202,6 +202,7 @@
 <script>
 /* ── STATE ── */
 let noteStore={}, activeId=null, zipGJ=null;
+let customPins=[], pinMode=false;
 const LYR={};
 
 /* ── AO ZIP LIST ── */
@@ -534,6 +535,60 @@ function buildStation(){
   if(document.getElementById("l-stn")?.checked) LYR.stn.addTo(MAP);
 }
 
+/* ── DROP-A-PIN TOOL ── */
+const PinCtrl=L.Control.extend({options:{position:'topleft'},
+  onAdd(){
+    const c=L.DomUtil.create('div','leaflet-bar');
+    const btn=L.DomUtil.create('button','',c);
+    btn.id='pin-btn';
+    btn.title='Drop a pin';
+    btn.style.cssText='width:30px;height:30px;background:var(--panel);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;';
+    btn.innerHTML=`<svg viewBox="0 0 16 16" width="16" height="16" stroke="var(--txt2)" stroke-width="1.5" fill="none"><circle cx="8" cy="8" r="3"/><line x1="8" y1="1" x2="8" y2="5"/><line x1="8" y1="11" x2="8" y2="15"/><line x1="1" y1="8" x2="5" y2="8"/><line x1="11" y1="8" x2="15" y2="8"/></svg>`;
+    L.DomEvent.on(btn,'click',L.DomEvent.stop);
+    L.DomEvent.on(btn,'click',togglePinMode);
+    return c;
+  }
+});
+new PinCtrl().addTo(MAP);
+
+function togglePinMode(){
+  pinMode=!pinMode;
+  const btn=document.getElementById('pin-btn');
+  MAP.getContainer().style.cursor=pinMode?'crosshair':'';
+  btn.style.background=pinMode?'var(--accent)':'var(--panel)';
+  btn.querySelector('svg').style.stroke=pinMode?'#221F20':'var(--txt2)';
+}
+
+MAP.on('click',function(e){
+  if(!pinMode)return;
+  const id='custom-'+Date.now();
+  const marker=L.marker([e.latlng.lat,e.latlng.lng],{icon:mkIcon('custom'),draggable:true});
+  marker.on('contextmenu',()=>{
+    if(confirm('Remove this pin?')){
+      MAP.removeLayer(marker);
+      customPins=customPins.filter(p=>p.id!==id);
+      delete noteStore[id];
+      updateStats();
+    }
+  });
+  marker.addTo(MAP);
+  customPins.push({id,marker,lat:e.latlng.lat,lng:e.latlng.lng});
+  activeId=id;
+  document.getElementById('dpi').textContent='◈';
+  document.getElementById('dpi').style.cssText='width:34px;height:34px;display:flex;align-items:center;justify-content:center;background:var(--card);font-size:18px;color:var(--accent);flex-shrink:0;';
+  document.getElementById('dpn').textContent='Custom Pin';
+  document.getElementById('dpc').textContent='CUSTOM MARKER';
+  document.getElementById('dpf').style.display='flex';
+  document.getElementById('dpb').innerHTML=`
+    <div style="padding:12px 14px;">
+      <div class="df"><label>Pin name</label><input id="f-pinName" value="${noteStore[id]?.pinName||''}" placeholder="Name this pin" /></div>
+      <div class="df"><label>Notes</label><textarea id="f-aar">${noteStore[id]?.aar||''}</textarea></div>
+      <div class="df" style="font-size:9px;color:var(--txt3);">${e.latlng.lat.toFixed(5)}, ${e.latlng.lng.toFixed(5)}</div>
+    </div>`;
+  openDP();
+  togglePinMode();
+});
+
 /* ── LEGEND ── */
 const LegCtrl=L.Control.extend({options:{position:"bottomright"},onAdd(){
   const d=L.DomUtil.create("div","leaflet-control legc");
@@ -699,10 +754,11 @@ function saveDP(){
   if(!activeId) return;
   const g=id=>{const e=document.getElementById("f-"+id);return e?e.value:undefined;};
   const data={};
-  ["principal","counselor","counselorPhone","counselorEmail","recruitingContact",
+  ["pinName","principal","counselor","counselorPhone","counselorEmail","recruitingContact",
    "rotcContact","chief","judge","lastVisit","nextVisit","priority","contactCount","aar","followUp"]
   .forEach(k=>{const v=g(k);if(v!==undefined)data[k]=v;});
   noteStore[activeId]=data;
+  if(activeId?.startsWith('custom-')){const p=customPins.find(x=>x.id===activeId);if(p){data.lat=p.lat;data.lng=p.lng;noteStore[activeId]=data;}}
   if(!activeId.startsWith('zip-'))buildPts('sch','sch',SCHOOLS);
   if(activeId.startsWith("zip-")&&zipGJ) buildZip(zipGJ);
   updateStats();
@@ -762,7 +818,12 @@ function exportData(){
 function importData(ev){
   const f=ev.target.files[0];if(!f)return;
   const r=new FileReader();
-  r.onload=e=>{try{const raw=JSON.parse(e.target.result);noteStore={...noteStore,...(raw.notes||raw)};if(zipGJ)buildZip(zipGJ);updateStats();showToast(`Imported ${Object.keys(raw.notes||raw).length} records ✓`);}catch{showToast("⚠ Import failed");}};
+  r.onload=e=>{try{const raw=JSON.parse(e.target.result);noteStore={...noteStore,...(raw.notes||raw)};Object.keys(noteStore).filter(k=>k.startsWith('custom-')).forEach(id=>{
+  const n=noteStore[id]; if(!n?.lat)return;
+  const marker=L.marker([n.lat,n.lng],{icon:mkIcon('custom'),draggable:true}).addTo(MAP);
+  marker.on('contextmenu',()=>{if(confirm('Remove this pin?')){MAP.removeLayer(marker);customPins=customPins.filter(p=>p.id!==id);delete noteStore[id];}});
+  customPins.push({id,marker,lat:n.lat,lng:n.lng});
+});if(zipGJ)buildZip(zipGJ);updateStats();showToast(`Imported ${Object.keys(raw.notes||raw).length} records ✓`);}catch{showToast("⚠ Import failed");}};
   r.readAsText(f);ev.target.value="";
 }
 
