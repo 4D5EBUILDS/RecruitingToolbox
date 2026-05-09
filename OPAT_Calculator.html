@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>OPAT — Occupational Physical Assessment Test</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
 /* ── FONTS ─────────────────────────────────────────────────────────────────── */
 @font-face{font-family:'G.I.';src:url('fonts/G.I.-400.ttf') format('truetype');font-weight:400;font-style:normal;}
@@ -148,7 +147,7 @@ body{
 }
 
 /* ── CONTENT AREA ────────────────────────────────────────────────────────────── */
-.content-area{background:var(--army-green);padding:0 5% 48px;}
+.content-area{background:var(--army-green);padding:0 5% 64px;}
 
 /* ── EXPOSED GRID ────────────────────────────────────────────────────────────── */
 .exp-grid-2{
@@ -156,15 +155,10 @@ body{
   border:2px solid rgba(255,255,255,0.15);
   margin-bottom:32px;
 }
-.exp-grid-2col{
-  display:grid;grid-template-columns:1fr 1fr;
-  border:2px solid rgba(255,255,255,0.15);
-  margin-bottom:32px;
-}
 .grid-cell{
   border:1px solid rgba(255,255,255,0.1);
   margin:-1px 0 0 -1px;
-  padding:20px 24px 24px;
+  padding:28px 32px 32px;
   background:var(--field-01);
   animation:fadeUp 0.3s cubic-bezier(0.2,0.6,0,1) both;
 }
@@ -276,65 +270,6 @@ input[type=number]:focus{outline:3px solid var(--army-gold);outline-offset:3px;}
 .iar-tc.bc .iar-tv{color:var(--white);}
 .iar-ts{font-size:9px;color:var(--gray-02);letter-spacing:0.5px;margin-top:2px;}
 
-/* ── ANALYSIS PANELS ─────────────────────────────────────────────────────────── */
-.chart-cell{background:var(--army-black);padding:20px 24px;}
-.chart-cell-hdr{
-  display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:14px;padding-bottom:10px;
-  border-bottom:1px solid rgba(255,255,255,0.08);
-}
-.chart-cell-title{font-weight:750;font-size:13px;letter-spacing:0.5px;text-transform:uppercase;color:var(--white);}
-.chart-cell-sub{font-size:10px;font-weight:530;letter-spacing:0.5px;color:var(--gray-02);text-transform:uppercase;}
-.radar-wrap{position:relative;height:280px;width:100%;}
-
-/* ── THRESHOLD TABLE ─────────────────────────────────────────────────────────── */
-.thresh-table{width:100%;border-collapse:collapse;}
-.thresh-table th{
-  padding:8px 12px;text-align:left;
-  font-size:11px;font-weight:530;letter-spacing:1px;text-transform:uppercase;
-  background:var(--army-gold);color:var(--army-black);border:none;
-}
-.thresh-table td{
-  padding:8px 12px;
-  border-bottom:1px solid rgba(255,255,255,0.06);
-  font-size:12px;font-weight:530;letter-spacing:0.5px;
-}
-.thresh-table tr:last-child td{border-bottom:none;}
-.thresh-table tr.row-black td{color:var(--white);}
-.thresh-table tr.row-gray  td{color:var(--gray-01);}
-.thresh-table tr.row-gold  td{color:var(--army-gold);}
-.thresh-table tr.row-white td{color:var(--hi-red);}
-.thresh-table td.you{font-weight:750;}
-.thresh-table tr.your-row{background:rgba(255,204,1,0.06);}
-.thresh-table tr.your-row td{border-top:2px solid var(--army-gold);}
-.thresh-table tr.your-row td:first-child{color:var(--army-gold);font-weight:750;}
-.band-pip{display:inline-block;width:3px;height:14px;margin-right:8px;vertical-align:middle;}
-.band-pip.black{background:var(--white);}
-.band-pip.gray {background:var(--gray-01);}
-.band-pip.gold {background:var(--army-gold);}
-.band-pip.white{background:var(--hi-red);}
-
-/* ── MOS SECTION ─────────────────────────────────────────────────────────────── */
-.mos-section{margin-bottom:32px;}
-.mos-grid{
-  display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
-  border:2px solid rgba(255,255,255,0.1);
-  background:var(--army-black);
-}
-.mos-item{
-  padding:10px 14px;
-  border:1px solid rgba(255,255,255,0.07);
-  margin:-1px 0 0 -1px;
-  display:flex;align-items:center;justify-content:space-between;gap:8px;
-  background:var(--army-black);
-}
-.mos-code{font-size:11px;font-weight:750;color:var(--gray-01);letter-spacing:0.5px;white-space:nowrap;}
-.mos-title{font-size:12px;font-weight:400;color:var(--white);flex:1;}
-.mos-dot{width:8px;height:8px;flex-shrink:0;}
-.mos-dot.black{background:var(--white);}
-.mos-dot.gray {background:var(--gray-01);}
-.mos-dot.gold {background:var(--army-gold);}
-
 /* ── FOOTER ──────────────────────────────────────────────────────────────────── */
 .site-footer{
   background:var(--army-black);
@@ -353,7 +288,7 @@ input[type=number]:focus{outline:3px solid var(--army-gold);outline-offset:3px;}
 
 /* ── RESPONSIVE ──────────────────────────────────────────────────────────────── */
 @media(max-width:800px){
-  .exp-grid-2,.exp-grid-2col{grid-template-columns:1fr;}
+  .exp-grid-2{grid-template-columns:1fr;}
   .pdc-panel{gap:24px;}
   .band-chips{min-width:unset;width:100%;}
   .pdc-grade{font-size:clamp(56px,16vw,96px);}
@@ -441,9 +376,6 @@ input[type=number]:focus{outline:3px solid var(--army-gold);outline-offset:3px;}
       <div class="thresh-marker gray-m"  style="left:38.69%;"></div>
       <div class="thresh-marker black-m" style="left:47.82%;"></div>
     </div>
-    <div class="thresh-labels">
-      <span>20"</span><span>Gold 47"</span><span>Gray 55"</span><span>Black 63"</span><span>110"</span>
-    </div>
     <div class="grade-badge none" id="badge-slj">
       <span class="grade-badge-icon">—</span>
       <div>
@@ -474,9 +406,6 @@ input[type=number]:focus{outline:3px solid var(--army-gold);outline-offset:3px;}
       <div class="thresh-marker gold-m"  style="left:36.36%;"></div>
       <div class="thresh-marker gray-m"  style="left:45.45%;"></div>
       <div class="thresh-marker black-m" style="left:54.55%;"></div>
-    </div>
-    <div class="thresh-labels">
-      <span>150</span><span>Gold 350</span><span>Gray 400</span><span>Black 450</span><span>700</span>
     </div>
     <div class="grade-badge none" id="badge-spt">
       <span class="grade-badge-icon">—</span>
@@ -521,9 +450,6 @@ input[type=number]:focus{outline:3px solid var(--army-gold);outline-offset:3px;}
       <div class="thresh-marker gray-m"  style="left:50%;"></div>
       <div class="thresh-marker black-m" style="left:62.5%;"></div>
     </div>
-    <div class="thresh-labels">
-      <span>60</span><span>Gold 120</span><span>Gray 140</span><span>Black 160</span><span>220</span>
-    </div>
     <div class="grade-badge none" id="badge-sdl">
       <span class="grade-badge-icon">—</span>
       <div>
@@ -551,23 +477,6 @@ input[type=number]:focus{outline:3px solid var(--army-gold);outline-offset:3px;}
       </div>
     </div>
     <div class="iar-total-line">Total shuttles: <strong id="iar-total">—</strong> &nbsp;·&nbsp; Beep test / 20m shuttle run</div>
-    <div class="iar-thresholds">
-      <div class="iar-tc gc">
-        <div class="iar-tb">Gold</div>
-        <div class="iar-tv">Lvl 5-4</div>
-        <div class="iar-ts">36 shuttles</div>
-      </div>
-      <div class="iar-tc sc">
-        <div class="iar-tb">Gray</div>
-        <div class="iar-tv">Lvl 5-8</div>
-        <div class="iar-ts">40 shuttles</div>
-      </div>
-      <div class="iar-tc bc">
-        <div class="iar-tb">Black</div>
-        <div class="iar-tv">Lvl 6-2</div>
-        <div class="iar-ts">43 shuttles</div>
-      </div>
-    </div>
     <div class="grade-badge none" id="badge-iar">
       <span class="grade-badge-icon">—</span>
       <div>
@@ -579,101 +488,6 @@ input[type=number]:focus{outline:3px solid var(--army-gold);outline-offset:3px;}
 
 </div><!-- /exp-grid-2 -->
 
-<!-- SECTION 02: PERFORMANCE ANALYSIS -->
-<div class="section-hdr">02 &nbsp;// &nbsp;Performance Analysis</div>
-
-<div class="exp-grid-2col">
-
-  <!-- RADAR CHART -->
-  <div class="grid-cell chart-cell" style="background:var(--army-black);">
-    <div class="chart-cell-hdr">
-      <span class="chart-cell-title">Event Profile</span>
-      <span class="chart-cell-sub">Radar / Performance</span>
-    </div>
-    <div class="radar-wrap">
-      <canvas id="radar-chart"></canvas>
-    </div>
-  </div>
-
-  <!-- THRESHOLD TABLE -->
-  <div class="grid-cell chart-cell" style="background:var(--army-black);padding-bottom:0;">
-    <div class="chart-cell-hdr">
-      <span class="chart-cell-title">Scoring Thresholds</span>
-      <span class="chart-cell-sub" style="color:var(--army-gold);">Your score highlighted</span>
-    </div>
-    <table class="thresh-table">
-      <thead>
-        <tr>
-          <th>PDC</th><th>SLJ (in)</th><th>SPT (cm)</th><th>SDL (lbs)</th><th>IAR</th><th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr class="row-black">
-          <td><span class="band-pip black"></span>Black</td>
-          <td>63"</td><td>450</td><td>160</td><td>6-2 (43)</td>
-          <td id="td-black">—</td>
-        </tr>
-        <tr class="row-gray">
-          <td><span class="band-pip gray"></span>Gray</td>
-          <td>55"</td><td>400</td><td>140</td><td>5-8 (40)</td>
-          <td id="td-gray">—</td>
-        </tr>
-        <tr class="row-gold">
-          <td><span class="band-pip gold"></span>Gold</td>
-          <td>47"</td><td>350</td><td>120</td><td>5-4 (36)</td>
-          <td id="td-gold">—</td>
-        </tr>
-        <tr class="row-white">
-          <td><span class="band-pip white"></span>White</td>
-          <td colspan="4">Below Gold minimum (any event)</td>
-          <td id="td-white">—</td>
-        </tr>
-        <tr class="your-row">
-          <td>&#9658; Your Score</td>
-          <td class="you" id="td-you-slj">—</td>
-          <td class="you" id="td-you-spt">—</td>
-          <td class="you" id="td-you-sdl">—</td>
-          <td class="you" id="td-you-iar">—</td>
-          <td class="you" id="td-you-grade">—</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-</div><!-- /exp-grid-2col -->
-
-<!-- BAR CHART -->
-<div class="section-hdr" style="margin-bottom:0;">Event vs. Thresholds &nbsp;<span style="font-weight:400;color:var(--gray-02);">— Normalized 0–100%</span></div>
-<div style="background:var(--army-black);padding:20px 24px 20px;margin-bottom:32px;border:2px solid rgba(255,255,255,0.1);border-top:none;">
-  <div style="position:relative;height:200px;">
-    <canvas id="bar-chart"></canvas>
-  </div>
-</div>
-
-<!-- SECTION 03: MOS REFERENCE -->
-<div class="section-hdr">03 &nbsp;// &nbsp;MOS Physical Demand Categories</div>
-<div class="mos-section">
-  <div class="mos-grid">
-    <div class="mos-item"><span class="mos-code">11A/B/C</span><span class="mos-title">Infantry</span><div class="mos-dot black"></div></div>
-    <div class="mos-item"><span class="mos-code">12B</span><span class="mos-title">Combat Engineer</span><div class="mos-dot black"></div></div>
-    <div class="mos-item"><span class="mos-code">13B</span><span class="mos-title">Field Artillery</span><div class="mos-dot black"></div></div>
-    <div class="mos-item"><span class="mos-code">13F</span><span class="mos-title">Fire Support</span><div class="mos-dot black"></div></div>
-    <div class="mos-item"><span class="mos-code">19D</span><span class="mos-title">Cavalry Scout</span><div class="mos-dot black"></div></div>
-    <div class="mos-item"><span class="mos-code">19K</span><span class="mos-title">Armor Crewman</span><div class="mos-dot black"></div></div>
-    <div class="mos-item"><span class="mos-code">68W</span><span class="mos-title">Combat Medic</span><div class="mos-dot black"></div></div>
-    <div class="mos-item"><span class="mos-code">11Z</span><span class="mos-title">Inf. Senior SGT</span><div class="mos-dot black"></div></div>
-    <div class="mos-item"><span class="mos-code">31A/B</span><span class="mos-title">Military Police</span><div class="mos-dot gray"></div></div>
-    <div class="mos-item"><span class="mos-code">25U</span><span class="mos-title">Signal Support</span><div class="mos-dot gray"></div></div>
-    <div class="mos-item"><span class="mos-code">92F</span><span class="mos-title">Petroleum Supply</span><div class="mos-dot gray"></div></div>
-    <div class="mos-item"><span class="mos-code">79R</span><span class="mos-title">Recruiter</span><div class="mos-dot gray"></div></div>
-    <div class="mos-item"><span class="mos-code">17C/E</span><span class="mos-title">Cyber</span><div class="mos-dot gold"></div></div>
-    <div class="mos-item"><span class="mos-code">35T</span><span class="mos-title">MI Systems</span><div class="mos-dot gold"></div></div>
-    <div class="mos-item"><span class="mos-code">42A</span><span class="mos-title">HR Specialist</span><div class="mos-dot gold"></div></div>
-    <div class="mos-item"><span class="mos-code">25B</span><span class="mos-title">IT Specialist</span><div class="mos-dot gold"></div></div>
-    <div class="mos-item"><span class="mos-code">68A</span><span class="mos-title">Biomedical</span><div class="mos-dot gold"></div></div>
-    <div class="mos-item"><span class="mos-code">09W</span><span class="mos-title">Warrant Off. Cand.</span><div class="mos-dot gold"></div></div>
-  </div>
-</div>
 
 </div><!-- /content-area -->
 
@@ -739,106 +553,6 @@ function lowestGrade(grades) {
 
 // ── STATE ──────────────────────────────────────────────────────────────────
 let S = { slj:55, spt:400, sdl:140, iarLvl:5, iarSht:8 };
-
-// ── CHART INSTANCES ────────────────────────────────────────────────────────
-let radarChart = null, barChart = null;
-
-function initCharts() {
-  // RADAR
-  radarChart = new Chart(document.getElementById('radar-chart'), {
-    type: 'radar',
-    data: {
-      labels: ['SLJ\n(Long Jump)', 'SPT\n(Power Throw)', 'SDL\n(Deadlift)', 'IAR\n(Aerobic Run)'],
-      datasets: [
-        {
-          label: 'Your Score',
-          data: [0,0,0,0],
-          borderColor: '#FFCC01',
-          backgroundColor: 'rgba(255,204,1,0.12)',
-          borderWidth: 2,
-          pointBackgroundColor: '#FFCC01',
-          pointRadius: 4,
-        },
-        {
-          label: 'BLACK threshold',
-          data: [100,100,100,100],
-          borderColor: 'rgba(255,255,255,0.25)',
-          backgroundColor: 'rgba(255,255,255,0.03)',
-          borderWidth: 1,
-          borderDash: [4,4],
-          pointRadius: 0,
-        },
-        {
-          label: 'GOLD threshold',
-          data: [40,40,40,40],
-          borderColor: 'rgba(255,204,1,0.25)',
-          backgroundColor: 'rgba(255,204,1,0.03)',
-          borderWidth: 1,
-          borderDash: [2,4],
-          pointRadius: 0,
-        }
-      ]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: {
-        r: {
-          min: 0, max: 110,
-          grid: { color: 'rgba(255,255,255,0.08)' },
-          angleLines: { color: 'rgba(255,255,255,0.08)' },
-          ticks: { display: false },
-          pointLabels: {
-            color: '#A8A6A2',
-            font: { family: "'G.I.'", size: 11 }
-          }
-        }
-      }
-    }
-  });
-
-  // BAR
-  barChart = new Chart(document.getElementById('bar-chart'), {
-    type: 'bar',
-    data: {
-      labels: ['SLJ', 'SPT', 'SDL', 'IAR'],
-      datasets: [
-        { label: 'Your Score %', data: [0,0,0,0], backgroundColor: ['#FFCC01','#FFCC01','#FFCC01','#FFCC01'], borderWidth: 0 },
-        { label: 'BLACK min', data: [100,100,100,100], type: 'line', borderColor: 'rgba(255,255,255,0.4)', backgroundColor: 'transparent', borderWidth: 1, borderDash: [5,5], pointRadius: 0 },
-        { label: 'GOLD min', data: [40,40,40,40], type: 'line', borderColor: 'rgba(255,204,1,0.4)', backgroundColor: 'transparent', borderWidth: 1, borderDash: [3,4], pointRadius: 0 },
-      ]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ' '+c.dataset.label+': '+Math.round(c.parsed.y)+'%' } } },
-      scales: {
-        x: { ticks: { color: '#A8A6A2', font: { family: "'G.I.'", size: 11 } }, grid: { display: false } },
-        y: { min: 0, max: 120, ticks: { color: '#A8A6A2', font: { family: "'G.I.'", size: 10 }, callback: v => v+'%' }, grid: { color: 'rgba(255,255,255,0.06)' } }
-      }
-    }
-  });
-}
-
-// Normalize scores to 0-110% for charts
-// black=100%, gold=40%, white=0%
-function normalize(event, val) {
-  const maxes = {slj:110, spt:700, sdl:220};
-  const blacks = {slj:63, spt:450, sdl:160};
-  const golds  = {slj:47, spt:350, sdl:120};
-  if (event === 'iar') {
-    const total = val;
-    if (total <= 0) return 0;
-    // gold=36 → 40%, black=43 → 100%, above → up to 110%
-    if (total < 36) return (total / 36) * 40;
-    if (total <= 43) return 40 + ((total - 36) / (43 - 36)) * 60;
-    return Math.min(110, 100 + ((total - 43) / 10) * 10);
-  }
-  if (val <= 0) return 0;
-  const g = golds[event], b = blacks[event], m = maxes[event];
-  if (val < g) return (val / g) * 40;
-  if (val <= b) return 40 + ((val - g) / (b - g)) * 60;
-  return Math.min(110, 100 + ((val - b) / (m - b)) * 10);
-}
 
 // ── RENDER ─────────────────────────────────────────────────────────────────
 function render() {
@@ -963,40 +677,6 @@ function render() {
   document.getElementById('sb-lowest').textContent = lowestEvent;
   document.getElementById('sb-pdc').textContent = overall==='white' ? 'NOT QUALIFIED' : info.label + ' AND BELOW';
 
-  // TABLE row highlights
-  const checkGrade = (req) => GRADE_ORDER[overall] >= GRADE_ORDER[req] ? '✓ QUALIFIED' : '✗';
-  document.getElementById('td-black').textContent = checkGrade('black');
-  document.getElementById('td-gray').textContent  = checkGrade('gray');
-  document.getElementById('td-gold').textContent  = checkGrade('gold');
-  document.getElementById('td-white').textContent = overall==='white' ? '⬅ YOUR RESULT' : '';
-  document.getElementById('td-you-slj').textContent = slj+'"';
-  document.getElementById('td-you-spt').textContent = spt+' cm';
-  document.getElementById('td-you-sdl').textContent = sdl+' lbs';
-  document.getElementById('td-you-iar').textContent = iarLvl+'-'+iarSht+' ('+iarTotal+')';
-  document.getElementById('td-you-grade').textContent = info.label;
-
-  // CHARTS
-  const nSlj = normalize('slj', slj);
-  const nSpt = normalize('spt', spt);
-  const nSdl = normalize('sdl', sdl);
-  const nIar = normalize('iar', iarTotal);
-
-  const COLORS = {
-    black:'rgba(255,255,255,0.8)',  gray:'rgba(168,166,162,0.8)',
-    gold:'rgba(255,204,1,0.85)',    white:'rgba(160,46,46,0.8)'
-  };
-
-  radarChart.data.datasets[0].data = [nSlj, nSpt, nSdl, nIar];
-  radarChart.data.datasets[0].borderColor = COLORS[overall];
-  radarChart.data.datasets[0].backgroundColor = COLORS[overall].replace('0.8','0.12');
-  radarChart.data.datasets[0].pointBackgroundColor = COLORS[overall];
-  radarChart.update('none');
-
-  barChart.data.datasets[0].data = [nSlj, nSpt, nSdl, nIar];
-  barChart.data.datasets[0].backgroundColor = [
-    COLORS[gSlj], COLORS[gSpt], COLORS[gSdl], COLORS[gIar]
-  ];
-  barChart.update('none');
 }
 
 // ── EVENT LISTENERS ────────────────────────────────────────────────────────
@@ -1033,7 +713,6 @@ window.syncIAR=function(){
 };
 
 // ── INIT ───────────────────────────────────────────────────────────────────
-initCharts();
 render();
 </script>
 </body>
