@@ -134,7 +134,7 @@
     <input id="sb-in" type="text" placeholder="🔍  Search name or ZIP…" autocomplete="off" />
     <div id="sd"></div>
   </div>
-  <button class="hbtn" onclick="toggleSb()">☰ Layers</button>
+  <button class="hbtn" onclick="toggleSb()">LAYERS</button>
 </header>
 
 <div id="body">
@@ -142,16 +142,46 @@
 
   <nav id="sb">
     <div class="ss">
-      <div class="st">Map Layers</div>
-      <label class="lr"><input type="checkbox" id="l-zip"    checked onchange="tLyr('zip')">   <div class="li" style="background:#0d2040;">📐</div><span class="ll">ZIP / ZCTA Boundaries</span><span class="lc" id="c-zip">…</span></label>
-      <label class="lr"><input type="checkbox" id="l-zl"     checked onchange="tLyr('zl')">    <div class="li" style="background:#0d1a30;">🔢</div><span class="ll">ZIP Labels on Map</span></label>
-      <label class="lr"><input type="checkbox" id="l-sch"    checked onchange="tLyr('sch')">   <div class="li" style="background:#2d1a00;">🏫</div><span class="ll">High Schools</span><span class="lc" id="c-sch">—</span></label>
-      <label class="lr"><input type="checkbox" id="l-uni"    checked onchange="tLyr('uni')">   <div class="li" style="background:#1e0a30;">🎓</div><span class="ll">Universities / Colleges</span><span class="lc" id="c-uni">—</span></label>
-      <label class="lr"><input type="checkbox" id="l-pd"     checked onchange="tLyr('pd')">    <div class="li" style="background:#0a1a30;">🚔</div><span class="ll">Police Departments</span><span class="lc" id="c-pd">—</span></label>
-      <label class="lr"><input type="checkbox" id="l-ct"     checked onchange="tLyr('ct')">    <div class="li" style="background:#0a2010;">⚖️</div><span class="ll">Courthouses</span><span class="lc" id="c-ct">—</span></label>
-      <label class="lr"><input type="checkbox" id="l-tb"     checked onchange="tLyr('tb')">    <div class="li" style="background:#300808;">🌮</div><span class="ll">Taco Bell</span><span class="lc" id="c-tb">—</span></label>
-      <label class="lr"><input type="checkbox" id="l-stn"    checked onchange="tLyr('stn')">   <div class="li" style="background:#1a1000;">⭐</div><span class="ll">Recruiting Station</span><span class="lc">1</span></label>
-    </div>
+  <div class="st">MAP LAYERS</div>
+  <label class="lr"><input type="checkbox" id="l-zip" checked onchange="tLyr('zip')">
+    <div class="li" style="background:#221F20;border-color:#FFCC01;"><svg viewBox="0 0 16 16" width="12" height="12" stroke="#FFCC01" stroke-width="1.5" fill="none"><rect x="2" y="2" width="12" height="12"/><line x1="2" y1="8" x2="14" y2="8"/><line x1="8" y1="2" x2="8" y2="14"/></svg></div>
+    <span class="ll">ZIP Boundaries</span><span class="lc" id="c-zip">…</span></label>
+  <label class="lr"><input type="checkbox" id="l-zl" checked onchange="tLyr('zl')">
+    <div class="li" style="background:#221F20;border-color:#57514a;"><svg viewBox="0 0 16 16" width="12" height="12" fill="#727365"><rect x="2" y="5" width="12" height="2"/><rect x="2" y="9" width="8" height="2"/></svg></div>
+    <span class="ll">ZIP Labels</span></label>
+  <label class="lr"><input type="checkbox" id="l-demo" onchange="toggleDemo()">
+    <div class="li" style="background:linear-gradient(135deg,#2F372F,#FFCC01);border-color:#FFCC01;"><svg viewBox="0 0 16 16" width="12" height="12" fill="white"><rect x="1" y="10" width="3" height="5"/><rect x="6" y="6" width="3" height="9"/><rect x="11" y="2" width="3" height="13"/></svg></div>
+    <span class="ll">17–24 Population</span></label>
+  <label class="lr"><input type="checkbox" id="l-sch" checked onchange="tLyr('sch')">
+    <div class="li" style="background:#221F20;border-color:#FFCC01;"><svg viewBox="0 0 16 16" width="12" height="12" fill="#FFCC01"><polygon points="8,2 15,6 8,10 1,6"/></svg></div>
+    <span class="ll">High Schools</span><span class="lc" id="c-sch">—</span></label>
+  <label class="lr"><input type="checkbox" id="l-uni" checked onchange="tLyr('uni')">
+    <div class="li" style="background:#2F372F;border-color:#FFCC01;"><svg viewBox="0 0 16 16" width="12" height="12" fill="#FFCC01"><rect x="1" y="11" width="14" height="2"/><rect x="2.5" y="5" width="2" height="6"/><rect x="7" y="5" width="2" height="6"/><rect x="11.5" y="5" width="2" height="6"/></svg></div>
+    <span class="ll">Universities</span><span class="lc" id="c-uni">—</span></label>
+  <label class="lr"><input type="checkbox" id="l-pd" checked onchange="tLyr('pd')">
+    <div class="li" style="background:#1a2a4a;border-color:#FFFFFF;"><svg viewBox="0 0 16 16" width="12" height="12" fill="white"><path d="M8,1 L15,4 L15,9 Q15,14 8,15 Q1,14 1,9 L1,4 Z"/></svg></div>
+    <span class="ll">Police Depts</span><span class="lc" id="c-pd">—</span></label>
+  <label class="lr"><input type="checkbox" id="l-ct" checked onchange="tLyr('ct')">
+    <div class="li" style="background:#2F372F;border-color:#FFFFFF;"><svg viewBox="0 0 16 16" width="12" height="12" stroke="white" stroke-width="1.5" fill="none"><line x1="8" y1="2" x2="8" y2="14"/><line x1="2" y1="5" x2="14" y2="5"/></svg></div>
+    <span class="ll">Courthouses</span><span class="lc" id="c-ct">—</span></label>
+  <label class="lr"><input type="checkbox" id="l-tb" checked onchange="tLyr('tb')">
+    <div class="li" style="background:#CF0000;border-color:#FFFFFF;"><svg viewBox="0 0 16 16" width="12" height="12" fill="white"><path d="M8,2 Q13,2 13,8 L13,12 L3,12 L3,8 Q3,2 8,2 Z"/></svg></div>
+    <span class="ll">Taco Bell</span><span class="lc" id="c-tb">—</span></label>
+  <label class="lr"><input type="checkbox" id="l-stn" checked onchange="tLyr('stn')">
+    <div class="li" style="background:#FFCC01;border-color:#221F20;"><svg viewBox="0 0 16 16" width="12" height="12" fill="#221F20"><polygon points="8,1 9.9,6.2 15.5,6.5 11.2,9.9 12.6,15.4 8,12.3 3.4,15.4 4.8,9.9 0.5,6.5 6.1,6.2"/></svg></div>
+    <span class="ll">Recruiting Station</span><span class="lc">1</span></label>
+</div>
+    <div class="ss">
+  <div class="st">MAP TILE</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
+    <button class="tile-btn" data-tile="dark"   onclick="setTile('dark')"
+      style="background:var(--accent);color:#221F20;border:1px solid var(--border);padding:7px 2px;font-family:'GI',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;cursor:pointer;text-transform:uppercase;">DARK</button>
+    <button class="tile-btn" data-tile="street" onclick="setTile('street')"
+      style="background:var(--card);color:var(--txt2);border:1px solid var(--border);padding:7px 2px;font-family:'GI',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;cursor:pointer;text-transform:uppercase;">STREET</button>
+    <button class="tile-btn" data-tile="sat"    onclick="setTile('sat')"
+      style="background:var(--card);color:var(--txt2);border:1px solid var(--border);padding:7px 2px;font-family:'GI',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;cursor:pointer;text-transform:uppercase;">SAT</button>
+  </div>
+</div>
     <div class="ss">
       <div class="st">Station Stats</div>
       <div class="sg">
