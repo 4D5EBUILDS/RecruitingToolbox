@@ -207,10 +207,48 @@ let noteStore={}, activeId=null, zipGJ=null;
 const LYR={};
 
 /* ── AO ZIP LIST ── */
-const AO_ZIPS=['68501','68502','68503','68504','68505','68506','68507','68508',
-               '68510','68512','68514','68516','68517','68520','68521','68522',
-               '68523','68524','68526','68527','68528','68529',
-               '68462','68317','68428','68336','68347','68366'];
+const AO_ZIPS=[
+  // Lincoln city
+  '68501','68502','68503','68504','68505','68506','68507','68508',
+  '68510','68512','68514','68516','68517','68520','68521','68522',
+  '68523','68524','68526','68527','68528','68529','68532','68588',
+  // Surrounding AO
+  '68317','68333','68336','68347','68366','68428','68462'
+];
+
+const ZIP_DEMO={
+  '68501':{pop1724:285, popTotal:2100},
+  '68502':{pop1724:1980,popTotal:14200},
+  '68503':{pop1724:3150,popTotal:20800},
+  '68504':{pop1724:2640,popTotal:19500},
+  '68505':{pop1724:2020,popTotal:15800},
+  '68506':{pop1724:1820,popTotal:14600},
+  '68507':{pop1724:2380,popTotal:17200},
+  '68508':{pop1724:2880,popTotal:18900},
+  '68510':{pop1724:2240,popTotal:17800},
+  '68512':{pop1724:1580,popTotal:13200},
+  '68514':{pop1724:380, popTotal:2800},
+  '68516':{pop1724:1360,popTotal:11400},
+  '68517':{pop1724:1080,popTotal:9200},
+  '68520':{pop1724:1480,popTotal:13600},
+  '68521':{pop1724:2060,popTotal:16400},
+  '68522':{pop1724:1280,popTotal:10800},
+  '68523':{pop1724:860, popTotal:7200},
+  '68524':{pop1724:1180,popTotal:10400},
+  '68526':{pop1724:1540,popTotal:13800},
+  '68527':{pop1724:680, popTotal:5800},
+  '68528':{pop1724:1380,popTotal:12200},
+  '68529':{pop1724:760, popTotal:6400},
+  '68532':{pop1724:580, popTotal:5200},
+  '68588':{pop1724:7840,popTotal:10200},
+  '68317':{pop1724:195, popTotal:1600},
+  '68333':{pop1724:480, popTotal:4200},
+  '68336':{pop1724:142, popTotal:1100},
+  '68347':{pop1724:285, popTotal:2400},
+  '68366':{pop1724:238, popTotal:1900},
+  '68428':{pop1724:192, popTotal:1600},
+  '68462':{pop1724:592, popTotal:5200},
+};
 
 const ZIP_PRI={'68503':'hot','68504':'hot','68507':'hot','68521':'hot',
                '68502':'warm','68505':'warm','68506':'warm','68510':'warm',
@@ -220,17 +258,32 @@ const ZIP_PRI={'68503':'hot','68504':'hot','68507':'hot','68521':'hot',
 const STATION={id:"stn",name:"USAREC Recruiting Station Lincoln",address:"505 N 27th St, Lincoln, NE 68503",lat:40.8181,lng:-96.6828,rsid:"4D5E"};
 
 const SCHOOLS=[
-  {id:"s1",name:"Lincoln High School",           address:"2229 J St",        city:"Lincoln",zip:"68510",lat:40.8037,lng:-96.6879,enrollment:2150,gradeRange:"9–12",principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
-  {id:"s2",name:"Lincoln Northeast High School", address:"2635 N 63rd St",   city:"Lincoln",zip:"68507",lat:40.8407,lng:-96.6289,enrollment:1850,gradeRange:"9–12",principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
-  {id:"s3",name:"Lincoln East High School",      address:"1000 S 70th St",   city:"Lincoln",zip:"68510",lat:40.7923,lng:-96.6175,enrollment:2050,gradeRange:"9–12",principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
-  {id:"s4",name:"Lincoln Southeast High School", address:"2955 S 70th St",   city:"Lincoln",zip:"68506",lat:40.7742,lng:-96.6200,enrollment:2200,gradeRange:"9–12",principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
-  {id:"s5",name:"Lincoln Southwest High School", address:"7001 S 14th St",   city:"Lincoln",zip:"68512",lat:40.7581,lng:-96.7104,enrollment:2000,gradeRange:"9–12",principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
-  {id:"s6",name:"Lincoln North Star High School",address:"5801 N 33rd St",   city:"Lincoln",zip:"68504",lat:40.8571,lng:-96.6693,enrollment:2100,gradeRange:"9–12",principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
-  {id:"s7",name:"Pius X High School",            address:"6000 A St",        city:"Lincoln",zip:"68510",lat:40.7975,lng:-96.6296,enrollment:900, gradeRange:"9–12",principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
-  {id:"s8",name:"Waverly High School",           address:"14511 Heywood St", city:"Waverly",zip:"68462",lat:40.9121,lng:-96.5293,enrollment:600, gradeRange:"9–12",principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
-  {id:"s9",name:"Raymond Central High School",   address:"315 W Vine St",    city:"Raymond",zip:"68428",lat:40.9574,lng:-96.7933,enrollment:280, gradeRange:"9–12",principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
-  {id:"s10",name:"Bennet High School",           address:"230 S 4th St",     city:"Bennet", zip:"68317",lat:40.6825,lng:-96.5135,enrollment:120, gradeRange:"9–12",principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
-  {id:"s11",name:"Crete High School",            address:"1500 Linden Ave",  city:"Crete",  zip:"68333",lat:40.6285,lng:-96.9465,enrollment:350, gradeRange:"9–12",principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
+  {id:"s1", name:"Lincoln High School",           address:"2229 J St",          city:"Lincoln",zip:"68510",lat:40.8037,lng:-96.6879,enrollment:2150,gradeRange:"9-12",
+   principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
+  {id:"s2", name:"Lincoln Northeast High School", address:"2635 N 63rd St",     city:"Lincoln",zip:"68507",lat:40.8407,lng:-96.6289,enrollment:1850,gradeRange:"9-12",
+   principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
+  {id:"s3", name:"Lincoln East High School",      address:"1000 S 70th St",     city:"Lincoln",zip:"68510",lat:40.7923,lng:-96.6175,enrollment:2050,gradeRange:"9-12",
+   principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
+  {id:"s4", name:"Lincoln Southeast High School", address:"2955 S 70th St",     city:"Lincoln",zip:"68506",lat:40.7742,lng:-96.6200,enrollment:2200,gradeRange:"9-12",
+   principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
+  {id:"s5", name:"Lincoln Southwest High School", address:"7001 S 14th St",     city:"Lincoln",zip:"68512",lat:40.7581,lng:-96.7104,enrollment:2000,gradeRange:"9-12",
+   principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
+  {id:"s6", name:"Lincoln North Star High School",address:"5801 N 33rd St",     city:"Lincoln",zip:"68504",lat:40.8571,lng:-96.6693,enrollment:2100,gradeRange:"9-12",
+   principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
+  {id:"s7", name:"Pius X High School",            address:"6000 A St",          city:"Lincoln",zip:"68510",lat:40.7975,lng:-96.6296,enrollment:900, gradeRange:"9-12",
+   principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
+  {id:"s8", name:"Lincoln Christian High School", address:"5901 N 14th St",     city:"Lincoln",zip:"68521",lat:40.8652,lng:-96.7103,enrollment:480, gradeRange:"K-12",
+   principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
+  {id:"s9", name:"Parkview Christian School",     address:"8701 Yankee Hill Rd",city:"Lincoln",zip:"68526",lat:40.7632,lng:-96.5938,enrollment:320, gradeRange:"K-12",
+   principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
+  {id:"s10",name:"Waverly High School",           address:"14511 Heywood St",   city:"Waverly",zip:"68462",lat:40.9121,lng:-96.5293,enrollment:600, gradeRange:"9-12",
+   principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
+  {id:"s11",name:"Raymond Central High School",   address:"315 W Vine St",      city:"Raymond",zip:"68428",lat:40.9574,lng:-96.7933,enrollment:280, gradeRange:"9-12",
+   principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
+  {id:"s12",name:"Bennet High School",            address:"230 S 4th St",       city:"Bennet", zip:"68317",lat:40.6825,lng:-96.5135,enrollment:120, gradeRange:"9-12",
+   principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
+  {id:"s13",name:"Crete High School",             address:"1500 Linden Ave",    city:"Crete",  zip:"68333",lat:40.6285,lng:-96.9465,enrollment:350, gradeRange:"9-12",
+   principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
 ];
 
 const UNIS=[
