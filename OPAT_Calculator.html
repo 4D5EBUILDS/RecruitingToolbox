@@ -4,993 +4,655 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>OPAT — Occupational Physical Assessment Test</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
-:root {
-  --bg:        #080a07;
-  --surface:   #0f1410;
-  --surface2:  #161d15;
-  --surface3:  #1e2820;
-  --border:    #253022;
-  --border2:   #344530;
-  --olive:     #6b8c3e;
-  --olive-l:   #91b858;
-  --olive-dim: #3d5224;
-  --amber:     #c4891f;
-  --amber-l:   #e8b040;
-  --amber-dim: #6b4a0e;
-  --red:       #b83228;
-  --red-l:     #e04535;
-  --gold:      #c8a830;
-  --gold-l:    #e8cc60;
-  --gray-c:    #5a7060;
-  --gray-l:    #7a9878;
-  --black-c:   #c0c8b8;
-  --white-c:   #3a4a38;
-  --text:      #b8c8a8;
-  --text-dim:  #6a806a;
-  --text-dimmer: #3d503d;
-  --white:     #e8f0d8;
-  --scan: rgba(140,200,80,0.03);
+/* ── FONTS ─────────────────────────────────────────────────────────────────── */
+@font-face{font-family:'G.I.';src:url('fonts/G.I.-400.ttf') format('truetype');font-weight:400;font-style:normal;}
+@font-face{font-family:'G.I.';src:url('fonts/G.I.-400Italic.ttf') format('truetype');font-weight:400;font-style:italic;}
+@font-face{font-family:'G.I.';src:url('fonts/G.I.-530.ttf') format('truetype');font-weight:530;font-style:normal;}
+@font-face{font-family:'G.I.';src:url('fonts/G.I.-530Italic.ttf') format('truetype');font-weight:530;font-style:italic;}
+@font-face{font-family:'G.I.';src:url('fonts/G.I.-750.ttf') format('truetype');font-weight:750;font-style:normal;}
+@font-face{font-family:'G.I.';src:url('fonts/G.I.-750Italic.ttf') format('truetype');font-weight:750;font-style:italic;}
+
+/* ── VARIABLES ──────────────────────────────────────────────────────────────── */
+:root{
+  --army-black:  #221F20;
+  --army-gold:   #FFCC01;
+  --army-green:  #2F372F;
+  --white:       #FFFFFF;
+  --field-01:    #3F4B36;
+  --gray-01:     #A8A6A2;
+  --gray-02:     #6E6C68;
+  --hi-red:      #A02E2E;
 }
+
+/* ── RESET ──────────────────────────────────────────────────────────────────── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'Rajdhani', sans-serif;
-  font-size: 15px;
-  min-height: 100vh;
-  overflow-x: hidden;
+html,body{min-height:100%;}
+body{
+  background:var(--army-black);
+  color:var(--white);
+  font-family:'G.I.',Eurostile,'DIN Next',Archivo,system-ui,sans-serif;
+  font-weight:400;
+  font-size:16px;
+  overflow-x:hidden;
+  hyphens:none;
 }
 
-/* Scanline overlay */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 2px,
-    var(--scan) 2px,
-    var(--scan) 4px
-  );
-  pointer-events: none;
-  z-index: 999;
+/* ── HEADER ─────────────────────────────────────────────────────────────────── */
+.site-header{
+  position:sticky;top:0;z-index:50;
+  background:var(--army-black);
+  border-bottom:2px solid var(--army-gold);
+  height:64px;
+  display:flex;align-items:center;
+  padding:0 5%;gap:16px;
+}
+.header-back{
+  display:flex;align-items:center;gap:8px;
+  text-decoration:none;color:var(--gray-01);
+  font-weight:530;font-size:11px;letter-spacing:1px;text-transform:uppercase;
+  border-right:1px solid var(--gray-02);padding-right:16px;margin-right:4px;
+  transition:color 0.15s;
+}
+.header-back:hover{color:var(--army-gold);}
+.header-star{flex-shrink:0;}
+.header-wordmark{
+  font-weight:750;font-size:13px;letter-spacing:0.5px;
+  text-transform:uppercase;color:var(--white);
+}
+.header-sep{color:var(--gray-02);margin:0 6px;font-weight:400;}
+.header-tool{
+  font-weight:750;font-size:18px;letter-spacing:0.5px;
+  text-transform:uppercase;color:var(--army-gold);
+}
+.header-subtitle{
+  font-weight:530;font-size:10px;letter-spacing:0.5px;
+  color:var(--gray-01);text-transform:uppercase;margin-left:4px;
+  display:flex;align-items:center;gap:6px;
+}
+.header-subtitle::before{content:'·';color:var(--gray-02);}
+.header-right{margin-left:auto;text-align:right;}
+.header-class{
+  font-size:10px;font-weight:530;letter-spacing:1px;
+  color:var(--gray-01);text-transform:uppercase;
+}
+.header-time{
+  font-size:10px;font-weight:400;color:var(--gray-02);
+  letter-spacing:0.5px;margin-top:2px;
 }
 
-/* Grid texture */
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image:
-    linear-gradient(var(--border) 1px, transparent 1px),
-    linear-gradient(90deg, var(--border) 1px, transparent 1px);
-  background-size: 32px 32px;
-  opacity: 0.25;
-  pointer-events: none;
-  z-index: 0;
+/* ── PDC RESULT PANEL ────────────────────────────────────────────────────────── */
+.pdc-panel{
+  background:var(--army-black);
+  border-bottom:1px solid rgba(255,255,255,0.1);
+  padding:28px 5%;
+  display:flex;align-items:center;gap:48px;flex-wrap:wrap;
+  animation:fadeUp 0.2s cubic-bezier(0.2,0.6,0,1) both;
+}
+.pdc-grade-block{flex:1;min-width:240px;}
+.pdc-micro{
+  font-size:10px;font-weight:530;letter-spacing:1px;
+  color:var(--gray-01);text-transform:uppercase;margin-bottom:6px;
+}
+.pdc-grade{
+  font-family:'G.I.',sans-serif;font-weight:750;
+  font-size:clamp(72px,12vw,136px);
+  line-height:0.88;text-transform:uppercase;letter-spacing:-1px;
+  transition:color 0.15s cubic-bezier(0.85,0,0.15,1);
+}
+.pdc-grade.grade-black{color:var(--white);}
+.pdc-grade.grade-gray {color:var(--gray-01);}
+.pdc-grade.grade-gold {color:var(--army-gold);}
+.pdc-grade.grade-white{color:var(--hi-red);}
+.pdc-sub{
+  font-size:13px;font-weight:400;color:var(--gray-01);
+  margin-top:8px;letter-spacing:0.3px;
+}
+.pdc-stats{display:flex;gap:20px;margin-top:14px;flex-wrap:wrap;}
+.pdc-stat{
+  font-size:11px;font-weight:530;letter-spacing:0.5px;
+  color:var(--white);text-transform:uppercase;
+  border-left:2px solid var(--army-gold);padding-left:10px;
+}
+.pdc-stat .stat-label{color:var(--gray-01);}
+
+/* band chips */
+.band-chips{
+  display:flex;flex-direction:column;gap:5px;
+  min-width:260px;
+}
+.band-chip{
+  display:flex;align-items:center;gap:12px;
+  padding:9px 14px;
+  border:2px solid var(--gray-02);
+  font-size:12px;font-weight:530;letter-spacing:0.5px;text-transform:uppercase;
+  color:var(--gray-02);
+  transition:all 0.15s cubic-bezier(0.85,0,0.15,1);
+}
+.band-chip-name{font-weight:750;}
+.band-chip-desc{opacity:0.7;flex:1;}
+.band-chip-status{margin-left:auto;font-weight:750;}
+.band-chip.active-black{border-color:var(--white);background:rgba(255,255,255,0.08);color:var(--white);}
+.band-chip.active-gray {border-color:var(--gray-01);background:rgba(168,166,162,0.08);color:var(--gray-01);}
+.band-chip.active-gold {border-color:var(--army-gold);background:rgba(255,204,1,0.1);color:var(--army-gold);}
+
+/* ── SECTION HEADER ──────────────────────────────────────────────────────────── */
+.section-hdr{
+  padding:10px 5%;
+  font-size:11px;font-weight:530;letter-spacing:1px;
+  color:var(--army-gold);text-transform:uppercase;
+  background:var(--army-green);
+  border-top:2px solid rgba(255,255,255,0.1);
+  border-bottom:2px solid rgba(255,255,255,0.1);
 }
 
-/* HEADER */
-header {
-  position: relative;
-  z-index: 10;
-  background: var(--surface);
-  border-bottom: 1px solid var(--border2);
-  padding: 0;
+/* ── CONTENT AREA ────────────────────────────────────────────────────────────── */
+.content-area{background:var(--army-green);padding:0 5% 48px;}
+
+/* ── EXPOSED GRID ────────────────────────────────────────────────────────────── */
+.exp-grid-2{
+  display:grid;grid-template-columns:1fr 1fr;
+  border:2px solid rgba(255,255,255,0.15);
+  margin-bottom:32px;
 }
-.header-top {
-  background: var(--olive-dim);
-  padding: 4px 24px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.exp-grid-2col{
+  display:grid;grid-template-columns:1fr 1fr;
+  border:2px solid rgba(255,255,255,0.15);
+  margin-bottom:32px;
 }
-.header-top-left {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 10px;
-  color: var(--olive-l);
-  letter-spacing: 0.12em;
+.grid-cell{
+  border:1px solid rgba(255,255,255,0.1);
+  margin:-1px 0 0 -1px;
+  padding:20px 24px 24px;
+  background:var(--field-01);
+  animation:fadeUp 0.3s cubic-bezier(0.2,0.6,0,1) both;
 }
-.header-top-right {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 10px;
-  color: var(--olive-l);
-  letter-spacing: 0.08em;
+.grid-cell:nth-child(2){animation-delay:.05s;}
+.grid-cell:nth-child(3){animation-delay:.10s;}
+.grid-cell:nth-child(4){animation-delay:.15s;}
+
+/* ── EVENT CELL ──────────────────────────────────────────────────────────────── */
+.event-eyebrow{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.event-num-lbl{font-size:10px;font-weight:530;letter-spacing:1px;color:var(--army-gold);text-transform:uppercase;}
+.event-abbr-badge{
+  font-size:10px;font-weight:750;letter-spacing:0.5px;color:var(--army-gold);
+  border:2px solid var(--army-gold);padding:2px 8px;text-transform:uppercase;
 }
-.header-main {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  padding: 16px 24px;
+.event-title{font-weight:750;font-size:21px;letter-spacing:0.3px;text-transform:uppercase;color:var(--white);margin-bottom:14px;line-height:1.1;}
+.metric-row{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:5px;}
+.metric-lbl{font-size:10px;font-weight:530;letter-spacing:0.5px;color:var(--gray-01);text-transform:uppercase;}
+.metric-val{font-size:13px;font-weight:530;color:var(--white);}
+
+/* ── INPUTS ──────────────────────────────────────────────────────────────────── */
+.input-row{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+input[type=range]{
+  flex:1;-webkit-appearance:none;appearance:none;
+  height:3px;background:var(--gray-02);outline:none;cursor:pointer;
 }
-.header-emblem {
-  width: 56px;
-  height: 56px;
-  flex-shrink: 0;
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:14px;height:14px;
+  background:var(--army-gold);cursor:pointer;border:none;border-radius:0;
 }
-.header-text h1 {
-  font-family: 'Oswald', sans-serif;
-  font-size: 28px;
-  font-weight: 700;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--white);
-  line-height: 1;
+input[type=range]::-moz-range-thumb{
+  width:14px;height:14px;background:var(--army-gold);
+  cursor:pointer;border-radius:0;border:none;
 }
-.header-text h2 {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 11px;
-  color: var(--olive-l);
-  letter-spacing: 0.1em;
-  margin-top: 4px;
-  font-weight: 400;
+input[type=number]{
+  width:72px;background:var(--army-black);border:2px solid var(--army-gold);
+  color:var(--white);font-family:'G.I.',sans-serif;font-weight:400;font-size:15px;
+  padding:5px 8px;text-align:center;outline:none;
+  -moz-appearance:textfield;
 }
-.header-right {
-  margin-left: auto;
-  text-align: right;
-}
-.version-tag {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 10px;
-  color: var(--amber);
-  border: 1px solid var(--amber-dim);
-  padding: 4px 10px;
-  display: inline-block;
-  letter-spacing: 0.1em;
-}
-.class-tag {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 10px;
-  color: var(--text-dim);
-  letter-spacing: 0.08em;
-  margin-top: 6px;
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0;}
+input[type=number]:focus{outline:3px solid var(--army-gold);outline-offset:3px;}
+.input-hint{
+  font-size:9px;font-weight:530;letter-spacing:0.5px;
+  color:var(--gray-02);text-transform:uppercase;margin-bottom:10px;
 }
 
-/* MAIN LAYOUT */
-.main-wrap {
-  position: relative;
-  z-index: 1;
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 20px 20px 40px;
+/* ── THRESHOLD TRACK ─────────────────────────────────────────────────────────── */
+.thresh-track{
+  height:4px;background:var(--gray-02);
+  position:relative;margin:4px 0 5px;overflow:visible;
+}
+.thresh-fill{
+  position:absolute;top:0;left:0;bottom:0;
+  transition:width 0.3s cubic-bezier(0.85,0,0.15,1),background 0.2s;
+}
+.thresh-marker{position:absolute;top:-5px;width:2px;height:14px;background:currentColor;}
+.thresh-marker.gold-m {color:var(--army-gold);opacity:0.85;}
+.thresh-marker.gray-m {color:var(--gray-01);opacity:0.85;}
+.thresh-marker.black-m{color:var(--white);opacity:0.6;}
+.thresh-labels{
+  display:flex;justify-content:space-between;
+  font-size:9px;font-weight:530;letter-spacing:0.5px;
+  color:var(--gray-02);text-transform:uppercase;margin-bottom:10px;
 }
 
-/* STATUS BAR */
-.status-bar {
-  background: var(--surface2);
-  border: 1px solid var(--border2);
-  border-left: 4px solid var(--olive);
-  padding: 12px 16px;
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
+/* ── GRADE BADGE ─────────────────────────────────────────────────────────────── */
+.grade-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:7px 14px;border:2px solid var(--gray-02);
+  margin-top:6px;transition:border-color 0.2s,background 0.2s;
 }
-.status-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.grade-badge.black{border-color:var(--white);background:rgba(255,255,255,0.06);}
+.grade-badge.gray {border-color:var(--gray-01);background:rgba(168,166,162,0.08);}
+.grade-badge.gold {border-color:var(--army-gold);background:rgba(255,204,1,0.08);}
+.grade-badge.white{border-color:var(--hi-red);background:rgba(160,46,46,0.10);}
+.grade-badge.none {border-color:var(--gray-02);background:transparent;}
+.grade-badge-icon{font-size:14px;}
+.grade-badge-text{font-weight:750;font-size:15px;letter-spacing:0.5px;text-transform:uppercase;}
+.grade-badge-sub {font-size:9px;font-weight:530;letter-spacing:1px;color:var(--gray-01);text-transform:uppercase;margin-top:1px;}
+
+/* ── SDL LADDER ──────────────────────────────────────────────────────────────── */
+.sdl-ladder{display:flex;gap:4px;flex-wrap:wrap;margin:8px 0 4px;}
+.sdl-step{
+  font-size:10px;font-weight:530;padding:4px 8px;
+  border:1px solid var(--gray-02);color:var(--gray-02);
+  cursor:pointer;letter-spacing:0.5px;transition:all 0.15s;user-select:none;
 }
-.status-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--olive);
-  animation: pulse 2s infinite;
+.sdl-step:hover{border-color:var(--army-gold);color:var(--army-gold);}
+
+/* ── IAR INPUTS ──────────────────────────────────────────────────────────────── */
+.iar-inputs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+.iar-field-lbl{font-size:10px;font-weight:530;letter-spacing:1px;color:var(--gray-01);text-transform:uppercase;margin-bottom:5px;}
+.iar-inputs input[type=number]{width:100%;font-size:22px;padding:10px 12px;}
+.iar-total-line{font-size:11px;font-weight:530;letter-spacing:0.5px;color:var(--gray-01);text-transform:uppercase;margin-bottom:10px;}
+.iar-total-line strong{color:var(--army-gold);font-weight:750;}
+.iar-thresholds{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:10px;}
+.iar-tc{padding:6px 10px;border:2px solid;}
+.iar-tc.gc{border-color:var(--army-gold);background:rgba(255,204,1,0.05);}
+.iar-tc.sc{border-color:var(--gray-01);background:rgba(168,166,162,0.05);}
+.iar-tc.bc{border-color:var(--white);background:rgba(255,255,255,0.04);}
+.iar-tb{font-size:9px;font-weight:530;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px;}
+.iar-tc.gc .iar-tb{color:var(--army-gold);}
+.iar-tc.sc .iar-tb{color:var(--gray-01);}
+.iar-tc.bc .iar-tb{color:var(--white);}
+.iar-tv{font-weight:750;font-size:16px;letter-spacing:0.3px;text-transform:uppercase;}
+.iar-tc.gc .iar-tv{color:var(--army-gold);}
+.iar-tc.sc .iar-tv{color:var(--gray-01);}
+.iar-tc.bc .iar-tv{color:var(--white);}
+.iar-ts{font-size:9px;color:var(--gray-02);letter-spacing:0.5px;margin-top:2px;}
+
+/* ── ANALYSIS PANELS ─────────────────────────────────────────────────────────── */
+.chart-cell{background:var(--army-black);padding:20px 24px;}
+.chart-cell-hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:14px;padding-bottom:10px;
+  border-bottom:1px solid rgba(255,255,255,0.08);
 }
-@keyframes pulse {
-  0%,100%{opacity:1;} 50%{opacity:.3;}
+.chart-cell-title{font-weight:750;font-size:13px;letter-spacing:0.5px;text-transform:uppercase;color:var(--white);}
+.chart-cell-sub{font-size:10px;font-weight:530;letter-spacing:0.5px;color:var(--gray-02);text-transform:uppercase;}
+.radar-wrap{position:relative;height:280px;width:100%;}
+
+/* ── THRESHOLD TABLE ─────────────────────────────────────────────────────────── */
+.thresh-table{width:100%;border-collapse:collapse;}
+.thresh-table th{
+  padding:8px 12px;text-align:left;
+  font-size:11px;font-weight:530;letter-spacing:1px;text-transform:uppercase;
+  background:var(--army-gold);color:var(--army-black);border:none;
 }
-.status-label {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 11px;
-  color: var(--text-dim);
-  letter-spacing: 0.06em;
+.thresh-table td{
+  padding:8px 12px;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+  font-size:12px;font-weight:530;letter-spacing:0.5px;
 }
-.status-value {
-  font-family: 'Rajdhani', sans-serif;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--white);
-  letter-spacing: 0.04em;
+.thresh-table tr:last-child td{border-bottom:none;}
+.thresh-table tr.row-black td{color:var(--white);}
+.thresh-table tr.row-gray  td{color:var(--gray-01);}
+.thresh-table tr.row-gold  td{color:var(--army-gold);}
+.thresh-table tr.row-white td{color:var(--hi-red);}
+.thresh-table td.you{font-weight:750;}
+.thresh-table tr.your-row{background:rgba(255,204,1,0.06);}
+.thresh-table tr.your-row td{border-top:2px solid var(--army-gold);}
+.thresh-table tr.your-row td:first-child{color:var(--army-gold);font-weight:750;}
+.band-pip{display:inline-block;width:3px;height:14px;margin-right:8px;vertical-align:middle;}
+.band-pip.black{background:var(--white);}
+.band-pip.gray {background:var(--gray-01);}
+.band-pip.gold {background:var(--army-gold);}
+.band-pip.white{background:var(--hi-red);}
+
+/* ── MOS SECTION ─────────────────────────────────────────────────────────────── */
+.mos-section{margin-bottom:32px;}
+.mos-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  border:2px solid rgba(255,255,255,0.1);
+  background:var(--army-black);
+}
+.mos-item{
+  padding:10px 14px;
+  border:1px solid rgba(255,255,255,0.07);
+  margin:-1px 0 0 -1px;
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  background:var(--army-black);
+}
+.mos-code{font-size:11px;font-weight:750;color:var(--gray-01);letter-spacing:0.5px;white-space:nowrap;}
+.mos-title{font-size:12px;font-weight:400;color:var(--white);flex:1;}
+.mos-dot{width:8px;height:8px;flex-shrink:0;}
+.mos-dot.black{background:var(--white);}
+.mos-dot.gray {background:var(--gray-01);}
+.mos-dot.gold {background:var(--army-gold);}
+
+/* ── FOOTER ──────────────────────────────────────────────────────────────────── */
+.site-footer{
+  background:var(--army-black);
+  border-top:2px solid rgba(255,255,255,0.08);
+  padding:16px 5%;
+  display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  font-size:10px;font-weight:530;letter-spacing:0.5px;
+  color:var(--gray-02);text-transform:uppercase;
 }
 
-/* RESULT HERO */
-.result-hero {
-  background: var(--surface);
-  border: 2px solid var(--border2);
-  padding: 20px 24px;
-  margin-bottom: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  flex-wrap: wrap;
-  position: relative;
-  overflow: hidden;
+/* ── ANIMATIONS ──────────────────────────────────────────────────────────────── */
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(8px);}
+  to  {opacity:1;transform:translateY(0);}
 }
-.result-hero::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, var(--olive) 0%, var(--amber) 100%);
-}
-.result-hero-left {}
-.result-hero-label {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 10px;
-  color: var(--text-dimmer);
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  margin-bottom: 4px;
-}
-.result-hero-grade {
-  font-family: 'Oswald', sans-serif;
-  font-size: 52px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  line-height: 1;
-  text-transform: uppercase;
-}
-.result-hero-sub {
-  font-size: 13px;
-  color: var(--text-dim);
-  margin-top: 6px;
-  letter-spacing: 0.04em;
-}
-.mos-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  flex: 1;
-  justify-content: flex-end;
-}
-.mos-tag {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 10px;
-  padding: 4px 10px;
-  border: 1px solid;
-  letter-spacing: 0.08em;
-}
-.mos-tag.eligible   { border-color: var(--olive);  color: var(--olive-l);  background: rgba(107,140,62,0.1); }
-.mos-tag.ineligible { border-color: var(--red);    color: var(--red-l);    background: rgba(184,50,40,0.1); }
 
-/* GRADE COLORS */
-.grade-black { color: var(--black-c); }
-.grade-gray  { color: var(--gray-l); }
-.grade-gold  { color: var(--gold-l); }
-.grade-white { color: var(--red-l); }
-
-/* 3-COL GRID */
-.grid {
-  display: grid;
-  gap: 16px;
-}
-.grid-3 { grid-template-columns: repeat(3, 1fr); }
-.grid-2 { grid-template-columns: repeat(2, 1fr); }
-.grid-12 { grid-template-columns: 1fr 2fr; }
+/* ── RESPONSIVE ──────────────────────────────────────────────────────────────── */
 @media(max-width:800px){
-  .grid-3,.grid-2,.grid-12{grid-template-columns:1fr;}
+  .exp-grid-2,.exp-grid-2col{grid-template-columns:1fr;}
+  .pdc-panel{gap:24px;}
+  .band-chips{min-width:unset;width:100%;}
+  .pdc-grade{font-size:clamp(56px,16vw,96px);}
 }
-
-/* EVENT CARD */
-.event-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-.event-card::after {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; bottom: 0;
-  width: 3px;
-}
-.event-card.black::after { background: var(--black-c); }
-.event-card.gray::after  { background: var(--gray-l); }
-.event-card.gold::after  { background: var(--gold-l); }
-.event-card.white::after { background: var(--red-l); }
-.event-card.none::after  { background: var(--border2); }
-
-.event-header {
-  padding: 10px 14px 8px 16px;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.event-num {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 9px;
-  color: var(--text-dimmer);
-  letter-spacing: 0.1em;
-}
-.event-name {
-  font-family: 'Oswald', sans-serif;
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--white);
-}
-.event-abbr {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 10px;
-  color: var(--amber);
-  border: 1px solid var(--amber-dim);
-  padding: 2px 6px;
-  letter-spacing: 0.08em;
-}
-.event-body {
-  padding: 14px 14px 14px 16px;
-  flex: 1;
-}
-
-/* FIELD */
-.field { margin-bottom: 12px; }
-.field-label {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 10px;
-  color: var(--text-dim);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 5px;
-}
-.field-label .fval {
-  font-size: 13px;
-  color: var(--olive-l);
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  font-family: 'Rajdhani', sans-serif;
-}
-.field-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.field-row input[type=range] {
-  flex: 1;
-  -webkit-appearance: none;
-  appearance: none;
-  height: 2px;
-  background: var(--border2);
-  outline: none;
-}
-.field-row input[type=range]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 16px;
-  height: 16px;
-  background: var(--olive-l);
-  cursor: pointer;
-  clip-path: polygon(50% 0%,100% 50%,50% 100%,0% 50%);
-  border: none;
-}
-.field-row input[type=range]::-moz-range-thumb {
-  width: 16px; height: 16px;
-  background: var(--olive-l);
-  cursor: pointer;
-  border-radius: 0;
-  border: none;
-  clip-path: polygon(50% 0%,100% 50%,50% 100%,0% 50%);
-}
-.field-row input[type=number] {
-  width: 74px;
-  background: var(--surface2);
-  border: 1px solid var(--border2);
-  color: var(--olive-l);
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 13px;
-  padding: 4px 6px;
-  text-align: center;
-  outline: none;
-}
-.field-row input[type=number]:focus { border-color: var(--olive); }
-/* IAR special input */
-.iar-inputs {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-bottom: 10px;
-}
-.iar-field { }
-.iar-label {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 9px;
-  color: var(--text-dimmer);
-  letter-spacing: 0.1em;
-  margin-bottom: 4px;
-}
-.iar-inputs input[type=number] {
-  width: 100%;
-  background: var(--surface2);
-  border: 1px solid var(--border2);
-  color: var(--olive-l);
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 15px;
-  padding: 7px 8px;
-  text-align: center;
-  outline: none;
-}
-.iar-inputs input[type=number]:focus { border-color: var(--olive); }
-
-/* GRADE BADGE */
-.grade-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 6px 12px;
-  border: 1px solid;
-  margin-top: 8px;
-}
-.grade-badge.black { border-color: var(--black-c); background: rgba(192,200,184,0.08); }
-.grade-badge.gray  { border-color: var(--gray-l);  background: rgba(122,152,120,0.1); }
-.grade-badge.gold  { border-color: var(--gold-l);  background: rgba(200,168,48,0.08); }
-.grade-badge.white { border-color: var(--red-l);   background: rgba(184,50,40,0.1); }
-.grade-badge.none  { border-color: var(--border2); background: transparent; }
-.grade-badge-icon { font-size: 14px; }
-.grade-badge-text {
-  font-family: 'Oswald', sans-serif;
-  font-size: 16px;
-  font-weight: 700;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-}
-.grade-badge-sub {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 9px;
-  color: var(--text-dim);
-  letter-spacing: 0.06em;
-  margin-top: 2px;
-}
-
-/* THRESHOLD BARS */
-.thresh-track {
-  height: 6px;
-  background: var(--surface3);
-  border: 1px solid var(--border);
-  position: relative;
-  margin: 10px 0 4px;
-  overflow: visible;
-}
-.thresh-fill {
-  position: absolute;
-  top: 0; left: 0; bottom: 0;
-  transition: width .4s ease, background .3s;
-}
-.thresh-marker {
-  position: absolute;
-  top: -4px;
-  width: 2px;
-  height: 14px;
-}
-.thresh-marker.gold-m  { background: var(--gold-l);  opacity: 0.7; }
-.thresh-marker.gray-m  { background: var(--gray-l);  opacity: 0.7; }
-.thresh-marker.black-m { background: var(--black-c); opacity: 0.7; }
-.thresh-labels {
-  display: flex;
-  justify-content: space-between;
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 9px;
-  color: var(--text-dimmer);
-  letter-spacing: 0.06em;
-}
-
-/* CHART PANEL */
-.chart-panel {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  padding: 0;
-}
-.chart-header {
-  padding: 10px 14px;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.chart-title {
-  font-family: 'Oswald', sans-serif;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--white);
-}
-.chart-body {
-  padding: 14px;
-}
-
-/* THRESHOLD TABLE */
-.thresh-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 11px;
-}
-.thresh-table th {
-  padding: 6px 10px;
-  text-align: left;
-  color: var(--text-dimmer);
-  letter-spacing: 0.1em;
-  font-weight: 400;
-  border-bottom: 1px solid var(--border);
-}
-.thresh-table td {
-  padding: 6px 10px;
-  border-bottom: 1px solid var(--border);
-  letter-spacing: 0.04em;
-}
-.thresh-table tr:last-child td { border-bottom: none; }
-.thresh-table tr.row-black td { color: var(--black-c); }
-.thresh-table tr.row-gray  td { color: var(--gray-l); }
-.thresh-table tr.row-gold  td { color: var(--gold-l); }
-.thresh-table tr.row-white td { color: var(--red-l); }
-.thresh-table td.you { font-weight: 700; color: var(--amber-l) !important; }
-.thresh-table tr.current-row { background: rgba(200,137,31,0.07); }
-
-/* MOS PANEL */
-.mos-panel {
-  background: var(--surface);
-  border: 1px solid var(--border);
-}
-.mos-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 0;
-}
-.mos-item {
-  padding: 8px 12px;
-  border-right: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-.mos-item:nth-child(3n){ border-right: none; }
-.mos-code {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 12px;
-  color: var(--text-dim);
-  letter-spacing: 0.04em;
-}
-.mos-title {
-  font-size: 12px;
-  color: var(--text);
-  letter-spacing: 0.02em;
-  flex: 1;
-}
-.mos-dot {
-  width: 8px; height: 8px;
-  flex-shrink: 0;
-}
-.mos-dot.black { background: var(--black-c); }
-.mos-dot.gray  { background: var(--gray-l); }
-.mos-dot.gold  { background: var(--gold-l); }
-
-/* DIVIDER */
-.section-label {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 10px;
-  color: var(--text-dimmer);
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  padding: 16px 0 8px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.section-label::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--border);
-}
-
-/* RADAR CHART container */
-.radar-wrap {
-  position: relative;
-  height: 260px;
-  width: 100%;
-}
-
-/* FOOTER */
-footer {
-  position: relative;
-  z-index: 1;
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 12px 20px 32px;
-  border-top: 1px solid var(--border);
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 10px;
-  color: var(--text-dimmer);
-  letter-spacing: 0.06em;
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-/* ANIMATE */
-@keyframes fadeUp {
-  from{opacity:0;transform:translateY(10px);}
-  to{opacity:1;transform:translateY(0);}
-}
-.event-card{animation:fadeUp .35s ease both;}
-.event-card:nth-child(2){animation-delay:.06s;}
-.event-card:nth-child(3){animation-delay:.12s;}
-.event-card:nth-child(4){animation-delay:.18s;}
-.result-hero{animation:fadeUp .25s ease both;}
 </style>
 </head>
 <body>
 
 <!-- HEADER -->
-<header>
-  <div class="header-top">
-    <span class="header-top-left">TRADOC // ARMY RECRUITING COMMAND // OPAT SCORING SYSTEM</span>
-    <span class="header-top-right" id="timestamp">LOADING...</span>
-  </div>
-  <div class="header-main">
-    <svg class="header-emblem" viewBox="0 0 56 56" fill="none">
-      <circle cx="28" cy="28" r="27" stroke="#6b8c3e" stroke-width="1.5"/>
-      <circle cx="28" cy="28" r="22" stroke="#3d5224" stroke-width="1"/>
-      <polygon points="28,6 32,20 47,20 35.5,29 39.5,43 28,34.5 16.5,43 20.5,29 9,20 24,20" fill="#3d5224" stroke="#91b858" stroke-width="1.2"/>
-      <polygon points="28,12 30.8,21 40,21 32.8,26.5 35.5,36 28,30.5 20.5,36 23.2,26.5 16,21 25.2,21" fill="#0f1410"/>
-      <text x="28" y="52" font-family="Share Tech Mono,monospace" font-size="5" fill="#6b8c3e" text-anchor="middle" letter-spacing="1">PHYSICAL READINESS</text>
-    </svg>
-    <div class="header-text">
-      <h1>OPAT</h1>
-      <h2>OCCUPATIONAL PHYSICAL ASSESSMENT TEST &nbsp;·&nbsp; GENDER &amp; AGE NEUTRAL &nbsp;·&nbsp; FM 7-22</h2>
-    </div>
-    <div class="header-right">
-      <div class="version-tag">UPDATED OCT 2021</div>
-      <div class="class-tag">FOR OFFICIAL USE ONLY — UNOFFICIAL TOOL</div>
-    </div>
+<header class="site-header">
+  <a class="header-back" href="index.html">← Toolbox</a>
+  <svg class="header-star" width="22" height="22" viewBox="0 0 22 22" fill="none" aria-label="U.S. Army">
+    <polygon points="11,1.5 13.6,8.2 21,8.2 15.2,12.6 17.4,19.5 11,15.2 4.6,19.5 6.8,12.6 1,8.2 8.4,8.2" fill="#FFCC01"/>
+  </svg>
+  <span class="header-wordmark">U.S. Army</span>
+  <span class="header-sep">|</span>
+  <span class="header-tool">OPAT</span>
+  <span class="header-subtitle">Occupational Physical Assessment Test</span>
+  <div class="header-right">
+    <div class="header-class">For Official Use Only &nbsp;·&nbsp; Unofficial Tool &nbsp;·&nbsp; Updated Oct 2021</div>
+    <div class="header-time" id="timestamp">--:--:-- UTC</div>
   </div>
 </header>
 
-<div class="main-wrap">
+<!-- PDC RESULT PANEL -->
+<section class="pdc-panel">
+  <div class="pdc-grade-block">
+    <div class="pdc-micro">Physical Demand Category</div>
+    <div class="pdc-grade grade-white" id="hero-grade">—</div>
+    <div class="pdc-sub" id="hero-sub">Enter scores below to calculate.</div>
+    <div class="pdc-stats">
+      <div class="pdc-stat"><span class="stat-label">Lowest event: </span><span id="sb-lowest">—</span></div>
+      <div class="pdc-stat"><span class="stat-label">PDC qualified: </span><span id="sb-pdc">—</span></div>
+    </div>
+  </div>
+  <div class="band-chips">
+    <div class="band-chip" id="chip-black">
+      <span class="band-chip-name">Black</span>
+      <span class="band-chip-desc">Heavy PDC</span>
+      <span class="band-chip-status">✗</span>
+    </div>
+    <div class="band-chip" id="chip-gray">
+      <span class="band-chip-name">Gray</span>
+      <span class="band-chip-desc">Significant PDC</span>
+      <span class="band-chip-status">✗</span>
+    </div>
+    <div class="band-chip" id="chip-gold">
+      <span class="band-chip-name">Gold</span>
+      <span class="band-chip-desc">Moderate PDC</span>
+      <span class="band-chip-status">✗</span>
+    </div>
+  </div>
+</section>
 
-<!-- STATUS BAR -->
-<div class="status-bar">
-  <div class="status-item">
-    <div class="status-dot"></div>
-    <span class="status-label">OVERALL GRADE</span>
-    <span class="status-value" id="sb-grade">—</span>
-  </div>
-  <div class="status-item">
-    <span class="status-label">LOWEST EVENT</span>
-    <span class="status-value" id="sb-lowest">—</span>
-  </div>
-  <div class="status-item">
-    <span class="status-label">PDC QUALIFIED</span>
-    <span class="status-value" id="sb-pdc">—</span>
-  </div>
-  <div class="status-item" style="margin-left:auto;">
-    <span class="status-label">NOTE:</span>
-    <span class="status-label" style="color:var(--text-dim);">OVERALL GRADE = LOWEST EVENT SCORE</span>
-  </div>
-</div>
+<!-- hidden compat — JS still writes these; values unused in new layout -->
+<span id="sb-grade" style="display:none"></span>
+<div id="hero-mos" style="display:none"></div>
 
-<!-- RESULT HERO -->
-<div class="result-hero">
-  <div class="result-hero-left">
-    <div class="result-hero-label">// PHYSICAL DEMAND CATEGORY //</div>
-    <div class="result-hero-grade grade-white" id="hero-grade">—</div>
-    <div class="result-hero-sub" id="hero-sub">Enter scores below to calculate</div>
-  </div>
-  <div class="mos-tags" id="hero-mos"></div>
-</div>
+<div class="content-area">
 
-<!-- EVENTS -->
-<div class="section-label">01 // EVENT INPUTS &amp; SCORING</div>
+<!-- SECTION 01: EVENT INPUTS -->
+<div class="section-hdr">01 &nbsp;// &nbsp;Event Inputs &amp; Scoring</div>
 
-<div class="grid grid-2" style="margin-bottom:16px;">
+<div class="exp-grid-2">
 
   <!-- SLJ -->
-  <div class="event-card none" id="card-slj">
-    <div class="event-header">
-      <div>
-        <div class="event-num">EVENT 01 / 04</div>
-        <div class="event-name">Standing Long Jump</div>
-      </div>
-      <div class="event-abbr">SLJ</div>
+  <div class="grid-cell event-card none" id="card-slj">
+    <div class="event-eyebrow">
+      <span class="event-num-lbl">Event 01 / SLJ</span>
+      <span class="event-abbr-badge">SLJ</span>
     </div>
-    <div class="event-body">
-      <div class="field">
-        <div class="field-label">
-          <span>Jump Distance</span>
-          <span class="fval" id="val-slj">—</span>
-        </div>
-        <div class="field-row">
-          <input type="range" id="rng-slj" min="20" max="110" step="1" value="55">
-          <input type="number" id="txt-slj" value="55" min="20" max="110">
-        </div>
-        <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text-dimmer);margin-top:3px;">
-          INCHES &nbsp;|&nbsp; RANGE: 20–110 IN
-        </div>
-      </div>
-      <div class="thresh-track">
-        <div class="thresh-fill" id="fill-slj" style="width:0%;background:var(--border2);"></div>
-        <div class="thresh-marker gold-m"  style="left:30.43%;"></div><!-- 47" = gold: (47-20)/(110-20)=30% -->
-        <div class="thresh-marker gray-m"  style="left:58.69%;"></div><!-- 55" = gray -->
-        <div class="thresh-marker black-m" style="left:73.91%;"></div><!-- 63" = black -->
-      </div>
-      <div class="thresh-labels">
-        <span>20"</span>
-        <span>GOLD 47"</span>
-        <span>GRAY 55"</span>
-        <span>BLACK 63"</span>
-        <span>110"</span>
-      </div>
-      <div class="grade-badge none" id="badge-slj">
-        <span class="grade-badge-icon">—</span>
-        <div>
-          <div class="grade-badge-text" id="badge-slj-text">NO SCORE</div>
-          <div class="grade-badge-sub">LOWER BODY POWER</div>
-        </div>
+    <div class="event-title">Standing Long Jump</div>
+    <div class="metric-row">
+      <span class="metric-lbl">Jump Distance</span>
+      <span class="metric-val" id="val-slj">—</span>
+    </div>
+    <div class="input-row">
+      <input type="range" id="rng-slj" min="20" max="110" step="1" value="55">
+      <input type="number" id="txt-slj" value="55" min="20" max="110">
+    </div>
+    <div class="input-hint">Inches &nbsp;·&nbsp; Range: 20–110 in</div>
+    <div class="thresh-track">
+      <div class="thresh-fill" id="fill-slj" style="width:0%;background:var(--gray-02);"></div>
+      <div class="thresh-marker gold-m"  style="left:30.43%;"></div>
+      <div class="thresh-marker gray-m"  style="left:38.69%;"></div>
+      <div class="thresh-marker black-m" style="left:47.82%;"></div>
+    </div>
+    <div class="thresh-labels">
+      <span>20"</span><span>Gold 47"</span><span>Gray 55"</span><span>Black 63"</span><span>110"</span>
+    </div>
+    <div class="grade-badge none" id="badge-slj">
+      <span class="grade-badge-icon">—</span>
+      <div>
+        <div class="grade-badge-text" id="badge-slj-text">No Score</div>
+        <div class="grade-badge-sub">Lower Body Power</div>
       </div>
     </div>
   </div>
 
   <!-- SPT -->
-  <div class="event-card none" id="card-spt">
-    <div class="event-header">
-      <div>
-        <div class="event-num">EVENT 02 / 04</div>
-        <div class="event-name">Seated Power Throw</div>
-      </div>
-      <div class="event-abbr">SPT</div>
+  <div class="grid-cell event-card none" id="card-spt">
+    <div class="event-eyebrow">
+      <span class="event-num-lbl">Event 02 / SPT</span>
+      <span class="event-abbr-badge">SPT</span>
     </div>
-    <div class="event-body">
-      <div class="field">
-        <div class="field-label">
-          <span>Throw Distance (cm)</span>
-          <span class="fval" id="val-spt">—</span>
-        </div>
-        <div class="field-row">
-          <input type="range" id="rng-spt" min="150" max="700" step="10" value="400">
-          <input type="number" id="txt-spt" value="400" min="150" max="700" step="10">
-        </div>
-        <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text-dimmer);margin-top:3px;">
-          CENTIMETERS &nbsp;|&nbsp; 4.4 LB MEDICINE BALL &nbsp;|&nbsp; RANGE: 150–700 CM
-        </div>
-      </div>
-      <div class="thresh-track">
-        <div class="thresh-fill" id="fill-spt" style="width:0%;background:var(--border2);"></div>
-        <div class="thresh-marker gold-m"  style="left:36.36%;"></div><!-- 350cm -->
-        <div class="thresh-marker gray-m"  style="left:45.45%;"></div><!-- 400cm -->
-        <div class="thresh-marker black-m" style="left:54.55%;"></div><!-- 450cm -->
-      </div>
-      <div class="thresh-labels">
-        <span>150</span>
-        <span>GOLD 350</span>
-        <span>GRAY 400</span>
-        <span>BLACK 450</span>
-        <span>700</span>
-      </div>
-      <div class="grade-badge none" id="badge-spt">
-        <span class="grade-badge-icon">—</span>
-        <div>
-          <div class="grade-badge-text" id="badge-spt-text">NO SCORE</div>
-          <div class="grade-badge-sub">UPPER BODY POWER</div>
-        </div>
+    <div class="event-title">Seated Power Throw</div>
+    <div class="metric-row">
+      <span class="metric-lbl">Throw Distance</span>
+      <span class="metric-val" id="val-spt">—</span>
+    </div>
+    <div class="input-row">
+      <input type="range" id="rng-spt" min="150" max="700" step="10" value="400">
+      <input type="number" id="txt-spt" value="400" min="150" max="700" step="10">
+    </div>
+    <div class="input-hint">Centimeters &nbsp;·&nbsp; 4.4 lb medicine ball &nbsp;·&nbsp; Range: 150–700 cm</div>
+    <div class="thresh-track">
+      <div class="thresh-fill" id="fill-spt" style="width:0%;background:var(--gray-02);"></div>
+      <div class="thresh-marker gold-m"  style="left:36.36%;"></div>
+      <div class="thresh-marker gray-m"  style="left:45.45%;"></div>
+      <div class="thresh-marker black-m" style="left:54.55%;"></div>
+    </div>
+    <div class="thresh-labels">
+      <span>150</span><span>Gold 350</span><span>Gray 400</span><span>Black 450</span><span>700</span>
+    </div>
+    <div class="grade-badge none" id="badge-spt">
+      <span class="grade-badge-icon">—</span>
+      <div>
+        <div class="grade-badge-text" id="badge-spt-text">No Score</div>
+        <div class="grade-badge-sub">Upper Body Power</div>
       </div>
     </div>
   </div>
 
   <!-- SDL -->
-  <div class="event-card none" id="card-sdl">
-    <div class="event-header">
-      <div>
-        <div class="event-num">EVENT 03 / 04</div>
-        <div class="event-name">Strength Deadlift</div>
-      </div>
-      <div class="event-abbr">SDL</div>
+  <div class="grid-cell event-card none" id="card-sdl">
+    <div class="event-eyebrow">
+      <span class="event-num-lbl">Event 03 / SDL</span>
+      <span class="event-abbr-badge">SDL</span>
     </div>
-    <div class="event-body">
-      <div class="field">
-        <div class="field-label">
-          <span>Max Lift (lbs)</span>
-          <span class="fval" id="val-sdl">—</span>
-        </div>
-        <div class="field-row">
-          <input type="range" id="rng-sdl" min="60" max="220" step="20" value="140">
-          <input type="number" id="txt-sdl" value="140" min="60" max="220" step="20">
-        </div>
-        <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text-dimmer);margin-top:3px;">
-          POUNDS (HEX BAR) &nbsp;|&nbsp; LADDER: 60, 120, 140, 160, 180, 190, 200, 210, 220 LBS
-        </div>
-      </div>
-      <!-- Weight ladder visual -->
-      <div style="display:flex;gap:4px;margin:8px 0;flex-wrap:wrap;">
-        <div id="sdl-60"  class="sdl-step" data-w="60"  style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:3px 6px;border:1px solid var(--border);color:var(--text-dimmer);cursor:pointer;letter-spacing:.04em;">60</div>
-        <div id="sdl-120" class="sdl-step" data-w="120" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:3px 6px;border:1px solid var(--border);color:var(--text-dimmer);cursor:pointer;letter-spacing:.04em;">120</div>
-        <div id="sdl-140" class="sdl-step" data-w="140" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:3px 6px;border:1px solid var(--gold-l);color:var(--gold-l);cursor:pointer;letter-spacing:.04em;">140★</div>
-        <div id="sdl-160" class="sdl-step" data-w="160" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:3px 6px;border:1px solid var(--border);color:var(--text-dimmer);cursor:pointer;letter-spacing:.04em;">160★</div>
-        <div id="sdl-180" class="sdl-step" data-w="180" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:3px 6px;border:1px solid var(--border);color:var(--text-dimmer);cursor:pointer;letter-spacing:.04em;">180</div>
-        <div id="sdl-190" class="sdl-step" data-w="190" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:3px 6px;border:1px solid var(--border);color:var(--text-dimmer);cursor:pointer;letter-spacing:.04em;">190</div>
-        <div id="sdl-200" class="sdl-step" data-w="200" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:3px 6px;border:1px solid var(--border);color:var(--text-dimmer);cursor:pointer;letter-spacing:.04em;">200</div>
-        <div id="sdl-210" class="sdl-step" data-w="210" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:3px 6px;border:1px solid var(--border);color:var(--text-dimmer);cursor:pointer;letter-spacing:.04em;">210</div>
-        <div id="sdl-220" class="sdl-step" data-w="220" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:3px 6px;border:1px solid var(--border);color:var(--text-dimmer);cursor:pointer;letter-spacing:.04em;">220</div>
-      </div>
-      <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text-dimmer);margin-bottom:8px;">★ = THRESHOLD WEIGHT (CLICK TO SELECT)</div>
-      <div class="thresh-track">
-        <div class="thresh-fill" id="fill-sdl" style="width:0%;background:var(--border2);"></div>
-        <div class="thresh-marker gold-m"  style="left:37.5%;"></div><!-- 120 of 60-220 -->
-        <div class="thresh-marker gray-m"  style="left:50%;"></div>
-        <div class="thresh-marker black-m" style="left:62.5%;"></div>
-      </div>
-      <div class="thresh-labels">
-        <span>60</span><span>GOLD 120</span><span>GRAY 140</span><span>BLACK 160</span><span>220</span>
-      </div>
-      <div class="grade-badge none" id="badge-sdl">
-        <span class="grade-badge-icon">—</span>
-        <div>
-          <div class="grade-badge-text" id="badge-sdl-text">NO SCORE</div>
-          <div class="grade-badge-sub">LOWER BODY STRENGTH</div>
-        </div>
+    <div class="event-title">Strength Deadlift</div>
+    <div class="metric-row">
+      <span class="metric-lbl">Max Lift</span>
+      <span class="metric-val" id="val-sdl">—</span>
+    </div>
+    <div class="input-row">
+      <input type="range" id="rng-sdl" min="60" max="220" step="20" value="140">
+      <input type="number" id="txt-sdl" value="140" min="60" max="220" step="20">
+    </div>
+    <div class="input-hint">Pounds (hex bar) &nbsp;·&nbsp; Ladder: 60, 120, 140, 160, 180, 190, 200, 210, 220</div>
+    <div class="sdl-ladder">
+      <div class="sdl-step" id="sdl-60"  data-w="60">60</div>
+      <div class="sdl-step" id="sdl-120" data-w="120">120</div>
+      <div class="sdl-step" id="sdl-140" data-w="140">140★</div>
+      <div class="sdl-step" id="sdl-160" data-w="160">160★</div>
+      <div class="sdl-step" id="sdl-180" data-w="180">180</div>
+      <div class="sdl-step" id="sdl-190" data-w="190">190</div>
+      <div class="sdl-step" id="sdl-200" data-w="200">200</div>
+      <div class="sdl-step" id="sdl-210" data-w="210">210</div>
+      <div class="sdl-step" id="sdl-220" data-w="220">220</div>
+    </div>
+    <div class="input-hint">★ = threshold weight (click to select)</div>
+    <div class="thresh-track">
+      <div class="thresh-fill" id="fill-sdl" style="width:0%;background:var(--gray-02);"></div>
+      <div class="thresh-marker gold-m"  style="left:37.5%;"></div>
+      <div class="thresh-marker gray-m"  style="left:50%;"></div>
+      <div class="thresh-marker black-m" style="left:62.5%;"></div>
+    </div>
+    <div class="thresh-labels">
+      <span>60</span><span>Gold 120</span><span>Gray 140</span><span>Black 160</span><span>220</span>
+    </div>
+    <div class="grade-badge none" id="badge-sdl">
+      <span class="grade-badge-icon">—</span>
+      <div>
+        <div class="grade-badge-text" id="badge-sdl-text">No Score</div>
+        <div class="grade-badge-sub">Lower Body Strength</div>
       </div>
     </div>
   </div>
 
   <!-- IAR -->
-  <div class="event-card none" id="card-iar">
-    <div class="event-header">
-      <div>
-        <div class="event-num">EVENT 04 / 04</div>
-        <div class="event-name">Interval Aerobic Run</div>
-      </div>
-      <div class="event-abbr">IAR</div>
+  <div class="grid-cell event-card none" id="card-iar">
+    <div class="event-eyebrow">
+      <span class="event-num-lbl">Event 04 / IAR</span>
+      <span class="event-abbr-badge">IAR</span>
     </div>
-    <div class="event-body">
-      <div class="iar-inputs">
-        <div class="iar-field">
-          <div class="iar-label">LEVEL (1–10+)</div>
-          <input type="number" id="txt-iar-lvl" value="5" min="1" max="15" step="1" oninput="syncIAR()">
-        </div>
-        <div class="iar-field">
-          <div class="iar-label">SHUTTLE (1–13)</div>
-          <input type="number" id="txt-iar-sht" value="8" min="1" max="13" step="1" oninput="syncIAR()">
-        </div>
+    <div class="event-title">Interval Aerobic Run</div>
+    <div class="iar-inputs">
+      <div>
+        <div class="iar-field-lbl">Level (1–10+)</div>
+        <input type="number" id="txt-iar-lvl" value="5" min="1" max="15" step="1" oninput="syncIAR()">
       </div>
-      <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text-dimmer);margin-bottom:10px;">
-        TOTAL SHUTTLES: <span id="iar-total" style="color:var(--olive-l);font-weight:700;">—</span> &nbsp;|&nbsp; BEEP TEST / 20M SHUTTLE RUN
+      <div>
+        <div class="iar-field-lbl">Shuttle (1–13)</div>
+        <input type="number" id="txt-iar-sht" value="8" min="1" max="13" step="1" oninput="syncIAR()">
       </div>
-      <!-- Level thresholds visual -->
-      <div style="margin-bottom:8px;">
-        <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text-dimmer);margin-bottom:4px;">THRESHOLDS:</div>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;">
-          <div style="padding:5px 8px;border:1px solid var(--gold-l);background:rgba(200,168,48,0.05);">
-            <div style="font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--gold-l);">GOLD</div>
-            <div style="font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;color:var(--gold-l);">LVL 5-4</div>
-            <div style="font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--text-dimmer);">36 SHUTTLES</div>
-          </div>
-          <div style="padding:5px 8px;border:1px solid var(--gray-l);background:rgba(122,152,120,0.05);">
-            <div style="font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--gray-l);">GRAY</div>
-            <div style="font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;color:var(--gray-l);">LVL 5-8</div>
-            <div style="font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--text-dimmer);">40 SHUTTLES</div>
-          </div>
-          <div style="padding:5px 8px;border:1px solid var(--black-c);background:rgba(192,200,184,0.05);">
-            <div style="font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--black-c);">BLACK</div>
-            <div style="font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;color:var(--black-c);">LVL 6-2</div>
-            <div style="font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--text-dimmer);">43 SHUTTLES</div>
-          </div>
-        </div>
+    </div>
+    <div class="iar-total-line">Total shuttles: <strong id="iar-total">—</strong> &nbsp;·&nbsp; Beep test / 20m shuttle run</div>
+    <div class="iar-thresholds">
+      <div class="iar-tc gc">
+        <div class="iar-tb">Gold</div>
+        <div class="iar-tv">Lvl 5-4</div>
+        <div class="iar-ts">36 shuttles</div>
       </div>
-      <div class="grade-badge none" id="badge-iar">
-        <span class="grade-badge-icon">—</span>
-        <div>
-          <div class="grade-badge-text" id="badge-iar-text">NO SCORE</div>
-          <div class="grade-badge-sub">AEROBIC CAPACITY</div>
-        </div>
+      <div class="iar-tc sc">
+        <div class="iar-tb">Gray</div>
+        <div class="iar-tv">Lvl 5-8</div>
+        <div class="iar-ts">40 shuttles</div>
+      </div>
+      <div class="iar-tc bc">
+        <div class="iar-tb">Black</div>
+        <div class="iar-tv">Lvl 6-2</div>
+        <div class="iar-ts">43 shuttles</div>
+      </div>
+    </div>
+    <div class="grade-badge none" id="badge-iar">
+      <span class="grade-badge-icon">—</span>
+      <div>
+        <div class="grade-badge-text" id="badge-iar-text">No Score</div>
+        <div class="grade-badge-sub">Aerobic Capacity</div>
       </div>
     </div>
   </div>
 
-</div><!-- /grid -->
+</div><!-- /exp-grid-2 -->
 
-<!-- CHARTS + TABLE -->
-<div class="section-label">02 // PERFORMANCE ANALYSIS</div>
+<!-- SECTION 02: PERFORMANCE ANALYSIS -->
+<div class="section-hdr">02 &nbsp;// &nbsp;Performance Analysis</div>
 
-<div class="grid grid-12" style="margin-bottom:16px;">
+<div class="exp-grid-2col">
 
   <!-- RADAR CHART -->
-  <div class="chart-panel">
-    <div class="chart-header">
-      <span class="chart-title">Event Profile</span>
-      <span style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text-dimmer);">RADAR / PERFORMANCE</span>
+  <div class="grid-cell chart-cell" style="background:var(--army-black);">
+    <div class="chart-cell-hdr">
+      <span class="chart-cell-title">Event Profile</span>
+      <span class="chart-cell-sub">Radar / Performance</span>
     </div>
-    <div class="chart-body">
-      <div class="radar-wrap">
-        <canvas id="radar-chart"></canvas>
-      </div>
+    <div class="radar-wrap">
+      <canvas id="radar-chart"></canvas>
     </div>
   </div>
 
   <!-- THRESHOLD TABLE -->
-  <div class="chart-panel">
-    <div class="chart-header">
-      <span class="chart-title">Scoring Thresholds</span>
-      <span style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--amber);">YOUR SCORE HIGHLIGHTED</span>
+  <div class="grid-cell chart-cell" style="background:var(--army-black);padding-bottom:0;">
+    <div class="chart-cell-hdr">
+      <span class="chart-cell-title">Scoring Thresholds</span>
+      <span class="chart-cell-sub" style="color:var(--army-gold);">Your score highlighted</span>
     </div>
-    <div class="chart-body" style="padding:0;">
-      <table class="thresh-table">
-        <thead>
-          <tr>
-            <th>PDC</th>
-            <th>SLJ (in)</th>
-            <th>SPT (cm)</th>
-            <th>SDL (lbs)</th>
-            <th>IAR</th>
-            <th>STATUS</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="row-black">
-            <td>⬛ BLACK</td><td>63"</td><td>450</td><td>160</td><td>6-2 (43)</td><td id="td-black">—</td>
-          </tr>
-          <tr class="row-gray">
-            <td>▪️ GRAY</td><td>55"</td><td>400</td><td>140</td><td>5-8 (40)</td><td id="td-gray">—</td>
-          </tr>
-          <tr class="row-gold">
-            <td>🟡 GOLD</td><td>47"</td><td>350</td><td>120</td><td>5-4 (36)</td><td id="td-gold">—</td>
-          </tr>
-          <tr class="row-white">
-            <td>⬜ WHITE</td><td colspan="4">BELOW GOLD MINIMUM (any event)</td><td id="td-white">—</td>
-          </tr>
-          <tr style="background:rgba(200,137,31,0.1);">
-            <td style="color:var(--amber-l);font-family:'Share Tech Mono',monospace;">▶ YOUR SCORE</td>
-            <td class="you" id="td-you-slj">—</td>
-            <td class="you" id="td-you-spt">—</td>
-            <td class="you" id="td-you-sdl">—</td>
-            <td class="you" id="td-you-iar">—</td>
-            <td class="you" id="td-you-grade">—</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <table class="thresh-table">
+      <thead>
+        <tr>
+          <th>PDC</th><th>SLJ (in)</th><th>SPT (cm)</th><th>SDL (lbs)</th><th>IAR</th><th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="row-black">
+          <td><span class="band-pip black"></span>Black</td>
+          <td>63"</td><td>450</td><td>160</td><td>6-2 (43)</td>
+          <td id="td-black">—</td>
+        </tr>
+        <tr class="row-gray">
+          <td><span class="band-pip gray"></span>Gray</td>
+          <td>55"</td><td>400</td><td>140</td><td>5-8 (40)</td>
+          <td id="td-gray">—</td>
+        </tr>
+        <tr class="row-gold">
+          <td><span class="band-pip gold"></span>Gold</td>
+          <td>47"</td><td>350</td><td>120</td><td>5-4 (36)</td>
+          <td id="td-gold">—</td>
+        </tr>
+        <tr class="row-white">
+          <td><span class="band-pip white"></span>White</td>
+          <td colspan="4">Below Gold minimum (any event)</td>
+          <td id="td-white">—</td>
+        </tr>
+        <tr class="your-row">
+          <td>&#9658; Your Score</td>
+          <td class="you" id="td-you-slj">—</td>
+          <td class="you" id="td-you-spt">—</td>
+          <td class="you" id="td-you-sdl">—</td>
+          <td class="you" id="td-you-iar">—</td>
+          <td class="you" id="td-you-grade">—</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
-</div>
+</div><!-- /exp-grid-2col -->
 
 <!-- BAR CHART -->
-<div class="chart-panel" style="margin-bottom:16px;">
-  <div class="chart-header">
-    <span class="chart-title">Event vs. Thresholds</span>
-    <span style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text-dimmer);">NORMALIZED 0–100%</span>
-  </div>
-  <div class="chart-body">
-    <div style="position:relative;height:200px;">
-      <canvas id="bar-chart"></canvas>
-    </div>
+<div class="section-hdr" style="margin-bottom:0;">Event vs. Thresholds &nbsp;<span style="font-weight:400;color:var(--gray-02);">— Normalized 0–100%</span></div>
+<div style="background:var(--army-black);padding:20px 24px 20px;margin-bottom:32px;border:2px solid rgba(255,255,255,0.1);border-top:none;">
+  <div style="position:relative;height:200px;">
+    <canvas id="bar-chart"></canvas>
   </div>
 </div>
 
-<!-- MOS REFERENCE -->
-<div class="section-label">03 // MOS PHYSICAL DEMAND CATEGORIES</div>
-<div class="mos-panel" style="margin-bottom:16px;">
-  <div class="chart-header">
-    <span class="chart-title">MOS Reference — Physical Demand Categories</span>
-    <span style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text-dimmer);">⬛ HEAVY (BLACK) &nbsp; ▪ SIGNIFICANT (GRAY) &nbsp; 🟡 MODERATE (GOLD)</span>
-  </div>
+<!-- SECTION 03: MOS REFERENCE -->
+<div class="section-hdr">03 &nbsp;// &nbsp;MOS Physical Demand Categories</div>
+<div class="mos-section">
   <div class="mos-grid">
     <div class="mos-item"><span class="mos-code">11A/B/C</span><span class="mos-title">Infantry</span><div class="mos-dot black"></div></div>
     <div class="mos-item"><span class="mos-code">12B</span><span class="mos-title">Combat Engineer</span><div class="mos-dot black"></div></div>
@@ -1013,11 +675,11 @@ footer {
   </div>
 </div>
 
-</div><!-- /main-wrap -->
+</div><!-- /content-area -->
 
-<footer>
-  <span>SOURCE: FM 7-22 · TRADOC PAM 350-70-14 · ARMY.MIL/OPAT · MILSPOT.COM — OPAT GRADING STANDARDS (OCT 2021)</span>
-  <span>NOT FOR OFFICIAL USE — EDUCATIONAL/TRAINING REFERENCE ONLY</span>
+<footer class="site-footer">
+  <span>Source: FM 7-22 &nbsp;·&nbsp; TRADOC PAM 350-70-14 &nbsp;·&nbsp; OPAT Grading Standards (Oct 2021)</span>
+  <span>Not for official use — Educational/training reference only</span>
 </footer>
 
 <script>
@@ -1064,10 +726,10 @@ function gradeIAR(total) {
 }
 
 const GRADE_INFO = {
-  black: { label:'BLACK',  sub:'Heavy PDC — Combat Arms eligible', color:'var(--black-c)', icon:'⬛', mos:'Combat Arms (11B, 19D, 12B, 13F...)' },
-  gray:  { label:'GRAY',   sub:'Significant PDC — Support MOS eligible', color:'var(--gray-l)',  icon:'▪️', mos:'Significant (31A, 25U, 92F...)' },
-  gold:  { label:'GOLD',   sub:'Moderate PDC — Minimum qualified', color:'var(--gold-l)', icon:'🟡', mos:'Moderate (17C, 42A, 25B...)' },
-  white: { label:'WHITE',  sub:'Not qualified — BELOW minimum standard', color:'var(--red-l)',  icon:'❌', mos:'NOT QUALIFIED' },
+  black: { label:'BLACK',  sub:'Heavy PDC — Combat Arms eligible',       color:'#FFFFFF',  icon:'', mos:'Combat Arms (11B, 19D, 12B, 13F...)' },
+  gray:  { label:'GRAY',   sub:'Significant PDC — Support MOS eligible', color:'#A8A6A2',  icon:'', mos:'Significant (31A, 25U, 92F...)' },
+  gold:  { label:'GOLD',   sub:'Moderate PDC — Minimum qualified',       color:'#FFCC01',  icon:'', mos:'Moderate (17C, 42A, 25B...)' },
+  white: { label:'WHITE',  sub:'Not qualified — BELOW minimum standard', color:'#A02E2E',  icon:'', mos:'NOT QUALIFIED' },
 };
 const GRADE_ORDER = {black:4, gray:3, gold:2, white:1};
 
@@ -1091,17 +753,17 @@ function initCharts() {
         {
           label: 'Your Score',
           data: [0,0,0,0],
-          borderColor: '#91b858',
-          backgroundColor: 'rgba(145,184,88,0.15)',
+          borderColor: '#FFCC01',
+          backgroundColor: 'rgba(255,204,1,0.12)',
           borderWidth: 2,
-          pointBackgroundColor: '#91b858',
+          pointBackgroundColor: '#FFCC01',
           pointRadius: 4,
         },
         {
           label: 'BLACK threshold',
           data: [100,100,100,100],
-          borderColor: 'rgba(192,200,184,0.3)',
-          backgroundColor: 'rgba(192,200,184,0.04)',
+          borderColor: 'rgba(255,255,255,0.25)',
+          backgroundColor: 'rgba(255,255,255,0.03)',
           borderWidth: 1,
           borderDash: [4,4],
           pointRadius: 0,
@@ -1109,8 +771,8 @@ function initCharts() {
         {
           label: 'GOLD threshold',
           data: [40,40,40,40],
-          borderColor: 'rgba(200,168,48,0.3)',
-          backgroundColor: 'rgba(200,168,48,0.04)',
+          borderColor: 'rgba(255,204,1,0.25)',
+          backgroundColor: 'rgba(255,204,1,0.03)',
           borderWidth: 1,
           borderDash: [2,4],
           pointRadius: 0,
@@ -1123,12 +785,12 @@ function initCharts() {
       scales: {
         r: {
           min: 0, max: 110,
-          grid: { color: 'rgba(50,68,48,0.6)' },
-          angleLines: { color: 'rgba(50,68,48,0.6)' },
+          grid: { color: 'rgba(255,255,255,0.08)' },
+          angleLines: { color: 'rgba(255,255,255,0.08)' },
           ticks: { display: false },
           pointLabels: {
-            color: '#6a806a',
-            font: { family: "'Share Tech Mono'", size: 10 }
+            color: '#A8A6A2',
+            font: { family: "'G.I.'", size: 11 }
           }
         }
       }
@@ -1141,17 +803,17 @@ function initCharts() {
     data: {
       labels: ['SLJ', 'SPT', 'SDL', 'IAR'],
       datasets: [
-        { label: 'Your Score %', data: [0,0,0,0], backgroundColor: ['#3d5224','#3d5224','#3d5224','#3d5224'], borderWidth: 0 },
-        { label: 'BLACK min', data: [100,100,100,100], type: 'line', borderColor: 'rgba(192,200,184,0.5)', backgroundColor: 'transparent', borderWidth: 1, borderDash: [5,5], pointRadius: 0 },
-        { label: 'GOLD min', data: [40,40,40,40], type: 'line', borderColor: 'rgba(200,168,48,0.5)', backgroundColor: 'transparent', borderWidth: 1, borderDash: [3,4], pointRadius: 0 },
+        { label: 'Your Score %', data: [0,0,0,0], backgroundColor: ['#FFCC01','#FFCC01','#FFCC01','#FFCC01'], borderWidth: 0 },
+        { label: 'BLACK min', data: [100,100,100,100], type: 'line', borderColor: 'rgba(255,255,255,0.4)', backgroundColor: 'transparent', borderWidth: 1, borderDash: [5,5], pointRadius: 0 },
+        { label: 'GOLD min', data: [40,40,40,40], type: 'line', borderColor: 'rgba(255,204,1,0.4)', backgroundColor: 'transparent', borderWidth: 1, borderDash: [3,4], pointRadius: 0 },
       ]
     },
     options: {
       responsive: true, maintainAspectRatio: false,
       plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ' '+c.dataset.label+': '+Math.round(c.parsed.y)+'%' } } },
       scales: {
-        x: { ticks: { color: '#6a806a', font: { family: "'Share Tech Mono'", size: 11 } }, grid: { display: false } },
-        y: { min: 0, max: 120, ticks: { color: '#6a806a', font: { family: "'Share Tech Mono'", size: 10 }, callback: v => v+'%' }, grid: { color: 'rgba(50,68,48,0.4)' } }
+        x: { ticks: { color: '#A8A6A2', font: { family: "'G.I.'", size: 11 } }, grid: { display: false } },
+        y: { min: 0, max: 120, ticks: { color: '#A8A6A2', font: { family: "'G.I.'", size: 10 }, callback: v => v+'%' }, grid: { color: 'rgba(255,255,255,0.06)' } }
       }
     }
   });
@@ -1226,11 +888,11 @@ function render() {
     return Math.max(0, Math.min(100, ((val-min)/(max-min))*100));
   }
   document.getElementById('fill-slj').style.width = pct('slj',slj,110,20)+'%';
-  document.getElementById('fill-slj').style.background = gSlj==='black'?'var(--black-c)':gSlj==='gray'?'var(--gray-l)':gSlj==='gold'?'var(--gold-l)':'var(--red-l)';
+  document.getElementById('fill-slj').style.background = gSlj==='black'?'#FFFFFF':gSlj==='gray'?'#A8A6A2':gSlj==='gold'?'#FFCC01':'#A02E2E';
   document.getElementById('fill-spt').style.width = pct('spt',spt,700,150)+'%';
-  document.getElementById('fill-spt').style.background = gSpt==='black'?'var(--black-c)':gSpt==='gray'?'var(--gray-l)':gSpt==='gold'?'var(--gold-l)':'var(--red-l)';
+  document.getElementById('fill-spt').style.background = gSpt==='black'?'#FFFFFF':gSpt==='gray'?'#A8A6A2':gSpt==='gold'?'#FFCC01':'#A02E2E';
   document.getElementById('fill-sdl').style.width = pct('sdl',sdl,220,60)+'%';
-  document.getElementById('fill-sdl').style.background = gSdl==='black'?'var(--black-c)':gSdl==='gray'?'var(--gray-l)':gSdl==='gold'?'var(--gold-l)':'var(--red-l)';
+  document.getElementById('fill-sdl').style.background = gSdl==='black'?'#FFFFFF':gSdl==='gray'?'#A8A6A2':gSdl==='gold'?'#FFCC01':'#A02E2E';
 
   updateCard('slj', gSlj);
   updateCard('spt', gSpt);
@@ -1242,17 +904,17 @@ function render() {
     const w = parseInt(el.dataset.w);
     const isActive = w === sdl;
     if(isActive){
-      el.style.background = 'rgba(145,184,88,0.2)';
-      el.style.color = 'var(--olive-l)';
-      el.style.borderColor = 'var(--olive-l)';
+      el.style.background = 'rgba(255,204,1,0.15)';
+      el.style.color = '#FFCC01';
+      el.style.borderColor = '#FFCC01';
     } else if(w === 120){
-      el.style.background='transparent'; el.style.color='var(--gold-l)'; el.style.borderColor='var(--gold-l)';
+      el.style.background='transparent'; el.style.color='#FFCC01'; el.style.borderColor='#FFCC01';
     } else if(w === 140){
-      el.style.background='transparent'; el.style.color='var(--gray-l)'; el.style.borderColor='var(--gray-l)';
+      el.style.background='transparent'; el.style.color='#A8A6A2'; el.style.borderColor='#A8A6A2';
     } else if(w === 160){
-      el.style.background='transparent'; el.style.color='var(--black-c)'; el.style.borderColor='var(--black-c)';
+      el.style.background='transparent'; el.style.color='#FFFFFF'; el.style.borderColor='#FFFFFF';
     } else {
-      el.style.background='transparent'; el.style.color='var(--text-dimmer)'; el.style.borderColor='var(--border)';
+      el.style.background='transparent'; el.style.color='#6E6C68'; el.style.borderColor='#6E6C68';
     }
   });
 
@@ -1271,8 +933,17 @@ function render() {
   const info = GRADE_INFO[overall];
   const hero = document.getElementById('hero-grade');
   hero.textContent = info.label;
-  hero.className = 'result-hero-grade grade-'+overall;
+  hero.className = 'pdc-grade grade-'+overall;
   document.getElementById('hero-sub').textContent = info.sub;
+
+  // Band chips
+  ['black','gray','gold'].forEach(function(band) {
+    const chip = document.getElementById('chip-'+band);
+    if (!chip) return;
+    const eligible = GRADE_ORDER[overall] >= GRADE_ORDER[band];
+    chip.className = 'band-chip' + (eligible ? ' active-'+band : '');
+    chip.querySelector('.band-chip-status').textContent = eligible ? '✓' : '✗';
+  });
 
   // MOS tags
   const mosTags = document.getElementById('hero-mos');
@@ -1311,8 +982,8 @@ function render() {
   const nIar = normalize('iar', iarTotal);
 
   const COLORS = {
-    black:'rgba(192,200,184,0.8)', gray:'rgba(122,152,120,0.8)',
-    gold:'rgba(200,168,48,0.8)',   white:'rgba(224,69,53,0.8)'
+    black:'rgba(255,255,255,0.8)',  gray:'rgba(168,166,162,0.8)',
+    gold:'rgba(255,204,1,0.85)',    white:'rgba(160,46,46,0.8)'
   };
 
   radarChart.data.datasets[0].data = [nSlj, nSpt, nSdl, nIar];
