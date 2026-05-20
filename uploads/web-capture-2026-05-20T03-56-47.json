@@ -1,0 +1,304 @@
+[
+  {
+    "id": "cap_mpdj4l0y_e6je0r",
+    "selector": "div.chp-timeline",
+    "label": "Be A B E A Defender. D E F E N D E R . S…",
+    "tag": "div",
+    "url": "https://www.goarmy.com/",
+    "title": "Be All You Can Be | U.S. Army",
+    "timestamp": "2026-05-20T03:55:55.378Z",
+    "innerText": "Be A\n\nB\nE\n \nA\n\nDefender.\n\nD\nE\nF\nE\nN\nD\nE\nR\n.\n\nSolver.\n\nS\nO\nL\nV\nE\nR\n.\n\nHealer.\n\nH\nE\nA\nL\nE\nR\n.\n\nPlanner.\n\nP\nL\nA\nN\nN\nE\nR\n.\n\nConnector.\n\nC\nO\nN\nN\nE\nC\nT\nO\nR\n.\n\nSoldier.\n\nS\nO\nL\nD\nI\nE\nR\n.",
+    "outerHTML": "<div class=\"chp-timeline\">\n      <div class=\"chp-stage chp-mobile chp-parallax\" style=\"background-image: url('/content/dam/goarmy/chapter-breaks/homepage-soldier-helicopter-sm-v2.jpg'); background-position-x: center\" role=\"img\" aria-label=\"Soldier looking out of a flying helicopter over a football stadium\"></div>\n      <div class=\"chp-stage chp-desktop chp-parallax\" style=\"background-image: url('/content/dam/goarmy/chapter-breaks/homepage-soldier-helicopter-lg-v2.jpg');  background-position-x: center\" role=\"img\" aria-label=\"Soldier looking out of a flying helicopter over a football stadium\"></div>\n      <div class=\"chp-stage chp-overlay\" style=\"opacity: 0.1\"></div>\n      <div class=\"chp-static-stage\">\n        <div class=\"chp-anim\">\n          <div class=\"chp-typewriter\">\n            <p class=\"sr-only\">Be A</p>\n            <p class=\"!text-gold uppercase chp-line t1 \" role=\"presentation\" style=\"--clip-width: 0%;\"><span>B</span><span>E</span><span>&nbsp;</span><span>A</span><div class=\"chp-cursor\" style=\"background-color: rgb(255, 204, 1); translate: none; rotate: none; scale: none; transform: translate(0px, 0px); opacity: 0; visibility: hidden;\"></div></p>\n          \n            <p class=\"sr-only\">Defender.</p>\n            <p class=\"!text-white uppercase chp-line t1 \" role=\"presentation\" style=\"--clip-width: 0%;\"><span>D</span><span>E</span><span>F</span><span>E</span><span>N</span><span>D</span><span>E</span><span>R</span><span>.</span><div class=\"chp-cursor\" style=\"background-color: rgb(255, 255, 255); translate: none; rotate: none; scale: none; transform: translate(0px, 0px); opacity: 0; visibility: hidden;\"></div></p>\n          \n            <p class=\"sr-only\">Solver.</p>\n            <p class=\"!text-white uppercase chp-line t1 \" role=\"presentation\" style=\"--clip-width: 0%;\"><span>S</span><span>O</span><span>L</span><span>V</span><span>E</span><span>R</span><span>.</span><div class=\"chp-cursor\" style=\"background-color: rgb(255, 255, 255); translate: none; rotate: none; scale: none; transform: translate(0px, 0px); opacity: 0; visibility: hidden;\"></div></p>\n          \n            <p class=\"sr-only\">Healer.</p>\n            <p class=\"!text-white uppercase chp-line t1 \" role=\"presentation\" style=\"--clip-width: 0%;\"><span>H</span><span>E</span><span>A</span><span>L</span><span>E</span><span>R</span><span>.</span><div class=\"chp-cursor\" style=\"background-color: rgb(255, 255, 255); translate: none; rotate: none; scale: none; transform: translate(0px, 0px); opacity: 0; visibility: hidden;\"></div></p>\n          \n            <p class=\"sr-only\">Planner.</p>\n            <p class=\"!text-white uppercase chp-line t1 \" role=\"presentation\" style=\"--clip-width: 0%;\"><span>P</span><span>L</span><span>A</span><span>N</span><span>N</span><span>E</span><span>R</span><span>.</span><div class=\"chp-cursor\" style=\"background-color: rgb(255, 255, 255); translate: none; rotate: none; scale: none; transform: translate(0px, 0px); opacity: 0; visibility: hidden;\"></div></p>\n          \n            <p class=\"sr-only\">Connector.</p>\n            <p class=\"!text-white uppercase chp-line t1 \" role=\"presentation\" style=\"--clip-width: 0%;\"><span>C</span><span>O</span><span>N</span><span>N</span><span>E</span><span>C</span><span>T</span><span>O</span><span>R</span><span>.</span><div class=\"chp-cursor\" style=\"background-color: rgb(255, 255, 255); translate: none; rotate: none; scale: none; transform: translate(0px, 0px); opacity: 0; visibility: hidden;\"></div></p>\n          \n            <p class=\"sr-only\">Soldier.</p>\n            <p class=\"!text-gold uppercase chp-line t1 \" role=\"presentation\" style=\"--clip-width: 0%;\"><span>S</span><span>O</span><span>L</span><span>D</span><span>I</span><span>E</span><span>R</span><span>.</span><div class=\"chp-cursor\" style=\"background-color: rgb(255, 204, 1); translate: none; rotate: none; scale: none; transform: translate(0px, 0px); opacity: 0; visibility: hidden;\"></div></p>\n          </div>\n        </div>\n      </div>\n    </div>",
+    "rect": {
+      "x": 0,
+      "y": 49,
+      "width": 1430,
+      "height": 720
+    },
+    "computedStyles": {
+      "display": "block",
+      "position": "relative",
+      "top": "0px",
+      "right": "0px",
+      "bottom": "0px",
+      "left": "0px",
+      "width": "1430px",
+      "height": "720px",
+      "border": "0px solid rgb(0, 0, 0)",
+      "box-sizing": "border-box",
+      "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+      "font-family": "gi, arial, sans-serif",
+      "font-size": "18px",
+      "line-height": "27px",
+      "text-decoration": "none",
+      "overflow": "clip",
+      "transition": "all"
+    },
+    "cssRules": [
+      {
+        "selector": "*, ::before, ::after",
+        "css": "--tw-border-spacing-x: 0; --tw-border-spacing-y: 0; --tw-translate-x: 0; --tw-translate-y: 0; --tw-rotate: 0; --tw-skew-x: 0; --tw-skew-y: 0; --tw-scale-x: 1; --tw-scale-y: 1; --tw-pan-x: ; --tw-pan-y: ; --tw-pinch-zoom: ; --tw-scroll-snap-strictness: proximity; --tw-gradient-from-position: ; --tw-gradient-via-position: ; --tw-gradient-to-position: ; --tw-ordinal: ; --tw-slashed-zero: ; --tw-numeric-figure: ; --tw-numeric-spacing: ; --tw-numeric-fraction: ; --tw-ring-inset: ; --tw-ring-offset-width: 0px; --tw-ring-offset-color: #fff; --tw-ring-color: rgb(59 130 246 / .5); --tw-ring-offset-shadow: 0 0 #0000; --tw-ring-shadow: 0 0 #0000; --tw-shadow: 0 0 #0000; --tw-shadow-colored: 0 0 #0000; --tw-blur: ; --tw-brightness: ; --tw-contrast: ; --tw-grayscale: ; --tw-hue-rotate: ; --tw-invert: ; --tw-saturate: ; --tw-sepia: ; --tw-drop-shadow: ; --tw-backdrop-blur: ; --tw-backdrop-brightness: ; --tw-backdrop-contrast: ; --tw-backdrop-grayscale: ; --tw-backdrop-hue-rotate: ; --tw-backdrop-invert: ; --tw-backdrop-opacity: ; --tw-backdrop-saturate: ; --tw-backdrop-sepia: ; --tw-contain-size: ; --tw-contain-layout: ; --tw-contain-paint: ; --tw-contain-style: ;"
+      },
+      {
+        "selector": "*, ::before, ::after",
+        "css": "box-sizing: border-box; border-width: 0px; border-style: solid; border-color: currentcolor;"
+      },
+      {
+        "selector": "section[data-component=\"chapterbreakparallax\"] .chp-timeline",
+        "css": "overflow: clip; position: relative; height: 100vh; max-height: var(--max-mobile-height); width: 100%;"
+      },
+      {
+        "selector": "section[data-component=\"chapterbreakparallax\"] .chp-timeline",
+        "css": "max-height: var(--max-desktop-height);",
+        "media": "(min-width: 1024px)"
+      },
+      {
+        "selector": "section[data-component=\"chapterbreakparallax\"] .chp-timeline",
+        "css": "overflow: clip; position: relative; height: 100vh; max-height: var(--max-mobile-height); width: 100%;"
+      },
+      {
+        "selector": "section[data-component=\"chapterbreakparallax\"] .chp-timeline",
+        "css": "max-height: var(--max-desktop-height);",
+        "media": "(min-width: 1024px)"
+      }
+    ]
+  },
+  {
+    "id": "cap_mpdj4q9u_c86kpg",
+    "selector": "div.chp-timeline",
+    "label": "Be B E Ambitious. A M B I T I O U S . Cu…",
+    "tag": "div",
+    "url": "https://www.goarmy.com/",
+    "title": "Be All You Can Be | U.S. Army",
+    "timestamp": "2026-05-20T03:56:02.178Z",
+    "innerText": "Be\n\nB\nE\n\nAmbitious.\n\nA\nM\nB\nI\nT\nI\nO\nU\nS\n.\n\nCurious.\n\nC\nU\nR\nI\nO\nU\nS\n.\n\nInspired.\n\nI\nN\nS\nP\nI\nR\nE\nD\n.\n\nAdventurous.\n\nA\nD\nV\nE\nN\nT\nU\nR\nO\nU\nS\n.\n\nEmpowered.\n\nE\nM\nP\nO\nW\nE\nR\nE\nD\n.\n\nA Soldier.\n\nA\n \nS\nO\nL\nD\nI\nE\nR\n.",
+    "outerHTML": "<div class=\"chp-timeline\">\n      <div class=\"chp-stage chp-mobile chp-parallax\" style=\"background-image: url('/content/dam/goarmy/chapter-breaks/homepage-training-sm-v3.jpg'); background-position-x: center\" role=\"img\" aria-label=\"Soldiers in combat uniform climbing ropes outside with a sunrise in the background\"></div>\n      <div class=\"chp-stage chp-desktop chp-parallax\" style=\"background-image: url('/content/dam/goarmy/chapter-breaks/homepage-training-lg-v2.jpg');  background-position-x: center\" role=\"img\" aria-label=\"Soldiers in combat uniform climbing ropes outside with a sunrise in the background\"></div>\n      <div class=\"chp-stage chp-overlay\" style=\"opacity: 0.4\"></div>\n      <div class=\"chp-static-stage\">\n        <div class=\"chp-anim\">\n          <div class=\"chp-typewriter\">\n            <p class=\"sr-only\">Be</p>\n            <p class=\" uppercase chp-line t1 \" role=\"presentation\" style=\"--clip-width: 0%;\"><span>B</span><span>E</span><div class=\"chp-cursor\" style=\"background-color: rgb(255, 204, 1); translate: none; rotate: none; scale: none; transform: translate(0px, 0px); opacity: 0; visibility: hidden;\"></div></p>\n          \n            <p class=\"sr-only\">Ambitious.</p>\n            <p class=\"!text-white uppercase chp-line t1 \" role=\"presentation\" style=\"--clip-width: 0%;\"><span>A</span><span>M</span><span>B</span><span>I</span><span>T</span><span>I</span><span>O</span><span>U</span><span>S</span><span>.</span><div class=\"chp-cursor\" style=\"background-color: rgb(255, 255, 255); translate: none; rotate: none; scale: none; transform: translate(0px, 0px); opacity: 0; visibility: hidden;\"></div></p>\n          \n            <p class=\"sr-only\">Curious.</p>\n            <p class=\"!text-white uppercase chp-line t1 \" role=\"presentation\" style=\"--clip-width: 0%;\"><span>C</span><span>U</span><span>R</span><span>I</span><span>O</span><span>U</span><span>S</span><span>.</span><div class=\"chp-cursor\" style=\"background-color: rgb(255, 255, 255); translate: none; rotate: none; scale: none; transform: translate(0px, 0px); opacity: 0; visibility: hidden;\"></div></p>\n          \n            <p class=\"sr-only\">Inspired.</p>\n            <p class=\"!text-white uppercase chp-line t1 \" role=\"presentation\" style=\"--clip-width: 0%;\"><span>I</span><span>N</span><span>S</span><span>P</span><span>I</span><span>R</span><span>E</span><span>D</span><span>.</span><div class=\"chp-cursor\" style=\"background-color: rgb(255, 255, 255); translate: none; rotate: none; scale: none; transform: translate(0px, 0px); opacity: 0; visibility: hidden;\"></div></p>\n          \n            <p class=\"sr-only\">Adventurous.</p>\n            <p class=\"!text-white uppercase chp-line t1 \" role=\"presentation\" style=\"--clip-width: 0%;\"><span>A</span><span>D</span><span>V</span><span>E</span><span>N</span><span>T</span><span>U</span><span>R</span><span>O</span><span>U</span><span>S</span><span>.</span><div class=\"chp-cursor\" style=\"background-color: rgb(255, 255, 255); translate: none; rotate: none; scale: none; transform: translate(0px, 0px); opacity: 0; visibility: hidden;\"></div></p>\n          \n            <p class=\"sr-only\">Empowered.</p>\n            <p class=\"!text-white uppercase chp-line t1 \" role=\"presentation\" style=\"--clip-width: 0%;\"><span>E</span><span>M</span><span>P</span><span>O</span><span>W</span><span>E</span><span>R</span><span>E</span><span>D</span><span>.</span><div class=\"chp-cursor\" style=\"background-color: rgb(255, 255, 255); translate: none; rotate: none; scale: none; transform: translate(0px, 0px); opacity: 0; visibility: hidden;\"></div></p>\n          \n            <p class=\"sr-only\">A Soldier.</p>\n            <p class=\" uppercase chp-line t1 \" role=\"presentation\" style=\"--clip-width: 98.9566%;\"><span>A</span><span>&nbsp;</span><span>S</span><span>O</span><span>L</span><span>D</span><span>I</span><span>E</span><span>R</span><span>.</span><div class=\"chp-cursor\" style=\"background-color: rgb(255, 204, 1); translate: none; rotate: none; scale: none; transform: translate3d(-386.92px, 0px, 0px);\"></div></p>\n          </div>\n        </div>\n      </div>\n    </div>",
+    "rect": {
+      "x": 0,
+      "y": 0,
+      "width": 1430,
+      "height": 720
+    },
+    "computedStyles": {
+      "display": "block",
+      "position": "relative",
+      "top": "0px",
+      "right": "0px",
+      "bottom": "0px",
+      "left": "0px",
+      "width": "1430px",
+      "height": "720px",
+      "border": "0px solid rgb(0, 0, 0)",
+      "box-sizing": "border-box",
+      "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+      "font-family": "gi, arial, sans-serif",
+      "font-size": "18px",
+      "line-height": "27px",
+      "text-decoration": "none",
+      "overflow": "clip",
+      "transition": "all"
+    },
+    "cssRules": [
+      {
+        "selector": "*, ::before, ::after",
+        "css": "--tw-border-spacing-x: 0; --tw-border-spacing-y: 0; --tw-translate-x: 0; --tw-translate-y: 0; --tw-rotate: 0; --tw-skew-x: 0; --tw-skew-y: 0; --tw-scale-x: 1; --tw-scale-y: 1; --tw-pan-x: ; --tw-pan-y: ; --tw-pinch-zoom: ; --tw-scroll-snap-strictness: proximity; --tw-gradient-from-position: ; --tw-gradient-via-position: ; --tw-gradient-to-position: ; --tw-ordinal: ; --tw-slashed-zero: ; --tw-numeric-figure: ; --tw-numeric-spacing: ; --tw-numeric-fraction: ; --tw-ring-inset: ; --tw-ring-offset-width: 0px; --tw-ring-offset-color: #fff; --tw-ring-color: rgb(59 130 246 / .5); --tw-ring-offset-shadow: 0 0 #0000; --tw-ring-shadow: 0 0 #0000; --tw-shadow: 0 0 #0000; --tw-shadow-colored: 0 0 #0000; --tw-blur: ; --tw-brightness: ; --tw-contrast: ; --tw-grayscale: ; --tw-hue-rotate: ; --tw-invert: ; --tw-saturate: ; --tw-sepia: ; --tw-drop-shadow: ; --tw-backdrop-blur: ; --tw-backdrop-brightness: ; --tw-backdrop-contrast: ; --tw-backdrop-grayscale: ; --tw-backdrop-hue-rotate: ; --tw-backdrop-invert: ; --tw-backdrop-opacity: ; --tw-backdrop-saturate: ; --tw-backdrop-sepia: ; --tw-contain-size: ; --tw-contain-layout: ; --tw-contain-paint: ; --tw-contain-style: ;"
+      },
+      {
+        "selector": "*, ::before, ::after",
+        "css": "box-sizing: border-box; border-width: 0px; border-style: solid; border-color: currentcolor;"
+      },
+      {
+        "selector": "section[data-component=\"chapterbreakparallax\"] .chp-timeline",
+        "css": "overflow: clip; position: relative; height: 100vh; max-height: var(--max-mobile-height); width: 100%;"
+      },
+      {
+        "selector": "section[data-component=\"chapterbreakparallax\"] .chp-timeline",
+        "css": "max-height: var(--max-desktop-height);",
+        "media": "(min-width: 1024px)"
+      },
+      {
+        "selector": "section[data-component=\"chapterbreakparallax\"] .chp-timeline",
+        "css": "overflow: clip; position: relative; height: 100vh; max-height: var(--max-mobile-height); width: 100%;"
+      },
+      {
+        "selector": "section[data-component=\"chapterbreakparallax\"] .chp-timeline",
+        "css": "max-height: var(--max-desktop-height);",
+        "media": "(min-width: 1024px)"
+      }
+    ]
+  },
+  {
+    "id": "cap_mpdj4y3w_y50sw6",
+    "selector": "section#imagecallout-7a2f45951b",
+    "label": "TAKE THE FIRST STEP. Find out more about…",
+    "tag": "section",
+    "url": "https://www.goarmy.com/",
+    "title": "Be All You Can Be | U.S. Army",
+    "timestamp": "2026-05-20T03:56:12.332Z",
+    "innerText": "TAKE THE FIRST STEP.\nFind out more about becoming a Soldier and if a career in the Army is right for you.\nTalk to a Recruiter\nArmy Soldier raising his arm to fly a drone with trees and clear skies in the background",
+    "outerHTML": "<section data-cmp-data-layer=\"{&quot;imagecallout-7a2f45951b&quot;:{&quot;@type&quot;:&quot;goarmy/components/content/imagecallout&quot;,&quot;repo:modifyDate&quot;:&quot;2026-03-30T19:22:10Z&quot;,&quot;dc:title&quot;:&quot;Take the first step.&quot;,&quot;xdm:text&quot;:&quot;Find out more about becoming a Soldier and if a career in the Army is right for you.&quot;,&quot;xdm:linkURL&quot;:&quot;&quot;}}\" id=\"imagecallout-7a2f45951b\" data-type=\"typewriter\" data-authormode=\"false\" data-component=\"imagecallout\" data-callout-alignment=\"image-right\" class=\"callout image-right bg-gold\">\n  <div class=\"column-left w-full desktop:w-1/2\">\n    <div class=\"image-callout-heading\">\n      <h2 class=\"image-callout-heading-text !t2 !null uppercase\" style=\"opacity: 1;\" aria-label=\"Take the first step.\"><div class=\"chp-line\" aria-hidden=\"true\" style=\"position: relative; display: block; text-align: start; --clip-width: 0%;\">Take the first step.<div class=\"chp-cursor\" style=\"background-color: rgb(34, 31, 32); translate: none; rotate: none; scale: none; transform: translate(0px, 0px); opacity: 0; visibility: hidden;\"></div></div></h2>\n    </div>\n    <div class=\"image-callout-heading-supporting-text\">\n      \n    <div class=\"rte\">\n        Find out more about becoming a Soldier and if a career in the Army is right for you.\n    </div>\n\n    </div>\n    <div class=\"image-callout-cta-container\">\n        \n            <div class=\"image-callout-cta-secondary\">\n                \n    \n\n\n\n<button type=\"button\" id=\"cta-1d74410661\" data-component=\"cta\" data-type=\"secondary\" data-is-tracked=\"true\" data-cmp-data-layer=\"{&quot;cta-1d74410661&quot;:{&quot;@type&quot;:&quot;goarmy/components/content/cta&quot;,&quot;repo:modifyDate&quot;:&quot;2024-04-02T15:15:17Z&quot;,&quot;dc:title&quot;:&quot;Talk to a Recruiter&quot;,&quot;parentId&quot;:&quot;imagecallout-7a2f45951b&quot;,&quot;ctaType&quot;:&quot;SECONDARY&quot;}}\" data-state=\"active\" data-override-class=\"goarmy-git-open\" data-override-data=\"ebrc\" x-cq-linkchecker=\"valid\" class=\"  \" data-loaded=\"true\">\n  \n\n  \n\n  \n    Talk to a Recruiter\n  \n\n  \n\n  <span aria-hidden=\"true\" class=\"icon\">\n    \n    <svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" height=\"32\" viewBox=\"0 0 33 32\" width=\"33\">\n    <path d=\"M18.9269 23.3166L25.7039 15.9996L18.9269 8.68262L17.6579 9.87062L22.6259 15.1896H7.04688V16.8366H22.6259L17.6579 22.1556L18.9269 23.3166Z\" fill=\"#221F20\"></path>\n    </svg>\n\n  </span>\n</button>\n\n\n\n            </div>\n        \n    </div>\n  </div>\n  <div class=\"column-right w-full desktop:w-1/2\" role=\"img\" aria-labelledby=\"imagecallout-7a2f45951b__image-label\">\n    <div class=\"chp-timeline\">\n      <div class=\"chp-stage chp-mobile chp-parallax\" style=\"background-image: url('/content/dam/goarmy/en/homepage/Homepage-drone-soldier_lg.jpg'); background-position-x: center\"></div>\n      <div class=\"chp-stage chp-desktop chp-parallax\" style=\"background-image: url('/content/dam/goarmy/en/homepage/Homepage-drone-soldier_lg.jpg'); background-position-x: center\"></div>\n      <div class=\"chp-stage chp-overlay\" style=\"opacity: 0\"></div>\n      <div class=\"sr-only\" id=\"imagecallout-7a2f45951b__image-label\">Army Soldier raising his arm to fly a drone with trees and clear skies in the background</div>\n    </div>\n  </div>\n</section>",
+    "rect": {
+      "x": 0,
+      "y": 63,
+      "width": 1430,
+      "height": 580
+    },
+    "computedStyles": {
+      "display": "flex",
+      "width": "1430px",
+      "height": "580px",
+      "padding": "45px",
+      "border": "0px solid rgb(34, 31, 32)",
+      "box-sizing": "border-box",
+      "background": "rgb(255, 204, 1) none repeat scroll 0% 0% / auto padding-box border-box",
+      "color": "rgb(34, 31, 32)",
+      "font-family": "gi, arial, sans-serif",
+      "font-size": "18px",
+      "line-height": "27px",
+      "text-decoration": "none",
+      "justify-content": "space-between",
+      "gap": "45px",
+      "overflow": "clip",
+      "transition": "all"
+    },
+    "cssRules": [
+      {
+        "selector": "*, ::before, ::after",
+        "css": "--tw-border-spacing-x: 0; --tw-border-spacing-y: 0; --tw-translate-x: 0; --tw-translate-y: 0; --tw-rotate: 0; --tw-skew-x: 0; --tw-skew-y: 0; --tw-scale-x: 1; --tw-scale-y: 1; --tw-pan-x: ; --tw-pan-y: ; --tw-pinch-zoom: ; --tw-scroll-snap-strictness: proximity; --tw-gradient-from-position: ; --tw-gradient-via-position: ; --tw-gradient-to-position: ; --tw-ordinal: ; --tw-slashed-zero: ; --tw-numeric-figure: ; --tw-numeric-spacing: ; --tw-numeric-fraction: ; --tw-ring-inset: ; --tw-ring-offset-width: 0px; --tw-ring-offset-color: #fff; --tw-ring-color: rgb(59 130 246 / .5); --tw-ring-offset-shadow: 0 0 #0000; --tw-ring-shadow: 0 0 #0000; --tw-shadow: 0 0 #0000; --tw-shadow-colored: 0 0 #0000; --tw-blur: ; --tw-brightness: ; --tw-contrast: ; --tw-grayscale: ; --tw-hue-rotate: ; --tw-invert: ; --tw-saturate: ; --tw-sepia: ; --tw-drop-shadow: ; --tw-backdrop-blur: ; --tw-backdrop-brightness: ; --tw-backdrop-contrast: ; --tw-backdrop-grayscale: ; --tw-backdrop-hue-rotate: ; --tw-backdrop-invert: ; --tw-backdrop-opacity: ; --tw-backdrop-saturate: ; --tw-backdrop-sepia: ; --tw-contain-size: ; --tw-contain-layout: ; --tw-contain-paint: ; --tw-contain-style: ;"
+      },
+      {
+        "selector": "*, ::before, ::after",
+        "css": "box-sizing: border-box; border-width: 0px; border-style: solid; border-color: currentcolor;"
+      },
+      {
+        "selector": ".bg-gold",
+        "css": "--tw-bg-opacity: 1; background-color: rgb(255 204 1 / var(--tw-bg-opacity, 1));"
+      },
+      {
+        "selector": "section[data-component=\"imagecallout\"]",
+        "css": "--typewriter-bg-color: #F1E4C7; --mobile-stage-offset: 150px; --desktop-stage-offset: 200px; --max-mobile-height: 484px; --max-desktop-height: 490px;"
+      },
+      {
+        "selector": "section[data-component=\"imagecallout\"].bg-tan, section[data-component=\"imagecallout\"].bg-gold, section[data-component=\"imagecallout\"].bg-white, section[data-component=\"imagecallout\"].bg-field02",
+        "css": "--tw-text-opacity: 1; color: rgb(34 31 32 / var(--tw-text-opacity, 1));"
+      },
+      {
+        "selector": "section[data-component=\"imagecallout\"].bg-gold",
+        "css": "--typewriter-bg-color: #FFCC01; --typewriter-text-color: #221F20;"
+      },
+      {
+        "selector": "section[data-component=\"imagecallout\"]",
+        "css": "overflow: clip; width: 100%; padding-right: 18px; padding-left: 18px;"
+      },
+      {
+        "selector": "section[data-component=\"imagecallout\"]",
+        "css": "max-width: 425px;",
+        "media": "(min-width: 425px)"
+      },
+      {
+        "selector": "section[data-component=\"imagecallout\"]",
+        "css": "max-width: 768px; padding-right: 45px; padding-left: 45px;",
+        "media": "(min-width: 768px)"
+      },
+      {
+        "selector": "section[data-component=\"imagecallout\"]",
+        "css": "max-width: 1023px;",
+        "media": "(min-width: 1023px)"
+      },
+      {
+        "selector": "section[data-component=\"imagecallout\"]",
+        "css": "max-width: 1024px; padding-right: 45px; padding-left: 45px;",
+        "media": "(min-width: 1024px)"
+      },
+      {
+        "selector": "section[data-component=\"imagecallout\"]",
+        "css": "max-width: 1280px;",
+        "media": "(min-width: 1280px)"
+      },
+      {
+        "selector": "section[data-component=\"imagecallout\"]",
+        "css": "max-width: 1600px; padding-right: 90px; padding-left: 90px;",
+        "media": "(min-width: 1600px)"
+      },
+      {
+        "selector": "section[data-component=\"imagecallout\"]",
+        "css": "display: flex; height: min-content; width: 100%; max-width: 100%; flex-direction: column; justify-content: flex-end; gap: 2.5rem; padding-top: 18px; padding-bottom: 2.5rem;"
+      },
+      {
+        "selector": "section[data-component=\"imagecallout\"]",
+        "css": "height: 100%; min-height: fit-content; padding-top: 45px;",
+        "media": "(min-width: 768px)"
+      },
+      {
+        "selector": "section[data-component=\"imagecallout\"]",
+        "css": "min-height: fit-content; flex-direction: row; justify-content: space-between;",
+        "media": "(min-width: 1024px)"
+      },
+      {
+        "selector": "section[data-component=\"imagecallout\"]",
+        "css": "gap: 5rem; padding-top: 90px; padding-bottom: 90px;",
+        "media": "(min-width: 1600px)"
+      }
+    ]
+  },
+  {
+    "id": "cap_mpdj5b0p_4p0mkj",
+    "selector": "div.!t3",
+    "label": "Pursue a career you’re passionate about …",
+    "tag": "div",
+    "url": "https://www.goarmy.com/",
+    "title": "Be All You Can Be | U.S. Army",
+    "timestamp": "2026-05-20T03:56:29.065Z",
+    "innerText": "Pursue a career you’re passionate about while serving the way you want to reach your goals.",
+    "outerHTML": "<div class=\"!t3 !text-white \">\n          Pursue a career you’re passionate about while serving the way you want to reach your goals.\n        </div>",
+    "rect": {
+      "x": 45,
+      "y": 45,
+      "width": 648,
+      "height": 135
+    },
+    "computedStyles": {
+      "display": "block",
+      "width": "647.5px",
+      "height": "135px",
+      "border": "0px solid rgb(255, 255, 255)",
+      "box-sizing": "border-box",
+      "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+      "color": "rgb(255, 255, 255)",
+      "font-family": "gi, arial, sans-serif",
+      "font-size": "36px",
+      "font-weight": "500",
+      "line-height": "45px",
+      "text-decoration": "none",
+      "transition": "all"
+    },
+    "cssRules": [
+      {
+        "selector": "*, ::before, ::after",
+        "css": "--tw-border-spacing-x: 0; --tw-border-spacing-y: 0; --tw-translate-x: 0; --tw-translate-y: 0; --tw-rotate: 0; --tw-skew-x: 0; --tw-skew-y: 0; --tw-scale-x: 1; --tw-scale-y: 1; --tw-pan-x: ; --tw-pan-y: ; --tw-pinch-zoom: ; --tw-scroll-snap-strictness: proximity; --tw-gradient-from-position: ; --tw-gradient-via-position: ; --tw-gradient-to-position: ; --tw-ordinal: ; --tw-slashed-zero: ; --tw-numeric-figure: ; --tw-numeric-spacing: ; --tw-numeric-fraction: ; --tw-ring-inset: ; --tw-ring-offset-width: 0px; --tw-ring-offset-color: #fff; --tw-ring-color: rgb(59 130 246 / .5); --tw-ring-offset-shadow: 0 0 #0000; --tw-ring-shadow: 0 0 #0000; --tw-shadow: 0 0 #0000; --tw-shadow-colored: 0 0 #0000; --tw-blur: ; --tw-brightness: ; --tw-contrast: ; --tw-grayscale: ; --tw-hue-rotate: ; --tw-invert: ; --tw-saturate: ; --tw-sepia: ; --tw-drop-shadow: ; --tw-backdrop-blur: ; --tw-backdrop-brightness: ; --tw-backdrop-contrast: ; --tw-backdrop-grayscale: ; --tw-backdrop-hue-rotate: ; --tw-backdrop-invert: ; --tw-backdrop-opacity: ; --tw-backdrop-saturate: ; --tw-backdrop-sepia: ; --tw-contain-size: ; --tw-contain-layout: ; --tw-contain-paint: ; --tw-contain-style: ;"
+      },
+      {
+        "selector": "*, ::before, ::after",
+        "css": "box-sizing: border-box; border-width: 0px; border-style: solid; border-color: currentcolor;"
+      },
+      {
+        "selector": ".\\!text-white",
+        "css": "--tw-text-opacity: 1 !important; color: rgb(255 255 255 / var(--tw-text-opacity, 1)) !important;"
+      },
+      {
+        "selector": ".t3, h3, .\\!t3",
+        "css": "font-weight: 500; line-height: 36px;"
+      },
+      {
+        "selector": ".\\!t3",
+        "css": "font-size: 27px !important;",
+        "media": "screen and (min-width: 300px)"
+      },
+      {
+        "selector": ".\\!t3",
+        "css": "font-size: 36px !important; line-height: 45px;",
+        "media": "screen and (min-width: 1024px)"
+      }
+    ]
+  }
+]
