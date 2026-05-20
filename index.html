@@ -158,30 +158,32 @@
     .scroll-line { width:1px; height:48px; background:var(--white); }
     .scroll-label { font-size:9px; font-weight:700; letter-spacing:0.28em; text-transform:uppercase; color:var(--white); }
 
-    /* CTA SECTION */
-    .cta-section {
-      position:relative; overflow:hidden;
-      background:var(--army-green); padding:120px 9%;
+    /* TOOLS SECTION */
+    .tools-section {
+      background:var(--army-black); padding:100px 9%;
       border-top:2px solid var(--army-gold);
-      display:grid; grid-template-columns:1fr 1fr; gap:64px; align-items:center;
     }
-    .cta-patch {
-      position:absolute; left:-6%; bottom:-8%;
-      width:min(38%, 460px); pointer-events:none;
-      opacity:0.08; mix-blend-mode:overlay; transform:rotate(-10deg);
+    .tools-header { margin-bottom:64px; }
+    .tools-eyebrow { font-size:11px; font-weight:700; letter-spacing:0.28em; text-transform:uppercase; color:var(--army-gold); margin-bottom:16px; }
+    .tools-heading { font-size:clamp(40px,6vw,80px); font-weight:700; text-transform:uppercase; color:var(--white); line-height:0.92; letter-spacing:-0.01em; margin-bottom:20px; }
+    .tools-sub { font-size:16px; font-weight:400; color:var(--gray-02); max-width:480px; line-height:1.6; }
+    .tools-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));
+      gap:2px;
     }
-    .cta-eyebrow { font-size:11px; font-weight:700; letter-spacing:0.28em; text-transform:uppercase; color:var(--army-gold); margin-bottom:20px; }
-    .cta-rule { width:36px; height:2px; background:var(--army-gold); margin-bottom:22px; }
-    .cta-heading { font-size:clamp(48px,6vw,88px); font-weight:700; text-transform:uppercase; color:var(--white); line-height:0.92; letter-spacing:-0.01em; }
-    .cta-body { font-size:18px; font-weight:400; color:var(--gray-02); line-height:1.62; margin-bottom:40px; position:relative; z-index:1; }
-    .cta-btn {
-      display:inline-flex; align-items:center; gap:14px; position:relative; z-index:1;
-      background:var(--army-gold); color:var(--army-black);
-      font-family:"GI",Arial,sans-serif; font-size:13px; font-weight:700;
-      letter-spacing:0.18em; text-transform:uppercase; text-decoration:none;
-      padding:18px 36px; border:none; cursor:pointer; transition:opacity 0.2s;
+    .tool-card {
+      background:var(--army-green); padding:36px 32px;
+      display:flex; flex-direction:column;
+      text-decoration:none; color:inherit;
+      border:1px solid rgba(255,255,255,0.06);
+      transition:background 0.18s, border-color 0.18s;
     }
-    .cta-btn:hover { opacity:0.82; }
+    .tool-card:hover { background:#3a4a3a; border-color:var(--army-gold); }
+    .tool-card-tag { font-size:9px; font-weight:700; letter-spacing:0.28em; text-transform:uppercase; color:var(--army-gold); margin-bottom:16px; }
+    .tool-card-title { font-size:22px; font-weight:700; text-transform:uppercase; color:var(--white); line-height:1.1; margin-bottom:12px; }
+    .tool-card-desc { font-size:13px; font-weight:400; color:var(--gray-02); line-height:1.6; flex:1; margin-bottom:28px; }
+    .tool-card-arrow { font-size:11px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:var(--army-gold); }
 
     /* FOOTER */
     footer {
@@ -194,8 +196,8 @@
     @media (max-width:768px) {
       nav { padding:0 24px; }
       .hero { padding:64px 6% 80px; }
-      .fact-headline { white-space:normal; }
-      .cta-section { grid-template-columns:1fr; gap:40px; padding:80px 6%; }
+      .tools-section { padding:80px 6%; }
+      .tools-grid { grid-template-columns:1fr; }
       footer { flex-direction:column; gap:16px; }
     }
   </style>
@@ -245,17 +247,56 @@
   </div>
 </section>
 
-<!-- CTA -->
-<section class="cta-section">
-  <img class="cta-patch" src="uploads/Vector_USAREC_BELL_od green.png" alt="" aria-hidden="true">
-  <div style="position:relative;z-index:1">
-    <div class="cta-eyebrow">Army Recruiter Tools // Open Source</div>
-    <div class="cta-rule"></div>
-    <h2 class="cta-heading">Explore<br>the<br>Toolbox</h2>
+<!-- TOOLS -->
+<section class="tools-section">
+  <div class="tools-header">
+    <div class="tools-eyebrow">Army Recruiter Tools // Open Source</div>
+    <h2 class="tools-heading">The Toolbox</h2>
+    <p class="tools-sub">Built by a recruiter, for recruiters. Free and open.</p>
   </div>
-  <div>
-    <p class="cta-body">A collection of tools built by a recruiter, for recruiters. Eligibility calculators, regulation lookups, processing checklists — everything in one place, open and free.</p>
-    <a href="https://github.com" class="cta-btn" id="cta-github-link" target="_blank" rel="noopener">View on GitHub →</a>
+  <div class="tools-grid">
+    <a href="AFT_Score_Calculator_v2.html" class="tool-card">
+      <div class="tool-card-tag">Fitness // Calculator</div>
+      <div class="tool-card-title">AFT Score Calculator</div>
+      <p class="tool-card-desc">Compute Army Fitness Test scores by event, age group, and gender. Instant pass/fail with point breakdown.</p>
+      <span class="tool-card-arrow">Open Tool →</span>
+    </a>
+    <a href="Army_Body_Composition_Calculator.html" class="tool-card">
+      <div class="tool-card-tag">Medical // Calculator</div>
+      <div class="tool-card-title">Body Composition</div>
+      <p class="tool-card-desc">ABCP tape-test calculator. Determine body fat percentage and Army standards compliance by gender and age.</p>
+      <span class="tool-card-arrow">Open Tool →</span>
+    </a>
+    <a href="OPAT_Calculator.html" class="tool-card">
+      <div class="tool-card-tag">Fitness // Assessment</div>
+      <div class="tool-card-title">OPAT Calculator</div>
+      <p class="tool-card-desc">Score the Occupational Physical Assessment Test and match results to MOS-specific physical demand categories.</p>
+      <span class="tool-card-arrow">Open Tool →</span>
+    </a>
+    <a href="asvab_mos_tool_v2.html" class="tool-card">
+      <div class="tool-card-tag">Eligibility // Reference</div>
+      <div class="tool-card-title">ASVAB MOS Tool</div>
+      <p class="tool-card-desc">Enter line scores and see every MOS the applicant qualifies for. Cross-reference composites against the full MOS list.</p>
+      <span class="tool-card-arrow">Open Tool →</span>
+    </a>
+    <a href="ets-countdown.html" class="tool-card">
+      <div class="tool-card-tag">Admin // Tracking</div>
+      <div class="tool-card-title">ETS Countdown</div>
+      <p class="tool-card-desc">Track time remaining to expiration of term of service. Useful for prior-service pipeline and retention conversations.</p>
+      <span class="tool-card-arrow">Open Tool →</span>
+    </a>
+    <a href="medical_v7.html" class="tool-card">
+      <div class="tool-card-tag">Medical // Screening</div>
+      <div class="tool-card-title">Medical Screening</div>
+      <p class="tool-card-desc">Pre-MEPS medical disqualifier lookup. Identify potential issues before the appointment — not after.</p>
+      <span class="tool-card-arrow">Open Tool →</span>
+    </a>
+    <a href="recruiting-map.html" class="tool-card">
+      <div class="tool-card-tag">Territory // Prospecting</div>
+      <div class="tool-card-title">Recruiting Map</div>
+      <p class="tool-card-desc">Visualize your territory, track prospect locations, and plan canvassing routes across your recruiting zone.</p>
+      <span class="tool-card-arrow">Open Tool →</span>
+    </a>
   </div>
 </section>
 
@@ -567,7 +608,14 @@ function populate(f, idx) {
 
 /* ─── REVEAL ────────────────────────────────────────── */
 function reveal(f, idx, done) {
-  const fs      = parseFloat(getComputedStyle(headlineEl).fontSize);
+  headlineEl.style.fontSize = '';
+  let fs = parseFloat(getComputedStyle(headlineEl).fontSize);
+  const availW = window.innerWidth * 0.80;
+  const textW  = measureW(f.h, fs);
+  if (textW > availW) {
+    fs = Math.floor(fs * (availW / textW)) - 1;
+    headlineEl.style.fontSize = fs + 'px';
+  }
   /* Square dot = cap-height ~ 72% of font-size */
   const capH    = Math.round(fs * 0.72);
   const dotSize = Math.round(fs * 0.13);   // small period dot
