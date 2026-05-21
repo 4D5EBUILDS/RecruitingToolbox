@@ -461,7 +461,7 @@ const _rand = arr => arr[Math.floor(Math.random()*arr.length)];
 /* ═══════════════════════════════════════════════════════
    PROFILE OPTIONS — humorous labels for dropdowns/toggles
 ════════════════════════════════════════════════════════ */
-const PROFILE_OPTIONS = {
+const AUTOPSY_PROFILE_OPTS = {
   citizenship: [
     { v:"citizen",     l:"US CITIZEN (NATURAL BORN) — THE DEFAULT SETTING" },
     { v:"naturalized", l:"NATURALIZED CITIZEN — WELCOME TO THE CLUB" },
@@ -511,6 +511,33 @@ const badgeClass  = (s) => s==="complete"?"aut-badge aut-badge-complete":s==="fl
 const badgeLabel  = (s) => s==="complete"?"COMPLETE":s==="flagged"?"FLAGGED":s==="na"?"N/A":"PENDING";
 
 /* ═══════════════════════════════════════════════════════
+   SECTION NOTES — inline notes textarea per organ card
+════════════════════════════════════════════════════════ */
+const AutSectionNotes = ({ sectionId, value, onChange }) => {
+  const [foc, setFoc] = useState(false);
+  return (
+    <div style={{ padding:"10px 20px 14px", borderTop:"1px solid #1f2937" }}>
+      <div className="aut-pstart" style={{ fontSize:6, color:"#3f3f46",
+        letterSpacing:2, marginBottom:6 }}>FIELD NOTES — INTERNAL ONLY</div>
+      <textarea
+        value={value || ""}
+        onChange={e=>onChange(sectionId, e.target.value)}
+        onFocus={()=>setFoc(true)}
+        onBlur={()=>setFoc(false)}
+        placeholder="Add notes for this section..."
+        style={{ width:"100%", resize:"vertical", minHeight:46, maxHeight:140,
+          background: foc ? "rgba(255,204,1,.03)" : "#050505",
+          color:"#e5e5e5",
+          border:`1px solid ${foc ? "rgba(255,204,1,.3)" : "#27272a"}`,
+          fontFamily:"'VT323',monospace", fontSize:15, lineHeight:1.5,
+          padding:"8px 10px", outline:"none", borderRadius:4,
+          fontStyle: value ? "normal" : "italic",
+          transition:"border .15s, background .15s" }}/>
+    </div>
+  );
+};
+
+/* ═══════════════════════════════════════════════════════
    COMPONENT
 ════════════════════════════════════════════════════════ */
 const AutopsyMode = ({ sections, statuses, profile, aliasCheck, onToggle, onQuickComplete, onReset }) => {
@@ -555,6 +582,11 @@ const AutopsyMode = ({ sections, statuses, profile, aliasCheck, onToggle, onQuic
     ageGender:   profile.ageGender   || "18m",
     ssnLast4:    profile.ssnLast4    || "????",
     dob:         profile.dob         || "",
+  });
+  const [autFilter,    setAutFilter]    = useState("all");
+  const [autSearch,    setAutSearch]    = useState("");
+  const [sectionNotes, setSectionNotes] = useState(() => {
+    try { return JSON.parse(localStorage.getItem("pqc-aut-notes") || "{}"); } catch { return {}; }
   });
 
   const prevStatuses = useRef(statuses);
@@ -696,6 +728,27 @@ const AutopsyMode = ({ sections, statuses, profile, aliasCheck, onToggle, onQuic
       text:"☠ RANDOM NIGHTMARE GENERATED. GC HAS BEEN NOTIFIED. PRAYERS ACCEPTED."
     }].slice(-80));
   },[]);
+
+  const saveAutNote = useCallback((sectionId, text) => {
+    setSectionNotes(prev => {
+      const n = { ...prev, [sectionId]:text };
+      localStorage.setItem("pqc-aut-notes", JSON.stringify(n));
+      return n;
+    });
+  }, []);
+
+  /* ── Filtered sections (search + status filter) ── */
+  const filteredSections = useMemo(() => {
+    return sections.map(s => ({
+      ...s,
+      filteredItems: s.items.map(i=>({...i,ds:getStatus(i.id)})).filter(i => {
+        const matchFilter = autFilter==="all" || i.ds===autFilter;
+        const searchTarget = (i.label+" "+(AUTOPSY_SUBS[i.id]||i.sub||"")).toLowerCase();
+        const matchSearch  = !autSearch || searchTarget.includes(autSearch.toLowerCase());
+        return matchFilter && matchSearch;
+      }),
+    })).filter(s => s.filteredItems.length > 0);
+  }, [sections, autFilter, autSearch, getStatus]);
 
   /* ── Alias DNA ── */
   const aliasStatus = aliasCheck.status;
@@ -993,7 +1046,7 @@ const AutopsyMode = ({ sections, statuses, profile, aliasCheck, onToggle, onQuic
               style={{ background:"#000", border:"1px solid #3f3f46", color:"#e5e5e5",
                 fontFamily:"'Press Start 2P',monospace", fontSize:8, padding:"6px 10px",
                 borderRadius:4, cursor:"pointer", flex:"1 1 200px", minWidth:200, outline:"none" }}>
-              {PROFILE_OPTIONS.citizenship.map(o=>(
+              {AUTOPSY_PROFILE_OPTS.citizenship.map(o=>(
                 <option key={o.v} value={o.v}>{o.l}</option>
               ))}
             </select>
@@ -1002,7 +1055,7 @@ const AutopsyMode = ({ sections, statuses, profile, aliasCheck, onToggle, onQuic
               style={{ background:"#000", border:"1px solid #3f3f46", color:"#e5e5e5",
                 fontFamily:"'Press Start 2P',monospace", fontSize:8, padding:"6px 10px",
                 borderRadius:4, cursor:"pointer", flex:"1 1 200px", minWidth:200, outline:"none" }}>
-              {PROFILE_OPTIONS.ageGender.map(o=>(
+              {AUTOPSY_PROFILE_OPTS.ageGender.map(o=>(
                 <option key={o.v} value={o.v}>{o.l}</option>
               ))}
             </select>
@@ -1023,7 +1076,7 @@ const AutopsyMode = ({ sections, statuses, profile, aliasCheck, onToggle, onQuic
               <div className="aut-pstart" style={{ fontSize:8, color:"#52525b",
                 marginBottom:10, letterSpacing:2 }}>WAIVERS ACTIVE</div>
               <div style={{ display:"flex", flexDirection:"column", gap:5 }}>
-                {PROFILE_OPTIONS.waivers.map(w=>{
+                {AUTOPSY_PROFILE_OPTS.waivers.map(w=>{
                   const active = localProfile.waivers.includes(w.v);
                   return (
                     <div key={w.v} onClick={()=>toggleWaiver(w.v)}
@@ -1049,7 +1102,7 @@ const AutopsyMode = ({ sections, statuses, profile, aliasCheck, onToggle, onQuic
               <div className="aut-pstart" style={{ fontSize:8, color:"#52525b",
                 marginBottom:10, letterSpacing:2 }}>SPECIAL PROGRAMS</div>
               <div style={{ display:"flex", flexDirection:"column", gap:5 }}>
-                {PROFILE_OPTIONS.programs.map(pg=>{
+                {AUTOPSY_PROFILE_OPTS.programs.map(pg=>{
                   const active = localProfile.programs.includes(pg.v);
                   return (
                     <div key={pg.v} onClick={()=>toggleProgram(pg.v)}
@@ -1074,14 +1127,76 @@ const AutopsyMode = ({ sections, statuses, profile, aliasCheck, onToggle, onQuic
           </div>
         </div>
 
+        {/* ── SEARCH & FILTER BAR ── */}
+        <div style={{ marginBottom:16, display:"flex", gap:10, alignItems:"center", flexWrap:"wrap" }}>
+          {/* Search input */}
+          <div style={{ flex:"1 1 220px", display:"flex", alignItems:"center", gap:8,
+            background:"#0a0808", border:"1px solid #27272a", borderRadius:8, padding:"7px 14px" }}>
+            <i className="fas fa-search" style={{ color:"#3f3f46", fontSize:12, flexShrink:0 }}></i>
+            <input value={autSearch} onChange={e=>setAutSearch(e.target.value)}
+              placeholder="Search items..."
+              style={{ background:"transparent", border:"none", outline:"none",
+                color:"#e5e5e5", fontFamily:"'Press Start 2P',monospace", fontSize:8,
+                width:"100%", letterSpacing:1 }}/>
+            {autSearch && (
+              <button onClick={()=>setAutSearch("")}
+                style={{ background:"none", border:"none", cursor:"pointer",
+                  color:"#52525b", fontSize:14, lineHeight:1, flexShrink:0 }}>✕</button>
+            )}
+          </div>
+          {/* Status filter chips */}
+          <div style={{ display:"flex", gap:5, flexShrink:0 }}>
+            {[
+              ["all",     "ALL",     "#71717a"],
+              ["pending", "PENDING", "#fbbf24"],
+              ["complete","VIABLE",  "#4ade80"],
+              ["flagged", "FLAGGED", "#f87171"],
+            ].map(([k,l,c])=>(
+              <button key={k} onClick={()=>setAutFilter(k)}
+                className="aut-pstart"
+                style={{ fontSize:7, padding:"7px 13px",
+                  background: autFilter===k ? c+"22" : "transparent",
+                  border:`1px solid ${autFilter===k ? c : "#27272a"}`,
+                  color: autFilter===k ? c : "#52525b",
+                  cursor:"pointer", letterSpacing:1, borderRadius:6, transition:"all .1s" }}>
+                {l}
+              </button>
+            ))}
+          </div>
+          {/* Active filter label */}
+          {(autFilter!=="all" || autSearch) && (
+            <button onClick={()=>{ setAutFilter("all"); setAutSearch(""); }}
+              className="aut-pstart"
+              style={{ fontSize:6, padding:"5px 10px", background:"rgba(248,113,113,.08)",
+                border:"1px solid rgba(248,113,113,.25)", color:"#f87171",
+                cursor:"pointer", borderRadius:6, whiteSpace:"nowrap" }}>
+              ✕ CLEAR
+            </button>
+          )}
+        </div>
+
         {/* ── ORGAN CARDS ── */}
+        {filteredSections.length === 0 && (
+          <div style={{ textAlign:"center", padding:"60px 20px" }}>
+            <div className="aut-pstart" style={{ fontSize:9, color:"#3f3f46", letterSpacing:2 }}>
+              NO ORGANS MATCH YOUR FILTER
+            </div>
+            <div className="aut-vt323" style={{ fontSize:16, color:"#27272a", marginTop:8 }}>
+              GC is not impressed by your search skills either.
+            </div>
+          </div>
+        )}
         <div style={{ display:"grid", gridTemplateColumns:"repeat(2,1fr)", gap:16 }}>
-          {sections.map(section=>{
+          {filteredSections.map(section=>{
             const org   = ORGAN_MAP[section.id]||{organ:section.title,emoji:"📄",tag:"",desc:""};
-            const items = section.items.map(i=>({...i, ds:getStatus(i.id)}));
-            const sDone  = items.filter(i=>i.ds==="complete").length;
-            const sFlag  = items.filter(i=>i.ds==="flagged").length;
-            const sTotal = items.length;
+            // All items for section header stats (unfiltered counts)
+            const allSectionItems = section.items.map(i=>({...i,ds:getStatus(i.id)}));
+            // Display items (filtered by search/status)
+            const items = section.filteredItems;
+            // Stats based on ALL items (not filtered) for accurate header display
+            const sDone  = allSectionItems.filter(i=>i.ds==="complete").length;
+            const sFlag  = allSectionItems.filter(i=>i.ds==="flagged").length;
+            const sTotal = allSectionItems.length;
             const allDone = sDone===sTotal && sTotal>0;
             const hasFlag = sFlag>0;
             const pct    = sTotal>0?Math.round(sDone/sTotal*100):0;
@@ -1185,6 +1300,11 @@ const AutopsyMode = ({ sections, statuses, profile, aliasCheck, onToggle, onQuic
                           </div>
                         );
                       })}
+                      {/* ── Section Notes ── */}
+                      <AutSectionNotes
+                        sectionId={section.id}
+                        value={sectionNotes[section.id]}
+                        onChange={saveAutNote}/>
                     </div>
                   )}
                 </div>
