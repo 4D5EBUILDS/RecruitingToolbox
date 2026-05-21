@@ -627,7 +627,7 @@ const Phase2 = ({ applicant, setApplicant, offenses, setOffenses, verdict, answe
               <input className="form-input" value={applicant.rsid||''} onChange={e=>setAppl('rsid',e.target.value)} placeholder="RSID"/>
             </div>
           </div>
-          <div className="form-grid">
+          <div className="form-grid" style={{marginBottom:12}}>
             <div className="form-field">
               <label className="form-label">Education Level</label>
               <select className="form-input" value={applicant.educationLevel||''} onChange={e=>setAppl('educationLevel',e.target.value)}>
@@ -636,8 +636,71 @@ const Phase2 = ({ applicant, setApplicant, offenses, setOffenses, verdict, answe
               </select>
             </div>
             <div className="form-field">
+              <label className="form-label">Education Code</label>
+              <input className="form-input" value={applicant.educationCode||''} onChange={e=>setAppl('educationCode',e.target.value)} placeholder="e.g. 2A, 4E"/>
+            </div>
+            <div className="form-field">
               <label className="form-label">AFQT Score</label>
               <input className="form-input" value={applicant.afqt||''} onChange={e=>setAppl('afqt',e.target.value)} placeholder="0–99"/>
+            </div>
+          </div>
+          <div className="form-grid" style={{marginBottom:12}}>
+            <div className="form-field">
+              <label className="form-label">PS / NPS</label>
+              <select className="form-input" value={applicant.psNps||''} onChange={e=>setAppl('psNps',e.target.value)}>
+                <option value="">Select...</option>
+                <option value="NPS">NPS — Non-Prior Service</option>
+                <option value="PS">PS — Prior Service</option>
+              </select>
+            </div>
+            <div className="form-field">
+              <label className="form-label">Marital Status</label>
+              <select className="form-input" value={applicant.maritalStatus||''} onChange={e=>setAppl('maritalStatus',e.target.value)}>
+                <option value="">Select...</option>
+                <option value="Single">Single</option>
+                <option value="Married">Married</option>
+                <option value="Divorced">Divorced</option>
+                <option value="Widowed">Widowed</option>
+                <option value="Separated">Separated</option>
+              </select>
+            </div>
+            <div className="form-field">
+              <label className="form-label"># of Dependents</label>
+              <input className="form-input" type="number" min="0" max="20" value={applicant.numDependents||''} onChange={e=>setAppl('numDependents',e.target.value)} placeholder="0"/>
+            </div>
+          </div>
+          <div className="form-grid">
+            <div className="form-field">
+              <label className="form-label">Dependent Ages</label>
+              <input className="form-input" value={applicant.dependentAges||''} onChange={e=>setAppl('dependentAges',e.target.value)} placeholder="e.g. 3, 7, 12"/>
+            </div>
+          </div>
+          <div className="divider" style={{margin:'16px 0 12px'}}/>
+          <div style={{fontSize:11,fontWeight:700,color:'var(--fg-m)',textTransform:'uppercase',letterSpacing:'.06em',marginBottom:10}}>Recruiter / Unit Info (for MFR letterhead)</div>
+          <div className="form-grid" style={{marginBottom:12}}>
+            <div className="form-field" style={{gridColumn:'1/-1'}}>
+              <label className="form-label">Unit Designation</label>
+              <input className="form-input" value={applicant.recruiterUnit||''} onChange={e=>setAppl('recruiterUnit',e.target.value)} placeholder="e.g. U.S. ARMY GRAND ISLAND DETACHMENT, DENVER RECRUITING BATTALION"/>
+            </div>
+          </div>
+          <div className="form-grid" style={{marginBottom:12}}>
+            <div className="form-field" style={{gridColumn:'1/-1'}}>
+              <label className="form-label">Unit Address</label>
+              <input className="form-input" value={applicant.recruiterAddress||''} onChange={e=>setAppl('recruiterAddress',e.target.value)} placeholder="e.g. 3341 W STATE ST. SUITE B1, GRAND ISLAND, NEBRASKA 68803"/>
+            </div>
+          </div>
+          <div className="form-grid">
+            <div className="form-field">
+              <label className="form-label">Office Symbol (RSID)</label>
+              <input className="form-input" value={applicant.recruiterOfficeSym||''} onChange={e=>setAppl('recruiterOfficeSym',e.target.value)} placeholder="e.g. RCSW-DEN-GI"/>
+            </div>
+            <div className="form-field">
+              <label className="form-label">Recruiter Name</label>
+              <input className="form-input" value={applicant.recruiterName||''} onChange={e=>setAppl('recruiterName',e.target.value)} placeholder="Last, First"/>
+            </div>
+            <div className="form-field">
+              <label className="form-label">Rank / Branch</label>
+              <input className="form-input" value={applicant.recruiterRank||''} onChange={e=>setAppl('recruiterRank',e.target.value)} placeholder="e.g. SSG, USA"/>
             </div>
           </div>
         </div>
@@ -755,28 +818,58 @@ function buildDatasetsXML(applicant, offenses) {
     if (!iso) return '';
     try { const [y,m,d] = iso.split('-'); return `${m}/${d}/${y}`; } catch { return ''; }
   };
+  const calcAge = (fromIso, toIso) => {
+    if (!fromIso || !toIso) return '';
+    try {
+      const [by,bm,bd] = fromIso.split('-').map(Number);
+      const [ty,tm,td] = toIso.split('-').map(Number);
+      let age = ty - by;
+      if (tm < bm || (tm === bm && td < bd)) age--;
+      return age >= 0 ? String(age) : '';
+    } catch { return ''; }
+  };
   const name = [applicant.lastName, [applicant.firstName, applicant.mi].filter(Boolean).join(' ')].filter(Boolean).join(', ');
+  const currentAge = calcAge(applicant.dob, new Date().toISOString().split('T')[0]);
   const sorted = [...offenses].sort((a,b) => new Date(b.date)-new Date(a.date));
   const get = i => sorted[i] || {};
   const tf = v => v ? `<TextField2>${esc(v)}</TextField2>` : '<TextField2/>';
   const df = v => v ? `<DateField2>${esc(v)}</DateField2>` : '<DateField2/>';
-  const nf = () => '<NumericField2/>';
-  const rowXML = i => `${df(fmtD(get(i).date))}\n${nf()}\n${tf(get(i).description)}\n${tf(get(i).disposition)}\n`;
+  const nf = v => v ? `<NumericField2>${esc(v)}</NumericField2>` : '<NumericField2/>';
 
-  // 183-element flat structure:
-  // [0] Name, [1] RadioButtonList,
-  // [2-5] Row 1, [6-12] 7 page-1 header TFs,
-  // [13-76] Rows 2-17 (16 rows × 4),
-  // [77-82] 6 page-2 header TFs,
-  // [83-182] Rows 18-42 (25 rows × 4)
+  // VERIFIED field mapping from XFA template analysis:
+  // [0]    TextField2     = MARITAL STATUS (page 1 header, x=58mm)
+  // [1]    RadioButtonList= PS/NPS (page 1 header, x=20mm)
+  // [2-5]  Row 1          = DateField(date), NumericField(age@time), TF(nature), TF(disposition)
+  // [6-12] 7 TFs          = COMMENTS / TYPE-OF-WAIVER section (leave blank)
+  // [13-76] Rows 2-17     = 16 offense rows × 4 fields each
+  // [77]   TF             = DEPENDENT AGES (page 2 header, x=119mm)
+  // [78]   TF             = # OF DEPENDENTS (page 2 header, x=91mm)
+  // [79]   TF             = NAME Last, First MI (page 2 header, x=12.87mm wide)
+  // [80]   TF             = AGE (page 2 header, x=113mm)
+  // [81]   TF             = EDUCATION CODE (page 2 header, x=134mm)
+  // [82]   TF             = AFQT (page 2 header, x=170mm)
+  // [83-182] Rows 18-42   = 25 offense rows × 4 fields each
+
+  const rowXML = i => {
+    const o = get(i);
+    const age = calcAge(applicant.dob, o.date);
+    const star = o.waivedOffense ? '*' : '';
+    return `${df(fmtD(o.date))}\n${nf(age)}\n${tf(star + (o.description||''))}\n${tf(o.disposition||'')}\n`;
+  };
+
   let xml = `<xfa:datasets xmlns:xfa="http://www.xfa.org/schema/xfa-data/1.0/">\n<xfa:data>\n<topmostSubform>\n`;
-  xml += tf(name) + '\n';
-  xml += '<RadioButtonList/>\n';
-  xml += rowXML(0);
-  for (let i=0;i<7;i++) xml += '<TextField2/>\n';
-  for (let i=1;i<=16;i++) xml += rowXML(i);
-  for (let i=0;i<6;i++) xml += '<TextField2/>\n';
-  for (let i=17;i<=41;i++) xml += rowXML(i);
+  xml += tf(applicant.maritalStatus) + '\n';                    // [0] Marital Status
+  xml += `<RadioButtonList>${esc(applicant.psNps||'')}</RadioButtonList>\n`; // [1] PS/NPS
+  xml += rowXML(0);                                              // [2-5] Row 1
+  for (let i=0;i<7;i++) xml += '<TextField2/>\n';               // [6-12] Comments (blank)
+  for (let i=1;i<=16;i++) xml += rowXML(i);                     // [13-76] Rows 2-17
+  xml += tf(applicant.dependentAges) + '\n';                    // [77] Dependent Ages
+  xml += tf(applicant.numDependents) + '\n';                    // [78] # of Dependents
+  xml += tf(name) + '\n';                                        // [79] NAME
+  xml += tf(currentAge) + '\n';                                  // [80] Age
+  xml += tf(applicant.educationCode||applicant.educationLevel||'') + '\n'; // [81] Ed Code
+  xml += tf(applicant.afqt) + '\n';                             // [82] AFQT
+  for (let i=17;i<=41;i++) xml += rowXML(i);                    // [83-182] Rows 18-42
   xml += '</topmostSubform>\n</xfa:data>\n</xfa:datasets>';
   return xml;
 }
@@ -921,7 +1014,11 @@ const Phase3 = ({ applicant, offenses, verdict, answers }) => {
     lines.push(`SSN (Last 4):      XXXX-XX-${ssnLast4}`);
     lines.push(`Date of Birth:     ${fmtDate(applicant.dob)}`);
     lines.push(`RSID:              ${applicant.rsid||'[RSID]'}`);
-    lines.push(`Education:         ${applicant.educationLevel||'[Ed Level]'}`);
+    lines.push(`PS/NPS:            ${applicant.psNps||'[PS/NPS]'}`);
+    lines.push(`Marital Status:    ${applicant.maritalStatus||'[Marital Status]'}`);
+    lines.push(`# Dependents:      ${applicant.numDependents||'0'}`);
+    if (applicant.dependentAges) lines.push(`Dependent Ages:    ${applicant.dependentAges}`);
+    lines.push(`Education:         ${applicant.educationLevel||'[Ed Level]'}${applicant.educationCode?' (Code: '+applicant.educationCode+')':''}`);
     lines.push(`AFQT Score:        ${applicant.afqt||'[Score]'}`);
     lines.push(`Approving Auth:    ${authorityShort}`);
     lines.push(`Date Prepared:     ${new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}`);
@@ -977,32 +1074,77 @@ const Phase3 = ({ applicant, offenses, verdict, answers }) => {
   };
 
   const genMFR = () => {
-    const lines = [];
-    lines.push(`MEMORANDUM FOR ${authorityMemo[authority]||authorityShort}`);
-    lines.push(`SUBJECT: Company Commander's Interview — ${fullName||'[APPLICANT NAME]'}`);
-    lines.push(``);
-    lines.push(`1. I interviewed ${fullName||'[APPLICANT NAME]'} on [DATE] regarding the following offense(s):`);
-    lines.push(``);
-    offenseList.forEach((o,i)=>{
+    const unit   = applicant.recruiterUnit    || '[UNIT DESIGNATION]';
+    const addr   = applicant.recruiterAddress || '[UNIT ADDRESS]';
+    const sym    = applicant.recruiterOfficeSym || applicant.rsid || '[OFFICE SYM]';
+    const dateStr = new Date().toLocaleDateString('en-US',{day:'numeric',month:'long',year:'numeric'});
+    const recName = applicant.recruiterName || '[RECRUITER NAME]';
+    const recRank = applicant.recruiterRank || '[RANK, BRANCH]';
+    const authTo  = authorityMemo[authority]||authorityShort;
+
+    const offList = offenseList.map((o,i) => {
       const letter = String.fromCharCode(97+i);
-      lines.push(`   ${letter}. ${fmtDate(o.date)} — ${o.description} — ${o.disposition}`);
-    });
-    lines.push(``);
-    lines.push(`2. Summary of interview:`);
-    lines.push(`   [CO FILLS IN — key points from the interview, applicant's demeanor and responses]`);
-    lines.push(``);
-    lines.push(`3. My assessment of the applicant is:`);
-    lines.push(`   [CO FILLS IN — character, maturity, likelihood of successful service]`);
-    lines.push(``);
-    lines.push(`4. Recommendation: [ ] Approve   [ ] Disapprove`);
-    lines.push(``);
-    lines.push(`   Justification: [CO FILLS IN]`);
-    lines.push(``);
-    lines.push(``);
-    lines.push(`__________________________________        ____________________`);
-    lines.push(`[CO RANK, NAME]                           Date`);
-    lines.push(`[UNIT], [LOCATION]`);
-    return lines.join('\n');
+      return `            ${letter}. ${fmtDate(o.date)} - ${o.description}. Disposition: ${o.disposition}.`;
+    }).join('\n');
+
+    return `<!DOCTYPE html><html><head><title>CO Interview MFR</title>
+<style>
+  body { font-family:"Times New Roman",serif; font-size:12pt; color:#000; margin:0; padding:0; }
+  @page { size:letter; margin:1in; }
+  @media screen { body { max-width:7.5in; margin:0.5in auto; padding:0.5in; } }
+  .lhd-unit { font-family:Arial,sans-serif; font-weight:bold; font-size:10pt; text-align:center; text-transform:uppercase; line-height:1.4; }
+  .lhd-dept { font-family:Arial,sans-serif; font-weight:bold; font-size:9pt; text-align:center; letter-spacing:.05em; margin-bottom:2pt; }
+  .lhd-addr { font-family:Arial,sans-serif; font-size:9pt; text-align:center; font-weight:normal; }
+  .lhd-rule { border:none; border-top:1.5pt solid #000; margin:6pt 0 4pt; }
+  .sym-date { display:flex; justify-content:space-between; font-family:Arial,sans-serif; font-size:10pt; margin-bottom:18pt; }
+  .sym-label { font-size:8pt; font-style:italic; color:#333; }
+  .body-block { font-family:"Times New Roman",serif; font-size:12pt; line-height:1.5; }
+  .memo-to { margin-bottom:4pt; }
+  .memo-subj { margin-bottom:14pt; }
+  .para { margin-bottom:10pt; }
+  .sig-block { margin-top:36pt; }
+  .sig-line { border-bottom:1pt solid #000; width:3.5in; }
+  .fill-blank { border-bottom:1pt solid #555; display:inline-block; min-width:1.8in; }
+</style>
+</head><body>
+<div class="lhd-dept">DEPARTMENT OF THE ARMY</div>
+<div class="lhd-unit">${unit}</div>
+<div class="lhd-addr">${addr}</div>
+<hr class="lhd-rule"/>
+<div class="sym-date">
+  <div>
+    <div class="sym-label">REPLY TO<br>ATTENTION OF</div>
+    <div style="font-family:Arial;font-size:10pt;font-weight:bold;">${sym}</div>
+  </div>
+  <div style="text-align:right;font-family:Arial;font-size:10pt;">${dateStr}</div>
+</div>
+<div class="body-block">
+  <div class="memo-to">MEMORANDUM FOR ${authTo}</div>
+  <div class="memo-subj">SUBJECT: Company Commander&#39;s Interview &#8211; ${fullName||'[APPLICANT NAME]'}, Moral Waiver</div>
+
+  <div class="para">1.&nbsp;&nbsp;On <span class="fill-blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>, I personally interviewed <strong>${fullName||'[APPLICANT NAME]'}</strong> regarding the following offense(s) requiring a moral waiver:</div>
+
+${offenseList.map((o,i)=>`  <div class="para" style="margin-left:36pt;">${String.fromCharCode(97+i)}.&nbsp;&nbsp;${fmtDate(o.date)} &#8211; ${o.description}. Disposition: ${o.disposition}.</div>`).join('\n')}
+
+  <div class="para">2.&nbsp;&nbsp;During the interview, ${applicant.firstName||'the applicant'} demonstrated <span class="fill-blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>. The applicant&#39;s explanation of the circumstances surrounding the offense(s) was <span class="fill-blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>.</div>
+
+  <div class="para">3.&nbsp;&nbsp;Based on my interview, I assess ${applicant.firstName||'the applicant'} to be <span class="fill-blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> and believe the offense(s) to be <span class="fill-blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> of the applicant&#39;s overall character.</div>
+
+  <div class="para">4.&nbsp;&nbsp;Recommendation:</div>
+  <div class="para" style="margin-left:36pt;">&#9633;&nbsp;&nbsp;<strong>APPROVE</strong> the moral waiver request.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#9633;&nbsp;&nbsp;<strong>DISAPPROVE</strong> the moral waiver request.</div>
+  <div class="para" style="margin-left:36pt;">Justification: <span class="fill-blank" style="min-width:3in;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div>
+
+  <div class="para">5.&nbsp;&nbsp;The point of contact for this memorandum is the undersigned at <span class="fill-blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>.</div>
+
+  <div class="sig-block">
+    <div style="margin-bottom:42pt;">&nbsp;</div>
+    <div class="sig-line">&nbsp;</div>
+    <div style="font-family:Arial,sans-serif;font-size:10pt;font-weight:bold;">[CO RANK NAME]</div>
+    <div style="font-family:Arial,sans-serif;font-size:10pt;">[BRANCH], USA</div>
+    <div style="font-family:Arial,sans-serif;font-size:10pt;">Commanding</div>
+  </div>
+</div>
+</body></html>`;
   };
 
   const genRouting = () => {
@@ -1037,15 +1179,21 @@ const Phase3 = ({ applicant, offenses, verdict, answers }) => {
   };
 
   const docTypes = [
-    { id:'cover',     name:'Printable Cover Sheet',       desc:'Formatted summary page for the top of the physical packet — applicant info, offense table, required docs.',  icon:<IcoDoc/>, gen:genCoverSheet },
-    { id:'statement', name:"Applicant's Statement Draft", desc:'Pre-filled boilerplate structure per AR 601-210 requirements. Applicant personalizes and signs.',              icon:<IcoDoc/>, gen:genStatement },
-    { id:'mfr',       name:"CO Interview MFR Draft",      desc:'Pre-filled memorandum for the Company Commander to complete and sign.',                                       icon:<IcoDoc/>, gen:genMFR },
-    { id:'routing',   name:'Routing / Transmittal Memo',  desc:'Memo from recruiter routing the complete packet up the chain to battalion S1.',                               icon:<IcoDoc/>, gen:genRouting },
+    { id:'cover',     name:'Printable Cover Sheet',       desc:'Formatted summary page for the top of the physical packet — applicant info, offense table, required docs.',  icon:<IcoDoc/>, gen:genCoverSheet, fmt:'text' },
+    { id:'statement', name:"Applicant's Statement Draft", desc:'Pre-filled boilerplate structure per AR 601-210 requirements. Applicant personalizes and signs.',              icon:<IcoDoc/>, gen:genStatement, fmt:'text' },
+    { id:'mfr',       name:"CO Interview MFR Draft",      desc:'Official Army memo with letterhead, AR 25-50 format. CO completes fill-in lines and signs.',                  icon:<IcoDoc/>, gen:genMFR,       fmt:'html' },
+    { id:'routing',   name:'Routing / Transmittal Memo',  desc:'Memo from recruiter routing the complete packet up the chain to battalion S1.',                               icon:<IcoDoc/>, gen:genRouting,   fmt:'text' },
   ];
 
-  const printDoc = (content) => {
+  const printDoc = (content, fmt='text') => {
     const w = window.open('','_blank');
-    w.document.write(`<!DOCTYPE html><html><head><title>Moral Waiver Document</title><style>body{font-family:"Courier New",monospace;font-size:12px;line-height:1.7;padding:48px;color:#000;max-width:700px;margin:auto}@media print{body{padding:24px}}</style></head><body><pre>${content}</pre><script>window.onload=()=>window.print()<\/script></body></html>`);
+    if (fmt === 'html') {
+      // Insert auto-print script before </body>
+      const html = content.replace('</body>', '<script>window.onload=()=>window.print()<\/script></body>');
+      w.document.write(html);
+    } else {
+      w.document.write(`<!DOCTYPE html><html><head><title>Moral Waiver Document</title><style>body{font-family:"Courier New",monospace;font-size:12px;line-height:1.7;padding:48px;color:#000;max-width:700px;margin:auto}@media print{body{padding:24px}}</style></head><body><pre>${content}</pre><script>window.onload=()=>window.print()<\/script></body></html>`);
+    }
     w.document.close();
   };
 
@@ -1115,7 +1263,7 @@ const Phase3 = ({ applicant, offenses, verdict, answers }) => {
                 <div className="output-desc">{dt.desc}</div>
                 <div style={{display:'flex',gap:6}}>
                   <button className="btn btn-outline btn-sm" onClick={()=>setActiveDoc({...dt, content:dt.gen()})}>Preview</button>
-                  <button className="btn btn-gold btn-sm" onClick={()=>printDoc(dt.gen())}><IcoPrint/> Print</button>
+                  <button className="btn btn-gold btn-sm" onClick={()=>printDoc(dt.gen(),dt.fmt)}><IcoPrint/> Print</button>
                 </div>
               </div>
             ))}
@@ -1133,17 +1281,20 @@ const Phase3 = ({ applicant, offenses, verdict, answers }) => {
       {/* Document Preview Modal */}
       {activeDoc && (
         <div className="modal-overlay" onClick={e=>{if(e.target===e.currentTarget)setActiveDoc(null)}}>
-          <div className="modal">
+          <div className="modal" style={{maxWidth:activeDoc.fmt==='html'?860:700}}>
             <div className="modal-hdr">
               <span className="modal-title">{activeDoc.name}</span>
               <button className="btn btn-outline btn-sm" onClick={()=>setActiveDoc(null)}><IcoX/></button>
             </div>
-            <div className="modal-body">
-              <pre className="doc-preview">{activeDoc.content}</pre>
+            <div className="modal-body" style={{padding:activeDoc.fmt==='html'?0:20}}>
+              {activeDoc.fmt==='html'
+                ? <iframe srcDoc={activeDoc.content} style={{width:'100%',height:'60vh',border:'none',background:'#fff'}} title="MFR Preview"/>
+                : <pre className="doc-preview">{activeDoc.content}</pre>
+              }
             </div>
             <div className="modal-ftr">
               <button className="btn btn-outline" onClick={()=>setActiveDoc(null)}>Close</button>
-              <button className="btn btn-gold" onClick={()=>printDoc(activeDoc.content)}><IcoPrint/> Print / Download</button>
+              <button className="btn btn-gold" onClick={()=>printDoc(activeDoc.content,activeDoc.fmt)}><IcoPrint/> Print / Download</button>
             </div>
           </div>
         </div>
@@ -1180,7 +1331,8 @@ const App = () => {
   const [verdict, setVerdict] = useState(null);
 
   // Phase 2 state
-  const [applicant, setApplicant] = useState({ lastName:'', firstName:'', mi:'', ssn:'', dob:'', rsid:'', educationLevel:'', afqt:'' });
+  const blankApplicant = { lastName:'', firstName:'', mi:'', ssn:'', dob:'', rsid:'', educationLevel:'', educationCode:'', afqt:'', psNps:'', maritalStatus:'', numDependents:'', dependentAges:'', recruiterUnit:'', recruiterAddress:'', recruiterOfficeSym:'', recruiterName:'', recruiterRank:'' };
+  const [applicant, setApplicant] = useState(blankApplicant);
   const [offenses, setOffenses] = useState([]);
 
   // Resume modal
@@ -1208,7 +1360,7 @@ const App = () => {
     setSelectedOffense(pendingDraft.selectedOffense||null);
     setAnswers(pendingDraft.answers||{});
     setVerdict(pendingDraft.verdict||null);
-    setApplicant(pendingDraft.applicant||{lastName:'',firstName:'',mi:'',ssn:'',dob:'',rsid:'',educationLevel:'',afqt:''});
+    setApplicant({...blankApplicant,...(pendingDraft.applicant||{})});
     setOffenses(pendingDraft.offenses||[]);
     setPendingDraft(null);
   };
@@ -1218,7 +1370,7 @@ const App = () => {
   const newApplicant = () => {
     clearDraft();
     setPhase(1); setSelectedOffense(null); setAnswers({}); setVerdict(null);
-    setApplicant({lastName:'',firstName:'',mi:'',ssn:'',dob:'',rsid:'',educationLevel:'',afqt:''});
+    setApplicant(blankApplicant);
     setOffenses([]);
   };
 
