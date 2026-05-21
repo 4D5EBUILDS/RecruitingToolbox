@@ -346,9 +346,120 @@ const SectionNotes = ({ sectionId, value, onChange }) => {
   );
 };
 
+/* ── Alias Check Panel ────────────────────────────────── */
+const AliasCheckPanel = ({ profile, onChange, aliasCheck }) => {
+  const isLPR = profile.citizenship === "lpr";
+  const fields = [
+    { key:"nameBC",       label:"Birth Certificate",   placeholder:"e.g. Corleone, Rita Marina" },
+    { key:"nameSSC",      label:"Social Security Card", placeholder:"e.g. Rita M. Corleone" },
+    ...(!isLPR ? [{ key:"namePassport", label:"U.S. Passport",       placeholder:"(if applicable)" }] : []),
+    ...(isLPR  ? [{ key:"nameI551",     label:"Green Card / I-551",  placeholder:"e.g. Rita N. Corleone" }] : []),
+  ];
+
+  const statusMeta = {
+    unknown:     { color:"var(--fg-dim)",  icon:"○", text:"Enter document names above to check for aliases." },
+    match:       { color:"#4ade80",        icon:"✓", text:"Names match — no alias required." },
+    alias:       { color:"var(--gold)",    icon:"⚠", text:"Alias required — different first/last name found. All names must be listed per AR 601-210 para 2-11b." },
+    discrepancy: { color:"var(--danger)",  icon:"✗", text:"Discrepancy — conflicting middle name. Verify with applicant before submitting." },
+  };
+  const meta = statusMeta[aliasCheck.status] || statusMeta.unknown;
+
+  const labelStyle = { fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:8.5,
+    textTransform:"uppercase", letterSpacing:".1em", color:"var(--fg)", opacity:.55,
+    display:"block", marginBottom:3 };
+  const inputStyle = { width:"100%", background:"var(--input-bg)", color:"var(--fg-alt)",
+    border:"1px solid var(--border)", fontFamily:'"GI",Arial,sans-serif', fontWeight:400,
+    fontSize:12, padding:"6px 9px", outline:"none", transition:"border .15s, background .15s",
+    boxSizing:"border-box" };
+
+  return (
+    <div style={{ borderTop:"1px solid var(--border-mid)", padding:"14px 20px 16px",
+      background:"rgba(255,204,1,.014)" }}>
+
+      {/* Header */}
+      <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:12 }}>
+        <div style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:8.5,
+          textTransform:"uppercase", letterSpacing:".12em", color:"var(--gold)", opacity:.8 }}>
+          Alias Check — AR 601-210 para 2-11b
+        </div>
+      </div>
+
+      {/* Name fields */}
+      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"10px 14px", marginBottom:12 }}>
+        {fields.map(({ key, label, placeholder }) => {
+          const [foc, setFoc] = React.useState(false);
+          return (
+            <div key={key}>
+              <label style={labelStyle}>{label}</label>
+              <input
+                type="text"
+                value={profile[key] || ""}
+                onChange={e => onChange(key, e.target.value)}
+                onFocus={() => setFoc(true)}
+                onBlur={() => setFoc(false)}
+                placeholder={placeholder}
+                style={{ ...inputStyle,
+                  borderColor: foc ? "var(--border-str)" : "var(--border)",
+                  background: foc ? "rgba(255,204,1,.035)" : "var(--input-bg)",
+                  fontStyle: profile[key] ? "normal" : "italic" }}/>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Verdict */}
+      <div style={{ display:"flex", alignItems:"flex-start", gap:8,
+        padding:"9px 12px", border:`1px solid ${meta.color}22`,
+        background:`${meta.color}08` }}>
+        <span style={{ color:meta.color, fontSize:13, lineHeight:1, flexShrink:0,
+          fontFamily:'"GI",Arial,sans-serif', fontWeight:700 }}>{meta.icon}</span>
+        <div>
+          <div style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:11,
+            color:meta.color, marginBottom:2 }}>
+            {aliasCheck.status === "unknown"     ? "NO DATA"      :
+             aliasCheck.status === "match"       ? "CLEAR"        :
+             aliasCheck.status === "alias"       ? "ALIAS REQUIRED" : "DISCREPANCY"}
+          </div>
+          <div style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:400, fontSize:10.5,
+            color:"var(--fg-dim)", lineHeight:1.45 }}>{meta.text}</div>
+
+          {/* Alias groups */}
+          {aliasCheck.status === "alias" && aliasCheck.groups.length > 0 && (
+            <div style={{ marginTop:6, display:"flex", flexDirection:"column", gap:3 }}>
+              {aliasCheck.groups.map(({ name, docs }) => (
+                <div key={name} style={{ fontFamily:'"GI",Arial,sans-serif', fontSize:10,
+                  color:"var(--fg-muted)" }}>
+                  <span style={{ color:"var(--gold)", fontWeight:700 }}>{name}</span>
+                  <span style={{ color:"var(--fg-dim)" }}> — {docs.join(", ")}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Discrepancy details */}
+          {aliasCheck.status === "discrepancy" && aliasCheck.issues.map((iss, i) => (
+            <div key={i} style={{ marginTop:6, fontFamily:'"GI",Arial,sans-serif', fontSize:10,
+              color:"var(--danger)" }}>
+              {iss.docs[0]} middle "{iss.vals[0]}" ≠ {iss.docs[1]} middle "{iss.vals[1]}"
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Regulation note */}
+      <div style={{ marginTop:8, fontFamily:'"GI",Arial,sans-serif', fontWeight:400, fontSize:9.5,
+        color:"var(--fg-dim)", lineHeight:1.5, opacity:.7 }}>
+        Format: "Last, First Middle" or "First Middle Last" · Initial abbreviation (M → Marina) is not an alias ·
+        Different initial (N ≠ Marina) is a discrepancy, not an alias · Different first/last name = alias, requires separate DD 369
+      </div>
+    </div>
+  );
+};
+
 /* ── Check Section ───────────────────────────────────── */
 const CheckSection = React.forwardRef(({ section, items, onToggle, onHelp, onQuickComplete, compact,
-  notes, onNoteChange, animatingIds, newItemIds, justCompleted, timestamps }, ref) => {
+  notes, onNoteChange, animatingIds, newItemIds, justCompleted, timestamps,
+  profile, onProfileChange, aliasCheck }, ref) => {
   const [open, setOpen] = useState(true);
   const done    = items.filter(i => i.status === "complete").length;
   const flagged = items.filter(i => i.status === "flagged").length;
@@ -438,6 +549,9 @@ const CheckSection = React.forwardRef(({ section, items, onToggle, onHelp, onQui
             compact={compact} isNew={newItemIds.has(item.id)} newDelay={idx * 35}
             animating={animatingIds.has(item.id)} timestamp={timestamps[item.id]}/>
         ))}
+        {section.id === "identity" && profile && aliasCheck && (
+          <AliasCheckPanel profile={profile} onChange={onProfileChange} aliasCheck={aliasCheck}/>
+        )}
         <SectionNotes sectionId={section.id} value={notes[section.id]} onChange={onNoteChange}/>
       </>}
     </div>
@@ -1194,7 +1308,8 @@ const App = () => {
                   onQuickComplete={quickCompleteSection}
                   compact={compact} notes={notes} onNoteChange={saveNote}
                   animatingIds={animatingIds} newItemIds={newItemIds}
-                  justCompleted={justCompleted.has(s.id)} timestamps={timestamps}/>
+                  justCompleted={justCompleted.has(s.id)} timestamps={timestamps}
+                  profile={profile} onProfileChange={handleProfileChange} aliasCheck={aliasCheck}/>
               ))
             }
             <div style={{ height:40 }}/>
