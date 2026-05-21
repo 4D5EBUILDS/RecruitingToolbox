@@ -94,30 +94,89 @@ const loadTs    = () => { try { return JSON.parse(localStorage.getItem("pqc-ts")
 const fmtTime   = () => new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
 
 /* ── Alias Check ─────────────────────────────────────────
-   Compares names across core identity documents.
-   Returns { status: "match"|"mismatch"|"unknown", groups }
-   where groups = [{ name, docs: ["BC","SSC",...] }]
+   Regulation basis: AR 601-210 para 2-11b (Mar 2026)
+   "The police record checks will indicate the name on the
+   applicant's social security card, the name the applicant
+   is enlisting under, as well as the name on birth
+   certificate, maiden name, or any other name the applicant
+   is known as. In cases where the name is clearly derived
+   from the originating name (for example, Dick from Richard
+   or Stephen from Estaban), all names will be listed."
+
+   Returns:
+     { status: "unknown"|"match"|"discrepancy"|"alias",
+       groups: [{ name, docs }],   ← alias variants for display
+       issues: [{ docs, vals }] }  ← middle-name mismatches
 ────────────────────────────────────────────────────────── */
 const getAliasCheck = (profile) => {
   const norm = s => s.trim().toUpperCase().replace(/\s+/g, " ");
+
+  // Parse "Last, First [Middle]" OR "First [Middle] Last" into components
+  const parseName = (raw) => {
+    const s = norm(raw);
+    if (!s) return null;
+    if (s.includes(",")) {
+      const comma = s.indexOf(",");
+      const last = s.slice(0, comma).trim();
+      const rest = s.slice(comma + 1).trim().split(/\s+/).filter(Boolean);
+      return { last, first: rest[0] || "", middle: rest.slice(1).join(" ") };
+    }
+    const parts = s.split(/\s+/);
+    if (parts.length === 1) return { last: parts[0], first: "", middle: "" };
+    if (parts.length === 2) return { first: parts[0], last: parts[1], middle: "" };
+    return { first: parts[0], middle: parts.slice(1, -1).join(" "), last: parts[parts.length - 1] };
+  };
+
+  // "M." or "M" is a valid abbreviation of "Marina" → same name, no alias
+  // "N." is NOT an abbreviation of "Marina" → discrepancy, must verify
+  const middleCompatible = (a, b) => {
+    if (!a || !b) return true;              // omitted middle = no conflict
+    const aC = a.replace(/\./g, "").trim();
+    const bC = b.replace(/\./g, "").trim();
+    if (aC === bC) return true;
+    if (aC.length === 1 && bC.startsWith(aC)) return true;  // M → Marina ✓
+    if (bC.length === 1 && aC.startsWith(bC)) return true;  // Marina → M ✓
+    return false;                           // N ≠ Marina ✗
+  };
+
   const entries = [
     { key:"nameBC",       label:"Birth Certificate" },
     { key:"nameSSC",      label:"Social Security Card" },
-    { key:"namePassport", label:"Passport",   show: profile.citizenship !== "lpr" },
+    { key:"namePassport", label:"Passport",           show: profile.citizenship !== "lpr" },
     { key:"nameI551",     label:"Green Card (I-551)", show: profile.citizenship === "lpr" },
   ]
     .filter(d => d.show !== false && profile[d.key]?.trim())
-    .map(d => ({ label: d.label, norm: norm(profile[d.key]) }));
+    .map(d => ({ label: d.label, parsed: parseName(profile[d.key]), raw: norm(profile[d.key]) }))
+    .filter(d => d.parsed);
 
-  if (entries.length < 2) return { status:"unknown", groups:[] };
+  if (entries.length < 2) return { status:"unknown", groups:[], issues:[] };
 
-  const map = {};
-  entries.forEach(({ label, norm }) => {
-    if (!map[norm]) map[norm] = [];
-    map[norm].push(label);
-  });
-  const groups = Object.entries(map).map(([name, docs]) => ({ name, docs }));
-  return { status: groups.length === 1 ? "match" : "mismatch", groups };
+  // Different first or last name → true alias (regulation requires all listed)
+  const firsts = [...new Set(entries.map(e => e.parsed.first).filter(Boolean))];
+  const lasts  = [...new Set(entries.map(e => e.parsed.last).filter(Boolean))];
+  const hasAlias = firsts.length > 1 || lasts.length > 1;
+
+  // Middle name mismatches → document discrepancy, must verify with applicant
+  const issues = [];
+  for (let i = 0; i < entries.length; i++) {
+    for (let j = i + 1; j < entries.length; j++) {
+      if (!middleCompatible(entries[i].parsed.middle, entries[j].parsed.middle)) {
+        issues.push({
+          docs: [entries[i].label, entries[j].label],
+          vals: [entries[i].parsed.middle || "(none)", entries[j].parsed.middle || "(none)"]
+        });
+      }
+    }
+  }
+
+  if (hasAlias) {
+    const map = {};
+    entries.forEach(({ label, raw }) => { if (!map[raw]) map[raw]=[]; map[raw].push(label); });
+    const groups = Object.entries(map).map(([name, docs]) => ({ name, docs }));
+    return { status:"alias", groups, issues };
+  }
+  if (issues.length > 0) return { status:"discrepancy", groups:[], issues };
+  return { status:"match", groups:[], issues:[] };
 };
 
 /* ── Icons ───────────────────────────────────────────── */
@@ -416,31 +475,73 @@ const PacketOverview = ({ sections, statuses, activeSection, onSectionClick, pro
       </div>
 
       {/* Alias Check */}
-      {aliasCheck.status !== "unknown" && (
-        <div style={{ padding:"10px 16px", borderBottom:"1px solid var(--border)", flexShrink:0,
-          background: aliasCheck.status === "mismatch" ? "rgba(207,0,0,.06)" : "rgba(255,204,1,.04)",
-          animation:"fadeUp .3s ease" }}>
-          <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom: aliasCheck.status === "mismatch" ? 7 : 0 }}>
-            <span style={{ fontSize:10, lineHeight:1 }}>{aliasCheck.status === "match" ? "✓" : "⚠"}</span>
-            <span style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:9,
-              textTransform:"uppercase", letterSpacing:".08em",
-              color: aliasCheck.status === "match" ? "var(--gold)" : "var(--danger)" }}>
-              {aliasCheck.status === "match" ? "Names match — no alias needed" : `${aliasCheck.groups.length} name variants — alias required`}
-            </span>
-          </div>
-          {aliasCheck.status === "mismatch" && aliasCheck.groups.map(({ name, docs }) => (
-            <div key={name} style={{ display:"flex", gap:6, alignItems:"flex-start", marginBottom:4 }}>
-              <span style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:8,
-                color:"var(--danger)", textTransform:"uppercase", letterSpacing:".06em",
-                background:"rgba(207,0,0,.15)", padding:"1px 5px", whiteSpace:"nowrap", flexShrink:0, marginTop:1 }}>
-                {docs.join(" · ")}
-              </span>
-              <span style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:500, fontSize:10.5,
-                color:"var(--fg-alt)", lineHeight:1.3, wordBreak:"break-word" }}>{name}</span>
+      {aliasCheck.status !== "unknown" && (() => {
+        const isAlias = aliasCheck.status === "alias";
+        const isDiscrep = aliasCheck.status === "discrepancy";
+        const isMatch = aliasCheck.status === "match";
+        const bg = isAlias ? "rgba(207,0,0,.07)" : isDiscrep ? "rgba(255,204,1,.05)" : "rgba(255,204,1,.03)";
+        const color = isAlias ? "var(--danger)" : isDiscrep ? "var(--gold)" : "var(--gold)";
+        const icon = isMatch ? "✓" : isAlias ? "✗" : "⚠";
+        const headline = isMatch
+          ? "Names match — no alias needed"
+          : isAlias
+          ? `${aliasCheck.groups.length} name variant${aliasCheck.groups.length > 1 ? "s" : ""} — alias required`
+          : "Middle name discrepancy — verify";
+        return (
+          <div style={{ padding:"10px 16px", borderBottom:"1px solid var(--border)", flexShrink:0,
+            background:bg, animation:"fadeUp .3s ease" }}>
+            <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom: isMatch ? 0 : 6 }}>
+              <span style={{ fontSize:10, lineHeight:1, color }}>{icon}</span>
+              <span style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:9,
+                textTransform:"uppercase", letterSpacing:".08em", color }}>{headline}</span>
             </div>
-          ))}
-        </div>
-      )}
+
+            {/* ALIAS: show each name variant grouped by source doc */}
+            {isAlias && aliasCheck.groups.map(({ name, docs }) => (
+              <div key={name} style={{ display:"flex", gap:6, alignItems:"flex-start", marginBottom:4 }}>
+                <span style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:7.5,
+                  color:"var(--danger)", textTransform:"uppercase", letterSpacing:".05em",
+                  background:"rgba(207,0,0,.15)", padding:"2px 5px", whiteSpace:"nowrap",
+                  flexShrink:0, marginTop:2 }}>{docs.join(" · ")}</span>
+                <span style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:500, fontSize:10,
+                  color:"var(--fg-alt)", lineHeight:1.35, wordBreak:"break-word" }}>{name}</span>
+              </div>
+            ))}
+            {isAlias && <div style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:400, fontSize:9,
+              color:"var(--danger)", marginTop:4, lineHeight:1.4 }}>
+              Enter all names in GENESIS Alias Tab · Run separate DD 369 per alias (AR 601-210 para 2-11b · UM 21-022)
+            </div>}
+
+            {/* DISCREPANCY: show conflicting middle names */}
+            {isDiscrep && aliasCheck.issues.map((iss, i) => (
+              <div key={i} style={{ marginBottom:4 }}>
+                <div style={{ display:"flex", gap:6, alignItems:"flex-start" }}>
+                  <span style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:7.5,
+                    color:"var(--gold)", textTransform:"uppercase", background:"rgba(255,204,1,.12)",
+                    padding:"2px 5px", whiteSpace:"nowrap", flexShrink:0, marginTop:2 }}>
+                    {iss.docs[0]}
+                  </span>
+                  <span style={{ fontFamily:'"GI",Arial,sans-serif', fontSize:10,
+                    color:"var(--fg-alt)" }}>{iss.vals[0]}</span>
+                </div>
+                <div style={{ display:"flex", gap:6, alignItems:"flex-start", marginTop:2 }}>
+                  <span style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:7.5,
+                    color:"var(--gold)", textTransform:"uppercase", background:"rgba(255,204,1,.12)",
+                    padding:"2px 5px", whiteSpace:"nowrap", flexShrink:0, marginTop:2 }}>
+                    {iss.docs[1]}
+                  </span>
+                  <span style={{ fontFamily:'"GI",Arial,sans-serif', fontSize:10,
+                    color:"var(--fg-alt)" }}>{iss.vals[1]}</span>
+                </div>
+              </div>
+            ))}
+            {isDiscrep && <div style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:400, fontSize:9,
+              color:"var(--fg-muted)", marginTop:4, lineHeight:1.4 }}>
+              Same first/last name — NOT an alias. Verify with applicant: typo or different middle? If different middle was legally used, enter as alias (AR 601-210 para 2-11b).
+            </div>}
+          </div>
+        );
+      })()}
 
       {/* Circle progress */}
       <div style={{ padding:"14px 16px 12px", borderBottom:"1px solid var(--border)",
@@ -1001,7 +1102,7 @@ const App = () => {
   // Alias check — auto-flag gen-s1 when document names mismatch
   const aliasCheck = useMemo(() => getAliasCheck(profile), [profile]);
   useEffect(() => {
-    if (aliasCheck.status === "mismatch") {
+    if (aliasCheck.status === "alias" || aliasCheck.status === "discrepancy") {
       setStatuses(prev => prev["gen-s1"] === "flagged" ? prev : { ...prev, "gen-s1":"flagged" });
     } else if (aliasCheck.status === "match") {
       setStatuses(prev => prev["gen-s1"] === "flagged" ? { ...prev, "gen-s1":"pending" } : prev);
