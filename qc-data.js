@@ -12,6 +12,8 @@ window.PROFILE_DEFAULTS = {
   dependents: "none",
   waivers: ["moral"],
   programs: ["arms20"],
+  // Document name fields — for alias detection
+  nameBC: "", nameSSC: "", namePassport: "", nameI551: "",
 };
 
 window.PROFILE_OPTIONS = {
