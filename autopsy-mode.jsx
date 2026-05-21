@@ -180,9 +180,9 @@ const ORGAN_MAP = {
    Overrides the standard sub in autopsy mode
 ════════════════════════════════════════════════════════ */
 const AUTOPSY_SUBS = {
-  "ssc":          "Original only. SSA.gov printouts will be used as evidence against you. Lamination of the original is acceptable. Everything else is a prayer.",
-  "bc":           "Certified copy with raised seal or certifying stamp. The 'congrats it's a girl' napkin from the hospital does not count. Neither does a photocopy. Neither does Google Translate.",
-  "pid":          "Current driver's license, state ID, or U.S. passport. Expired by one day? GC treats it like a forged 1997 document. Learner's permit: adorable, but go home.",
+  "ssc":          "Original only. SSA.gov printouts will be used as toilet paper by GC. Metal 'I Am Awesome' cards from the mall will be used as evidence against you. Lamination of the original is acceptable. Everything else is a prayer.",
+  "bc":           "Certified copy with raised seal. The 'congrats it's a girl' napkin from the hospital does not count. Neither does a photocopy. Neither does Google Translate. Neither does your uncle who 'took Spanish in high school.' All of them: no.",
+  "pid":          "Current. Not expired by one day. Not expired by one hour. GC treats an expired ID like you walked in with a document from a parallel timeline. Learner's permit: adorable. MEPS will laugh, then send you home.",
   "passport":     "N/A if they don't have one — most citizens don't, and that's fine. If they do have one, verify name/DOB match. LPR? Hidden — they don't have a U.S. passport. That's the point of being an LPR.",
   "i551":         "Alien number + expiration date + category code. All three. In GENESIS Citizenship Tab. Miss one field and GC will circle it in a color you've never seen before and don't want to see again.",
   "fp-lpr":       "LPR — check if they still have a valid or recently expired foreign passport. If yes, it goes in. If surrendered or expired, mark N/A and document it. Do not guess. Document.",
@@ -191,18 +191,18 @@ const AUTOPSY_SUBS = {
   "dd1966-bp":    "Both parents living: both sign page 5. One missing? You get to explain to the applicant why their packet is on hold while you track down their dad. One parent deceased/legally absent: document it and call GC.",
   "selsvc":       "Males 18+: verify at SSS.gov before projecting. Not registered? They register first. You wait. Then you proceed. Projecting an unregistered 18-year-old male is a conversation you don't want to have with GC.",
   "gen-person":   "Legal name. Not 'what they go by.' Not their Discord username. The name on the birth certificate. DL address must match most recent residence entry. Do NOT put a nickname in the legal name field. GC will call you.",
-  "gen-s1":       "Every alias. The married name. The maiden name. The name on the old ID. Both Screening Tab p.1 AND Alias Tab. Not one — BOTH. Empty Alias Tab with a prior name = automatic GC return and a very specific phone call.",
-  "gen-s2":       "No blank boxes. Every field answered. Write N/A if not applicable. GC cannot fill in the blanks for you. They can only return the packet, write 'REALLY?' in remarks, and forward it to the group chat as an example.",
+  "gen-s1":       "Every alias. The married name. The maiden name. The name on the expired ID they used in 2017. Both Screening Tab p.1 AND Alias Tab — BOTH. Not one. GC will check both. Empty Alias Tab = automatic return with 'DID YOU EVEN READ THE INSTRUCTIONS' written in remarks.",
+  "gen-s2":       "No blank boxes. Every single field. Write N/A. GC cannot fill in the blanks for you. They can only return the packet with a handwritten note that says 'NO,' then forward it to the group chat labeled 'LEARNING OPPORTUNITY.'",
   "gen-res":      "10 years or back to age 16 — whichever is shorter. No unexplained gaps. Lived somewhere for 3 weeks between apartments? That address goes in. DL address must match the most recent entry. GC will check.",
   "gen-emp":      "Every job. The summer at the ice cream shop. The weekend gig. Self-employment (including side hustles). Include JROTC in the Education tab — it may be worth an E-2 and you'd feel bad for missing it.",
   "gen-tabs":     "Education (all schools attended, including JROTC), Military Service Schools if applicable, Background/Investigation, Financial History. JROTC in Education, not Military Service. This matters. GC knows the difference.",
   "gen-refs":     "At least 3 references. Full names (not just 'Mike from work'). 3–7 year coverage. No family members as personal references on DD Form 370. GC will ask how the applicant knows 3 people and none of them are related.",
   "gen-docs":     "Upload everything with accurate, descriptive file names. Legible scans. Not blurry. Not cut off. Not a photo of a photo taken in poor lighting. Multi-page documents get labeled Page X of Y. GC reads every label.",
   "gen-sf86":     "Run the SF 86 Validation Report. Fix every flag. Run it again. Change one thing in GENESIS? Run it again. Unresolved flags before SC QC = automatic return. 'I thought it was fine' is not an answer.",
-  "gen-lsa":      "SC enters 'Station Live Scan Authorized' in Contact History in RZ. NOT SC Remarks. CONTACT HISTORY. This is the single most common GC NO-GO in the entire recruiting force. It has its own reputation. Do not add to the legend.",
+  "gen-lsa":      "CONTACT HISTORY. Not SC Remarks. Not a sticky note on the applicant folder. Not a text to your buddy who happens to be SC. CONTACT HISTORY IN RZ. This is the #1 cause of death in the entire recruiting force. GC will make sure everyone in the battalion knows it was you.",
   "gen-sck":      "Recruiter clicks 'Initiate SC Checkpoint' in RZ. SC and ASC get an automatic email. SC does NOT auto-reply. Call them to confirm receipt. Then coordinate directly. Do not assume the email was enough.",
   "livescan":     "Valid 120 days from the date of the scan. Not your best guess. The scan date. Expired by one day? Redo it. No exceptions. GC will not 'just check this time.' GC has never checked this time.",
-  "dd369":        "City police + county sheriff + state. All three returned. Every alias on a separate DD 369 — never hand-write an alias onto an existing form. Must cover locations where the applicant lived, worked, studied, or committed an offense in the last 3 years.",
+  "dd369":        "City police + county sheriff + state. ALL THREE RETURNED. Every alias gets its own separate DD 369 — hand-writing an alias onto an existing form is how you get blacklisted from GC's good graces permanently. GC will not negotiate. They will not count two out of three as 'close enough.'",
   "sex-off":      "NSOPW.gov plus applicable state registry. Document results in GENESIS remarks before SC QC. A hit means you stop immediately, call GC, and do not move. 'I thought I'd check after projecting' is career-altering logic.",
   "legal":        "Compare DD 369 returns against what the applicant disclosed during moral screening. New offense discovered = immediate GC call. Disclosure inconsistency (medical vs. moral) is also a GC return. Cross-reference everything.",
   "umf680":       "Sign in front of you. Not mailed. Not before the appointment. In your physical presence. Dates must match DD 2807-2 and GENESIS. Do not accept pre-signed forms. GC will ask the applicant directly. They will know.",
@@ -215,7 +215,7 @@ const AUTOPSY_SUBS = {
   "temp-res":     "Valid 7 calendar days only. MEPS date shifts past 7 days? Recreate it. Maximum 3 per applicant. On your third one, call GC before clicking anything. GC will want to know why you've been to the well twice already.",
   "mirs":         "Print on submission day. Not yesterday. Not last week. Not 'I'm pretty sure it's current.' Today. AFQT must match the most recent ASVAB in RZ. Stale MIRS on waiver packets is a very specific and very avoidable source of shame.",
   "asvab":        "Valid 2 years from test date. PICAT requires a MEPS confirmation test before scores are official — those aren't real scores yet. Verify AFQT matches MIRS 1.1. These are two different numbers and they must be the same number.",
-  "sigs":         "All signatures obtained in your presence. No Wite-Out — ever — on any government form. Error: single line through it, correction written next to it, initials next to the correction. That's the entire rule. Wite-Out is a war crime.",
+  "sigs":         "All signatures obtained in your physical presence. Not mailed. Not pre-signed. Not 'they were right here when I had the pen.' Wite-Out on a government form is a war crime. GC will circle it. Then circle you. Single line through the error, write the correction, initials. That is the law.",
   "mar-cert":     "Certified copy with raised seal. Verify name matches current legal name. Prior marriages? Every divorce decree, for every prior marriage, in the packet. 'I forgot about that one' is not a GENESIS entry.",
   "sp-docs":      "SSC (original or certified), birth certificate (certified), government-issued photo ID. All three. For each spouse. Names must be consistent across documents. GC will check all three.",
   "div-dec":      "Required for each prior marriage. Certified copy showing final decree. Note N/A if there are no prior marriages. Do not assume. Ask the applicant directly. 'It's complicated' is not a legal status.",
@@ -228,7 +228,7 @@ const AUTOPSY_SUBS = {
   "pha":          "Periodic Health Assessment. Most recent one. USAR/NG. Required for MEPS. If they don't have it, document why in remarks. GC would rather see a note explaining the absence than a blank space implying you didn't look.",
   "dd368-irr":    "IRR/Reserves obligation remaining? DD 368 required and must be approved before MEPS processing. N/A if no remaining obligation. Verify the IRR status. Don't guess. Guessing is how you find out at MEPS.",
   "dd368":        "DD 368 must be approved by both gaining AND releasing component commanders. Not pending. Not submitted. Approved. And not expired. Check the approval date and the expiration. Both. GC will.",
-  "mor-stmt":     "Written by the applicant. In their own words. Covering: what happened, their role, the outcome, what they've learned. You may not write it. You may not 'help them phrase it.' GC has read enough recruiter-written statements to know the difference on sight.",
+  "mor-stmt":     "Written by the applicant. In their own words. In their own handwriting — or typed by them. You may not write it. You may not 'help them phrase it.' You may not 'clean it up a little.' GC has read enough recruiter-written personal statements to identify your writing style by font choice alone.",
   "uf60108":      "Newest to oldest. Asterisk the offense(s) being waived — only those. AFQT must match most recent ASVAB in RZ. Marijuana possession/use: NO waiver required per AR 601-210 para 4-6 (Mar 2026). Distribution is different. Verify with GC before assuming.",
   "mor-incident": "Police incident report from the arresting jurisdiction. For every offense above traffic. Can't get a report? Use UF 601-210.02. Do not submit without one or the other. GC needs to read what happened. 'Trust me' is not a document.",
   "dockets":      "Three components per offense: (1) charging document (information docket), (2) court finding and sentencing, (3) final disposition. All three. For every offense above traffic. If the court won't furnish: UF 601-210.02. GC will ask for each one.",
@@ -458,6 +458,54 @@ const FULL_AUTOPSY_COMMENTS = [
 const _fmtTime = () => new Date().toLocaleTimeString("en-US", { hour:"2-digit", minute:"2-digit" });
 const _rand = arr => arr[Math.floor(Math.random()*arr.length)];
 
+/* ═══════════════════════════════════════════════════════
+   PROFILE OPTIONS — humorous labels for dropdowns/toggles
+════════════════════════════════════════════════════════ */
+const PROFILE_OPTIONS = {
+  citizenship: [
+    { v:"citizen",     l:"US CITIZEN (NATURAL BORN) — THE DEFAULT SETTING" },
+    { v:"naturalized", l:"NATURALIZED CITIZEN — WELCOME TO THE CLUB" },
+    { v:"lpr",         l:"PERMANENT RESIDENT (LPR) — GOOD LUCK WITH THAT I-551" },
+  ],
+  ageGender: [
+    { v:"18m",    l:"18+ MALE — BASIC EDITION" },
+    { v:"18f",    l:"18+ FEMALE — STILL BASIC" },
+    { v:"17m-sp", l:"17 SINGLE PARENT MALE — EXTRA PAPERWORK DLC" },
+    { v:"17f-sp", l:"17 SINGLE PARENT FEMALE — NIGHTMARE MODE" },
+    { v:"17m-bp", l:"17 BOTH PARENTS MALE — DOUBLE SIGNATURE SPECIAL" },
+    { v:"17f-bp", l:"17 BOTH PARENTS FEMALE — PARENTAL GUILT EDITION" },
+  ],
+  waivers: [
+    { v:"moral",      l:"MORAL (THE FUN KIND)" },
+    { v:"medical",    l:"MEDICAL (THE EXPENSIVE KIND)" },
+    { v:"suitability",l:"SUITABILITY (THE VAGUE KIND)" },
+    { v:"age-etp",    l:"AGE ETP (THE 'BUT I'M ALMOST 18' KIND)" },
+    { v:"tattoo",     l:"TATTOO (THE 'IT'S JUST A BUTTERFLY' KIND)" },
+    { v:"religious",  l:"RELIGIOUS ACCOMMODATION" },
+    { v:"re-code",    l:"RE CODE (THE 'I WAS YOUNG AND DUMB' KIND)" },
+    { v:"dependency", l:"DEPENDENCY" },
+  ],
+  programs: [
+    { v:"arms20",    l:"ARMS 2.0 — WE LOWERED THE BAR FOR YOU" },
+    { v:"fspc3",     l:"FSPC / IIIB" },
+    { v:"fspc-arms", l:"FSPC + ARMS 2.0 — DOUBLE THE ACRONYMS" },
+    { v:"flri",      l:"FLRI" },
+    { v:"ocs",       l:"OCS — OFFICER CANDIDATE SUFFERING" },
+    { v:"smp",       l:"SMP — SIMULTANEOUS MEMBERSHIP PAIN" },
+    { v:"woft",      l:"WOFT — THE COOL ONE (FLIGHT)" },
+    { v:"atp",       l:"ATP" },
+  ],
+};
+
+const RANDOM_NIGHTMARES = [
+  { citizenship:"lpr",       ageGender:"17f-bp", waivers:["moral","medical","dependency"],           programs:["arms20","woft"]        },
+  { citizenship:"citizen",   ageGender:"17m-sp", waivers:["moral","re-code","tattoo"],               programs:["ocs","smp"]            },
+  { citizenship:"naturalized",ageGender:"18m",   waivers:["medical","suitability"],                  programs:["arms20","fspc3"]       },
+  { citizenship:"lpr",       ageGender:"17f-sp", waivers:["moral","medical","tattoo","age-etp"],      programs:["woft"]                },
+  { citizenship:"citizen",   ageGender:"18f",    waivers:["suitability","religious"],                 programs:["arms20","fspc-arms","flri"] },
+  { citizenship:"naturalized",ageGender:"17m-bp",waivers:["moral","tattoo","re-code","dependency"],   programs:["ocs"]                 },
+];
+
 const cycleStatus = (s) => s==="pending"?"complete":s==="complete"?"flagged":"pending";
 const badgeClass  = (s) => s==="complete"?"aut-badge aut-badge-complete":s==="flagged"?"aut-badge aut-badge-flagged":s==="na"?"aut-badge aut-badge-na":"aut-badge aut-badge-pending";
 const badgeLabel  = (s) => s==="complete"?"COMPLETE":s==="flagged"?"FLAGGED":s==="na"?"N/A":"PENDING";
@@ -500,6 +548,14 @@ const AutopsyMode = ({ sections, statuses, profile, aliasCheck, onToggle, onQuic
   const [submitRoast,  setSubmitRoast]  = useState("");
   const [openSections, setOpenSections] = useState(() => new Set());
   const [localStatuses,setLocalStatuses]= useState({});
+  const [localProfile, setLocalProfile] = useState({
+    waivers:     profile.waivers  || [],
+    programs:    profile.programs || [],
+    citizenship: profile.citizenship || "citizen",
+    ageGender:   profile.ageGender   || "18m",
+    ssnLast4:    profile.ssnLast4    || "????",
+    dob:         profile.dob         || "",
+  });
 
   const prevStatuses = useRef(statuses);
   const morgueRef    = useRef(null);
@@ -624,6 +680,21 @@ const AutopsyMode = ({ sections, statuses, profile, aliasCheck, onToggle, onQuic
 
   const toggleSection = useCallback((id)=>{
     setOpenSections(p=>{const n=new Set(p); n.has(id)?n.delete(id):n.add(id); return n;});
+  },[]);
+
+  const toggleWaiver = useCallback((v)=>{
+    setLocalProfile(p=>({ ...p, waivers: p.waivers.includes(v)?p.waivers.filter(w=>w!==v):[...p.waivers,v] }));
+  },[]);
+  const toggleProgram = useCallback((v)=>{
+    setLocalProfile(p=>({ ...p, programs: p.programs.includes(v)?p.programs.filter(pg=>pg!==v):[...p.programs,v] }));
+  },[]);
+  const randomizeProfile = useCallback(()=>{
+    const rng = _rand(RANDOM_NIGHTMARES);
+    setLocalProfile(p=>({ ...p, ...rng }));
+    setMorgueLog(prev=>[...prev,{
+      time:_fmtTime(), color:"#f87171",
+      text:"☠ RANDOM NIGHTMARE GENERATED. GC HAS BEEN NOTIFIED. PRAYERS ACCEPTED."
+    }].slice(-80));
   },[]);
 
   /* ── Alias DNA ── */
@@ -895,29 +966,111 @@ const AutopsyMode = ({ sections, statuses, profile, aliasCheck, onToggle, onQuic
         )}
 
         {/* ── PROFILE BAR ── */}
-        <div style={{ background:"rgba(255,255,255,.02)", border:"1px solid #27272a",
-          borderRadius:16, padding:"12px 18px", marginBottom:20 }}>
-          <div style={{ display:"flex", flexWrap:"wrap", alignItems:"center", gap:14 }}>
-            <div className="aut-vt323" style={{ fontSize:16, color:"#71717a" }}>
-              SSN: <span style={{ color:"#e5e5e5" }}>••••{profile.ssnLast4||"—"}</span>
+        <div style={{ background:"#090507", border:"1px solid #27272a", borderRadius:16,
+          padding:"16px 20px", marginBottom:20 }}>
+          {/* Row 1: inputs + selects + random button */}
+          <div style={{ display:"flex", flexWrap:"wrap", alignItems:"center", gap:12 }}>
+            <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+              <span className="aut-vt323" style={{ fontSize:16, color:"#52525b" }}>SSN:</span>
+              <input maxLength={4} value={localProfile.ssnLast4}
+                onChange={e=>setLocalProfile(p=>({...p,ssnLast4:e.target.value}))}
+                style={{ background:"#000", width:64, padding:"4px 8px", textAlign:"center",
+                  border:"1px solid #3f3f46", color:"#e5e5e5",
+                  fontFamily:"'Press Start 2P',monospace", fontSize:9,
+                  borderRadius:4, outline:"none" }}/>
             </div>
-            <div className="aut-vt323" style={{ fontSize:16, color:"#71717a" }}>
-              DOB: <span style={{ color:"#e5e5e5" }}>{profile.dob||"—"}</span>
+            <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+              <span className="aut-vt323" style={{ fontSize:16, color:"#52525b" }}>DOB:</span>
+              <input value={localProfile.dob}
+                onChange={e=>setLocalProfile(p=>({...p,dob:e.target.value}))}
+                style={{ background:"#000", width:130, padding:"4px 8px",
+                  border:"1px solid #3f3f46", color:"#e5e5e5",
+                  fontFamily:"'Press Start 2P',monospace", fontSize:9,
+                  borderRadius:4, outline:"none" }}/>
             </div>
-            <div className="aut-vt323" style={{ fontSize:16, color:"#71717a" }}>
-              CTZ: <span style={{ color:"#e5e5e5" }}>{profile.citizenship==="citizen"?"US CITIZEN":profile.citizenship==="lpr"?"PERMANENT RESIDENT (LPR)":"NATURALIZED CITIZEN"}</span>
+            <select value={localProfile.citizenship}
+              onChange={e=>setLocalProfile(p=>({...p,citizenship:e.target.value}))}
+              style={{ background:"#000", border:"1px solid #3f3f46", color:"#e5e5e5",
+                fontFamily:"'Press Start 2P',monospace", fontSize:8, padding:"6px 10px",
+                borderRadius:4, cursor:"pointer", flex:"1 1 200px", minWidth:200, outline:"none" }}>
+              {PROFILE_OPTIONS.citizenship.map(o=>(
+                <option key={o.v} value={o.v}>{o.l}</option>
+              ))}
+            </select>
+            <select value={localProfile.ageGender}
+              onChange={e=>setLocalProfile(p=>({...p,ageGender:e.target.value}))}
+              style={{ background:"#000", border:"1px solid #3f3f46", color:"#e5e5e5",
+                fontFamily:"'Press Start 2P',monospace", fontSize:8, padding:"6px 10px",
+                borderRadius:4, cursor:"pointer", flex:"1 1 200px", minWidth:200, outline:"none" }}>
+              {PROFILE_OPTIONS.ageGender.map(o=>(
+                <option key={o.v} value={o.v}>{o.l}</option>
+              ))}
+            </select>
+            <button onClick={randomizeProfile}
+              style={{ fontFamily:"'Press Start 2P',monospace", fontSize:8, padding:"8px 18px",
+                background:"rgba(139,0,0,.25)", border:"1px solid #8B0000", color:"#f87171",
+                cursor:"pointer", letterSpacing:1, borderRadius:6,
+                display:"flex", alignItems:"center", gap:8,
+                flexShrink:0, whiteSpace:"nowrap" }}>
+              <i className="fas fa-dice"></i>RANDOM NIGHTMARE
+            </button>
+          </div>
+
+          {/* Row 2: waivers + programs checkboxes */}
+          <div style={{ marginTop:14, paddingTop:14, borderTop:"1px solid #1f2937",
+            display:"grid", gridTemplateColumns:"1fr 1fr", gap:20 }}>
+            <div>
+              <div className="aut-pstart" style={{ fontSize:8, color:"#52525b",
+                marginBottom:10, letterSpacing:2 }}>WAIVERS ACTIVE</div>
+              <div style={{ display:"flex", flexDirection:"column", gap:5 }}>
+                {PROFILE_OPTIONS.waivers.map(w=>{
+                  const active = localProfile.waivers.includes(w.v);
+                  return (
+                    <div key={w.v} onClick={()=>toggleWaiver(w.v)}
+                      style={{ display:"flex", alignItems:"flex-start", gap:10,
+                        cursor:"pointer", padding:"6px 10px", borderRadius:8,
+                        background:active?"rgba(248,113,113,.07)":"transparent",
+                        border:active?"1px solid rgba(248,113,113,.25)":"1px solid transparent",
+                        transition:"all .12s" }}>
+                      <div style={{ width:16, height:16, flexShrink:0, marginTop:2,
+                        border:active?"2px solid #f87171":"2px solid #3f3f46",
+                        background:active?"#8B0000":"transparent", borderRadius:3,
+                        display:"flex", alignItems:"center", justifyContent:"center" }}>
+                        {active && <i className="fas fa-check" style={{ fontSize:8, color:"#f87171" }}></i>}
+                      </div>
+                      <span className="aut-pstart" style={{ fontSize:9, lineHeight:1.6,
+                        color:active?"#f87171":"#52525b" }}>{w.l}</span>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-            <div className="aut-vt323" style={{ fontSize:16, color:"#71717a" }}>
-              TYPE: <span style={{ color:"#e5e5e5" }}>{(profile.ageGender||"").toUpperCase()}</span>
+            <div>
+              <div className="aut-pstart" style={{ fontSize:8, color:"#52525b",
+                marginBottom:10, letterSpacing:2 }}>SPECIAL PROGRAMS</div>
+              <div style={{ display:"flex", flexDirection:"column", gap:5 }}>
+                {PROFILE_OPTIONS.programs.map(pg=>{
+                  const active = localProfile.programs.includes(pg.v);
+                  return (
+                    <div key={pg.v} onClick={()=>toggleProgram(pg.v)}
+                      style={{ display:"flex", alignItems:"flex-start", gap:10,
+                        cursor:"pointer", padding:"6px 10px", borderRadius:8,
+                        background:active?"rgba(255,204,1,.06)":"transparent",
+                        border:active?"1px solid rgba(255,204,1,.22)":"1px solid transparent",
+                        transition:"all .12s" }}>
+                      <div style={{ width:16, height:16, flexShrink:0, marginTop:2,
+                        border:active?"2px solid #FFCC01":"2px solid #3f3f46",
+                        background:active?"rgba(255,204,1,.18)":"transparent", borderRadius:3,
+                        display:"flex", alignItems:"center", justifyContent:"center" }}>
+                        {active && <i className="fas fa-check" style={{ fontSize:8, color:"#FFCC01" }}></i>}
+                      </div>
+                      <span className="aut-pstart" style={{ fontSize:9, lineHeight:1.6,
+                        color:active?"#FFCC01":"#52525b" }}>{pg.l}</span>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-            {profile.waivers?.length>0 && profile.waivers.map(w=>(
-              <span key={w} className="aut-badge aut-badge-flagged" style={{ fontSize:6 }}>{w.toUpperCase()} WVR</span>
-            ))}
-            {profile.programs?.length>0 && profile.programs.map(p=>(
-              <span key={p} className="aut-pstart" style={{ fontSize:6, padding:"4px 8px",
-                border:"1px solid rgba(255,204,1,.3)", color:"#FFCC01",
-                background:"rgba(255,204,1,.05)" }}>{p.toUpperCase()}</span>
-            ))}
           </div>
         </div>
 
@@ -944,10 +1097,10 @@ const AutopsyMode = ({ sections, statuses, profile, aliasCheck, onToggle, onQuic
                     <div style={{ display:"flex", alignItems:"center", gap:12 }}>
                       <div style={{ fontSize:26 }}>{org.emoji}</div>
                       <div>
-                        <div className="aut-pstart" style={{ fontSize:10, color:"#FFCC01", lineHeight:1.4 }}>
+                        <div className="aut-pstart" style={{ fontSize:11, color:"#FFCC01", lineHeight:1.4 }}>
                           {section.title}
                         </div>
-                        <div className="aut-vt323" style={{ fontSize:14, color:"#71717a", marginTop:2 }}>
+                        <div className="aut-vt323" style={{ fontSize:15, color:"#71717a", marginTop:3 }}>
                           {section.reg} • {org.organ}
                         </div>
                       </div>
@@ -967,7 +1120,7 @@ const AutopsyMode = ({ sections, statuses, profile, aliasCheck, onToggle, onQuic
                   {/* Organ description — always visible */}
                   <div style={{ padding:"10px 20px 8px", borderBottom:"1px solid #1f2937",
                     background:"rgba(0,0,0,.25)" }}>
-                    <div className="aut-vt323" style={{ fontSize:15, color:"#52525b", lineHeight:1.4 }}>
+                    <div className="aut-vt323" style={{ fontSize:16, color:"#52525b", lineHeight:1.4 }}>
                       {org.desc}
                     </div>
                   </div>
@@ -1011,14 +1164,14 @@ const AutopsyMode = ({ sections, statuses, profile, aliasCheck, onToggle, onQuic
                             <div style={{ flex:1, minWidth:0 }}>
                               <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", gap:8 }}>
                                 <div style={{ flex:1, minWidth:0 }}>
-                                  <div className="aut-pstart" style={{ fontSize:8, lineHeight:1.6,
+                                  <div className="aut-pstart" style={{ fontSize:9, lineHeight:1.7,
                                     color:st==="complete"?"rgba(74,222,128,.4)":"#e5e5e5",
                                     textDecoration:st==="complete"?"line-through":"none" }}>
                                     {item.label}
                                   </div>
                                   {(subOverride||item.sub) && (
-                                    <div className="aut-vt323" style={{ fontSize:14, color:"#71717a",
-                                      marginTop:3, lineHeight:1.35 }}>
+                                    <div className="aut-vt323" style={{ fontSize:16, color:"#52525b",
+                                      marginTop:4, lineHeight:1.4 }}>
                                       {subOverride||item.sub}
                                     </div>
                                   )}
