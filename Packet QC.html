@@ -48,18 +48,21 @@ button,select,textarea,input{font-family:inherit}
 @keyframes overlayIn{from{opacity:0}to{opacity:1}}
 @keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
 @keyframes scanPulse{0%,100%{opacity:1}50%{opacity:.35}}
-@keyframes stickerLand{
-  0%{opacity:0;transform:rotate(-18deg) scale(1.5) translateY(-30px)}
-  18%{opacity:1;transform:rotate(-7deg) scale(1.04) translateY(0)}
-  75%{opacity:1;transform:rotate(-7deg) scale(1)}
-  100%{opacity:0;transform:rotate(-7deg) scale(.92) translateY(8px)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes completeBurst{
+  0%{opacity:0;transform:scale(.4)}
+  20%{opacity:1;transform:scale(1.12)}
+  50%{opacity:1;transform:scale(1)}
+  80%{opacity:.85;transform:scale(1)}
+  100%{opacity:0;transform:scale(1.06)}
 }
-@keyframes milestoneIn{
-  0%{opacity:0;transform:translateY(20px) scale(.8)}
-  20%{opacity:1;transform:translateY(0) scale(1.05)}
-  80%{opacity:1;transform:scale(1)}
-  100%{opacity:0;transform:scale(.95)}
+@keyframes shimmer{
+  0%{background-position:200% center}
+  100%{background-position:-200% center}
 }
+@keyframes navPulse{0%{opacity:1}50%{opacity:.4}100%{opacity:1}}
+@keyframes resetFlash{0%{background:rgba(255,204,1,.18)}60%{background:rgba(255,204,1,.06)}100%{background:transparent}}
+@keyframes spinIn{from{stroke-dashoffset:999}to{stroke-dashoffset:var(--dash-off)}}
 @keyframes tsIn{from{opacity:0;transform:translateX(6px)}to{opacity:1;transform:none}}
 @keyframes drawerIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
 </style>
@@ -117,7 +120,8 @@ const CircleProgress = ({ pct, size = 90, stroke = 6, color = "var(--gold)" }) =
       <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="var(--border-mid)" strokeWidth={stroke}/>
       <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color} strokeWidth={stroke}
         strokeDasharray={c} strokeDashoffset={off} strokeLinecap="butt"
-        style={{ transition: "stroke-dashoffset .6s cubic-bezier(.2,.6,0,1)" }}/>
+        style={{ transition: "stroke-dashoffset .7s cubic-bezier(.2,.6,0,1), filter .5s",
+          filter: pct === 100 ? "drop-shadow(0 0 4px rgba(255,204,1,.7))" : "none" }}/>
     </svg>
   );
 };
@@ -273,12 +277,22 @@ const CheckSection = React.forwardRef(({ section, items, onToggle, onHelp, onQui
       {justCompleted && (
         <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center",
           justifyContent:"center", pointerEvents:"none", zIndex:10,
-          animation:"stampFade 1.4s ease forwards" }}>
+          animation:"stampFade 1.8s ease forwards",
+          background:"rgba(255,204,1,.03)" }}>
+          {/* Burst rings */}
+          <div style={{ position:"absolute", width:160, height:160, borderRadius:"50%",
+            border:"2px solid rgba(255,204,1,.5)",
+            animation:"completeBurst 1.8s ease forwards" }}/>
+          <div style={{ position:"absolute", width:120, height:120, borderRadius:"50%",
+            border:"1px solid rgba(255,204,1,.3)",
+            animation:"completeBurst 1.8s ease .1s forwards" }}/>
+          {/* Stamp text */}
           <div style={{ border:"3px solid var(--gold)", color:"var(--gold)",
-            fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:32,
-            letterSpacing:".12em", textTransform:"uppercase", padding:"4px 20px",
-            animation:"stampIn .45s cubic-bezier(.2,.6,0,1)", opacity:.85 }}>
-            Complete
+            fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:30,
+            letterSpacing:".14em", textTransform:"uppercase", padding:"5px 22px",
+            animation:"stampIn .45s cubic-bezier(.2,.6,0,1)", opacity:.92,
+            boxShadow:"0 0 24px rgba(255,204,1,.25)", background:"rgba(15,12,16,.85)" }}>
+            ✓ Complete
           </div>
         </div>
       )}
@@ -418,7 +432,8 @@ const PacketOverview = ({ sections, statuses, activeSection, onSectionClick, pro
               width:"100%", background:isActive ? "rgba(255,204,1,.07)" : "transparent",
               border:`1px solid ${isActive ? "var(--border-mid)" : "transparent"}`,
               padding:"9px 10px", marginBottom:4, cursor:"pointer", textAlign:"left",
-              transition:"all .15s", borderLeft:isActive ? "3px solid var(--gold)" : "3px solid transparent",
+              transition:"all .15s, transform .1s", borderLeft:isActive ? "3px solid var(--gold)" : "3px solid transparent",
+              transform: isActive ? "translateX(2px)" : "none",
             }}>
               <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:5 }}>
                 <div style={{ display:"flex", alignItems:"center", gap:7 }}>
@@ -437,9 +452,14 @@ const PacketOverview = ({ sections, statuses, activeSection, onSectionClick, pro
                     color:allDone ? "var(--gold)" : "var(--fg-dim)" }}>{sDone}/{sTotal}</span>
                 </div>
               </div>
-              <div style={{ height:2, background:"var(--border)", position:"relative" }}>
+              <div style={{ height:2, background:"var(--border)", position:"relative", overflow:"hidden" }}>
                 <div style={{ position:"absolute", left:0, top:0, height:"100%",
-                  width:`${sPct}%`, background:barColor, transition:"width .4s cubic-bezier(.2,.6,0,1)" }}/>
+                  width:`${sPct}%`, transition:"width .5s cubic-bezier(.2,.6,0,1)",
+                  background: allDone
+                    ? "linear-gradient(90deg,var(--gold) 25%,rgba(255,255,200,.9) 50%,var(--gold) 75%)"
+                    : barColor,
+                  backgroundSize: allDone ? "200% auto" : "auto",
+                  animation: allDone ? "shimmer 2.2s linear infinite" : "none" }}/>
               </div>
             </button>
           );
@@ -475,7 +495,7 @@ const fldStyle = { width:"100%", background:"var(--input-bg)", color:"var(--fg-a
 const lbl = { fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:9, textTransform:"uppercase",
   letterSpacing:".1em", color:"var(--fg)", opacity:.5, display:"block", marginBottom:4 };
 
-const ProfileForm = ({ profile, onChange, onClose }) => {
+const ProfileForm = ({ profile, onChange, onClose, onReset }) => {
   const upd = (f, v) => onChange(f, v);
   const toggleArr = (f, v) => onChange(f, profile[f].includes(v)
     ? profile[f].filter(x => x !== v) : [...profile[f], v]);
@@ -551,10 +571,22 @@ const ProfileForm = ({ profile, onChange, onClose }) => {
           <span style={lbl}>Programs</span><MultiCheck f="programs"/>
         </div>
       </div>
-      <div style={{ padding:"12px 16px", borderTop:"1px solid var(--border)", flexShrink:0 }}>
-        <button onClick={onClose} style={{ width:"100%", fontFamily:'"GI",Arial,sans-serif',
+      <div style={{ padding:"12px 16px", borderTop:"1px solid var(--border)", flexShrink:0, display:"flex", gap:8 }}>
+        <button onClick={onReset}
+          style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:9.5,
+            textTransform:"uppercase", letterSpacing:".06em", padding:"10px 14px",
+            background:"transparent", color:"var(--fg-muted)", border:"1px solid var(--border-str)",
+            cursor:"pointer", whiteSpace:"nowrap", transition:"all .15s", flexShrink:0 }}
+          onMouseEnter={e => { e.currentTarget.style.color = "var(--danger)"; e.currentTarget.style.borderColor = "var(--danger)"; }}
+          onMouseLeave={e => { e.currentTarget.style.color = "var(--fg-muted)"; e.currentTarget.style.borderColor = "var(--border-str)"; }}>
+          ↺ New Applicant
+        </button>
+        <button onClick={onClose} style={{ flex:1, fontFamily:'"GI",Arial,sans-serif',
           fontWeight:700, fontSize:10.5, textTransform:"uppercase", letterSpacing:".06em",
-          background:"var(--gold)", color:"var(--black)", border:"none", padding:"10px", cursor:"pointer" }}>
+          background:"var(--gold)", color:"var(--black)", border:"none", padding:"10px", cursor:"pointer",
+          transition:"filter .15s" }}
+          onMouseEnter={e => e.currentTarget.style.filter = "brightness(1.1)"}
+          onMouseLeave={e => e.currentTarget.style.filter = "none"}>
           Done — Update Checklist →
         </button>
       </div>
@@ -709,12 +741,15 @@ const TabBar = ({ activeTab, setActiveTab }) => (
     ].map(({ id, label }) => (
       <button key={id} onClick={() => setActiveTab(id)} style={{
         background:"transparent", border:"none",
-        borderBottom: activeTab===id ? "2px solid var(--gold)" : "2px solid transparent",
-        padding:"10px 20px",
+        borderBottom: activeTab===id ? "3px solid var(--gold)" : "3px solid transparent",
+        padding:"11px 22px 8px",
         fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:11,
         textTransform:"uppercase", letterSpacing:".06em",
         color: activeTab===id ? "var(--gold)" : "var(--fg-muted)",
-        cursor:"pointer", transition:"color .15s"
+        cursor:"pointer",
+        transition:"color .2s, border-color .2s, opacity .2s",
+        opacity: activeTab===id ? 1 : 0.6,
+        boxShadow: activeTab===id ? "inset 0 -1px 0 rgba(255,204,1,.15)" : "none"
       }}>{label}</button>
     ))}
   </div>
@@ -736,7 +771,7 @@ const App = () => {
   const [newItemIds,     setNewItemIds]     = useState(new Set());
   const [newSectionIds,  setNewSectionIds]  = useState(new Set());
   const [activeSection,  setActiveSection]  = useState(null);
-  const [stickerVisible, setStickerVisible] = useState(false);
+  const [resetFlash,     setResetFlash]     = useState(false);
   const [refOpen,        setRefOpen]        = useState(false);
   const [tweaks,         setTweaks]         = useState(false);
   const [activeTab,      setActiveTab]      = useState("recruiter");
@@ -778,6 +813,18 @@ const App = () => {
     setProfile(prev => ({ ...prev, [field]:value }));
   }, []);
 
+  const handleReset = useCallback(() => {
+    setProfile(PROFILE_DEFAULTS);
+    setStatuses(initStatuses());
+    setTimestamps({});
+    setNotes({});
+    localStorage.removeItem("pqc-notes");
+    localStorage.removeItem("pqc-ts");
+    setEditingProfile(false);
+    setResetFlash(true);
+    setTimeout(() => setResetFlash(false), 900);
+  }, []);
+
   const saveNote = useCallback((sectionId, text) => {
     setNotes(prev => {
       const n = { ...prev, [sectionId]:text };
@@ -801,11 +848,9 @@ const App = () => {
         if (sec && sec.items.every(i => next[i.id] === "complete")) {
           setTimeout(() => {
             setJustCompleted(p => new Set([...p, sec.id]));
-            setStickerVisible(true);
             setTimeout(() => {
               setJustCompleted(p => { const n = new Set(p); n.delete(sec.id); return n; });
-              setStickerVisible(false);
-            }, 2400);
+            }, 1800);
           }, 280);
         }
       } else {
@@ -843,11 +888,9 @@ const App = () => {
     });
     setTimeout(() => {
       setJustCompleted(p => new Set([...p, sectionId]));
-      setStickerVisible(true);
       setTimeout(() => {
         setJustCompleted(p => { const n = new Set(p); n.delete(sectionId); return n; });
-        setStickerVisible(false);
-      }, 2400);
+      }, 1800);
     }, 200);
   }, [sections]);
 
@@ -894,7 +937,9 @@ const App = () => {
         onRefOpen={() => setRefOpen(true)}
         total={total} done={done} flagged={flagged}/>
       <TabBar activeTab={activeTab} setActiveTab={setActiveTab}/>
-      {activeTab === "gc" ? <GCReference/> : <div style={{ flex:1, display:"flex", overflow:"hidden" }}>
+      {activeTab === "gc"
+        ? <div key="gc" style={{ flex:1, display:"flex", flexDirection:"column", overflow:"hidden", animation:"fadeUp .22s ease" }}><GCReference/></div>
+        : <div key="rec" style={{ flex:1, display:"flex", overflow:"hidden", animation:"fadeUp .22s ease" }}>
 
         {/* ── LEFT PANEL ── */}
         <div style={{ width:270, flexShrink:0, borderRight:"1px solid var(--border-mid)",
@@ -903,7 +948,7 @@ const App = () => {
             onSectionClick={scrollToSection} profile={profile}
             total={total} done={done} flagged={flagged} onEdit={() => setEditingProfile(true)}/>
           {editingProfile && <ProfileForm profile={profile}
-            onChange={handleProfileChange} onClose={() => setEditingProfile(false)}/>}
+            onChange={handleProfileChange} onClose={() => setEditingProfile(false)} onReset={handleReset}/>}
         </div>
 
         {/* ── MAIN PANEL ── */}
@@ -953,13 +998,10 @@ const App = () => {
         </div>
       </div>}
 
-      {/* ── STICKER ── */}
-      {stickerVisible && (
-        <div style={{ position:"fixed", bottom:80, right:28, zIndex:250, pointerEvents:"none",
-          animation:"stickerLand 2.4s ease forwards",
-          boxShadow:"0 8px 28px rgba(0,0,0,.45)", transform:"rotate(-7deg)" }}>
-          <img src="assets/stickers/stars-2.gif" alt="" style={{ width:128, height:128, display:"block" }}/>
-        </div>
+      {/* ── RESET FLASH ── */}
+      {resetFlash && (
+        <div style={{ position:"fixed", inset:0, zIndex:250, pointerEvents:"none",
+          animation:"resetFlash .9s ease forwards" }}/>
       )}
 
       {helpItem && <HelpModal item={helpItem} onClose={() => setHelpItem(null)}/>}
