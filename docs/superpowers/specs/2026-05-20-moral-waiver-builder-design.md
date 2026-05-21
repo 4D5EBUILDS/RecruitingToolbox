@@ -42,42 +42,67 @@ Consistent with all existing ARTIFACTS tools:
 ### Phase 1 — Eligibility Screener
 
 **Step 1: Offense Selection**  
-Recruiter selects the offense category from a card list derived from AR 601-210 Chapter 4, Table 4-1. Categories include:
+Recruiter selects the offense category from a card list derived from AR 601-210 Chapter 4 (8 Nov 2023 edition). Categories map directly to Table 4-3 (Misconduct) and Table 4-4 (Serious/Major Misconduct):
 
-| Category | Examples |
-|----------|---------|
-| Felony — Drug Distribution/Trafficking | Sale, manufacture, distribution of controlled substances |
-| Felony — Violent (Non-bar) | Aggravated assault, voluntary manslaughter, arson |
-| Felony — Property/Financial | Grand theft, burglary, fraud, forgery |
-| Felony — Weapons | Unlawful possession of firearm (felony) |
-| Felony — Other | All other adult felony convictions |
-| Serious Misdemeanor | DUI causing injury, theft, fraud, weapons, domestic violence |
-| Minor Misdemeanor | Simple assault, disorderly conduct, minor in possession |
-| Drug — Possession/Use | Marijuana, controlled substance (adult) |
-| Drug — DAT Positive | MEPS/USMEPCOM positive drug test |
-| Traffic — Above Minor | DUI (no injury), reckless driving, hit and run |
-| Juvenile Offense | Any offense adjudicated as a juvenile |
-| Domestic Violence | Any offense involving domestic violence (Lautenberg) |
-| Sex Offender Registration | Any offense requiring registration |
-| Absolute Bar Offense | Murder, sexual assault of minor, human trafficking, terrorism |
+| Category | AR 601-210 Reference | AR Code | Typical Authority |
+|----------|---------------------|---------|-------------------|
+| Major Misconduct — Drug Distribution/Trafficking (incl. cannabis) | Table 4-4, Code 436 | Major | USAREC / DMPM |
+| Major Misconduct — Violent | Table 4-4, Code 400 (aggrav. assault), 426 (manslaughter), 401 (arson) | Major | USAREC / DMPM |
+| Major Misconduct — Property/Financial | Table 4-4, Code 418 (grand larceny ≥$500), 405 (burglary), 415 (embezzlement) | Major | USAREC / DMPM |
+| Major Misconduct — Drug Possession/Use (non-marijuana) | Table 4-4, Code 428 ("marijuana not included") | Major | USAREC / DMPM |
+| Major Misconduct — Other | Table 4-4, Code 441 | Major | USAREC / DMPM |
+| Misconduct — Marijuana Possession/Paraphernalia (conviction) | Table 4-3, Code 316 | Misconduct | BN CO |
+| Misconduct — DUI / Driving While Impaired | Table 4-3, Code 309 | Misconduct | BN CO |
+| Misconduct — Theft/Fraud (under $500) | Table 4-3, Code 310–311 | Misconduct | BN CO |
+| Misconduct — Weapons (unlawful carry / concealed) | Table 4-3, Code 325 | Misconduct | BN CO |
+| Misconduct — Other Nontraffic | Table 4-3, Code 330 | Misconduct | BN CO |
+| Drug — DAT Positive (MEPS/USMEPCOM) | Para 4-18 | Varies | BN CO (1st positive, marijuana/alcohol); Perm. disqual (2nd positive) |
+| Traffic — Above Minor | Para 4-8 | Traffic | BN CO |
+| Juvenile Offense | Para 4-30(b)(5) | Varies by offense type | BN CO / USAREC |
+| Domestic Violence — Non-Lautenberg | Table 4-3, Code 308 | Misconduct | BN CO |
+| Domestic Violence — Lautenberg (18 USC 922) | Table 4-4, Code 414 | **NOT WAIVABLE if convicted** | ABSOLUTE BAR |
+| Sex Offense / Sex Offender Registration | Para 4-22j | **NOT WAIVABLE** | ABSOLUTE BAR |
+| Murder | Para 4-22k | **NOT WAIVABLE** | ABSOLUTE BAR |
+
+> **Marijuana policy note (8 Nov 2023 AR 601-210):** Table 4-4, Code 428 explicitly states "marijuana not included" from major misconduct narcotics. Marijuana POSSESSION with a conviction = misconduct only (Table 4-3, Code 316), BN CO authority. Marijuana SALE/DISTRIBUTION = major misconduct (Code 436), USAREC/DMPM authority. Self-admitted USE with no court record/conviction = verify current USAREC policy; per para 4-30, no waiver is required when no conviction or adverse disposition occurred.
 
 **Step 2: Qualifying Questions (yes/no, sequential)**
 1. Was applicant an adult (18+) at time of offense?
-2. What was the court disposition? (Convicted / Dismissed / Deferred / No court record — self-admittal)
-3. How many total qualifying offenses? (1 / 2 / 3+)
-4. Does any offense involve firearms? (yes/no)
-5. Does any offense involve domestic violence? (yes/no)
-6. Has sufficient time elapsed? (per AR 601-210 Table 4-2 thresholds)
+2. What was the court disposition? (Convicted / Adverse Disposition / Dismissed without adverse disposition / No court record — self-admittal)
+   - If "Dismissed without adverse disposition": no waiver required per para 4-30. App displays green "No waiver required" card.
+   - If "No court record — self-admittal" for marijuana use: display amber card referencing current USAREC policy; waiver may not be required.
+3. Is any charge currently pending? (yes/no) — If yes: hard stop, para 4-22g, cannot process.
+4. Is applicant currently under civil restraint (confinement, parole, probation)? (yes/no) — If yes: hard stop, para 4-22h.
+5. How many total major misconduct (felony-level) convictions? (0 / 1 / 2+) — If 2+: absolute bar, para 4-22i.
+6. Does any offense involve domestic violence as defined by the Lautenberg Amendment (18 USC 922)? (yes/no) — If yes + convicted: absolute bar, Table 4-4 Code 414.
+7. Does any offense appear on the sex offender list (para 4-22j)? (yes/no) — If yes: absolute bar.
+8. Was applicant confined for 15 or more days? (yes/no)
+   - If no (or juvenile <15 days): 3-month waiting period required before waiver can be submitted (BN CO may waive up to 45 days — para 4-31).
+   - If yes: 6-month waiting period required (BN CO may waive up to 3 months — para 4-31).
+   - If parole/probation imposed: all court-ordered requirements must be complete before submission.
+9. Is applicant currently on unsupervised probation for a minor offense listed in para 4-35? (yes/no) — If yes: may process (no waiting period required for these specific offenses).
 
 **Step 3: Verdict Card**
 
 | Result | Color | Content |
 |--------|-------|---------|
-| WAIVABLE | Green | Authority level, regulation cite (e.g., "AR 601-210, Para 4-28") |
-| NOT WAIVABLE | Red | "Absolute bar — AR 601-210, Para 4-22(b)(1). Do not build packet." |
+| WAIVABLE | Green | Authority level, regulation cite, waiver validity (6 months from approval — para 4-27) |
+| NO WAIVER REQUIRED | Blue | "No conviction/adverse disposition — waiver not required. Per AR 601-210, para 4-30." |
+| NOT WAIVABLE | Red | Specific bar with regulation paragraph. Do not build packet. |
 | ETP REQUIRED | Amber | "Exception to Policy required before waiver submission. Contact battalion S1." |
+| WAITING PERIOD | Yellow | Days remaining before waiver can be submitted; specific court completion requirements. |
 
-**Hard Stop:** If an absolute bar offense is selected at any point, the app immediately renders a full red screen with the regulation paragraph and stops all further input. No packet is built.
+**Absolute Bars (para 4-22) — Hard Stops:**
+The following trigger an immediate full red screen with the regulation cite. No further input accepted. No packet built.
+- Lautenberg DV conviction — Table 4-4, Code 414
+- Any sex offense conviction (rape, carnal knowledge, sodomy, prostitution involving minor, indecent assault, pornography involving minor, etc.) — para 4-22j
+- Murder conviction — para 4-22k
+- More than one major misconduct (felony-level) conviction — para 4-22i
+- Applicant with pending criminal or juvenile charge — para 4-22g
+- Applicant under civil restraint (confinement, parole, probation) at time of application — para 4-22h
+- Drug dependence (not in sustained remission, <12 months since last occurrence) — para 4-22c
+- Alcoholism (not in sustained remission) — para 4-22b
+- Second positive MEPS drug test (cocaine/other) or second positive marijuana DAT — para 4-18
 
 ---
 
@@ -133,17 +158,21 @@ Required documents determined by offense type + authority level, based on USAREC
 - Sex Offender Check (IAW UM 21-022)
 - All source documents (Birth cert, Ed docs, SSN, PS)
 - RZ Complete (Q1: last 7 years / Q2: felony, firearms, alcohol/drugs, DV / Q3: traffic)
-- Police Incident Report (all offenses above traffic)
-- DD 369s — work, live, school (last 3 years + where offenses occurred, < 6 months old)
-- Court Dockets (IAW AR 601-210, Para 4-28(1)(e)): information docket, court finding/sentencing, final disposition
+- Police Incident Report (all offenses above traffic; NOT required for traffic offenses — para 4-28)
+- Court Dockets (police checks and court documents IAW para 4-28): information docket, court finding/sentencing, final disposition — NOT required for traffic offenses
 - USAREC Form 601-210.02 (in lieu of court dockets when court will not furnish)
+- Probation/parole officer documents (if applicable — para 4-28(e)(2))
+- Documents from correctional facility (if confined — para 4-28(e)(3))
+- DD 369s — work, live, school (last 3 years + where offenses occurred, < 6 months old)
 - Applicant's Statement (newest to oldest, what applicant has done to overcome behavior, why waiver should be granted)
 - Company Commander's Interview MFR
+- DD Form 1966 and SF 86 (para 4-28(e)(7))
 - UF 601-210.08 (all law violations, asterisk next to offense(s) being waived)
 
-**USAREC and DMPM level add:**
-- DD Form 370 — Request for Reference (3 required at USAREC/DMPM level)
-- DD 2807-2 / DD 2808 (Genesis Report) — for applicable cases
+**USAREC and DMPM level add (para 4-28(e)(4)):**
+- DD Form 370 — Request for Reference (3 required; reference letters from employers covering 1 year prior to application and schools attended in 3 years prior — NOT required at BN level)
+- DD Form 2808 (Genesis Report/MEPS physical) — required for all major misconduct level waivers (para 4-28(e)(5))
+- DD 2807-2 — for applicable cases
 
 **When confined 24+ hours:**
 - USAREC FL 601-210.04 (Request for information from institution)
@@ -295,9 +324,15 @@ App state (all Phase 1, 2, and 3 inputs) is serialized to `localStorage` under k
 
 ---
 
+## Waiver Validity
+
+Per AR 601-210, para 4-27: **Waivers are valid for 6 months from the approval date.** The app displays this on the verdict card and in the generated cover sheet. If an applicant acquires additional offenses after waiver approval, the waiver must be resubmitted for reconsideration.
+
+---
+
 ## AR 601-210 Version Stamp
 
-Footer displays: **"Eligibility logic based on AR 601-210, [date of regulation edition used]. Verify currency before submission."**
+Footer displays: **"Eligibility logic based on AR 601-210, 8 November 2023. Verify currency before submission."**
 
 ---
 
@@ -314,5 +349,6 @@ Footer displays: **"Eligibility logic based on AR 601-210, [date of regulation e
 ## Open Questions for Build
 
 1. Full XFA field-name-to-position mapping for the .08 (to be completed during build via template stream analysis)
-2. Exact AR 601-210 edition date to stamp in footer (recruiter to confirm current edition)
+2. **Marijuana possession/conviction waiver requirement — verify with current USAREC policy.** AR 601-210 (8 Nov 2023), Table 4-3, Code 316 still lists marijuana possession as a misconduct offense (BN CO waiver if convicted). However, Table 4-4, Code 428 explicitly removes marijuana from major misconduct narcotics. Self-admitted USE with no conviction requires no waiver per para 4-30. Confirm with battalion S1 whether any USAREC policy memorandum or DA message has further changed the conviction-level requirement since 8 Nov 2023.
 3. Whether routing memo should include battalion/company commander name fields (currently scoped to applicant info only per user decision)
+4. Confirm exact threshold rules for USAREC vs. DMPM authority (single major misconduct → USAREC CG; UCMJ EO/SHARP or sexually-based action → DMPM per para 4-12c).
