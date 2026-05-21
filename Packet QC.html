@@ -68,6 +68,7 @@ button,select,textarea,input{font-family:inherit}
 <div id="root"></div>
 <script src="qc-data.js"></script>
 <script type="text/babel" src="reference-drawer.jsx"></script>
+<script type="text/babel" src="gc-reference.jsx"></script>
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
@@ -698,6 +699,27 @@ const TweakPanel = ({ theme, setTheme, compact, setCompact, onClose }) => {
 ══════════════════════════════════════════════════════ */
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{"theme":"dark","compact":false}/*EDITMODE-END*/;
 
+/* ── Tab Bar ─────────────────────────────────────────── */
+const TabBar = ({ activeTab, setActiveTab }) => (
+  <div style={{ display:"flex", background:"#0c0a0e",
+    borderBottom:"1px solid var(--border-str)", flexShrink:0 }}>
+    {[
+      { id:"recruiter", label:"⬛  Recruiter Checklist" },
+      { id:"gc",        label:"📋  GC Reference" }
+    ].map(({ id, label }) => (
+      <button key={id} onClick={() => setActiveTab(id)} style={{
+        background:"transparent", border:"none",
+        borderBottom: activeTab===id ? "2px solid var(--gold)" : "2px solid transparent",
+        padding:"10px 20px",
+        fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:11,
+        textTransform:"uppercase", letterSpacing:".06em",
+        color: activeTab===id ? "var(--gold)" : "var(--fg-muted)",
+        cursor:"pointer", transition:"color .15s"
+      }}>{label}</button>
+    ))}
+  </div>
+);
+
 const App = () => {
   const [theme,          setTheme]          = useState(TWEAK_DEFAULTS.theme);
   const [compact,        setCompact]        = useState(TWEAK_DEFAULTS.compact);
@@ -717,6 +739,7 @@ const App = () => {
   const [stickerVisible, setStickerVisible] = useState(false);
   const [refOpen,        setRefOpen]        = useState(false);
   const [tweaks,         setTweaks]         = useState(false);
+  const [activeTab,      setActiveTab]      = useState("recruiter");
   const sectionRefs  = useRef({});
   const containerRef = useRef(null);
   const prevItemIds  = useRef(new Set());
@@ -870,7 +893,8 @@ const App = () => {
       <Header theme={theme} onThemeToggle={() => setTheme(t => t === "dark" ? "light" : "dark")}
         onRefOpen={() => setRefOpen(true)}
         total={total} done={done} flagged={flagged}/>
-      <div style={{ flex:1, display:"flex", overflow:"hidden" }}>
+      <TabBar activeTab={activeTab} setActiveTab={setActiveTab}/>
+      {activeTab === "gc" ? <GCReference/> : <div style={{ flex:1, display:"flex", overflow:"hidden" }}>
 
         {/* ── LEFT PANEL ── */}
         <div style={{ width:270, flexShrink:0, borderRight:"1px solid var(--border-mid)",
@@ -927,7 +951,7 @@ const App = () => {
             ))}
           </div>
         </div>
-      </div>
+      </div>}
 
       {/* ── STICKER ── */}
       {stickerVisible && (
