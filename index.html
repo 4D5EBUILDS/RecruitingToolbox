@@ -32,14 +32,6 @@
     }
     .nav-brand { display:flex; align-items:center; gap:14px; }
     .nav-title { font-size:13px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; }
-    .nav-github {
-      font-family:"GI",Arial,sans-serif; font-size:12px; font-weight:700;
-      letter-spacing:0.18em; text-transform:uppercase;
-      color:var(--army-gold); text-decoration:none;
-      border:1px solid var(--army-gold); padding:9px 22px;
-      transition:background 0.18s, color 0.18s;
-    }
-    .nav-github:hover { background:var(--army-gold); color:var(--army-black); }
 
     /* HERO */
     .hero {
@@ -213,7 +205,6 @@
     </svg>
     <span class="nav-title">Recruiting Toolbox</span>
   </div>
-  <a href="https://github.com" class="nav-github" id="nav-github-link" target="_blank" rel="noopener">GitHub ↗</a>
 </nav>
 
 <!-- HERO -->
@@ -533,6 +524,49 @@ const FACTS = [
   {e:"FUN FACT // AR 601-210 (20 MARCH 2026)", h:"READ THE NEW REG",   g:false,
    s:"AR 601-210 was revised in March 2026. New age limits. New marijuana policy. New command structure. New SSN documents. New video call rules. If you haven't read it yet, today is the day.",
    c:"AR 601-210 (20 March 2026) — Current Effective Regulation"},
+
+  {e:"FUN FACT // AR 601-210 §2-9b",          h:"MMOT: ASK EVERYTHING", g:true,
+   s:"You are legally required to ask about hernias, STIs, and psychological treatment — at your recruiting station, at your desk — before MEPS. The Army put this in writing and made it your problem. There is no graceful way to do it. Ask anyway.",
+   c:"AR 601-210, Para 2-9b — Required Medical Moment of Truth Topics"},
+  {e:"FUN FACT // AR 601-210 §1-9b",          h:"PROMISE NOTHING",      g:false,
+   s:"Verbal promises have no legal standing. The regulation is unambiguous on this. 'But I told him he'd get that MOS' is a sentence that has ended careers. Get it in writing or don't say it.",
+   c:"AR 601-210, Para 1-9b — Unauthorized Promises Prohibited"},
+  {e:"FUN FACT // AR 601-210 §4-8",           h:"3 MONTHS: NOT WEEKS",  g:true,
+   s:"Waiver processing takes up to 60 business days. 60 business days is approximately 3 calendar months. If you quoted your applicant 'a few weeks,' this is your opportunity to revisit that conversation before they revisit it first.",
+   c:"AR 601-210, Para 4-8 — Waiver Processing Timeline"},
+  {e:"FUN FACT // AR 601-210 §2-11a",         h:"CHECK THE CHART FIRST",g:false,
+   s:"The regulation has a felony reference chart. Study it before the appointment, not during it, and absolutely not at the moment your face is doing something your applicant can see.",
+   c:"AR 601-210, Para 2-11a — Felony Conviction Chart Reference"},
+  {e:"FUN FACT // AR 601-210 §2-4a",          h:"'I THINK' IS NOT ENOUGH",g:true,
+   s:"'I think I'm a citizen' has never once been sufficient for enlistment processing. Neither has 'pretty sure.' The Army accepts documentation. It has never accepted personal theories about citizenship status.",
+   c:"AR 601-210, Para 2-4a — Citizenship and Alienage Verification"},
+  {e:"FUN FACT // UR 601-210 Ch. 3",          h:"PRESSURE: PROHIBITED",  g:false,
+   s:"UR 601-210 explicitly lists prohibited recruiting practices: pressure, misrepresentation, and exploitation of personal hardship are all named. The Army put this in a regulation because enough recruiters required a regulation about it.",
+   c:"UR 601-210, Chapter 3 — Prohibited Recruiting Practices"},
+  {e:"FUN FACT // AR 601-210 §6-3",           h:"OATH: AT MEPS",         g:true,
+   s:"The oath of enlistment is administered at MEPS by an authorized officer, on record. Not at the station. Not in the parking lot. Not over FaceTime. Everything before that moment is paperwork — important paperwork, but still just paperwork.",
+   c:"AR 601-210, Para 6-3 — Oath of Enlistment Administration"},
+  {e:"FUN FACT // AR 601-210 §2-3b",          h:"MARRIED AT 17: DIFFERENT",g:false,
+   s:"A married 17-year-old can provide their own consent without parental involvement. The Army thought through the intersection of emancipation law and minor enlistment and wrote an entire paragraph. Ask about marital status. Early.",
+   c:"AR 601-210, Para 2-3b — Married Minor Self-Consent Policy"},
+  {e:"FUN FACT // UR 601-210 Ch. 4",          h:"MONTHLY CONTACT: LOGGED",g:true,
+   s:"Future Soldier monthly contact must be documented in ARISS with the correct contact type code. 'I texted him' is a sentence. An ARISS entry is a record. Your commander wants records. Your IG also wants records, for different reasons.",
+   c:"UR 601-210, Chapter 4 — Future Soldier Contact Requirements"},
+  {e:"FUN FACT // AR 601-210 §2-3a(2)",       h:"SHIP DATE: MATH APPLIES",g:false,
+   s:"An applicant must ship before their 43rd birthday. This requires knowing their birthday. Recruiters have been surprised by this math at inopportune moments. Do the math at the first appointment. It costs nothing.",
+   c:"AR 601-210, Para 2-3a(2) — Maximum Age at Accession Calculation"},
+  {e:"FUN FACT // AR 601-210 §2-8b",          h:"ASVAB IS NOT OPTIONAL", g:true,
+   s:"Every applicant must take the ASVAB. There is no waiver for the ASVAB. There is no 'he's really smart though.' There is an ASVAB. Schedule the ASVAB.",
+   c:"AR 601-210, Para 2-8b — ASVAB Testing Requirement"},
+  {e:"FUN FACT // AR 601-210 §2-13",          h:"YOU ARE THE CHECKPOINT", g:false,
+   s:"You are required to review applicant documents for completeness before forwarding to MEPS. Not MEPS. Not the guidance counselor. You. First. If something is wrong, MEPS will find it — after spending your entire day waiting for a callback.",
+   c:"AR 601-210, Para 2-13 — Recruiter Document Review Requirement"},
+  {e:"FUN FACT // AR 601-210 §2-7d",          h:"GED: TIER 2 ALWAYS",    g:true,
+   s:"A GED is Tier 2. There is no combination of circumstances, personality traits, or ASVAB scores that makes a GED a Tier 1 credential. Tier 2 requires a higher score and a waiver. This has not changed and will not change based on attitude.",
+   c:"AR 601-210, Para 2-7d — GED Tier 2 Classification"},
+  {e:"FUN FACT // AR 601-210 §2-4c(1)",       h:"I-551 CHECK AT DESK",   g:false,
+   s:"Check the LPR card expiration at your desk, at the first appointment. Not at MEPS. Not the day before shipping. The 6-month validity requirement exists whether or not you looked at the card.",
+   c:"AR 601-210, Para 2-4c(1) — LPR Card Validity Verification Timing"},
 ];
 
 /* ─── SHUFFLE (Fisher-Yates) ─────────────────────────── */
@@ -568,9 +602,9 @@ let holdTimer    = null;
 let isTransiting = false;
 let isPaused     = false;
 
-const MS_PER_CHAR = 48;   // faster reveal
+const MS_PER_CHAR = 28;   // fast reveal
 const HOLD_MS     = 2800;
-const EXIT_MS     = 420;
+const EXIT_MS     = 160;
 
 /* ─── TEXT MEASUREMENT ──────────────────────────────── */
 let probe = null;
