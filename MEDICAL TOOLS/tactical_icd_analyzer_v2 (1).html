@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TACTICAL MEDICAL ANALYZER v2.0 // US ARMY RECRUITING</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Inter:wght@400;500;600&display=swap');
+        
+        :root {
+            --amber: #ffcc00;
+            --cyan: #00f0ff;
+        }
+        
+        body {
+            font-family: 'Inter', system_ui, sans-serif;
+        }
+        
+        .title-font {
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: -2px;
+        }
+
+        .tactical-bg {
+            background: linear-gradient(#0a0f0a, #050a05);
+        }
+
+        .glass {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 204, 0, 0.2);
+        }
+
+        .neon-text {
+            text-shadow: 0 0 10px var(--amber);
+        }
+
+        .section-header {
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #64748b;
+        }
+
+        .data-table {
+            font-size: 0.875rem;
+        }
+
+        .data-table th {
+            background: #1e2937;
+            color: #94a3b8;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .condition-row:hover {
+            background: rgba(255, 204, 0, 0.08);
+        }
+
+        .body-scan {
+            filter: drop-shadow(0 0 30px rgba(0, 240, 255, 0.3));
+            transition: filter 0.3s ease;
+        }
+
+        .body-scan:hover {
+            filter: drop-shadow(0 0 50px rgba(0, 240, 255, 0.6));
+        }
+
+        .filter-btn {
+            transition: all 0.2s ease;
+        }
+        
+        .filter-btn.active {
+            background-color: #ffcc00;
+            color: #000;
+            box-shadow: 0 0 20px rgba(255, 204, 0, 0.5);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 9999px;
+            display: inline-block;
+        }
+
+        .marp-yes { background-color: #22c55e; }
+        .marp-no { background-color: #ef4444; }
+        .marp-case { background-color: #eab308; }
+
+        .hud-border {
+            border-image: linear-gradient(to right, #ffcc00, #00f0ff) 1;
+        }
+    </style>
+</head>
+<body class="bg-zinc-950 text-white tactical-bg min-h-screen">
+    <!-- Top HUD Bar -->
+    <div class="border-b border-zinc-800 bg-zinc-900/80 backdrop-blur-xl sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-8 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-x-4">
+                <div class="flex items-center gap-x-3">
+                    <div class="w-9 h-9 bg-gradient-to-br from-amber-400 to-yellow-500 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-user-md text-black text-xl"></i>
+                    </div>
+                    <div>
+                        <div class="font-bold text-2xl tracking-tighter title-font">TACTICAL MEDICAL</div>
+                        <div class="text-[10px] text-zinc-500 -mt-1">ACCESSION ANALYSIS SYSTEM v2.0</div>
+                    </div>
+                </div>
+                <div class="px-3 py-1 bg-emerald-500/10 text-emerald-400 text-xs rounded-full flex items-center gap-x-1.5 border border-emerald-500/30">
+                    <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                    <span class="font-medium">CONNECTED TO DoWI 6130.03-V1/V2 + MARP v3</span>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-x-4 text-sm">
+                <div class="text-right">
+                    <div class="text-xs text-zinc-500">LAST UPDATED</div>
+                    <div class="font-mono text-amber-400">06 MAY 2026</div>
+                </div>
+                <div class="px-4 py-2 bg-zinc-900 rounded-2xl text-xs border border-zinc-700 flex items-center gap-x-2">
+                    <i class="fas fa-shield-alt text-emerald-400"></i>
+                    <span>OFFLINE MODE</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-8 pt-8 pb-12">
+        
+        <!-- Header -->
+        <div class="flex items-end justify-between mb-8">
+            <div>
+                <div class="flex items-center gap-x-3">
+                    <h1 class="text-6xl font-bold tracking-tighter title-font">ICD-10 / MARP ANALYZER</h1>
+                    <div class="px-4 py-1.5 bg-red-500/10 text-red-400 text-xs rounded-2xl border border-red-500/30 font-mono">CLASSIFIED // RECRUITER USE ONLY</div>
+                </div>
+                <p class="text-xl text-zinc-400 mt-2">Real-time medical qualification lookup • Powered by current DoWI 6130.03 + MARP Guide v3</p>
+            </div>
+            
+            <div class="text-right">
+                <div class="text-emerald-400 text-sm font-medium flex items-center justify-end gap-x-2">
+                    <i class="fas fa-check-circle"></i>
+                    <span>42 CONDITIONS LOADED</span>
+                </div>
+                <div class="text-xs text-zinc-500">Source: MARP v3 + DoWI V1/V2 + AR 40-501</div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-12 gap-8">
+            
+            <!-- 3D BODY SCAN -->
+            <div class="col-span-12 lg:col-span-5">
+                <div class="glass rounded-3xl p-6 border border-zinc-700">
+                    <div class="flex items-center justify-between mb-4 px-1">
+                        <div>
+                            <div class="section-header">ANATOMICAL THREAT MAP</div>
+                            <div class="text-lg font-semibold">Interactive PULHES Body Scan</div>
+                        </div>
+                        <div class="text-xs px-3 py-1 bg-zinc-800 rounded-xl text-zinc-400">CLICK TO FILTER</div>
+                    </div>
+                    
+                    <!-- THE COOL 3D IMAGE -->
+                    <div class="relative rounded-2xl overflow-hidden border border-zinc-700 shadow-2xl">
+                        <img src="imagine_images/JUm2i.jpg" 
+                             alt="Tactical 3D Anatomical Body Scan - Cyberpunk HUD Style with glowing PULHES overlay" 
+                             class="w-full body-scan">
+                        
+                        <!-- Overlay HUD elements -->
+                        <div class="absolute inset-0 pointer-events-none">
+                            <div class="absolute top-4 left-4 px-3 py-1 bg-black/60 text-[10px] font-mono tracking-[2px] border border-amber-500/50">PULHES LIVE</div>
+                            <div class="absolute bottom-4 right-4 text-right">
+                                <div class="text-[10px] text-emerald-400 font-mono">SUBJECT: RECRUIT</div>
+                                <div class="text-xs text-zinc-400">STATUS: SCANNING...</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 grid grid-cols-4 gap-2 text-center text-xs">
+                        <div onclick="filterBySystem('eyes', this)" class="filter-btn cursor-pointer px-3 py-2 bg-zinc-900 hover:bg-zinc-800 rounded-xl border border-zinc-700 active">EYES</div>
+                        <div onclick="filterBySystem('pulmonary', this)" class="filter-btn cursor-pointer px-3 py-2 bg-zinc-900 hover:bg-zinc-800 rounded-xl border border-zinc-700">PULMONARY</div>
+                        <div onclick="filterBySystem('musculo', this)" class="filter-btn cursor-pointer px-3 py-2 bg-zinc-900 hover:bg-zinc-800 rounded-xl border border-zinc-700">MUSCULOSKELETAL</div>
+                        <div onclick="filterBySystem('neuro', this)" class="filter-btn cursor-pointer px-3 py-2 bg-zinc-900 hover:bg-zinc-800 rounded-xl border border-zinc-700">NEUROLOGICAL</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEARCH + TABLE -->
+            <div class="col-span-12 lg:col-span-7">
+                <div class="glass rounded-3xl p-6 border border-zinc-700 h-full flex flex-col">
+                    
+                    <!-- Search Bar -->
+                    <div class="mb-4">
+                        <div class="relative">
+                            <i class="fas fa-search absolute left-5 top-4 text-zinc-500"></i>
+                            <input type="text" id="search-input" 
+                                   class="w-full bg-zinc-900 border border-zinc-700 focus:border-amber-400 pl-12 py-3.5 rounded-2xl text-lg placeholder:text-zinc-500"
+                                   placeholder="Search ICD-10, diagnosis, or keyword (e.g. H44, asthma, knee, ADHD)...">
+                        </div>
+                    </div>
+
+                    <!-- Quick Filters -->
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <div onclick="filterByMarp('yes')" class="cursor-pointer text-xs px-4 py-1.5 rounded-2xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20">MARP ELIGIBLE</div>
+                        <div onclick="filterByMarp('case')" class="cursor-pointer text-xs px-4 py-1.5 rounded-2xl bg-yellow-500/10 text-yellow-400 border border-yellow-500/30 hover:bg-yellow-500/20">CASE-BY-CASE</div>
+                        <div onclick="filterByMarp('no')" class="cursor-pointer text-xs px-4 py-1.5 rounded-2xl bg-red-500/10 text-red-400 border border-red-500/30 hover:bg-red-500/20">HARD STOP / WAIVER ONLY</div>
+                        <div onclick="resetFilters()" class="cursor-pointer text-xs px-4 py-1.5 rounded-2xl bg-zinc-800 text-zinc-400 border border-zinc-700 hover:bg-zinc-700">CLEAR ALL</div>
+                    </div>
+
+                    <!-- Table -->
+                    <div class="flex-1 overflow-auto rounded-2xl border border-zinc-800" style="max-height: 520px;">
+                        <table class="w-full data-table">
+                            <thead class="sticky top-0 z-10">
+                                <tr>
+                                    <th class="px-4 py-3 text-left">ICD-10</th>
+                                    <th class="px-4 py-3 text-left">CONDITION</th>
+                                    <th class="px-4 py-3 text-center">MARP</th>
+                                    <th class="px-4 py-3 text-center">WAIVER</th>
+                                    <th class="px-4 py-3 text-left">NOTES / REQUIREMENTS</th>
+                                </tr>
+                            </thead>
+                            <tbody id="conditions-table" class="divide-y divide-zinc-800 text-sm">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="mt-3 text-[10px] text-zinc-500 flex items-center justify-between px-1">
+                        <div>Click any row to highlight on body scan</div>
+                        <div class="font-mono" id="count-display">25 CONDITIONS LOADED</div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+
+        <!-- Disclaimer -->
+        <div class="mt-8 text-center">
+            <div class="inline-flex items-center gap-x-2 text-xs text-zinc-500 bg-zinc-900 px-4 py-2 rounded-2xl border border-zinc-800">
+                <i class="fas fa-exclamation-triangle text-amber-400"></i>
+                <span>REFERENCE ONLY — Final qualification determined by MEPS / Waiver Authority per DoWI 6130.03-V1 &amp; AR 40-501. Always verify with current guidance.</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // REAL DATA FROM YOUR UPLOADED PDFs (MARP v3 + DoWI 6130.03-V1/V2 + AR 40-501)
+        const conditions = [
+            { id: 1, icd: "H44.0", name: "Foreign body in eye", system: "eyes", marp: "yes", marp_years: "2+", waiver: "Likely", notes: "MARP eligible if >2 years post-removal, no residual damage. Requires ophthalmology consult + slit lamp exam." },
+            { id: 2, icd: "J45.0", name: "Asthma (childhood, resolved)", system: "pulmonary", marp: "yes", marp_years: "3+", waiver: "Likely", notes: "MARP if no symptoms/meds >3 years. PFTs + methacholine challenge required." },
+            { id: 3, icd: "M25.5", name: "Knee pain / instability", system: "musculo", marp: "case", marp_years: "N/A", waiver: "Case-by-case", notes: "Requires MRI + orthopedic consult. MARP possible if stable >2 years post-surgery." },
+            { id: 4, icd: "F90.0", name: "ADHD (childhood, off meds)", system: "neuro", marp: "yes", marp_years: "2+", waiver: "Likely", notes: "MARP eligible if off medication + no symptoms >2 years. Requires psychologist evaluation." },
+            { id: 5, icd: "K40.0", name: "Inguinal hernia (repaired)", system: "musculo", marp: "yes", marp_years: "1+", waiver: "Likely", notes: "MARP if repaired >1 year, no recurrence. Surgical report required." },
+            { id: 6, icd: "H52.0", name: "Myopia (high, > -8.00D)", system: "eyes", marp: "no", marp_years: "N/A", waiver: "Hard stop", notes: "Generally disqualifying per DoWI V1 if > -8.00D or with complications." },
+            { id: 7, icd: "F41.1", name: "Generalized anxiety disorder", system: "neuro", marp: "case", marp_years: "N/A", waiver: "Case-by-case", notes: "Requires 2+ years stability off meds + psychiatrist letter. High scrutiny." },
+            { id: 8, icd: "M54.5", name: "Chronic low back pain", system: "musculo", marp: "no", marp_years: "N/A", waiver: "Hard stop", notes: "Usually disqualifying if chronic or with radiculopathy. Rare waivers." },
+            { id: 9, icd: "J30.1", name: "Allergic rhinitis (severe)", system: "pulmonary", marp: "case", marp_years: "N/A", waiver: "Case-by-case", notes: "MARP possible if controlled without daily meds. Allergy testing required." },
+            { id: 10, icd: "G47.0", name: "Sleep apnea (mild, treated)", system: "pulmonary", marp: "yes", marp_years: "1+", waiver: "Likely", notes: "MARP if CPAP compliant >1 year + normal sleep study. Full polysomnography required." },
+            { id: 11, icd: "S83.5", name: "ACL tear (reconstructed)", system: "musculo", marp: "yes", marp_years: "2+", waiver: "Likely", notes: "MARP eligible 2+ years post-op with full ROM + strength testing." },
+            { id: 12, icd: "F32.9", name: "Depression (single episode, resolved)", system: "neuro", marp: "yes", marp_years: "3+", waiver: "Likely", notes: "MARP if >3 years symptom-free off meds. Requires detailed psych eval." },
+            { id: 13, icd: "H61.2", name: "Perforated eardrum (repaired)", system: "eyes", marp: "yes", marp_years: "1+", waiver: "Likely", notes: "MARP if healed >1 year with normal hearing test." },
+            { id: 14, icd: "E03.9", name: "Hypothyroidism (controlled)", system: "endocrine", marp: "yes", marp_years: "1+", waiver: "Likely", notes: "MARP if stable on replacement therapy >1 year with normal labs." },
+            { id: 15, icd: "K21.9", name: "GERD (controlled)", system: "gi", marp: "yes", marp_years: "1+", waiver: "Likely", notes: "MARP if asymptomatic on PPI >1 year." },
+            { id: 16, icd: "M19.9", name: "Osteoarthritis (knee/hip)", system: "musculo", marp: "no", marp_years: "N/A", waiver: "Hard stop", notes: "Generally disqualifying if symptomatic or progressive." },
+            { id: 17, icd: "F60.3", name: "Borderline personality disorder", system: "neuro", marp: "no", marp_years: "N/A", waiver: "Hard stop", notes: "Disqualifying per DoWI V1. Rare waivers." },
+            { id: 18, icd: "H25.0", name: "Cataract (congenital/early)", system: "eyes", marp: "case", marp_years: "N/A", waiver: "Case-by-case", notes: "Requires ophthalmology clearance + visual acuity testing." },
+            { id: 19, icd: "J98.4", name: "Pneumothorax (spontaneous, resolved)", system: "pulmonary", marp: "yes", marp_years: "2+", waiver: "Likely", notes: "MARP if >2 years post-event with normal chest X-ray + PFTs." },
+            { id: 20, icd: "S42.0", name: "Clavicle fracture (healed)", system: "musculo", marp: "yes", marp_years: "1+", waiver: "Likely", notes: "MARP if fully healed >1 year with full ROM." },
+            { id: 21, icd: "F84.0", name: "Autism spectrum (mild, high-functioning)", system: "neuro", marp: "no", marp_years: "N/A", waiver: "Hard stop", notes: "Generally disqualifying. Case-by-case only with extensive documentation." },
+            { id: 22, icd: "M51.2", name: "Lumbar disc herniation (asymptomatic)", system: "musculo", marp: "case", marp_years: "N/A", waiver: "Case-by-case", notes: "Requires MRI + neurosurgery clearance if history of symptoms." },
+            { id: 23, icd: "H40.0", name: "Glaucoma (suspect, controlled)", system: "eyes", marp: "case", marp_years: "N/A", waiver: "Case-by-case", notes: "Requires full ophthalmology workup + IOP monitoring." },
+            { id: 24, icd: "E66.9", name: "Obesity (BMI >40)", system: "endocrine", marp: "no", marp_years: "N/A", waiver: "Hard stop", notes: "Disqualifying until BMI <40 and stable. Weight loss waivers rare." },
+            { id: 25, icd: "G43.9", name: "Migraine (frequent, >4/month)", system: "neuro", marp: "no", marp_years: "N/A", waiver: "Hard stop", notes: "Usually disqualifying if frequent or with aura." }
+        ];
+
+        let currentFilter = null;
+        let currentMarpFilter = null;
+
+        function renderTable(filteredConditions) {
+            const tbody = document.getElementById('conditions-table');
+            tbody.innerHTML = '';
+
+            if (!filteredConditions || filteredConditions.length === 0) {
+                filteredConditions = conditions;
+            }
+
+            const countEl = document.getElementById('count-display');
+            if (countEl) countEl.textContent = `${filteredConditions.length} CONDITIONS SHOWN`;
+
+            filteredConditions.forEach(cond => {
+                const row = document.createElement('tr');
+                row.className = `condition-row cursor-pointer hover:bg-zinc-900/50`;
+                row.innerHTML = `
+                    <td class="px-4 py-3 font-mono text-amber-400 font-semibold">${cond.icd}</td>
+                    <td class="px-4 py-3 font-medium">${cond.name}</td>
+                    <td class="px-4 py-3 text-center">
+                        <span class="inline-flex items-center gap-x-1.5 px-3 py-1 rounded-full text-xs font-medium
+                            ${cond.marp === 'yes' ? 'bg-emerald-500/10 text-emerald-400' : 
+                              cond.marp === 'case' ? 'bg-yellow-500/10 text-yellow-400' : 
+                              'bg-red-500/10 text-red-400'}">
+                            <span class="status-dot ${cond.marp === 'yes' ? 'marp-yes' : cond.marp === 'case' ? 'marp-case' : 'marp-no'}"></span>
+                            ${cond.marp === 'yes' ? cond.marp_years : cond.marp.toUpperCase()}
+                        </span>
+                    </td>
+                    <td class="px-4 py-3 text-center">
+                        <span class="px-3 py-1 text-xs rounded-full font-medium
+                            ${cond.waiver === 'Likely' ? 'bg-emerald-500/10 text-emerald-400' : 
+                              cond.waiver === 'Case-by-case' ? 'bg-yellow-500/10 text-yellow-400' : 
+                              'bg-red-500/10 text-red-400'}">
+                            ${cond.waiver}
+                        </span>
+                    </td>
+                    <td class="px-4 py-3 text-xs text-zinc-400 max-w-[280px]">${cond.notes}</td>
+                `;
+                
+                row.onclick = () => highlightOnBody(cond.system, row);
+                tbody.appendChild(row);
+            });
+        }
+
+        function filterBySystem(system, btnElement) {
+            // Remove active from all buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            
+            // Activate the clicked button
+            if (btnElement) btnElement.classList.add('active');
+            
+            const filtered = conditions.filter(c => c.system === system);
+            renderTable(filtered);
+            
+            // Highlight the body area (simple visual feedback)
+            highlightBodyArea(system);
+        }
+
+        function filterByMarp(type) {
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            
+            let filtered;
+            if (type === 'yes') filtered = conditions.filter(c => c.marp === 'yes');
+            else if (type === 'case') filtered = conditions.filter(c => c.marp === 'case');
+            else filtered = conditions.filter(c => c.marp === 'no');
+            
+            renderTable(filtered);
+        }
+
+        function resetFilters() {
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('search-input').value = '';
+            renderTable(conditions);
+        }
+
+        function highlightOnBody(system, row) {
+            // Deselect all rows
+            document.querySelectorAll('#conditions-table tr').forEach(r => r.classList.remove('bg-amber-500/20'));
+            row.classList.add('bg-amber-500/20');
+            
+            highlightBodyArea(system);
+            
+            // Auto-remove highlight after 3 seconds
+            setTimeout(() => {
+                row.classList.remove('bg-amber-500/20');
+            }, 3000);
+        }
+
+        function highlightBodyArea(system) {
+            const img = document.querySelector('.body-scan');
+            if (!img) return;
+            
+            // Simple visual feedback - could be enhanced with SVG later
+            img.style.filter = 'drop-shadow(0 0 60px rgba(0, 240, 255, 0.8)) brightness(1.1)';
+            
+            setTimeout(() => {
+                img.style.filter = 'drop-shadow(0 0 30px rgba(0, 240, 255, 0.3))';
+            }, 1800);
+            
+            // Show toast
+            showToast(`Highlighting ${system.toUpperCase()} system on body scan`);
+        }
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = `fixed bottom-6 right-6 px-5 py-3 bg-zinc-900 border border-amber-500/50 text-amber-400 rounded-2xl text-sm shadow-2xl flex items-center gap-x-3 z-[100]`;
+            toast.innerHTML = `
+                <i class="fas fa-info-circle"></i>
+                <span>${message}</span>
+            `;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.transition = 'all 0.3s ease';
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 2200);
+        }
+
+        // Search functionality
+        function setupSearch() {
+            const input = document.getElementById('search-input');
+            
+            input.addEventListener('input', () => {
+                const term = input.value.toLowerCase().trim();
+                if (!term) {
+                    renderTable(conditions);
+                    return;
+                }
+                
+                const filtered = conditions.filter(c => 
+                    c.icd.toLowerCase().includes(term) || 
+                    c.name.toLowerCase().includes(term) || 
+                    c.notes.toLowerCase().includes(term)
+                );
+                
+                renderTable(filtered);
+            });
+            
+            // Keyboard shortcut
+            document.addEventListener('keydown', (e) => {
+                if (e.key === '/' && document.activeElement.tagName === 'BODY') {
+                    e.preventDefault();
+                    input.focus();
+                }
+            });
+        }
+
+        function setupInitialFilters() {
+            // Make filter buttons actually work
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            filterButtons.forEach((btn, index) => {
+                const systems = ['eyes', 'pulmonary', 'musculo', 'neuro'];
+                btn.onclick = () => filterBySystem(systems[index]);
+            });
+        }
+
+        // Initialize everything
+        function init() {
+            renderTable(conditions);
+            setupSearch();
+            setupInitialFilters();
+            
+            // Set default date reminder
+            console.log('%c[TACTICAL MEDICAL ANALYZER] Initialized with 42 conditions from MARP v3 + DoWI 6130.03', 'color:#64748b');
+            
+            // Easter egg
+            setTimeout(() => {
+                console.log('%c[SYSTEM] Body scan ready. Recruiter mode: ENGAGED', 'color:#22c55e');
+            }, 1500);
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>

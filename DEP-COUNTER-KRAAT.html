@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEP COUNTER • KRAAT'S SHIFT</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&amp;display=swap');
+        
+        body {
+            margin: 0;
+            padding: 0;
+            background: #0a0a0a;
+            color: #00ff00;
+            font-family: 'Press Start 2P', system-ui, monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        
+        .crt {
+            position: relative;
+            width: 960px;
+            height: 540px;
+            border: 10px solid #222;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.25),
+                        inset 0 0 100px rgba(0, 0, 0, 0.85);
+            background: #0a0a0a;
+            overflow: hidden;
+        }
+        
+        canvas {
+            display: block;
+            image-rendering: pixelated;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 6px;
+        }
+        
+        .title {
+            font-size: 28px;
+            color: #ffff00;
+            text-shadow: 0 0 12px #ffff00, 3px 3px 0 #000;
+            margin: 0;
+            letter-spacing: 4px;
+        }
+        
+        .subtitle {
+            font-size: 11px;
+            color: #ff4444;
+            margin: 2px 0 0;
+            text-shadow: 2px 2px 0 #000;
+        }
+        
+        .ui {
+            display: flex;
+            justify-content: space-between;
+            width: 960px;
+            margin-top: 6px;
+            font-size: 12px;
+        }
+        
+        .ui-box {
+            background: #111;
+            padding: 5px 12px;
+            border: 3px solid #00ff00;
+            box-shadow: 0 0 6px rgba(0, 255, 0, 0.4);
+        }
+        
+        .log {
+            width: 960px;
+            height: 70px;
+            background: #050505;
+            border: 3px solid #00ff00;
+            margin-top: 6px;
+            padding: 6px 10px;
+            font-size: 10px;
+            color: #aaaaaa;
+            overflow-y: auto;
+            line-height: 1.3;
+        }
+        
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            text-align: center;
+        }
+        
+        .overlay h2 {
+            font-size: 26px;
+            color: #ffff00;
+            margin: 0 0 15px;
+            text-shadow: 0 0 8px #ffff00;
+        }
+        
+        button {
+            background: #000;
+            color: #00ff00;
+            border: 4px solid #00ff00;
+            padding: 12px 28px;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+        
+        button:hover {
+            background: #00ff00;
+            color: #000;
+        }
+        
+        .scanlines {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: repeating-linear-gradient(
+                transparent 0px,
+                transparent 2px,
+                rgba(255,255,255,0.03) 2px,
+                rgba(255,255,255,0.03) 4px
+            );
+            pointer-events: none;
+            z-index: 100;
+            animation: scan 4s linear infinite;
+        }
+        
+        @keyframes scan {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 540px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 class="title">DEP COUNTER</h1>
+        <p class="subtitle">KRAAT'S SHIFT • 5 MIN • TOTALLY UNFILTERED</p>
+    </div>
+    
+    <div class="crt" id="crt">
+        <canvas id="game" width="960" height="540"></canvas>
+        <div class="scanlines"></div>
+        
+        <!-- Start Screen -->
+        <div id="start" class="overlay">
+            <h2>DEP COUNTER</h2>
+            <p style="color:#ffaa00; font-size:13px; margin-bottom:20px;">5-MINUTE SHIFT • MANAGE THE RECRUITS OR THEY WALK</p>
+            <p style="max-width:520px; color:#cccccc; font-size:12px; line-height:1.5;">
+                Side-view recruiting station counter.<br>
+                Run left/right. Approach recruits. Handle their bullshit before the timer runs out.<br>
+                Waivers • Phone calls • Paperwork • Packet fixes.<br>
+                If they leave unhappy → DEP Loss. GC will hear about it.
+            </p>
+            <button onclick="startShift()">START YOUR SHIFT, RECRUITER</button>
+            <p style="margin-top:25px; font-size:10px; color:#666;">ARROW KEYS / A D — MOVE &nbsp;|&nbsp; X — INTERACT / SERVE<br>
+            Z — QUICK PEP TALK (COOLDOWN) &nbsp;|&nbsp; P — PAUSE</p>
+        </div>
+        
+        <!-- End Screen -->
+        <div id="end" class="overlay" style="display:none;">
+            <h2 style="color:#ff4444;">SHIFT OVER</h2>
+            <p id="end-stats" style="font-size:14px; color:#ffff00; margin:10px 0 20px;"></p>
+            <p id="end-comment" style="max-width:480px; color:#ffaaaa; font-size:13px; line-height:1.4;"></p>
+            <button onclick="restartShift()">ANOTHER SHIFT? (MASOCHIST)</button>
+        </div>
+        
+        <!-- Pause -->
+        <div id="pause" class="overlay" style="display:none; background:rgba(0,0,0,0.85);">
+            <h2 style="color:#ffff00;">PAUSED</h2>
+            <p style="color:#aaa;">PRESS P TO RESUME YOUR SUFFERING</p>
+        </div>
+    </div>
+    
+    <div class="ui">
+        <div class="ui-box">TIME: <span id="timer">5:00</span></div>
+        <div class="ui-box">SHIPPED: <span id="shipped">0</span></div>
+        <div class="ui-box">LOSSES: <span id="losses">0</span></div>
+        <div class="ui-box">SCORE: <span id="score">00000</span></div>
+    </div>
+    
+    <div class="log" id="log">
+        <div id="log-content"></div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('game');
+        const ctx = canvas.getContext('2d');
+        
+        const WIDTH = 960;
+        const HEIGHT = 540;
+        const GROUND = 380;
+        const COUNTER_Y = 320;
+        
+        let player = { x: 200, y: GROUND - 55, width: 38, height: 52, vx: 0, anim: 0, facing: 1 };
+        let recruits = [];
+        let particles = [];
+        let floating = [];
+        let score = 0;
+        let shipped = 0;
+        let losses = 0;
+        let timeLeft = 300; // 5 minutes
+        let gameRunning = false;
+        let paused = false;
+        let keys = {};
+        let lastSpawn = 0;
+        let lastPep = 0;
+        let logLines = [];
+        
+        const NEEDS = [
+            { type: 'WAIVER', label: 'WAIVER NEEDED', time: 28, points: 220, color: '#ffaa00' },
+            { type: 'PHONE', label: 'CALL MOM/DAD/GF', time: 22, points: 180, color: '#4488ff' },
+            { type: 'PAPERWORK', label: 'PAPERWORK FIX', time: 18, points: 150, color: '#00cc66' },
+            { type: 'PACKET', label: 'PACKET CORRECTION', time: 32, points: 280, color: '#ff4444' }
+        ];
+        
+        const FUNNY_LINES = {
+            serve: [
+                "Here, sign this before I lose my will to live.",
+                "This waiver is cleaner than your last three relationships.",
+                "Your mom said if you don't ship she's moving in with you. Call her.",
+                "Packet was so fucked up even GC felt bad. Fixed it. You're welcome.",
+                "Congratulations, you now have a job. Try not to fuck it up in the first week.",
+                "I processed your waiver. Don't make me regret it.",
+                "Phone call done. Your girlfriend is still pissed but at least she knows you're not dead.",
+                "Paperwork corrected. Try not to spill coffee on it this time."
+            ],
+            loss: [
+                "Another one decided the Army 'wasn't his vibe'. Cool story, bro.",
+                "Recruit ghosted faster than your ex. DEP Loss logged.",
+                "He joined for the boots and the bonus. Left for the 'life experience'.",
+                "Mom won. Recruit stayed home. GC is going to love this report.",
+                "Future soldier became future 'I almost joined' guy. Classic.",
+                "He said he needed to 'find himself'. Found the exit instead.",
+                "Another one for the 'what could have been' folder. Pour one out.",
+                "GC just added this to your highlight reel. In the bad way."
+            ],
+            pep: [
+                "Listen up, princess. The Army doesn't care about your feelings.",
+                "You wanted to be a warrior. Warriors don't cry over paperwork.",
+                "Ship or get out of my station. I have actual work to do.",
+                "Your recruiter believes in you. Slightly. Now move.",
+                "The only easy day was yesterday. Today you sign shit and ship."
+            ]
+        };
+        
+        function addLog(msg, color = '#aaaaaa') {
+            logLines.unshift({ text: msg, color: color, time: Date.now() });
+            if (logLines.length > 6) logLines.pop();
+            const container = document.getElementById('log-content');
+            container.innerHTML = logLines.map(l => 
+                `<div style="color:${l.color};">${l.text}</div>`
+            ).join('');
+        }
+        
+        function resetGame() {
+            player.x = 200;
+            player.vx = 0;
+            player.anim = 0;
+            player.facing = 1;
+            
+            recruits = [];
+            particles = [];
+            floating = [];
+            score = 0;
+            shipped = 0;
+            losses = 0;
+            timeLeft = 300;
+            lastSpawn = 0;
+            lastPep = 0;
+            logLines = [];
+            
+            document.getElementById('log-content').innerHTML = '';
+            addLog("Shift started. Don't fuck it up, Kraat.", '#00ff00');
+            
+            updateUI();
+        }
+        
+        function updateUI() {
+            const min = Math.floor(timeLeft / 60);
+            const sec = Math.floor(timeLeft % 60);
+            document.getElementById('timer').textContent = `${min}:${sec.toString().padStart(2,'0')}`;
+            document.getElementById('shipped').textContent = shipped;
+            document.getElementById('losses').textContent = losses;
+            document.getElementById('score').textContent = score.toString().padStart(5, '0');
+        }
+        
+        function spawnRecruit() {
+            if (recruits.length >= 5) return;
+            
+            const need = NEEDS[Math.floor(Math.random() * NEEDS.length)];
+            const x = 120 + Math.random() * (WIDTH - 240);
+            
+            // Avoid overlapping too much
+            for (const r of recruits) {
+                if (Math.abs(r.x - x) < 70) return;
+            }
+            
+            recruits.push({
+                x: x,
+                y: COUNTER_Y - 10,
+                need: need,
+                timer: need.time,
+                maxTimer: need.time,
+                state: 'waiting', // waiting, being_served, done
+                servedProgress: 0,
+                happy: false
+            });
+            
+            addLog(`New recruit: ${need.label}`, '#ffaa00');
+        }
+        
+        function interact() {
+            if (!gameRunning || paused) return;
+            
+            for (let i = 0; i < recruits.length; i++) {
+                const r = recruits[i];
+                const dist = Math.abs(r.x - player.x);
+                
+                if (dist < 55 && r.state === 'waiting') {
+                    r.state = 'being_served';
+                    r.servedProgress = 0;
+                    
+                    // Serve time depends on need complexity
+                    const serveTime = r.need.type === 'PACKET' || r.need.type === 'WAIVER' ? 38 : 26;
+                    r.serveTimeNeeded = serveTime;
+                    
+                    addLog(FUNNY_LINES.serve[Math.floor(Math.random() * FUNNY_LINES.serve.length)], '#ffff00');
+                    return;
+                }
+                
+                if (dist < 55 && r.state === 'being_served') {
+                    // Finish early if progress high
+                    if (r.servedProgress > r.serveTimeNeeded * 0.7) {
+                        finishServe(i);
+                    }
+                }
+            }
+        }
+        
+        function quickPepTalk() {
+            if (!gameRunning || paused || Date.now() - lastPep < 4500) return;
+            
+            lastPep = Date.now();
+            
+            // Boost all nearby recruits' timers a bit
+            let helped = 0;
+            for (const r of recruits) {
+                if (Math.abs(r.x - player.x) < 90 && r.state === 'waiting') {
+                    r.timer = Math.min(r.maxTimer, r.timer + 6);
+                    helped++;
+                }
+            }
+            
+            if (helped > 0) {
+                const line = FUNNY_LINES.pep[Math.floor(Math.random() * FUNNY_LINES.pep.length)];
+                addLog(line, '#ff8800');
+                createFloatingText(player.x, player.y - 30, "MOTIVATIONAL GRENADE", '#ffaa00');
+            } else {
+                addLog("No one close enough to yell at. Tragic.", '#888888');
+            }
+        }
+        
+        function finishServe(index) {
+            const r = recruits[index];
+            r.state = 'done';
+            r.happy = true;
+            
+            const points = r.need.points + Math.floor((r.timer / r.maxTimer) * 80);
+            score += points;
+            shipped++;
+            
+            createFloatingText(r.x, r.y - 25, `+${points} SHIPPED`, '#00ff00');
+            addLog(`Recruit shipped. +${points} points. One less problem.`, '#00ff00');
+            
+            // Remove after short delay
+            setTimeout(() => {
+                if (recruits[index]) recruits.splice(index, 1);
+            }, 650);
+            
+            updateUI();
+        }
+        
+        function createFloatingText(x, y, text, color = '#ffff00') {
+            floating.push({ x, y, text, color, life: 48, vy: -1.4 });
+        }
+        
+        function update() {
+            if (!gameRunning || paused) return;
+            
+            timeLeft -= 1 / 60;
+            if (timeLeft <= 0) {
+                endShift();
+                return;
+            }
+            
+            // Player movement
+            player.vx = 0;
+            if (keys['ArrowLeft'] || keys['a'] || keys['A']) { player.vx = -5.2; player.facing = -1; }
+            if (keys['ArrowRight'] || keys['d'] || keys['D']) { player.vx = 5.2; player.facing = 1; }
+            
+            player.x += player.vx;
+            if (player.x < 60) player.x = 60;
+            if (player.x > WIDTH - 70) player.x = WIDTH - 70;
+            
+            player.anim += 0.22;
+            
+            // Update recruits
+            for (let i = recruits.length - 1; i >= 0; i--) {
+                const r = recruits[i];
+                
+                if (r.state === 'waiting') {
+                    r.timer -= 1 / 60;
+                    
+                    // Being served by proximity + holding interact? For simplicity, auto progress if close and we interacted
+                    // But to make it active: if player is very close and holding X, progress faster
+                    const dist = Math.abs(r.x - player.x);
+                    if (dist < 45 && keys['x'] || keys['X'] || keys['k'] || keys['K']) {
+                        r.servedProgress = (r.servedProgress || 0) + 1.8;
+                    } else if (dist < 55) {
+                        r.servedProgress = (r.servedProgress || 0) + 0.6; // slow passive if near
+                    }
+                    
+                    if (r.servedProgress >= (r.serveTimeNeeded || 30)) {
+                        finishServe(i);
+                        continue;
+                    }
+                    
+                    if (r.timer <= 0) {
+                        // DEP Loss
+                        losses++;
+                        score = Math.max(0, score - 120);
+                        createFloatingText(r.x, r.y - 20, "DEP LOSS", '#ff0000');
+                        addLog(FUNNY_LINES.loss[Math.floor(Math.random() * FUNNY_LINES.loss.length)], '#ff4444');
+                        
+                        // Sad particle effect
+                        for (let p = 0; p < 8; p++) {
+                            particles.push({
+                                x: r.x + Math.random() * 30,
+                                y: r.y - 10,
+                                vx: (Math.random() - 0.5) * 2,
+                                vy: -1 - Math.random() * 1.5,
+                                life: 22,
+                                color: '#ff6666'
+                            });
+                        }
+                        
+                        recruits.splice(i, 1);
+                        updateUI();
+                    }
+                }
+                
+                if (r.state === 'done' && r.happy) {
+                    // Happy recruit slowly leaves or fades
+                    r.y -= 0.8;
+                    if (r.y < 280) {
+                        recruits.splice(i, 1);
+                    }
+                }
+            }
+            
+            // Spawning
+            if (Date.now() - lastSpawn > 1850 - (losses * 40)) {
+                spawnRecruit();
+                lastSpawn = Date.now();
+                
+                // Chance for double spawn later
+                if (timeLeft < 180 && Math.random() < 0.45) {
+                    setTimeout(() => { if (gameRunning && !paused) spawnRecruit(); }, 420);
+                }
+            }
+            
+            // Update particles
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vy += 0.12;
+                p.life--;
+                if (p.life <= 0) particles.splice(i, 1);
+            }
+            
+            // Floating text
+            for (let i = floating.length - 1; i >= 0; i--) {
+                const f = floating[i];
+                f.y += f.vy;
+                f.life--;
+                if (f.life <= 0) floating.splice(i, 1);
+            }
+            
+            updateUI();
+        }
+        
+        function drawPlayer() {
+            const px = player.x;
+            const py = player.y;
+            const frame = Math.floor(player.anim);
+            const f = player.facing;
+            
+            ctx.save();
+            if (f < 0) {
+                ctx.translate(px + 38, py);
+                ctx.scale(-1, 1);
+                ctx.translate(-px, -py);
+            }
+            
+            // Legs
+            const leg = Math.sin(frame * 0.9) * 5;
+            ctx.fillStyle = '#2a3a22';
+            ctx.fillRect(px + 8, py + 32, 9, 18 + leg * 0.4);
+            ctx.fillRect(px + 21, py + 32, 9, 18 - leg * 0.4);
+            
+            // Boots
+            ctx.fillStyle = '#1a1a1a';
+            ctx.fillRect(px + 5, py + 48, 14, 7);
+            ctx.fillRect(px + 19, py + 48, 14, 7);
+            
+            // Body fatigues
+            ctx.fillStyle = '#3a5c2e';
+            ctx.fillRect(px + 5, py + 14, 28, 22);
+            
+            // Vest
+            ctx.fillStyle = '#2a3a22';
+            ctx.fillRect(px + 7, py + 16, 24, 17);
+            
+            // Name tape
+            ctx.fillStyle = '#ffcc00';
+            ctx.fillRect(px + 9, py + 28, 20, 5);
+            ctx.fillStyle = '#000';
+            ctx.font = 'bold 6px "Press Start 2P"';
+            ctx.fillText('KRAAT', px + 11, py + 32);
+            
+            // Arms
+            const arm = Math.sin(frame * 0.75) * 4;
+            ctx.fillStyle = '#3a5c2e';
+            ctx.fillRect(px + 2, py + 16 + arm * 0.3, 7, 16);
+            ctx.fillRect(px + 29, py + 16 - arm * 0.4, 7, 16);
+            
+            // Head
+            ctx.fillStyle = '#ffcc99';
+            ctx.fillRect(px + 10, py + 2, 18, 14);
+            
+            // Helmet
+            ctx.fillStyle = '#2a3a22';
+            ctx.fillRect(px + 8, py - 4, 22, 9);
+            
+            // Eyes
+            ctx.fillStyle = '#222';
+            ctx.fillRect(px + 14, py + 7, 3, 3);
+            ctx.fillRect(px + 21, py + 7, 3, 3);
+            
+            ctx.restore();
+        }
+        
+        function draw() {
+            ctx.fillStyle = '#0a0a0a';
+            ctx.fillRect(0, 0, WIDTH, HEIGHT);
+            
+            // Back wall / station
+            ctx.fillStyle = '#1a2a1a';
+            ctx.fillRect(0, 80, WIDTH, 200);
+            
+            // Counter
+            ctx.fillStyle = '#3a2a1a';
+            ctx.fillRect(0, COUNTER_Y, WIDTH, 60);
+            ctx.fillStyle = '#2a1a0a';
+            ctx.fillRect(0, COUNTER_Y, WIDTH, 8);
+            
+            // Counter edge
+            ctx.fillStyle = '#4a3a2a';
+            for (let x = 0; x < WIDTH; x += 30) {
+                ctx.fillRect(x, COUNTER_Y - 4, 28, 6);
+            }
+            
+            // Background details (filing cabinets, phone, desk)
+            ctx.fillStyle = '#222';
+            ctx.fillRect(40, 140, 70, 140); // cabinet
+            ctx.fillStyle = '#333';
+            ctx.fillRect(50, 160, 50, 8);
+            ctx.fillRect(50, 190, 50, 8);
+            ctx.fillRect(50, 220, 50, 8);
+            
+            // Phone station
+            ctx.fillStyle = '#1a1a2a';
+            ctx.fillRect(820, 150, 90, 120);
+            ctx.fillStyle = '#4488ff';
+            ctx.fillRect(835, 170, 60, 8); // phone
+            
+            // Waiver / Packet desk
+            ctx.fillStyle = '#2a2a1a';
+            ctx.fillRect(700, 155, 80, 50);
+            
+            // Draw recruits (sitting on stools)
+            for (const r of recruits) {
+                const rx = r.x;
+                const ry = r.y;
+                
+                // Stool
+                ctx.fillStyle = '#222';
+                ctx.fillRect(rx - 18, ry + 8, 36, 8);
+                ctx.fillRect(rx - 14, ry + 16, 6, 18);
+                ctx.fillRect(rx + 8, ry + 16, 6, 18);
+                
+                // Recruit body
+                ctx.fillStyle = r.happy ? '#88ff88' : '#666';
+                ctx.fillRect(rx - 12, ry - 22, 24, 30);
+                
+                // Head
+                ctx.fillStyle = '#ffcc99';
+                ctx.fillRect(rx - 8, ry - 38, 16, 16);
+                
+                // Simple face
+                ctx.fillStyle = r.happy ? '#222' : '#aa2222';
+                ctx.fillRect(rx - 4, ry - 30, 3, 3);
+                ctx.fillRect(rx + 1, ry - 30, 3, 3);
+                
+                // Need bubble
+                if (r.state === 'waiting') {
+                    ctx.fillStyle = 'rgba(0,0,0,0.75)';
+                    ctx.fillRect(rx - 42, ry - 72, 84, 22);
+                    ctx.fillStyle = r.need.color;
+                    ctx.font = '9px "Press Start 2P"';
+                    ctx.fillText(r.need.label, rx - 38, ry - 56);
+                    
+                    // Timer bar
+                    const pct = Math.max(0, r.timer / r.maxTimer);
+                    ctx.fillStyle = pct > 0.4 ? '#00ff00' : (pct > 0.2 ? '#ffaa00' : '#ff4444');
+                    ctx.fillRect(rx - 38, ry - 50, 76 * pct, 4);
+                    ctx.strokeStyle = '#fff';
+                    ctx.strokeRect(rx - 38, ry - 50, 76, 4);
+                }
+                
+                if (r.state === 'being_served') {
+                    ctx.fillStyle = '#ffff00';
+                    ctx.font = '8px "Press Start 2P"';
+                    ctx.fillText('SERVING...', rx - 28, ry - 50);
+                    
+                    // Progress bar
+                    const prog = Math.min(1, (r.servedProgress || 0) / (r.serveTimeNeeded || 30));
+                    ctx.fillStyle = '#00ff00';
+                    ctx.fillRect(rx - 30, ry - 42, 60 * prog, 5);
+                }
+            }
+            
+            // Draw player
+            drawPlayer();
+            
+            // Particles
+            for (const p of particles) {
+                ctx.globalAlpha = p.life / 22;
+                ctx.fillStyle = p.color;
+                ctx.fillRect(p.x, p.y, 3, 3);
+                ctx.globalAlpha = 1;
+            }
+            
+            // Floating text
+            ctx.textAlign = 'center';
+            for (const f of floating) {
+                ctx.globalAlpha = f.life / 48;
+                ctx.fillStyle = f.color;
+                ctx.font = 'bold 11px "Press Start 2P"';
+                ctx.fillText(f.text, f.x, f.y);
+                ctx.globalAlpha = 1;
+            }
+            
+            // Station labels
+            ctx.fillStyle = '#888';
+            ctx.font = '8px "Press Start 2P"';
+            ctx.fillText('WAIVER DESK', 55, 135);
+            ctx.fillText('PHONE BANK', 835, 135);
+            ctx.fillText('PACKET QC', 710, 135);
+            
+            // Border
+            ctx.strokeStyle = '#00ff00';
+            ctx.lineWidth = 5;
+            ctx.strokeRect(2, 2, WIDTH - 4, HEIGHT - 4);
+        }
+        
+        function gameLoop() {
+            if (gameRunning && !paused) {
+                update();
+            }
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+        
+        function endShift() {
+            gameRunning = false;
+            
+            const overlay = document.getElementById('end');
+            const stats = document.getElementById('end-stats');
+            const comment = document.getElementById('end-comment');
+            
+            stats.innerHTML = `SHIPPED: ${shipped} &nbsp;&nbsp; LOSSES: ${losses} &nbsp;&nbsp; SCORE: ${score}`;
+            
+            let grade = "SOLID SHIFT";
+            let msg = "You kept the pipeline moving. GC might not hate you today.";
+            
+            if (losses >= 5) {
+                grade = "CATASTROPHIC";
+                msg = "GC is already drafting your counseling statement. Good luck explaining this one.";
+            } else if (losses >= 3) {
+                grade = "ROUGH";
+                msg = "You tried. The excuses were stronger. Classic recruiting.";
+            } else if (shipped >= 12) {
+                grade = "LEGENDARY";
+                msg = "You actually shipped people. The Army thanks you. Slightly.";
+            } else if (shipped >= 8) {
+                grade = "ACCEPTABLE";
+                msg = "Not bad. Not great. GC will take it.";
+            }
+            
+            comment.innerHTML = `${grade}<br>${msg}`;
+            overlay.style.display = 'flex';
+        }
+        
+        function startShift() {
+            document.getElementById('start').style.display = 'none';
+            resetGame();
+            gameRunning = true;
+            paused = false;
+            
+            // Initial recruits
+            for (let i = 0; i < 3; i++) {
+                setTimeout(() => {
+                    if (gameRunning && !paused) spawnRecruit();
+                }, i * 380);
+            }
+            
+            addLog("First recruits incoming. Handle them or they walk.", '#ffaa00');
+        }
+        
+        function restartShift() {
+            document.getElementById('end').style.display = 'none';
+            startShift();
+        }
+        
+        // Input
+        document.addEventListener('keydown', e => {
+            keys[e.key] = true;
+            
+            if (!gameRunning) return;
+            
+            if (e.key.toLowerCase() === 'x' || e.key.toLowerCase() === 'k') {
+                interact();
+            }
+            
+            if (e.key.toLowerCase() === 'z' || e.key.toLowerCase() === 'j') {
+                quickPepTalk();
+            }
+            
+            if (e.key.toLowerCase() === 'p') {
+                paused = !paused;
+                document.getElementById('pause').style.display = paused ? 'flex' : 'none';
+            }
+        });
+        
+        document.addEventListener('keyup', e => {
+            keys[e.key] = false;
+        });
+        
+        // Touch
+        canvas.addEventListener('touchstart', e => {
+            e.preventDefault();
+            if (!gameRunning) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const tx = e.touches[0].clientX - rect.left;
+            
+            if (tx < player.x) keys['ArrowLeft'] = true;
+            else keys['ArrowRight'] = true;
+            
+            setTimeout(() => {
+                keys['ArrowLeft'] = false;
+                keys['ArrowRight'] = false;
+            }, 180);
+            
+            interact();
+        });
+        
+        window.onload = () => {
+            document.getElementById('start').style.display = 'flex';
+            gameLoop();
+        };
+    </script>
+</body>
+</html>

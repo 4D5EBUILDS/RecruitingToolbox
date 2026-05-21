@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEP DEFENDER • Recruit or Die</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&amp;display=swap');
+        
+        body {
+            margin: 0;
+            padding: 0;
+            background: #0a0a0a;
+            color: #00ff00;
+            font-family: 'Press Start 2P', system-ui, monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        
+        .crt {
+            position: relative;
+            width: 800px;
+            height: 600px;
+            border: 8px solid #333;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3),
+                        inset 0 0 80px rgba(0, 0, 0, 0.8);
+            background: #000;
+            overflow: hidden;
+        }
+        
+        .crt::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: repeating-linear-gradient(
+                transparent 0px,
+                transparent 2px,
+                rgba(0, 255, 0, 0.03) 2px,
+                rgba(0, 255, 0, 0.03) 4px
+            );
+            pointer-events: none;
+            z-index: 10;
+        }
+        
+        canvas {
+            display: block;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .title {
+            font-size: 32px;
+            color: #ffff00;
+            text-shadow: 0 0 10px #ffff00,
+                        4px 4px 0 #000;
+            margin: 0;
+            letter-spacing: 4px;
+        }
+        
+        .subtitle {
+            font-size: 12px;
+            color: #ff0000;
+            margin: 5px 0 0;
+            text-shadow: 2px 2px 0 #000;
+        }
+        
+        .info {
+            display: flex;
+            justify-content: space-between;
+            width: 800px;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        
+        .score, .lives, .month {
+            background: #111;
+            padding: 8px 16px;
+            border: 3px solid #00ff00;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+        
+        .instructions {
+            margin-top: 15px;
+            font-size: 11px;
+            color: #888;
+            text-align: center;
+            max-width: 800px;
+            line-height: 1.5;
+        }
+        
+        .game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            border: 6px solid #ff0000;
+            padding: 30px 50px;
+            text-align: center;
+            z-index: 100;
+            display: none;
+            box-shadow: 0 0 30px #ff0000;
+        }
+        
+        .game-over h2 {
+            color: #ff0000;
+            font-size: 28px;
+            margin: 0 0 15px;
+            text-shadow: 0 0 10px #ff0000;
+        }
+        
+        .game-over p {
+            color: #ffff00;
+            font-size: 14px;
+            margin: 10px 0;
+        }
+        
+        button {
+            background: #000;
+            color: #00ff00;
+            border: 3px solid #00ff00;
+            padding: 12px 30px;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.1s;
+        }
+        
+        button:hover {
+            background: #00ff00;
+            color: #000;
+            box-shadow: 0 0 15px #00ff00;
+        }
+        
+        .scanline {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                transparent 50%,
+                rgba(255, 255, 255, 0.03) 50%
+            );
+            background-size: 100% 6px;
+            pointer-events: none;
+            z-index: 5;
+            animation: scan 4s linear infinite;
+        }
+        
+        @keyframes scan {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 600px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 class="title">DEP DEFENDER</h1>
+        <p class="subtitle">KEEP 'EM IN THE PROGRAM OR DIE (CAREER-WISE)</p>
+    </div>
+    
+    <div class="crt" id="crt-container">
+        <canvas id="game" width="800" height="600"></canvas>
+        <div class="scanline"></div>
+        
+        <!-- Game Over Screen -->
+        <div id="game-over" class="game-over">
+            <h2>DEP LOSS</h2>
+            <p id="final-score">FINAL SCORE: 0</p>
+            <p id="game-over-message">Another one slipped through...</p>
+            <button onclick="restartGame()">TRY AGAIN, RECRUITER</button>
+        </div>
+    </div>
+    
+    <div class="info">
+        <div class="score">SCORE: <span id="score">0</span></div>
+        <div class="lives">DEP STRENGTH: <span id="lives">5</span></div>
+        <div class="month">MONTH: <span id="month">1</span></div>
+    </div>
+    
+    <div class="instructions">
+        ARROW KEYS / A D — MOVE &nbsp;&nbsp;|&nbsp;&nbsp; SPACE — FIRE MOTIVATIONAL GRENADE<br>
+        CATCH GOOD STUFF (🍕 LETTERS 📞 BONUS) &nbsp;&nbsp;|&nbsp;&nbsp; DESTROY OR DODGE BAD STUFF (💔 😴 👨‍👩‍👧)<br>
+        <span style="color:#ffaa00">Survive 5 months. Keep your future soldiers shipping.</span>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('game');
+        const ctx = canvas.getContext('2d', { alpha: true });
+        
+        // Game variables
+        let player = { x: 370, y: 520, width: 60, height: 40, speed: 7 };
+        let bullets = [];
+        let fallingItems = [];
+        let score = 0;
+        let lives = 5;
+        let month = 1;
+        let gameRunning = true;
+        let keys = {};
+        let frame = 0;
+        let lastSpawn = 0;
+        let spawnRate = 45; // frames between spawns
+        
+        // Colors
+        const COLORS = {
+            bg: '#0a0a0a',
+            green: '#00ff00',
+            yellow: '#ffff00',
+            red: '#ff0000',
+            blue: '#00aaff',
+            orange: '#ffaa00'
+        };
+        
+        // Item types
+        const ITEM_TYPES = {
+            GOOD: [
+                { emoji: '🍕', name: 'FREE PIZZA', points: 150, color: '#ffaa00' },
+                { emoji: '📜', name: 'MOTIVATION LETTER', points: 200, color: '#00aaff' },
+                { emoji: '📞', name: 'DS CALL', points: 250, color: '#00ff00' },
+                { emoji: '💰', name: 'BONUS CHECK', points: 300, color: '#ffff00' },
+                { emoji: '🏋️', name: 'PT HELP', points: 180, color: '#ff6600' }
+            ],
+            BAD: [
+                { emoji: '💔', name: 'GIRLFRIEND DRAMA', damage: 1, color: '#ff00aa' },
+                { emoji: '😴', name: 'LAZY RECRUIT', damage: 1, color: '#888888' },
+                { emoji: '👨‍👩‍👧', name: 'ANGRY PARENTS', damage: 1, color: '#aa0000' },
+                { emoji: '🚗', name: 'NEW CAR DREAM', damage: 1, color: '#00aaff' },
+                { emoji: '📱', name: 'TIKTOK INFLUENCER', damage: 1, color: '#ff00ff' },
+                { emoji: '🍺', name: 'PARTY THIS WEEKEND', damage: 1, color: '#ffaa00' }
+            ]
+        };
+        
+        // Funny game over messages
+        const GAME_OVER_MESSAGES = [
+            "Another one slipped through the cracks...",
+            "GC is going to LOVE this report...",
+            "Your recruiter career just took a DEP hit.",
+            "That one joined the Marines instead. Ouch.",
+            "You tried. The system won. Again.",
+            "DEP Loss logged. Your name is now on the list.",
+            "Future soldier became future civilian. GG.",
+            "The green weenie strikes again."
+        ];
+        
+        function resetGame() {
+            player.x = 370;
+            bullets = [];
+            fallingItems = [];
+            score = 0;
+            lives = 5;
+            month = 1;
+            gameRunning = true;
+            frame = 0;
+            lastSpawn = 0;
+            spawnRate = 45;
+            
+            document.getElementById('score').textContent = score;
+            document.getElementById('lives').textContent = lives;
+            document.getElementById('month').textContent = month;
+            document.getElementById('game-over').style.display = 'none';
+        }
+        
+        function updateUI() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('lives').textContent = lives;
+            document.getElementById('month').textContent = month;
+        }
+        
+        function spawnItem() {
+            const isGood = Math.random() > 0.55; // Slightly more bad items for challenge
+            let item;
+            
+            if (isGood) {
+                const type = ITEM_TYPES.GOOD[Math.floor(Math.random() * ITEM_TYPES.GOOD.length)];
+                item = {
+                    x: Math.random() * (canvas.width - 40) + 20,
+                    y: -30,
+                    width: 32,
+                    height: 32,
+                    type: 'good',
+                    emoji: type.emoji,
+                    name: type.name,
+                    points: type.points,
+                    color: type.color,
+                    speed: 1.8 + Math.random() * 1.2 + (month - 1) * 0.3
+                };
+            } else {
+                const type = ITEM_TYPES.BAD[Math.floor(Math.random() * ITEM_TYPES.BAD.length)];
+                item = {
+                    x: Math.random() * (canvas.width - 40) + 20,
+                    y: -30,
+                    width: 32,
+                    height: 32,
+                    type: 'bad',
+                    emoji: type.emoji,
+                    name: type.name,
+                    damage: type.damage,
+                    color: type.color,
+                    speed: 2.2 + Math.random() * 1.5 + (month - 1) * 0.4
+                };
+            }
+            
+            fallingItems.push(item);
+        }
+        
+        function shoot() {
+            if (!gameRunning) return;
+            
+            bullets.push({
+                x: player.x + player.width / 2 - 4,
+                y: player.y,
+                width: 8,
+                height: 16,
+                speed: -12
+            });
+            
+            // Retro shoot sound (Web Audio)
+            try {
+                const audio = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audio.createOscillator();
+                const gain = audio.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.value = 180;
+                gain.gain.value = 0.15;
+                
+                const filter = audio.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.value = 800;
+                
+                osc.connect(filter);
+                filter.connect(gain);
+                gain.connect(audio.destination);
+                
+                osc.start();
+                setTimeout(() => {
+                    gain.gain.exponentialRampToValueAtTime(0.001, audio.currentTime + 0.25);
+                    setTimeout(() => osc.stop(), 300);
+                }, 80);
+            } catch(e) {}
+        }
+        
+        function update() {
+            if (!gameRunning) return;
+            
+            frame++;
+            
+            // Player movement
+            if (keys['ArrowLeft'] || keys['a'] || keys['A']) {
+                player.x -= player.speed;
+            }
+            if (keys['ArrowRight'] || keys['d'] || keys['D']) {
+                player.x += player.speed;
+            }
+            
+            // Clamp player position
+            if (player.x < 10) player.x = 10;
+            if (player.x > canvas.width - player.width - 10) player.x = canvas.width - player.width - 10;
+            
+            // Update bullets
+            for (let i = bullets.length - 1; i >= 0; i--) {
+                bullets[i].y += bullets[i].speed;
+                
+                // Remove off-screen bullets
+                if (bullets[i].y < -20) {
+                    bullets.splice(i, 1);
+                }
+            }
+            
+            // Update falling items
+            for (let i = fallingItems.length - 1; i >= 0; i--) {
+                const item = fallingItems[i];
+                item.y += item.speed;
+                
+                // Check collision with player (catch good / hit by bad)
+                if (item.y + item.height > player.y && 
+                    item.x < player.x + player.width && 
+                    item.x + item.width > player.x) {
+                    
+                    if (item.type === 'good') {
+                        score += item.points;
+                        // Small visual feedback
+                        createFloatingText(item.x, item.y, `+${item.points}`, '#00ff00');
+                    } else {
+                        lives -= item.damage || 1;
+                        createFloatingText(item.x, item.y, `-${item.damage || 1} DEP`, '#ff0000');
+                        
+                        if (lives <= 0) {
+                            endGame();
+                            return;
+                        }
+                    }
+                    
+                    fallingItems.splice(i, 1);
+                    updateUI();
+                    continue;
+                }
+                
+                // Check bullet collisions (only for bad items)
+                if (item.type === 'bad') {
+                    for (let b = bullets.length - 1; b >= 0; b--) {
+                        const bullet = bullets[b];
+                        
+                        if (bullet.x < item.x + item.width &&
+                            bullet.x + bullet.width > item.x &&
+                            bullet.y < item.y + item.height &&
+                            bullet.y + bullet.height > item.y) {
+                            
+                            // Destroy bad item
+                            score += 100;
+                            createFloatingText(item.x, item.y, '+100 PREVENTED', '#ffff00');
+                            fallingItems.splice(i, 1);
+                            bullets.splice(b, 1);
+                            updateUI();
+                            break;
+                        }
+                    }
+                }
+                
+                // Remove off-screen items
+                if (item.y > canvas.height + 30) {
+                    if (item.type === 'bad') {
+                        // Bad item escaped = extra penalty
+                        lives -= 1;
+                        createFloatingText(canvas.width / 2 - 80, 100, 'DEP LOSS!', '#ff0000');
+                        updateUI();
+                        
+                        if (lives <= 0) {
+                            endGame();
+                            return;
+                        }
+                    }
+                    fallingItems.splice(i, 1);
+                }
+            }
+            
+            // Spawn new items
+            if (frame - lastSpawn > spawnRate) {
+                spawnItem();
+                lastSpawn = frame;
+                
+                // Occasionally spawn extra in later months
+                if (month >= 3 && Math.random() < 0.35) {
+                    setTimeout(() => {
+                        if (gameRunning) spawnItem();
+                    }, 180);
+                }
+            }
+            
+            // Increase difficulty over time / months
+            if (frame % 600 === 0 && month < 5) {
+                month++;
+                spawnRate = Math.max(22, spawnRate - 5);
+                document.getElementById('month').textContent = month;
+                
+                // Bonus for surviving the month
+                score += 500 * month;
+                createFloatingText(canvas.width / 2 - 120, 80, `MONTH ${month} SURVIVED! +${500 * month}`, '#ffff00');
+                updateUI();
+            }
+            
+            // Win condition
+            if (month > 5) {
+                winGame();
+            }
+        }
+        
+        function createFloatingText(x, y, text, color) {
+            // Simple floating text system
+            const textObj = {
+                x: x,
+                y: y,
+                text: text,
+                color: color || '#ffff00',
+                life: 45,
+                vy: -1.5
+            };
+            
+            // Store in a global array for drawing
+            if (!window.floatingTexts) window.floatingTexts = [];
+            window.floatingTexts.push(textObj);
+        }
+        
+        function draw() {
+            // Clear
+            ctx.fillStyle = COLORS.bg;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Retro grid background
+            ctx.strokeStyle = 'rgba(0, 255, 0, 0.08)';
+            ctx.lineWidth = 1;
+            for (let x = 0; x < canvas.width; x += 40) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
+            }
+            for (let y = 0; y < canvas.height; y += 40) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+            
+            // Draw player (retro recruiter)
+            ctx.fillStyle = '#003300';
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+            
+            // Player body / uniform
+            ctx.fillStyle = '#006600';
+            ctx.fillRect(player.x + 8, player.y + 8, player.width - 16, player.height - 12);
+            
+            // Head
+            ctx.fillStyle = '#ffcc99';
+            ctx.fillRect(player.x + 18, player.y - 8, 24, 20);
+            
+            // Hat / cover
+            ctx.fillStyle = '#222';
+            ctx.fillRect(player.x + 16, player.y - 12, 28, 8);
+            
+            // Name tag area
+            ctx.fillStyle = '#ffff00';
+            ctx.fillRect(player.x + 12, player.y + 18, player.width - 24, 8);
+            ctx.fillStyle = '#000';
+            ctx.font = 'bold 9px "Press Start 2P"';
+            ctx.fillText('KRAAT', player.x + 15, player.y + 25);
+            
+            // Draw bullets
+            ctx.fillStyle = '#ffff00';
+            for (const bullet of bullets) {
+                ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
+                // Tracer
+                ctx.fillStyle = 'rgba(255, 255, 0, 0.4)';
+                ctx.fillRect(bullet.x, bullet.y + 16, bullet.width, 12);
+                ctx.fillStyle = '#ffff00';
+            }
+            
+            // Draw falling items
+            for (const item of fallingItems) {
+                // Shadow
+                ctx.fillStyle = 'rgba(0,0,0,0.4)';
+                ctx.beginPath();
+                ctx.ellipse(item.x + item.width/2, item.y + item.height + 6, item.width * 0.6, 6, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Item background circle
+                ctx.fillStyle = item.color || '#ffffff';
+                ctx.beginPath();
+                ctx.arc(item.x + item.width/2, item.y + item.height/2, 18, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Emoji
+                ctx.font = '26px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillStyle = '#fff';
+                ctx.fillText(item.emoji, item.x + item.width/2, item.y + item.height/2 + 9);
+                
+                // Small label for good items
+                if (item.type === 'good') {
+                    ctx.font = '8px "Press Start 2P"';
+                    ctx.fillStyle = '#000';
+                    ctx.fillText(item.name.split(' ')[0], item.x + item.width/2, item.y + item.height + 14);
+                }
+            }
+            
+            // Draw floating texts
+            if (window.floatingTexts) {
+                for (let i = window.floatingTexts.length - 1; i >= 0; i--) {
+                    const ft = window.floatingTexts[i];
+                    ctx.font = 'bold 13px "Press Start 2P"';
+                    ctx.fillStyle = ft.color;
+                    ctx.fillText(ft.text, ft.x, ft.y);
+                    
+                    ft.y += ft.vy;
+                    ft.life--;
+                    
+                    if (ft.life <= 0) {
+                        window.floatingTexts.splice(i, 1);
+                    }
+                }
+            }
+            
+            // Draw month indicator / wave info
+            ctx.fillStyle = 'rgba(255, 255, 0, 0.7)';
+            ctx.font = '11px "Press Start 2P"';
+            ctx.fillText(`MONTH ${month} / 5`, 20, 30);
+            
+            // Recruiter title
+            ctx.fillStyle = '#00ff00';
+            ctx.font = '10px "Press Start 2P"';
+            ctx.fillText('SSG KRAAT • KC RECRUITING', canvas.width - 280, 30);
+            
+            // Border
+            ctx.strokeStyle = '#00ff00';
+            ctx.lineWidth = 4;
+            ctx.strokeRect(2, 2, canvas.width - 4, canvas.height - 4);
+        }
+        
+        function gameLoop() {
+            if (gameRunning) {
+                update();
+            }
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+        
+        function endGame() {
+            gameRunning = false;
+            
+            const gameOverScreen = document.getElementById('game-over');
+            const messageEl = document.getElementById('game-over-message');
+            const scoreEl = document.getElementById('final-score');
+            
+            scoreEl.textContent = `FINAL SCORE: ${score}`;
+            
+            // Pick random funny message
+            const randomMsg = GAME_OVER_MESSAGES[Math.floor(Math.random() * GAME_OVER_MESSAGES.length)];
+            messageEl.textContent = randomMsg;
+            
+            gameOverScreen.style.display = 'block';
+        }
+        
+        function winGame() {
+            gameRunning = false;
+            
+            const gameOverScreen = document.getElementById('game-over');
+            const messageEl = document.getElementById('game-over-message');
+            const scoreEl = document.getElementById('final-score');
+            
+            scoreEl.textContent = `FINAL SCORE: ${score}`;
+            messageEl.innerHTML = `YOU DID IT.<br>ALL FUTURE SOLDIERS SHIPPED.<br>GC IS PROUD (FOR ONCE).`;
+            messageEl.style.color = '#00ff00';
+            
+            gameOverScreen.style.borderColor = '#00ff00';
+            gameOverScreen.style.boxShadow = '0 0 30px #00ff00';
+            gameOverScreen.style.display = 'block';
+        }
+        
+        function restartGame() {
+            resetGame();
+            window.floatingTexts = [];
+            // Small delay so button click doesn't interfere
+            setTimeout(() => {
+                document.getElementById('game-over').style.display = 'none';
+            }, 50);
+        }
+        
+        // Keyboard controls
+        document.addEventListener('keydown', (e) => {
+            keys[e.key] = true;
+            
+            if (e.key === ' ' || e.key === 'Spacebar') {
+                e.preventDefault();
+                shoot();
+            }
+            
+            if (e.key.toLowerCase() === 'p' && gameRunning) {
+                gameRunning = false;
+                setTimeout(() => {
+                    if (!gameRunning) {
+                        const ctx2 = canvas.getContext('2d');
+                        ctx2.fillStyle = 'rgba(0,0,0,0.7)';
+                        ctx2.fillRect(0, 0, canvas.width, canvas.height);
+                        ctx2.fillStyle = '#ffff00';
+                        ctx2.font = '24px "Press Start 2P"';
+                        ctx2.fillText('PAUSED', canvas.width/2 - 70, canvas.height/2);
+                        ctx2.font = '12px "Press Start 2P"';
+                        ctx2.fillText('PRESS P TO RESUME', canvas.width/2 - 110, canvas.height/2 + 40);
+                    }
+                }, 10);
+            } else if (e.key.toLowerCase() === 'p' && !gameRunning) {
+                gameRunning = true;
+            }
+            
+            // Secret cheat code hint
+            if (e.key === '?') {
+                createFloatingText(player.x, player.y - 30, 'CHEAT: ↑↑↓↓←→←→BA', '#ffff00');
+            }
+        });
+        
+        document.addEventListener('keyup', (e) => {
+            keys[e.key] = false;
+        });
+        
+        // Touch support for mobile (basic)
+        let touchStartX = 0;
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            touchStartX = e.touches[0].clientX;
+            shoot();
+        });
+        
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            const touchX = e.touches[0].clientX;
+            const rect = canvas.getBoundingClientRect();
+            const canvasX = ((touchX - rect.left) / rect.width) * canvas.width;
+            player.x = Math.max(10, Math.min(canvas.width - player.width - 10, canvasX - player.width / 2));
+        });
+        
+        // Konami code easter egg
+        let konamiCode = [];
+        const konamiSequence = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+        
+        document.addEventListener('keydown', (e) => {
+            konamiCode.push(e.key);
+            if (konamiCode.length > konamiSequence.length) {
+                konamiCode.shift();
+            }
+            
+            if (konamiCode.join(',') === konamiSequence.join(',')) {
+                konamiCode = [];
+                // Activate unlimited motivation mode
+                lives = Math.max(lives, 99);
+                score += 5000;
+                createFloatingText(canvas.width / 2 - 140, 150, 'UNLIMITED MOTIVATION ACTIVATED', '#ffff00');
+                updateUI();
+                
+                // Spawn a bunch of good items
+                for (let i = 0; i < 8; i++) {
+                    setTimeout(() => {
+                        if (gameRunning) {
+                            const goodType = ITEM_TYPES.GOOD[Math.floor(Math.random() * ITEM_TYPES.GOOD.length)];
+                            fallingItems.push({
+                                x: 50 + Math.random() * (canvas.width - 100),
+                                y: -40 - (i * 15),
+                                width: 32,
+                                height: 32,
+                                type: 'good',
+                                emoji: goodType.emoji,
+                                name: goodType.name,
+                                points: goodType.points * 2,
+                                color: '#ffff00',
+                                speed: 1.5
+                            });
+                        }
+                    }, i * 80);
+                }
+            }
+        });
+        
+        // Start the game
+        function startGame() {
+            resetGame();
+            window.floatingTexts = [];
+            
+            // Initial spawn burst
+            setTimeout(() => {
+                if (gameRunning) spawnItem();
+            }, 600);
+            
+            gameLoop();
+            
+            // Welcome message
+            setTimeout(() => {
+                if (gameRunning) {
+                    createFloatingText(280, 120, 'WELCOME TO THE DEP, RECRUITER', '#00ff00');
+                }
+            }, 1200);
+        }
+        
+        // Boot the game
+        window.onload = function() {
+            startGame();
+            
+            // Easter egg hint in console
+            console.log('%c[DEP DEFENDER] Konami code still works here. Try it.', 'color:#666');
+        };
+        
+        // Prevent scrolling on space
+        window.addEventListener('keydown', function(e) {
+            if (e.key === ' ' && e.target === document.body) {
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>

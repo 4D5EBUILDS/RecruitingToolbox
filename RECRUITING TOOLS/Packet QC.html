@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Packet QC — Recruiter Toolbox 4D5E</title>
+<style>
+@font-face{font-family:"GI";src:url("fonts/G.I.-400.ttf");font-weight:400;font-display:swap}
+@font-face{font-family:"GI";src:url("fonts/G.I.-530.ttf");font-weight:500;font-display:swap}
+@font-face{font-family:"GI";src:url("fonts/G.I.-750.ttf");font-weight:700;font-display:swap}
+
+:root,[data-theme="dark"]{
+  --bg:#0f0c10;--bg-surface:#1a1719;--bg-card:#201d22;--bg-hover:rgba(255,204,1,.04);
+  --fg:#FFCC01;--fg-alt:#F0EDF0;--fg-muted:#8A878A;--fg-dim:#444;
+  --border:rgba(255,204,1,.09);--border-mid:rgba(255,204,1,.16);--border-str:rgba(255,204,1,.3);
+  --gold:#FFCC01;--black:#0f0c10;--danger:#CF0000;--sidebar:#100e14;
+  --section-accent:3px solid rgba(255,204,1,.55);
+  --item-done-text:rgba(255,255,255,.28);
+  --input-bg:rgba(255,255,255,.04);--input-border:rgba(255,204,1,.2);
+  --search-bg:rgba(255,255,255,.05);
+}
+[data-theme="light"]{
+  --bg:#F1E4C7;--bg-surface:#FFFFFF;--bg-card:#FFFFFF;--bg-hover:rgba(34,31,32,.03);
+  --fg:#221F20;--fg-alt:#221F20;--fg-muted:#565557;--fg-dim:#BBB;
+  --border:rgba(34,31,32,.1);--border-mid:rgba(34,31,32,.2);--border-str:rgba(34,31,32,.3);
+  --gold:#FFCC01;--black:#221F20;--danger:#B00000;--sidebar:#E3D4B4;
+  --section-accent:3px solid #221F20;
+  --item-done-text:rgba(34,31,32,.28);
+  --input-bg:rgba(34,31,32,.04);--input-border:rgba(34,31,32,.25);
+  --search-bg:rgba(34,31,32,.06);
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:"GI",Arial,sans-serif;background:var(--bg);color:var(--fg-alt);font-weight:500;-webkit-font-smoothing:antialiased;transition:background .3s,color .3s}
+button,select,textarea,input{font-family:inherit}
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border-str)}
+#root{height:100%;display:flex;flex-direction:column}
+
+@keyframes checkPulse{0%{transform:scale(1)}30%{transform:scale(1.4)}65%{transform:scale(.9)}100%{transform:scale(1)}}
+@keyframes rowFlash{0%{background:rgba(255,204,1,.18)}100%{background:transparent}}
+@keyframes rippleOut{0%{transform:scale(1);opacity:.7}100%{transform:scale(2.8);opacity:0}}
+@keyframes stampIn{0%{opacity:0;transform:scale(1.5) rotate(-6deg)}55%{transform:scale(.96) rotate(1deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
+@keyframes stampFade{0%,55%{opacity:1}100%{opacity:0}}
+@keyframes sectionGlow{0%{border-left-color:rgba(255,204,1,.55)}40%{border-left-color:rgba(255,204,1,1)}100%{border-left-color:rgba(255,204,1,.55)}}
+@keyframes itemEnter{from{opacity:0;transform:translateX(-14px)}to{opacity:1;transform:none}}
+@keyframes slideRight{from{transform:translateX(-100%)}to{transform:translateX(0)}}
+@keyframes modalIn{from{opacity:0;transform:translateY(12px) scale(.96)}to{opacity:1;transform:none}}
+@keyframes overlayIn{from{opacity:0}to{opacity:1}}
+@keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+@keyframes scanPulse{0%,100%{opacity:1}50%{opacity:.35}}
+@keyframes stickerLand{
+  0%{opacity:0;transform:rotate(-18deg) scale(1.5) translateY(-30px)}
+  18%{opacity:1;transform:rotate(-7deg) scale(1.04) translateY(0)}
+  75%{opacity:1;transform:rotate(-7deg) scale(1)}
+  100%{opacity:0;transform:rotate(-7deg) scale(.92) translateY(8px)}
+}
+@keyframes milestoneIn{
+  0%{opacity:0;transform:translateY(20px) scale(.8)}
+  20%{opacity:1;transform:translateY(0) scale(1.05)}
+  80%{opacity:1;transform:scale(1)}
+  100%{opacity:0;transform:scale(.95)}
+}
+@keyframes tsIn{from{opacity:0;transform:translateX(6px)}to{opacity:1;transform:none}}
+@keyframes drawerIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="qc-data.js"></script>
+<script type="text/babel" src="reference-drawer.jsx"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel">
+const { useState, useEffect, useMemo, useCallback, useRef } = React;
+const { SECTION_DEFS, PROFILE_DEFAULTS, PROFILE_OPTIONS, SECTION_ICONS } = window;
+
+/* ── Helpers ─────────────────────────────────────────── */
+const generateSections = p =>
+  SECTION_DEFS.filter(s => s.cond(p))
+    .map(s => ({ ...s, items: s.items.filter(i => i.cond(p)) }))
+    .filter(s => s.items.length > 0);
+const initStatuses = () => {
+  const m = {};
+  SECTION_DEFS.forEach(s => s.items.forEach(i => { m[i.id] = i.init; }));
+  return m;
+};
+const loadNotes = () => { try { return JSON.parse(localStorage.getItem("pqc-notes") || "{}"); } catch { return {}; } };
+const loadTs    = () => { try { return JSON.parse(localStorage.getItem("pqc-ts")    || "{}"); } catch { return {}; } };
+const fmtTime   = () => new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
+
+/* ── Icons ───────────────────────────────────────────── */
+const IcoCheck  = () => <svg width="11" height="9"  viewBox="0 0 11 9"  fill="none"><path d="M1 4L4 7.5L10 1" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>;
+const IcoX      = ({c="white",s=10}) => <svg width={s} height={s} viewBox="0 0 10 10" fill="none"><path d="M1 1L9 9M9 1L1 9" stroke={c} strokeWidth="2" strokeLinecap="round"/></svg>;
+const IcoHelp   = () => <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5.5" stroke="currentColor" strokeWidth="1.4"/><path d="M4.8 5C4.8 4.06 5.57 3.3 6.5 3.3s1.7.76 1.7 1.7c0 1.1-1.7 1.5-1.7 2.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/><circle cx="6.5" cy="9.7" r=".7" fill="currentColor"/></svg>;
+const IcoChev   = ({open}) => <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style={{transform:open?"rotate(180deg)":"none",transition:"transform .2s"}}><path d="M2 3.5L5 7L8 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>;
+const IcoEdit   = () => <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M7.5 1.5l2 2L3 10H1V8L7.5 1.5z" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>;
+const IcoSearch = () => <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="5.5" cy="5.5" r="4" stroke="currentColor" strokeWidth="1.4"/><path d="M8.5 8.5L12 12" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/></svg>;
+
+/* ── Army Icon (inline SVG from path) ───────────────── */
+const ArmyIcon = ({ id, size = 16, color = "currentColor" }) => {
+  const path = (SECTION_ICONS || {})[id];
+  if (!path) return null;
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill={color} style={{ flexShrink: 0, display: "block" }}>
+      <path d={path} />
+    </svg>
+  );
+};
+
+/* ── Circle Progress ─────────────────────────────────── */
+const CircleProgress = ({ pct, size = 90, stroke = 6, color = "var(--gold)" }) => {
+  const r = (size - stroke) / 2, c = 2 * Math.PI * r, off = c * (1 - pct / 100);
+  return (
+    <svg width={size} height={size} style={{ transform: "rotate(-90deg)" }}>
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="var(--border-mid)" strokeWidth={stroke}/>
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color} strokeWidth={stroke}
+        strokeDasharray={c} strokeDashoffset={off} strokeLinecap="butt"
+        style={{ transition: "stroke-dashoffset .6s cubic-bezier(.2,.6,0,1)" }}/>
+    </svg>
+  );
+};
+
+/* ── Help Modal ──────────────────────────────────────── */
+const HelpModal = ({ item, onClose }) => {
+  if (!item) return null;
+  const h = item.help;
+  return (
+    <div onClick={onClose} style={{ position:"fixed", inset:0, zIndex:400, background:"rgba(10,8,12,.85)",
+      display:"flex", alignItems:"center", justifyContent:"center", padding:48, animation:"overlayIn .15s ease" }}>
+      <div onClick={e => e.stopPropagation()} style={{ background:"var(--bg-card)", border:"1px solid var(--border-str)",
+        width:"100%", maxWidth:540, padding:"28px 28px 22px", animation:"modalIn .18s cubic-bezier(.2,.6,0,1)", position:"relative" }}>
+        <div style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:9, textTransform:"uppercase",
+          letterSpacing:".14em", color:"var(--fg)", opacity:.4, marginBottom:4 }}>{h.reg}</div>
+        <div style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:17, textTransform:"uppercase",
+          color:"var(--fg)", lineHeight:1.05, marginBottom:14 }}>{h.title}</div>
+        <div style={{ height:2, background:"var(--fg)", opacity:.15, marginBottom:14 }}/>
+        <div style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:400, fontSize:13.5, color:"var(--fg-alt)",
+          lineHeight:1.7, whiteSpace:"pre-line", marginBottom:h.timing||h.flags?14:0 }}>{h.body}</div>
+        {h.timing && <div style={{ background:"rgba(207,0,0,.1)", border:"1px solid rgba(207,0,0,.3)",
+          padding:"8px 12px", marginBottom:12 }}>
+          <div style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:9, textTransform:"uppercase",
+            letterSpacing:".08em", color:"var(--danger)", marginBottom:3 }}>⏱ Timing</div>
+          <div style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:400, fontSize:13, color:"var(--fg-alt)" }}>{h.timing}</div>
+        </div>}
+        {h.flags && <div>
+          <div style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:9, textTransform:"uppercase",
+            letterSpacing:".08em", color:"var(--danger)", marginBottom:6 }}>⚠ Common Returns</div>
+          {h.flags.map((f, i) => (
+            <div key={i} style={{ display:"flex", gap:7, alignItems:"flex-start", marginBottom:4 }}>
+              <span style={{ color:"var(--danger)", fontWeight:700, flexShrink:0, lineHeight:1.5, fontSize:13 }}>✗</span>
+              <span style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:400, fontSize:13, color:"var(--fg-alt)", lineHeight:1.5 }}>{f}</span>
+            </div>
+          ))}
+        </div>}
+        <button onClick={onClose} style={{ position:"absolute", top:14, right:14, width:26, height:26,
+          background:"transparent", border:"1px solid var(--border-str)", color:"var(--fg-muted)",
+          display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer" }}>
+          <IcoX c="currentColor" s={9}/>
+        </button>
+      </div>
+    </div>
+  );
+};
+
+/* ── Check Item ──────────────────────────────────────── */
+const CheckItem = ({ item, onToggle, onHelp, compact, isNew, newDelay = 0, animating, timestamp }) => {
+  const [hov, setHov] = useState(false);
+  const [ripple, setRipple] = useState(false);
+  const done = item.status === "complete", flagged = item.status === "flagged";
+  const cbBorder = flagged ? "var(--danger)" : done ? "var(--gold)" : "var(--border-str)";
+  const cbBg     = done ? "var(--gold)" : flagged ? "var(--danger)" : "transparent";
+  const handleClick = () => {
+    if (!done && !flagged) { setRipple(true); setTimeout(() => setRipple(false), 700); }
+    onToggle(item.id);
+  };
+  return (
+    <div onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)} style={{
+      display:"grid", gridTemplateColumns:"34px 1fr auto 34px", gap:10, alignItems:"center",
+      padding:compact ? "9px 16px" : "13px 20px", borderBottom:"1px solid var(--border)",
+      background:hov ? "var(--bg-hover)" : "transparent",
+      animation:isNew ? `itemEnter .35s ease ${newDelay}ms both` : animating && done ? "rowFlash .5s ease" : "none",
+      transition:"background .1s", position:"relative",
+    }}>
+      <div style={{ position:"relative", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+        <button onClick={handleClick} style={{
+          width:22, height:22, border:`2px solid ${cbBorder}`, background:cbBg,
+          display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0,
+          transition:"border-color .15s,background .15s", color:"var(--black)",
+          animation:animating && done ? "checkPulse .35s cubic-bezier(.2,.6,0,1)" : "none", cursor:"pointer",
+        }}>
+          {done && <IcoCheck/>}{flagged && <IcoX c="white"/>}
+        </button>
+        {ripple && <div style={{ position:"absolute", inset:-9, borderRadius:"50%",
+          border:"2px solid var(--gold)", animation:"rippleOut .7s ease forwards", pointerEvents:"none" }}/>}
+      </div>
+      <div style={{ minWidth:0 }}>
+        <div style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:500, fontSize:13.5,
+          color:done ? "var(--item-done-text)" : "var(--fg-alt)",
+          textDecoration:done ? "line-through" : "none", textDecorationColor:"var(--fg-dim)",
+          lineHeight:1.25, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
+          {item.label}
+        </div>
+        {!compact && <div style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:400, fontSize:11.5,
+          color:"var(--fg-dim)", marginTop:2, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
+          {item.sub}
+        </div>}
+      </div>
+      {/* Status + timestamp */}
+      <div style={{ display:"flex", flexDirection:"column", alignItems:"flex-end", gap:2, minWidth:0 }}>
+        <div style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:9, textTransform:"uppercase",
+          letterSpacing:".07em", padding:"2px 7px", whiteSpace:"nowrap", transition:"all .2s",
+          color:flagged ? "var(--danger)" : done ? "var(--gold)" : "transparent",
+          border:`1px solid ${flagged ? "var(--danger)" : done ? "var(--gold)" : "transparent"}` }}>
+          {done ? "Done" : flagged ? "Flag" : ""}
+        </div>
+        {done && timestamp && (
+          <div style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:400, fontSize:9.5,
+            color:"var(--fg-dim)", animation:"tsIn .3s ease" }}>{timestamp}</div>
+        )}
+      </div>
+      <button onClick={() => onHelp(item)} style={{ width:27, height:27, borderRadius:"50%",
+        border:"1px solid var(--border-str)", background:"transparent", color:"var(--fg-dim)",
+        display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0,
+        transition:"all .12s", cursor:"pointer" }}
+        onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--fg)"; e.currentTarget.style.color = "var(--fg)"; }}
+        onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border-str)"; e.currentTarget.style.color = "var(--fg-dim)"; }}
+        title="View instructions">
+        <IcoHelp/>
+      </button>
+    </div>
+  );
+};
+
+/* ── Section Notes ───────────────────────────────────── */
+const SectionNotes = ({ sectionId, value, onChange }) => {
+  const [foc, setFoc] = useState(false);
+  return (
+    <div style={{ padding:"10px 20px 14px", borderTop:"1px solid var(--border)" }}>
+      <div style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:8.5, textTransform:"uppercase",
+        letterSpacing:".12em", color:"var(--fg)", opacity:.35, marginBottom:5 }}>Recruiter Notes</div>
+      <textarea value={value || ""} onChange={e => onChange(sectionId, e.target.value)}
+        onFocus={() => setFoc(true)} onBlur={() => setFoc(false)}
+        placeholder="Add notes for this section..."
+        style={{ width:"100%", resize:"vertical", minHeight:46, maxHeight:140,
+          background:foc ? "rgba(255,204,1,.04)" : "var(--input-bg)", color:"var(--fg-alt)",
+          border:`1px solid ${foc ? "var(--border-str)" : "var(--border)"}`,
+          fontFamily:'"GI",Arial,sans-serif', fontWeight:400, fontSize:12.5, lineHeight:1.55,
+          padding:"8px 10px", outline:"none", transition:"border .15s,background .15s",
+          fontStyle:value ? "normal" : "italic" }}/>
+    </div>
+  );
+};
+
+/* ── Check Section ───────────────────────────────────── */
+const CheckSection = React.forwardRef(({ section, items, onToggle, onHelp, onQuickComplete, compact,
+  notes, onNoteChange, animatingIds, newItemIds, justCompleted, timestamps }, ref) => {
+  const [open, setOpen] = useState(true);
+  const done    = items.filter(i => i.status === "complete").length;
+  const flagged = items.filter(i => i.status === "flagged").length;
+  const total   = items.length;
+  const allDone = done === total && total > 0;
+  const pendingCount = items.filter(i => i.status === "pending").length;
+
+  return (
+    <div ref={ref} style={{ marginBottom:12, border:"1px solid var(--border-mid)",
+      borderLeft:"var(--section-accent)", background:"var(--bg-card)", position:"relative",
+      animation:newItemIds.has(section.id) ? "itemEnter .4s ease both"
+        : justCompleted ? "sectionGlow .9s ease" : "none",
+      transition:"border-color .3s" }}>
+      {/* Completion stamp */}
+      {justCompleted && (
+        <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center",
+          justifyContent:"center", pointerEvents:"none", zIndex:10,
+          animation:"stampFade 1.4s ease forwards" }}>
+          <div style={{ border:"3px solid var(--gold)", color:"var(--gold)",
+            fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:32,
+            letterSpacing:".12em", textTransform:"uppercase", padding:"4px 20px",
+            animation:"stampIn .45s cubic-bezier(.2,.6,0,1)", opacity:.85 }}>
+            Complete
+          </div>
+        </div>
+      )}
+
+      {/* Section header */}
+      <div style={{ borderBottom:open ? "1px solid var(--border)" : "none",
+        padding:"12px 16px 12px 14px", display:"flex", alignItems:"center", gap:10 }}>
+        {/* Icon */}
+        <div style={{ color:allDone ? "var(--gold)" : flagged > 0 ? "var(--danger)" : "var(--fg-muted)",
+          transition:"color .3s", opacity:allDone || flagged > 0 ? 1 : 0.5 }}>
+          <ArmyIcon id={section.id} size={16}/>
+        </div>
+        {/* Title + reg */}
+        <button onClick={() => setOpen(o => !o)} style={{ flex:1, background:"transparent", border:"none",
+          cursor:"pointer", textAlign:"left", display:"flex", flexDirection:"column", gap:1, minWidth:0 }}>
+          <span style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:13,
+            textTransform:"uppercase", letterSpacing:".05em", color:"var(--fg)", lineHeight:1 }}>{section.title}</span>
+          <span style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:400, fontSize:9.5,
+            color:"var(--fg-dim)", textTransform:"uppercase", letterSpacing:".04em" }}>{section.reg}</span>
+        </button>
+        {/* Controls */}
+        <div style={{ display:"flex", alignItems:"center", gap:7, flexShrink:0 }}>
+          {flagged > 0 && <span style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:9,
+            textTransform:"uppercase", color:"var(--danger)", border:"1px solid var(--danger)",
+            padding:"2px 7px", animation:"scanPulse 2s ease infinite" }}>{flagged} Flag{flagged > 1 ? "s" : ""}</span>}
+          {allDone && <span style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:9,
+            textTransform:"uppercase", color:"var(--gold)", border:"1px solid var(--gold)",
+            padding:"2px 7px", animation:"stampIn .4s cubic-bezier(.2,.6,0,1) both" }}>✓ Done</span>}
+          {pendingCount > 0 && !allDone && (
+            <button onClick={() => onQuickComplete(section.id)} title="Mark all complete"
+              style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:9,
+                textTransform:"uppercase", letterSpacing:".04em", background:"transparent",
+                color:"var(--fg-dim)", border:"1px solid var(--border-str)",
+                padding:"2px 8px", cursor:"pointer", transition:"all .12s", whiteSpace:"nowrap" }}
+              onMouseEnter={e => { e.currentTarget.style.color = "var(--fg)"; e.currentTarget.style.borderColor = "var(--fg)"; }}
+              onMouseLeave={e => { e.currentTarget.style.color = "var(--fg-dim)"; e.currentTarget.style.borderColor = "var(--border-str)"; }}>
+              ✓ All
+            </button>
+          )}
+          <span style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:13,
+            color:allDone ? "var(--gold)" : done > 0 ? "var(--fg-muted)" : "var(--fg-dim)" }}>
+            {done}<span style={{ fontWeight:400, color:"var(--fg-dim)" }}>/{total}</span>
+          </span>
+          <button onClick={() => setOpen(o => !o)} style={{ background:"transparent", border:"none",
+            color:"var(--fg-muted)", cursor:"pointer", display:"flex", alignItems:"center" }}>
+            <IcoChev open={open}/>
+          </button>
+        </div>
+      </div>
+
+      {open && <>
+        {items.map((item, idx) => (
+          <CheckItem key={item.id} item={item} onToggle={onToggle} onHelp={onHelp}
+            compact={compact} isNew={newItemIds.has(item.id)} newDelay={idx * 35}
+            animating={animatingIds.has(item.id)} timestamp={timestamps[item.id]}/>
+        ))}
+        <SectionNotes sectionId={section.id} value={notes[section.id]} onChange={onNoteChange}/>
+      </>}
+    </div>
+  );
+});
+
+/* ── Packet Overview (left) ──────────────────────────── */
+const PacketOverview = ({ sections, statuses, activeSection, onSectionClick, profile,
+  total, done, flagged, onEdit }) => {
+  const pct = total > 0 ? Math.round(done / total * 100) : 0;
+  const hasFlag = flagged > 0, isReady = pct === 100 && !hasFlag;
+  const statusLabel = hasFlag ? "RETURNED" : isReady ? "READY" : "IN REVIEW";
+  const statusColor = hasFlag ? "var(--danger)" : isReady ? "var(--gold)" : "var(--fg-muted)";
+  return (
+    <div style={{ height:"100%", display:"flex", flexDirection:"column", overflow:"hidden" }}>
+      {/* Applicant */}
+      <div style={{ padding:"16px 16px 14px", borderBottom:"1px solid var(--border)", flexShrink:0 }}>
+        <div style={{ display:"flex", alignItems:"center", gap:7, marginBottom:8 }}>
+          <img src="assets/logos/army-star.svg" alt="" style={{ width:16, height:16, opacity:.7 }}/>
+          <span style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:8.5,
+            textTransform:"uppercase", letterSpacing:".12em", color:"var(--fg)", opacity:.35 }}>4D5E · Lincoln NE</span>
+        </div>
+        <div style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:16,
+          textTransform:"uppercase", color:"var(--fg)", lineHeight:1.05, marginBottom:3 }}>{profile.name || "—"}</div>
+        <div style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:400, fontSize:11,
+          color:"var(--fg-dim)", marginBottom:8 }}>{profile.dob} · SSN ···· {profile.ssnLast4}</div>
+        <div style={{ display:"flex", alignItems:"center", gap:5, flexWrap:"wrap" }}>
+          <span style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:9.5,
+            textTransform:"uppercase", color:statusColor, border:`1px solid ${statusColor}`,
+            padding:"3px 9px", transition:"all .4s", letterSpacing:".05em" }}>{statusLabel}</span>
+          {profile.waivers.map(w => <span key={w} style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:700,
+            fontSize:8.5, textTransform:"uppercase", color:"var(--danger)",
+            border:"1px solid var(--danger)", padding:"2px 6px" }}>{w}</span>)}
+          {profile.programs.map(p => <span key={p} style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:700,
+            fontSize:8.5, textTransform:"uppercase", color:"var(--fg)",
+            border:"1px solid var(--border-str)", padding:"2px 6px" }}>{p}</span>)}
+        </div>
+      </div>
+
+      {/* Circle progress */}
+      <div style={{ padding:"14px 16px 12px", borderBottom:"1px solid var(--border)",
+        flexShrink:0, display:"flex", alignItems:"center", gap:14 }}>
+        <div style={{ position:"relative", flexShrink:0 }}>
+          <CircleProgress pct={pct} size={76} stroke={5} color={hasFlag ? "var(--danger)" : "var(--gold)"}/>
+          <div style={{ position:"absolute", inset:0, display:"flex", flexDirection:"column",
+            alignItems:"center", justifyContent:"center" }}>
+            <div style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:20,
+              color:hasFlag ? "var(--danger)" : "var(--fg)", lineHeight:1 }}>{pct}</div>
+            <div style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:8.5,
+              color:"var(--fg-dim)", textTransform:"uppercase" }}>%</div>
+          </div>
+        </div>
+        <div>
+          <div style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:11,
+            textTransform:"uppercase", letterSpacing:".03em", color:"var(--fg)", marginBottom:2 }}>
+            Overall Progress
+          </div>
+          <div style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:400, fontSize:11.5, color:"var(--fg-muted)" }}>
+            {done} of {total} complete
+          </div>
+          {hasFlag && <div style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:10,
+            textTransform:"uppercase", color:"var(--danger)", marginTop:2 }}>{flagged} flagged</div>}
+        </div>
+      </div>
+
+      {/* Section list */}
+      <div style={{ flex:1, overflow:"auto", padding:"10px 10px 6px" }}>
+        <div style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:8, textTransform:"uppercase",
+          letterSpacing:".12em", color:"var(--fg)", opacity:.3, padding:"2px 6px 7px" }}>Sections</div>
+        {sections.map(section => {
+          const sItems = section.items.map(i => ({ ...i, status:statuses[i.id] || "pending" }));
+          const sDone = sItems.filter(i => i.status === "complete").length;
+          const sFlag = sItems.filter(i => i.status === "flagged").length;
+          const sTotal = sItems.length;
+          const sPct = sTotal > 0 ? Math.round(sDone / sTotal * 100) : 0;
+          const allDone = sDone === sTotal && sTotal > 0;
+          const isActive = activeSection === section.id;
+          const barColor = sFlag > 0 ? "var(--danger)" : allDone ? "var(--gold)" : "var(--fg-muted)";
+          return (
+            <button key={section.id} onClick={() => onSectionClick(section.id)} style={{
+              width:"100%", background:isActive ? "rgba(255,204,1,.07)" : "transparent",
+              border:`1px solid ${isActive ? "var(--border-mid)" : "transparent"}`,
+              padding:"9px 10px", marginBottom:4, cursor:"pointer", textAlign:"left",
+              transition:"all .15s", borderLeft:isActive ? "3px solid var(--gold)" : "3px solid transparent",
+            }}>
+              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:5 }}>
+                <div style={{ display:"flex", alignItems:"center", gap:7 }}>
+                  <div style={{ color:allDone ? "var(--gold)" : sFlag > 0 ? "var(--danger)" : "var(--fg-dim)",
+                    transition:"color .3s" }}>
+                    <ArmyIcon id={section.id} size={13}/>
+                  </div>
+                  <span style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:10.5,
+                    textTransform:"uppercase", letterSpacing:".03em",
+                    color:isActive ? "var(--fg)" : "var(--fg-alt)" }}>{section.short}</span>
+                </div>
+                <div style={{ display:"flex", alignItems:"center", gap:5 }}>
+                  {sFlag > 0 && <span style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:8.5,
+                    color:"var(--danger)", animation:"scanPulse 2s ease infinite" }}>⚠</span>}
+                  <span style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:500, fontSize:10,
+                    color:allDone ? "var(--gold)" : "var(--fg-dim)" }}>{sDone}/{sTotal}</span>
+                </div>
+              </div>
+              <div style={{ height:2, background:"var(--border)", position:"relative" }}>
+                <div style={{ position:"absolute", left:0, top:0, height:"100%",
+                  width:`${sPct}%`, background:barColor, transition:"width .4s cubic-bezier(.2,.6,0,1)" }}/>
+              </div>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* GC/SC + edit */}
+      <div style={{ padding:"10px 16px 12px", borderTop:"1px solid var(--border)", flexShrink:0 }}>
+        {[["GC", profile.gc], ["SC", profile.sc]].map(([l, v]) => (
+          <div key={l} style={{ display:"flex", gap:8, marginBottom:3, alignItems:"baseline" }}>
+            <span style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:8.5,
+              textTransform:"uppercase", letterSpacing:".08em", color:"var(--fg)", opacity:.35, width:22, flexShrink:0 }}>{l}</span>
+            <span style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:400, fontSize:11, color:"var(--fg-muted)" }}>{v || "—"}</span>
+          </div>
+        ))}
+        <button onClick={onEdit} style={{ marginTop:10, width:"100%", display:"flex", alignItems:"center",
+          justifyContent:"center", gap:7, fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:10,
+          textTransform:"uppercase", letterSpacing:".06em", background:"transparent", color:"var(--fg)",
+          border:"1px solid var(--border-str)", padding:"7px 12px", cursor:"pointer", transition:"all .12s" }}
+          onMouseEnter={e => { e.currentTarget.style.background = "var(--fg)"; e.currentTarget.style.color = "var(--black)"; }}
+          onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "var(--fg)"; }}>
+          <IcoEdit/> Edit Profile
+        </button>
+      </div>
+    </div>
+  );
+};
+
+/* ── Profile Form ────────────────────────────────────── */
+const fldStyle = { width:"100%", background:"var(--input-bg)", color:"var(--fg-alt)",
+  border:"1px solid var(--input-border)", fontFamily:'"GI",Arial,sans-serif',
+  fontWeight:400, fontSize:12.5, padding:"7px 10px", outline:"none" };
+const lbl = { fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:9, textTransform:"uppercase",
+  letterSpacing:".1em", color:"var(--fg)", opacity:.5, display:"block", marginBottom:4 };
+
+const ProfileForm = ({ profile, onChange, onClose }) => {
+  const upd = (f, v) => onChange(f, v);
+  const toggleArr = (f, v) => onChange(f, profile[f].includes(v)
+    ? profile[f].filter(x => x !== v) : [...profile[f], v]);
+
+  const MultiCheck = ({ f }) => (
+    <div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>
+      {PROFILE_OPTIONS[f].map(o => {
+        const sel = profile[f].includes(o.v);
+        return (
+          <button key={o.v} onClick={() => toggleArr(f, o.v)} style={{
+            fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:9, textTransform:"uppercase",
+            letterSpacing:".04em", padding:"4px 8px", cursor:"pointer", transition:"all .1s",
+            background:sel ? "var(--gold)" : "transparent",
+            color:sel ? "var(--black)" : "var(--fg-muted)",
+            border:`1px solid ${sel ? "var(--gold)" : "var(--border-str)"}` }}>{o.l}</button>
+        );
+      })}
+    </div>
+  );
+
+  return (
+    <div style={{ position:"absolute", inset:0, zIndex:50, background:"var(--sidebar)",
+      overflow:"auto", display:"flex", flexDirection:"column",
+      animation:"slideRight .25s cubic-bezier(.2,.6,0,1)" }}>
+      <div style={{ padding:"14px 16px", borderBottom:"1px solid var(--border)", flexShrink:0,
+        display:"flex", alignItems:"center", gap:10 }}>
+        <div style={{ flex:1, fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:12,
+          textTransform:"uppercase", letterSpacing:".05em", color:"var(--fg)" }}>Edit Profile</div>
+        <button onClick={onClose} style={{ background:"transparent", border:"1px solid var(--border-str)",
+          color:"var(--fg-muted)", width:26, height:26, display:"flex", alignItems:"center",
+          justifyContent:"center", cursor:"pointer" }}><IcoX c="currentColor" s={9}/></button>
+      </div>
+      <div style={{ flex:1, padding:"14px 16px", overflow:"auto" }}>
+        {[["name","Applicant Name (Last, First MI)"],["ssnLast4","SSN Last 4"],
+          ["dob","Date of Birth"],["gc","Guidance Counselor"],["sc","Station Commander"]
+        ].map(([f, l]) => (
+          <div key={f} style={{ marginBottom:12 }}>
+            <span style={lbl}>{l}</span>
+            <input type="text" value={profile[f] || ""} onChange={e => upd(f, e.target.value)}
+              style={{ ...fldStyle, width:"100%" }}
+              onFocus={e => e.target.style.border = "1px solid var(--fg)"}
+              onBlur={e => e.target.style.border = "1px solid var(--input-border)"}/>
+          </div>
+        ))}
+        {[["citizenship","Citizenship"],["ageGender","Age + Gender"],["education","Education"],
+          ["priorService","Prior Service"],["dependents","Dependents"]
+        ].map(([f, l]) => (
+          <div key={f} style={{ marginBottom:12 }}>
+            <span style={lbl}>{l}</span>
+            <select value={profile[f]} onChange={e => upd(f, e.target.value)}
+              style={{ ...fldStyle, cursor:"pointer" }}>
+              {PROFILE_OPTIONS[f].map(o => <option key={o.v} value={o.v}>{o.l}</option>)}
+            </select>
+          </div>
+        ))}
+        <div style={{ marginBottom:12 }}>
+          <span style={lbl}>MSO Remaining</span>
+          <div style={{ display:"flex", gap:5 }}>
+            {[["No", false], ["Yes — DD 368 Required", true]].map(([l, v]) => (
+              <button key={l} onClick={() => upd("mso", v)} style={{
+                flex:1, fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:9,
+                textTransform:"uppercase", padding:"6px 8px", cursor:"pointer",
+                background:profile.mso === v ? "var(--gold)" : "transparent",
+                color:profile.mso === v ? "var(--black)" : "var(--fg-muted)",
+                border:`1px solid ${profile.mso === v ? "var(--gold)" : "var(--border-str)"}` }}>{l}</button>
+            ))}
+          </div>
+        </div>
+        <div style={{ marginBottom:12 }}>
+          <span style={lbl}>Waivers / ETPs</span><MultiCheck f="waivers"/>
+        </div>
+        <div style={{ marginBottom:12 }}>
+          <span style={lbl}>Programs</span><MultiCheck f="programs"/>
+        </div>
+      </div>
+      <div style={{ padding:"12px 16px", borderTop:"1px solid var(--border)", flexShrink:0 }}>
+        <button onClick={onClose} style={{ width:"100%", fontFamily:'"GI",Arial,sans-serif',
+          fontWeight:700, fontSize:10.5, textTransform:"uppercase", letterSpacing:".06em",
+          background:"var(--gold)", color:"var(--black)", border:"none", padding:"10px", cursor:"pointer" }}>
+          Done — Update Checklist →
+        </button>
+      </div>
+    </div>
+  );
+};
+
+/* ── Header ──────────────────────────────────────────── */
+const Header = ({ theme, onThemeToggle, onRefOpen, total, done, flagged }) => {
+  const pct = total > 0 ? Math.round(done / total * 100) : 0;
+  const isReady = pct === 100 && flagged === 0;
+  return (
+    <div style={{ height:50, background:"#0c0a0e", borderBottom:"2px solid #FFCC01",
+      display:"flex", alignItems:"center", padding:"0 20px", gap:14, flexShrink:0 }}>
+      <img src="assets/logos/army-logo-reverse.svg" alt="U.S. Army" style={{ height:24, opacity:.9 }}/>
+      <div style={{ width:1, height:22, background:"rgba(255,204,1,.2)" }}/>
+      <div>
+        <div style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:8, textTransform:"uppercase",
+          letterSpacing:".16em", color:"rgba(255,204,1,.35)" }}>Recruiter Toolbox · 4D5E</div>
+        <div style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:14, textTransform:"uppercase",
+          letterSpacing:".03em", color:"#FFCC01", lineHeight:1.1 }}>Packet QC Tool</div>
+      </div>
+      {isReady && (
+        <div style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:11,
+          textTransform:"uppercase", color:"#FFCC01", border:"1px solid #FFCC01",
+          padding:"4px 14px", animation:"stampIn .5s cubic-bezier(.2,.6,0,1)", letterSpacing:".06em" }}>
+          ★ CLEARED FOR MEPS
+        </div>
+      )}
+      <div style={{ marginLeft:"auto", display:"flex", alignItems:"center", gap:12 }}>
+        <span style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:400, fontSize:9.5,
+          color:"rgba(255,255,255,.2)", textTransform:"uppercase", letterSpacing:".05em" }}>
+          AR 601-210 · Mar 2026
+        </span>
+        <button onClick={onRefOpen} style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:700,
+          fontSize:9.5, textTransform:"uppercase", letterSpacing:".06em", background:"transparent",
+          color:"rgba(255,204,1,.5)", border:"1px solid rgba(255,204,1,.2)", padding:"5px 12px",
+          cursor:"pointer", transition:"all .12s" }}
+          onMouseEnter={e => { e.currentTarget.style.color = "#FFCC01"; e.currentTarget.style.borderColor = "rgba(255,204,1,.5)"; }}
+          onMouseLeave={e => { e.currentTarget.style.color = "rgba(255,204,1,.5)"; e.currentTarget.style.borderColor = "rgba(255,204,1,.2)"; }}>
+          📚 Reference
+        </button>
+        <button onClick={onThemeToggle} style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:700,
+          fontSize:9.5, textTransform:"uppercase", letterSpacing:".06em", background:"transparent",
+          color:"rgba(255,204,1,.5)", border:"1px solid rgba(255,204,1,.2)", padding:"5px 12px",
+          cursor:"pointer", transition:"all .12s" }}
+          onMouseEnter={e => { e.currentTarget.style.color = "#FFCC01"; e.currentTarget.style.borderColor = "rgba(255,204,1,.5)"; }}
+          onMouseLeave={e => { e.currentTarget.style.color = "rgba(255,204,1,.5)"; e.currentTarget.style.borderColor = "rgba(255,204,1,.2)"; }}>
+          {theme === "dark" ? "☀ Field Manual" : "◐ Tactical"}
+        </button>
+      </div>
+    </div>
+  );
+};
+
+/* ── Filter + Search Bar ─────────────────────────────── */
+const FilterBar = ({ filter, onFilter, total, done, flagged, search, onSearch }) => {
+  const pending = total - done - flagged;
+  return (
+    <div style={{ borderBottom:"1px solid var(--border)", flexShrink:0 }}>
+      {/* Search */}
+      <div style={{ padding:"8px 20px 0", display:"flex", alignItems:"center", gap:8 }}>
+        <div style={{ display:"flex", alignItems:"center", gap:7, flex:1, maxWidth:340,
+          background:"var(--search-bg)", border:"1px solid var(--border)",
+          padding:"5px 10px", transition:"border .15s" }}
+          onFocus={() => {}} onBlur={() => {}}>
+          <span style={{ color:"var(--fg-dim)", flexShrink:0 }}><IcoSearch/></span>
+          <input value={search} onChange={e => onSearch(e.target.value)}
+            placeholder="Search items..." style={{ background:"transparent", border:"none",
+              color:"var(--fg-alt)", fontFamily:'"GI",Arial,sans-serif', fontWeight:400,
+              fontSize:12.5, outline:"none", width:"100%" }}/>
+          {search && <button onClick={() => onSearch("")} style={{ background:"transparent",
+            border:"none", color:"var(--fg-dim)", cursor:"pointer", fontSize:14, lineHeight:1,
+            flexShrink:0 }}>✕</button>}
+        </div>
+        {search && <span style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:400, fontSize:11,
+          color:"var(--fg-dim)", textTransform:"uppercase" }}>
+          Searching across all sections
+        </span>}
+      </div>
+      {/* Filter chips */}
+      <div style={{ padding:"7px 20px 8px", display:"flex", gap:5, alignItems:"center" }}>
+        <span style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:8.5,
+          textTransform:"uppercase", letterSpacing:".08em", color:"var(--fg-dim)", marginRight:4 }}>View:</span>
+        {[["all",`All (${total})`],["pending",`Pending (${pending})`],
+          ["flagged",`Flagged (${flagged})`],["complete",`Done (${done})`]].map(([k, l]) => (
+          <button key={k} onClick={() => onFilter(k)} style={{
+            fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:9, textTransform:"uppercase",
+            letterSpacing:".04em", background:filter===k ? "var(--gold)" : "transparent",
+            color:filter===k ? "var(--black)" : "var(--fg-muted)",
+            border:`1px solid ${filter===k ? "var(--gold)" : "var(--border-str)"}`,
+            padding:"4px 10px", cursor:"pointer", transition:"all .1s" }}>{l}</button>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+/* ── Tweaks Panel ────────────────────────────────────── */
+const TweakPanel = ({ theme, setTheme, compact, setCompact, onClose }) => {
+  const emit = edits => window.parent.postMessage({ type:"__edit_mode_set_keys", edits }, "*");
+  const B = (active, onClick, label) => (
+    <button onClick={onClick} style={{ flex:1, fontFamily:'"GI",Arial,sans-serif', fontWeight:700,
+      fontSize:9, textTransform:"uppercase", background:active ? "var(--gold)" : "transparent",
+      color:active ? "var(--black)" : "var(--fg-muted)",
+      border:`1px solid ${active ? "var(--gold)" : "var(--border-str)"}`,
+      padding:"5px 8px", cursor:"pointer" }}>{label}</button>
+  );
+  return (
+    <div style={{ position:"fixed", bottom:24, right:24, zIndex:500, background:"var(--bg-card)",
+      border:"1px solid var(--border-str)", width:220, padding:14,
+      boxShadow:"0 16px 48px rgba(0,0,0,.5)", animation:"slideDown .2s ease" }}>
+      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center",
+        marginBottom:12, paddingBottom:10, borderBottom:"1px solid var(--border)" }}>
+        <span style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:11,
+          textTransform:"uppercase", color:"var(--fg)" }}>Tweaks</span>
+        <button onClick={onClose} style={{ background:"transparent", border:"none",
+          color:"var(--fg-muted)", fontSize:16, cursor:"pointer" }}>✕</button>
+      </div>
+      <div style={{ marginBottom:12 }}>
+        <div style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:9,
+          textTransform:"uppercase", letterSpacing:".08em", color:"var(--fg-muted)", marginBottom:6 }}>Theme</div>
+        <div style={{ display:"flex", gap:5 }}>
+          {B(theme==="dark",  () => { setTheme("dark");  emit({ theme:"dark"  }); }, "Tactical")}
+          {B(theme==="light", () => { setTheme("light"); emit({ theme:"light" }); }, "Field Manual")}
+        </div>
+      </div>
+      <div>
+        <div style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:9,
+          textTransform:"uppercase", letterSpacing:".08em", color:"var(--fg-muted)", marginBottom:6 }}>Density</div>
+        <div style={{ display:"flex", gap:5 }}>
+          {B(!compact, () => { setCompact(false); emit({ compact:false }); }, "Normal")}
+          {B(compact,  () => { setCompact(true);  emit({ compact:true  }); }, "Compact")}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ══════════════════════════════════════════════════════
+   APP
+══════════════════════════════════════════════════════ */
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{"theme":"dark","compact":false}/*EDITMODE-END*/;
+
+const App = () => {
+  const [theme,          setTheme]          = useState(TWEAK_DEFAULTS.theme);
+  const [compact,        setCompact]        = useState(TWEAK_DEFAULTS.compact);
+  const [profile,        setProfile]        = useState(PROFILE_DEFAULTS);
+  const [statuses,       setStatuses]       = useState(initStatuses);
+  const [timestamps,     setTimestamps]     = useState(loadTs);
+  const [notes,          setNotes]          = useState(loadNotes);
+  const [filter,         setFilter]         = useState("all");
+  const [search,         setSearch]         = useState("");
+  const [helpItem,       setHelpItem]       = useState(null);
+  const [editingProfile, setEditingProfile] = useState(false);
+  const [animatingIds,   setAnimatingIds]   = useState(new Set());
+  const [justCompleted,  setJustCompleted]  = useState(new Set());
+  const [newItemIds,     setNewItemIds]     = useState(new Set());
+  const [newSectionIds,  setNewSectionIds]  = useState(new Set());
+  const [activeSection,  setActiveSection]  = useState(null);
+  const [stickerVisible, setStickerVisible] = useState(false);
+  const [refOpen,        setRefOpen]        = useState(false);
+  const [tweaks,         setTweaks]         = useState(false);
+  const sectionRefs  = useRef({});
+  const containerRef = useRef(null);
+  const prevItemIds  = useRef(new Set());
+  const prevSecIds   = useRef(new Set());
+
+  useEffect(() => { document.documentElement.setAttribute("data-theme", theme); }, [theme]);
+  useEffect(() => {
+    const h = e => {
+      if (e.data?.type === "__activate_edit_mode")   setTweaks(true);
+      if (e.data?.type === "__deactivate_edit_mode")  setTweaks(false);
+    };
+    window.addEventListener("message", h);
+    window.parent.postMessage({ type:"__edit_mode_available" }, "*");
+    return () => window.removeEventListener("message", h);
+  }, []);
+
+  const sections = useMemo(() => generateSections(profile), [profile]);
+
+  useEffect(() => {
+    const curItems = new Set(sections.flatMap(s => s.items.map(i => i.id)));
+    const curSecs  = new Set(sections.map(s => s.id));
+    setNewItemIds(new Set([...curItems].filter(id => !prevItemIds.current.has(id))));
+    setNewSectionIds(new Set([...curSecs].filter(id => !prevSecIds.current.has(id))));
+    setStatuses(prev => {
+      const u = { ...prev };
+      sections.forEach(s => s.items.forEach(i => { if (!(i.id in u)) u[i.id] = i.init; }));
+      return u;
+    });
+    prevItemIds.current = curItems;
+    prevSecIds.current  = curSecs;
+    const t = setTimeout(() => { setNewItemIds(new Set()); setNewSectionIds(new Set()); }, 900);
+    return () => clearTimeout(t);
+  }, [sections]);
+
+  const handleProfileChange = useCallback((field, value) => {
+    setProfile(prev => ({ ...prev, [field]:value }));
+  }, []);
+
+  const saveNote = useCallback((sectionId, text) => {
+    setNotes(prev => {
+      const n = { ...prev, [sectionId]:text };
+      localStorage.setItem("pqc-notes", JSON.stringify(n));
+      return n;
+    });
+  }, []);
+
+  const toggleItem = useCallback((id) => {
+    setStatuses(prev => {
+      const next = { ...prev, [id]:prev[id] === "complete" ? "pending" : "complete" };
+      if (next[id] === "complete") {
+        // Timestamp
+        setTimestamps(t => {
+          const n = { ...t, [id]:fmtTime() };
+          localStorage.setItem("pqc-ts", JSON.stringify(n));
+          return n;
+        });
+        // Section completion check
+        const sec = sections.find(s => s.items.some(i => i.id === id));
+        if (sec && sec.items.every(i => next[i.id] === "complete")) {
+          setTimeout(() => {
+            setJustCompleted(p => new Set([...p, sec.id]));
+            setStickerVisible(true);
+            setTimeout(() => {
+              setJustCompleted(p => { const n = new Set(p); n.delete(sec.id); return n; });
+              setStickerVisible(false);
+            }, 2400);
+          }, 280);
+        }
+      } else {
+        // Remove timestamp when unchecked
+        setTimestamps(t => {
+          const n = { ...t }; delete n[id];
+          localStorage.setItem("pqc-ts", JSON.stringify(n));
+          return n;
+        });
+      }
+      return next;
+    });
+    setAnimatingIds(p => new Set([...p, id]));
+    setTimeout(() => setAnimatingIds(p => { const n = new Set(p); n.delete(id); return n; }), 700);
+  }, [sections]);
+
+  const quickCompleteSection = useCallback((sectionId) => {
+    const sec = sections.find(s => s.id === sectionId);
+    if (!sec) return;
+    const t = fmtTime();
+    setStatuses(prev => {
+      const next = { ...prev };
+      sec.items.forEach(i => { next[i.id] = "complete"; });
+      return next;
+    });
+    setTimestamps(prev => {
+      const n = { ...prev };
+      sec.items.forEach(i => { if (!n[i.id]) n[i.id] = t; });
+      localStorage.setItem("pqc-ts", JSON.stringify(n));
+      return n;
+    });
+    sec.items.forEach(i => {
+      setAnimatingIds(p => new Set([...p, i.id]));
+      setTimeout(() => setAnimatingIds(p => { const n = new Set(p); n.delete(i.id); return n; }), 700);
+    });
+    setTimeout(() => {
+      setJustCompleted(p => new Set([...p, sectionId]));
+      setStickerVisible(true);
+      setTimeout(() => {
+        setJustCompleted(p => { const n = new Set(p); n.delete(sectionId); return n; });
+        setStickerVisible(false);
+      }, 2400);
+    }, 200);
+  }, [sections]);
+
+  const scrollToSection = useCallback((sectionId) => {
+    const el = sectionRefs.current[sectionId];
+    const c  = containerRef.current;
+    if (el && c) c.scrollTop = el.offsetTop - 16;
+    setActiveSection(sectionId);
+  }, []);
+
+  const handleScroll = useCallback(() => {
+    const c = containerRef.current;
+    if (!c) return;
+    const top = c.scrollTop + 80;
+    let active = sections[0]?.id;
+    for (const s of sections) {
+      const el = sectionRefs.current[s.id];
+      if (el && el.offsetTop <= top) active = s.id;
+    }
+    setActiveSection(active);
+  }, [sections]);
+
+  // Stats
+  const allItems = sections.flatMap(s => s.items.map(i => ({ ...i, status:statuses[i.id] || "pending" })));
+  const total    = allItems.length;
+  const done     = allItems.filter(i => i.status === "complete").length;
+  const flagged  = allItems.filter(i => i.status === "flagged").length;
+
+  // Filtered + searched sections
+  const visibleSections = sections.map(s => ({
+    ...s,
+    items: s.items.map(i => ({ ...i, status:statuses[i.id] || "pending" })).filter(i => {
+      const matchStatus = filter === "all" || i.status === filter;
+      const matchSearch = !search ||
+        i.label.toLowerCase().includes(search.toLowerCase()) ||
+        i.sub.toLowerCase().includes(search.toLowerCase());
+      return matchStatus && matchSearch;
+    }),
+  })).filter(s => s.items.length > 0);
+
+  return (
+    <div style={{ height:"100%", display:"flex", flexDirection:"column" }}>
+      <Header theme={theme} onThemeToggle={() => setTheme(t => t === "dark" ? "light" : "dark")}
+        onRefOpen={() => setRefOpen(true)}
+        total={total} done={done} flagged={flagged}/>
+      <div style={{ flex:1, display:"flex", overflow:"hidden" }}>
+
+        {/* ── LEFT PANEL ── */}
+        <div style={{ width:270, flexShrink:0, borderRight:"1px solid var(--border-mid)",
+          background:"var(--sidebar)", overflow:"hidden", position:"relative", transition:"background .3s" }}>
+          <PacketOverview sections={sections} statuses={statuses} activeSection={activeSection}
+            onSectionClick={scrollToSection} profile={profile}
+            total={total} done={done} flagged={flagged} onEdit={() => setEditingProfile(true)}/>
+          {editingProfile && <ProfileForm profile={profile}
+            onChange={handleProfileChange} onClose={() => setEditingProfile(false)}/>}
+        </div>
+
+        {/* ── MAIN PANEL ── */}
+        <div style={{ flex:1, display:"flex", flexDirection:"column", overflow:"hidden", background:"var(--bg)" }}>
+          {flagged > 0 && (
+            <div style={{ background:"rgba(207,0,0,.1)", borderBottom:"1px solid rgba(207,0,0,.3)",
+              padding:"7px 20px", display:"flex", alignItems:"center", gap:8, flexShrink:0,
+              animation:"slideDown .25s ease" }}>
+              <IcoX c="var(--danger)" s={10}/>
+              <span style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:10,
+                textTransform:"uppercase", letterSpacing:".06em", color:"var(--danger)" }}>
+                {flagged} item{flagged > 1 ? "s" : ""} flagged — resolve before submitting
+              </span>
+            </div>
+          )}
+
+          <FilterBar filter={filter} onFilter={setFilter} total={total} done={done} flagged={flagged}
+            search={search} onSearch={setSearch}/>
+
+          <div ref={containerRef} onScroll={handleScroll}
+            style={{ flex:1, overflow:"auto", padding:"14px 20px" }}>
+            {visibleSections.length === 0
+              ? <div style={{ textAlign:"center", paddingTop:80, fontFamily:'"GI",Arial,sans-serif',
+                  fontWeight:700, fontSize:12, textTransform:"uppercase", letterSpacing:".06em",
+                  color:"var(--fg-dim)" }}>
+                  {search ? `No items match "${search}"` : "No items match this filter."}
+                </div>
+              : visibleSections.map(s => (
+                <CheckSection key={s.id} ref={el => sectionRefs.current[s.id] = el}
+                  section={s} items={s.items} onToggle={toggleItem} onHelp={setHelpItem}
+                  onQuickComplete={quickCompleteSection}
+                  compact={compact} notes={notes} onNoteChange={saveNote}
+                  animatingIds={animatingIds} newItemIds={newItemIds}
+                  justCompleted={justCompleted.has(s.id)} timestamps={timestamps}/>
+              ))
+            }
+            <div style={{ height:40 }}/>
+          </div>
+
+          <div style={{ borderTop:"1px solid var(--border)", padding:"5px 20px",
+            display:"flex", gap:16, alignItems:"center", flexShrink:0 }}>
+            {["AR 601-210 (Mar 2026)", "UR 601-210", "USMEPCOM 601-23", "USMEPCOM 40-1"].map(r => (
+              <span key={r} style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:400, fontSize:9,
+                color:"var(--fg-dim)", textTransform:"uppercase", letterSpacing:".04em" }}>{r}</span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── STICKER ── */}
+      {stickerVisible && (
+        <div style={{ position:"fixed", bottom:80, right:28, zIndex:250, pointerEvents:"none",
+          animation:"stickerLand 2.4s ease forwards",
+          boxShadow:"0 8px 28px rgba(0,0,0,.45)", transform:"rotate(-7deg)" }}>
+          <img src="assets/stickers/stars-2.gif" alt="" style={{ width:128, height:128, display:"block" }}/>
+        </div>
+      )}
+
+      {helpItem && <HelpModal item={helpItem} onClose={() => setHelpItem(null)}/>}
+      <ReferenceDrawer open={refOpen} onClose={() => setRefOpen(false)}/>
+      {tweaks && <TweakPanel theme={theme} setTheme={setTheme} compact={compact} setCompact={setCompact}
+        onClose={() => { setTweaks(false); window.parent.postMessage({ type:"__edit_mode_dismissed" }, "*"); }}/>}
+    </div>
+  );
+};
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>

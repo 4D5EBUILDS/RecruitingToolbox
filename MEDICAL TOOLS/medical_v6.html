@@ -1,0 +1,1831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Army Medical DQ & Waiver Reference | RSID 4D5E</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap');
+
+/* ══ TOKENS ══════════════════════════════════════════════════════ */
+:root {
+  /* Palette — deep navy-black with ice-blue accent */
+  --ink:      #070b14;
+  --ink-1:    #0c1220;
+  --ink-2:    #111929;
+  --ink-3:    #172035;
+  --ink-4:    #1e2d47;
+  --ink-5:    #263659;
+
+  --wire:     #1c2d4a;
+  --wire-b:   #263d62;
+  --wire-c:   #2f4e7e;
+
+  --ice:      #4da8e8;    /* primary accent */
+  --ice-l:    #7dc4f8;
+  --ice-d:    rgba(77,168,232,.12);
+  --ice-glow: rgba(77,168,232,.06);
+
+  --gold:     #d4902a;
+  --gold-l:   #f0b040;
+  --gold-d:   rgba(212,144,42,.10);
+
+  --text:     #b8cde4;
+  --text-2:   #6888a8;
+  --text-3:   #3a5270;
+  --white:    #e8f4ff;
+
+  /* Status */
+  --g:  #1fa85c; --gl: #28d975; --gd: rgba(31,168,92,.10);
+  --r:  #cc2a3a; --rl: #f04050; --rd: rgba(204,42,58,.10);
+  --a:  #c07820; --al: #e8a030; --ad: rgba(192,120,32,.10);
+  --p:  #6840c8; --pl: #9870f8; --pd: rgba(104,64,200,.10);
+  --t:  #0a8878; --tl: #14c0aa; --td: rgba(10,136,120,.10);
+
+  /* Type */
+  --ff-head: 'Syne', sans-serif;
+  --ff-body: 'IBM Plex Sans', sans-serif;
+  --ff-mono: 'IBM Plex Mono', monospace;
+
+  --r3: 3px; --r6: 6px;
+}
+
+/* ══ RESET ═══════════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+body {
+  font-family: var(--ff-body);
+  font-size: 13px; line-height: 1.5;
+  background: var(--ink); color: var(--text);
+  display: flex; flex-direction: column;
+}
+
+/* Subtle grid texture */
+body::before {
+  content: '';
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background-image:
+    linear-gradient(rgba(77,168,232,.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(77,168,232,.025) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+/* ══ TOP BAR ═════════════════════════════════════════════════════ */
+.topbar {
+  flex-shrink: 0; height: 48px;
+  background: linear-gradient(90deg, var(--ink-1) 0%, var(--ink-2) 100%);
+  border-bottom: 1px solid var(--wire-b);
+  display: flex; align-items: center; padding: 0 20px; gap: 14px;
+  position: relative; z-index: 200;
+  box-shadow: 0 2px 20px rgba(0,0,0,.4);
+}
+
+/* Caduceus mark */
+.tb-mark {
+  width: 32px; height: 32px; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--ice-d), rgba(77,168,232,.06));
+  border: 1px solid var(--wire-b);
+  border-radius: var(--r6);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px;
+}
+
+.tb-brand {
+  font-family: var(--ff-head);
+  font-size: 13px; font-weight: 700;
+  letter-spacing: .08em; color: var(--white);
+  white-space: nowrap;
+}
+.tb-brand strong { color: var(--ice-l); }
+
+.tb-pipe { width: 1px; height: 22px; background: var(--wire-b); flex-shrink: 0; }
+
+.tb-meta {
+  font-family: var(--ff-mono);
+  font-size: 9.5px; color: var(--text-3);
+  letter-spacing: .06em; white-space: nowrap;
+}
+
+/* ── Search ── */
+.tb-search { flex: 1; max-width: 520px; position: relative; }
+.tb-search svg {
+  position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
+  width: 13px; height: 13px; stroke: var(--text-3); fill: none; stroke-width: 2;
+  pointer-events: none;
+}
+#gsearch {
+  width: 100%;
+  background: var(--ink-2); border: 1px solid var(--wire-b);
+  border-radius: var(--r3); color: var(--text);
+  font-family: var(--ff-body); font-size: 12px;
+  padding: 7px 12px 7px 34px;
+  transition: border-color .15s, box-shadow .15s;
+}
+#gsearch:focus {
+  outline: none;
+  border-color: var(--ice);
+  box-shadow: 0 0 0 3px var(--ice-d), inset 0 0 0 1px rgba(77,168,232,.15);
+}
+#gsearch::placeholder { color: var(--text-3); }
+
+/* Search dropdown */
+.sdrop {
+  display: none; position: absolute; top: calc(100% + 8px); left: 0; right: 0;
+  background: var(--ink-2); border: 1px solid var(--wire-b);
+  border-radius: var(--r6); z-index: 600;
+  max-height: 400px; overflow-y: auto;
+  box-shadow: 0 16px 48px rgba(0,0,0,.7), 0 0 0 1px rgba(77,168,232,.06);
+}
+.sdrop.open { display: block; }
+.sd-grp-hdr {
+  padding: 7px 14px; font-family: var(--ff-mono);
+  font-size: 9px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--text-3); border-bottom: 1px solid var(--wire);
+  position: sticky; top: 0; background: var(--ink-2);
+}
+.sd-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 14px; cursor: pointer;
+  transition: background .1s; border-bottom: 1px solid rgba(26,42,68,.6);
+}
+.sd-item:hover { background: var(--ink-3); }
+.sd-item:last-child { border-bottom: none; }
+.sdi-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.sdi-name {
+  font-size: 12px; font-weight: 500; color: var(--white);
+  flex: 1; min-width: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.sdi-name mark {
+  background: rgba(77,168,232,.2); color: var(--ice-l);
+  border-radius: 2px; padding: 0 1px;
+}
+.sdi-meta { display: flex; gap: 6px; align-items: center; }
+
+/* Waiver badge */
+.wbadge {
+  font-family: var(--ff-mono); font-size: 8px; font-weight: 600;
+  letter-spacing: .07em; padding: 2px 6px;
+  border-radius: 2px; border: 1px solid; white-space: nowrap;
+  display: inline-flex; align-items: center; gap: 3px;
+}
+.wbadge.likely  { color: var(--gl); border-color: var(--g);  background: var(--gd); }
+.wbadge.case    { color: var(--al); border-color: var(--a);  background: var(--ad); }
+.wbadge.unlikely{ color: var(--rl); border-color: var(--r);  background: var(--rd); }
+.wbadge.hardno  { color: var(--rl); border-color: var(--r);  background: var(--rd); font-weight: 800; }
+
+.tb-right {
+  margin-left: auto; display: flex; align-items: center; gap: 10px;
+  font-family: var(--ff-mono); font-size: 9.5px; color: var(--text-3);
+  white-space: nowrap;
+}
+.tb-count { color: var(--ice-l); font-weight: 600; }
+.tb-warning {
+  padding: 3px 8px; border: 1px solid rgba(204,42,58,.4);
+  color: var(--rl); font-size: 8px; font-weight: 700;
+  letter-spacing: .08em; border-radius: 2px;
+  background: rgba(204,42,58,.05);
+}
+
+/* ══ MAIN LAYOUT ════════════════════════════════════════════════ */
+.app { flex: 1; min-height: 0; display: flex; position: relative; z-index: 1; }
+
+/* ══ LEFT: CATEGORIES ════════════════════════════════════════════ */
+.cat-panel {
+  width: 210px; flex-shrink: 0;
+  background: var(--ink-1);
+  border-right: 1px solid var(--wire);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.cp-top {
+  flex-shrink: 0; padding: 10px 14px 8px;
+  border-bottom: 1px solid var(--wire);
+  display: flex; align-items: baseline; justify-content: space-between;
+}
+.cp-label {
+  font-family: var(--ff-mono); font-size: 8.5px; font-weight: 600;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--text-3);
+}
+.cp-cnt { font-family: var(--ff-mono); font-size: 10px; color: var(--ice-l); font-weight: 600; }
+
+.cat-scroll { flex: 1; overflow-y: auto; }
+
+.cat-btn {
+  display: flex; align-items: center; gap: 9px;
+  padding: 8px 14px; width: 100%; text-align: left;
+  background: transparent; border: none; border-left: 3px solid transparent;
+  color: var(--text); font-family: var(--ff-body); font-size: 11.5px;
+  cursor: pointer; transition: background .1s, border-color .1s;
+  line-height: 1.3;
+}
+.cat-btn:hover { background: var(--ink-2); color: var(--white); }
+.cat-btn.active {
+  background: rgba(77,168,232,.07);
+  border-left-color: var(--ice); color: var(--ice-l);
+}
+.cat-btn .cdot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.cat-btn .cnum {
+  margin-left: auto;
+  font-family: var(--ff-mono); font-size: 9px; color: var(--text-3);
+}
+
+/* Process info panel at bottom of cats */
+.proc-panel {
+  flex-shrink: 0; border-top: 1px solid var(--wire);
+  background: linear-gradient(180deg, var(--ink-2), var(--ink-1));
+}
+.proc-toggle {
+  width: 100%; padding: 9px 14px;
+  background: transparent; border: none; cursor: pointer;
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--ff-mono); font-size: 9px; font-weight: 600;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--ice-l);
+  transition: color .15s;
+}
+.proc-toggle:hover { color: var(--white); }
+.proc-toggle svg { width: 12px; height: 12px; flex-shrink: 0; transition: transform .2s; }
+.proc-toggle.open svg { transform: rotate(180deg); }
+.proc-body {
+  display: none; padding: 0 14px 12px;
+  font-size: 10px; color: var(--text-2); line-height: 1.7;
+}
+.proc-body.open { display: block; }
+.proc-step {
+  display: flex; gap: 8px; margin-bottom: 5px;
+}
+.proc-num {
+  font-family: var(--ff-mono); font-size: 9px; font-weight: 600;
+  color: var(--ice); flex-shrink: 0; margin-top: 1px;
+  background: var(--ice-d); border-radius: 50%;
+  width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;
+}
+.proc-text { font-size: 10px; }
+.proc-text strong { color: var(--white); font-weight: 600; }
+
+/* ══ CENTER: CONDITION LIST ══════════════════════════════════════ */
+.list-panel {
+  flex: 1; min-width: 0;
+  display: flex; flex-direction: column;
+  background: var(--ink); border-right: 1px solid var(--wire);
+}
+
+.lp-hdr {
+  flex-shrink: 0; padding: 10px 18px;
+  border-bottom: 1px solid var(--wire);
+  display: flex; align-items: center; gap: 10px;
+  background: linear-gradient(90deg, var(--ink-1), var(--ink));
+}
+.lp-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.lp-name {
+  font-family: var(--ff-head);
+  font-size: 13px; font-weight: 700; color: var(--white);
+}
+.lp-cnt {
+  margin-left: auto;
+  font-family: var(--ff-mono); font-size: 10px; color: var(--text-3);
+}
+
+/* Filter row */
+.filter-row {
+  flex-shrink: 0; padding: 7px 18px;
+  border-bottom: 1px solid var(--wire);
+  display: flex; gap: 5px; overflow-x: auto;
+  background: var(--ink-1);
+}
+.filter-row::-webkit-scrollbar { height: 0; }
+.fpill {
+  font-family: var(--ff-mono); font-size: 9px; font-weight: 600;
+  letter-spacing: .07em; white-space: nowrap;
+  padding: 4px 11px; border-radius: 999px;
+  border: 1px solid var(--wire-b);
+  background: transparent; color: var(--text-2);
+  cursor: pointer; transition: all .12s;
+}
+.fpill:hover { border-color: var(--wire-c); color: var(--white); }
+.fpill.on       { background: var(--ink-3); border-color: var(--wire-c); color: var(--white); }
+.fpill.fl.on    { background: var(--gd); border-color: var(--g); color: var(--gl); }
+.fpill.fc.on    { background: var(--ad); border-color: var(--a); color: var(--al); }
+.fpill.fu.on, .fpill.fh.on { background: var(--rd); border-color: var(--r); color: var(--rl); }
+
+/* List scroll area */
+.cscroll { flex: 1; overflow-y: auto; min-height: 0; }
+.cempty {
+  padding: 56px 24px; text-align: center;
+  color: var(--text-3); font-size: 12px; line-height: 2.2;
+}
+.cempty-icon { font-size: 28px; margin-bottom: 10px; opacity: .4; }
+
+/* Condition card */
+.cc {
+  padding: 11px 18px;
+  border-bottom: 1px solid rgba(26,42,68,.6);
+  cursor: pointer; transition: background .1s;
+  border-left: 3px solid transparent;
+  position: relative;
+}
+.cc::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px;
+  opacity: 0; transition: opacity .15s;
+}
+.cc:hover { background: var(--ink-1); }
+.cc.act {
+  background: linear-gradient(90deg, rgba(77,168,232,.06) 0%, transparent 100%);
+  border-left-color: var(--ice);
+}
+.cc-top { display: flex; align-items: flex-start; gap: 9px; margin-bottom: 4px; }
+.cc-name {
+  font-family: var(--ff-head);
+  font-size: 12px; font-weight: 600; color: var(--white);
+  flex: 1; line-height: 1.35;
+}
+.cc-name mark { background: rgba(77,168,232,.18); color: var(--ice-l); border-radius: 2px; padding: 0 2px; }
+.cc-icd {
+  font-family: var(--ff-mono); font-size: 9px; color: var(--pl);
+  margin-bottom: 4px; letter-spacing: .02em;
+}
+.cc-bottom { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+.cc-cat { font-family: var(--ff-mono); font-size: 9px; color: var(--text-3); }
+.src-chip {
+  font-family: var(--ff-mono); font-size: 8px;
+  padding: 1px 5px; border-radius: 2px;
+  border: 1px solid rgba(104,64,200,.3);
+  color: var(--pl); background: var(--pd);
+}
+
+/* ══ RIGHT: DETAIL ════════════════════════════════════════════════ */
+.det-panel {
+  width: 420px; flex-shrink: 0;
+  background: var(--ink-1);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+
+/* Empty state */
+.det-empty {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 16px; padding: 40px; text-align: center;
+}
+.det-empty-cross {
+  width: 52px; height: 52px; position: relative;
+  opacity: .2;
+}
+.det-empty-cross::before, .det-empty-cross::after {
+  content: ''; position: absolute; background: var(--ice);
+  border-radius: 2px;
+}
+.det-empty-cross::before { width: 6px; height: 52px; left: 23px; top: 0; }
+.det-empty-cross::after  { width: 52px; height: 6px; left: 0; top: 23px; }
+.det-empty h3 {
+  font-family: var(--ff-head); font-size: 14px; font-weight: 700;
+  color: var(--text-2);
+}
+.det-empty p {
+  font-size: 11px; color: var(--text-3); line-height: 1.7; max-width: 230px;
+}
+
+/* Detail content */
+.det-body { flex: 1; overflow-y: auto; min-height: 0; display: none; }
+.det-body.show { display: block; }
+
+/* Waiver verdict banner */
+.verdict-banner {
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--wire);
+  position: relative; overflow: hidden;
+}
+.verdict-banner::before {
+  content: ''; position: absolute; inset: 0;
+  opacity: .04;
+}
+.verdict-banner.likely::before  { background: var(--gl); }
+.verdict-banner.case::before    { background: var(--al); }
+.verdict-banner.unlikely::before, .verdict-banner.hardno::before { background: var(--rl); }
+.vb-top { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
+.vb-icon {
+  width: 38px; height: 38px; border-radius: 50%; border: 2px solid;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; font-weight: 800; flex-shrink: 0;
+  font-family: var(--ff-mono);
+}
+.vb-icon.likely  { border-color: var(--g);  background: var(--gd);  color: var(--gl); }
+.vb-icon.case    { border-color: var(--a);  background: var(--ad);  color: var(--al); }
+.vb-icon.unlikely{ border-color: var(--r);  background: var(--rd);  color: var(--rl); }
+.vb-icon.hardno  { border-color: var(--r);  background: var(--rd);  color: var(--rl); }
+.vb-verdict {
+  font-family: var(--ff-head);
+  font-size: 12px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
+  margin-bottom: 2px;
+}
+.vb-verdict.likely  { color: var(--gl); }
+.vb-verdict.case    { color: var(--al); }
+.vb-verdict.unlikely, .vb-verdict.hardno { color: var(--rl); }
+.vb-sub { font-size: 10.5px; color: var(--text-2); line-height: 1.5; }
+.vb-authority {
+  margin-top: 8px; padding: 7px 10px;
+  background: var(--ice-d); border: 1px solid rgba(77,168,232,.15);
+  border-radius: var(--r3);
+  font-family: var(--ff-mono); font-size: 9px; color: var(--ice-l);
+  display: flex; align-items: center; gap: 7px; line-height: 1.4;
+}
+.vb-authority svg { width: 12px; height: 12px; flex-shrink: 0; }
+
+/* Detail sections */
+.ds { padding: 13px 18px; border-bottom: 1px solid var(--wire); }
+.ds:last-child { border-bottom: none; }
+
+.ds-hdr {
+  display: flex; align-items: center; gap: 9px;
+  margin-bottom: 10px;
+}
+.ds-hdr-label {
+  font-family: var(--ff-mono);
+  font-size: 8.5px; font-weight: 700; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--text-3); white-space: nowrap;
+}
+.ds-hdr::after { content: ''; flex: 1; height: 1px; background: var(--wire); }
+
+/* Condition title */
+.ds-title {
+  font-family: var(--ff-head);
+  font-size: 15px; font-weight: 700; color: var(--white);
+  line-height: 1.3; margin-bottom: 4px;
+}
+.ds-sys { font-size: 11px; color: var(--text-2); margin-bottom: 2px; }
+.ds-sys span { color: var(--ice-l); font-weight: 500; }
+
+/* ICD codes */
+.icd-grid { display: flex; flex-wrap: wrap; gap: 5px; }
+.icd-chip {
+  font-family: var(--ff-mono); font-size: 10px;
+  padding: 3px 9px; border-radius: var(--r3);
+  background: var(--pd); border: 1px solid rgba(104,64,200,.35);
+  color: var(--pl); cursor: pointer;
+  transition: all .15s; user-select: none;
+}
+.icd-chip:hover { background: rgba(104,64,200,.2); color: var(--white); }
+.icd-chip.copied { background: var(--gd); border-color: var(--g); color: var(--gl); }
+
+/* DQ Standard */
+.dq-card {
+  background: var(--ink-2); border: 1px solid var(--wire-b);
+  border-radius: var(--r6); padding: 12px 14px;
+}
+.dq-pre {
+  font-family: var(--ff-mono); font-size: 8px; font-weight: 700;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--text-3); margin-bottom: 6px;
+}
+.dq-body { font-size: 11.5px; color: var(--text); line-height: 1.7; }
+
+/* Waiver criteria */
+.wc-card {
+  border-radius: var(--r6); padding: 12px 14px;
+  font-size: 11.5px; line-height: 1.75;
+}
+.wc-card.likely  { background: rgba(31,168,92,.06);  border: 1px solid rgba(31,168,92,.2); }
+.wc-card.case    { background: rgba(192,120,32,.06);  border: 1px solid rgba(192,120,32,.2); }
+.wc-card.unlikely, .wc-card.hardno { background: rgba(204,42,58,.06); border: 1px solid rgba(204,42,58,.2); }
+.wc-label {
+  font-family: var(--ff-mono); font-size: 8px; font-weight: 700;
+  letter-spacing: .12em; text-transform: uppercase; margin-bottom: 6px;
+}
+.wc-label.likely  { color: var(--gl); }
+.wc-label.case    { color: var(--al); }
+.wc-label.unlikely, .wc-label.hardno { color: var(--rl); }
+
+/* Required Documents */
+.docs-grid { display: flex; flex-direction: column; gap: 4px; }
+.doc-row {
+  display: flex; gap: 9px; align-items: flex-start;
+  padding: 6px 10px; border-radius: var(--r3);
+  background: var(--ink-2); border: 1px solid var(--wire);
+  transition: border-color .1s;
+}
+.doc-row:hover { border-color: var(--wire-b); }
+.doc-icon {
+  font-family: var(--ff-mono); font-size: 9px; font-weight: 700;
+  color: var(--ice); flex-shrink: 0; margin-top: 1px;
+  width: 16px; height: 16px; display: flex; align-items: center;
+  justify-content: center; background: var(--ice-d);
+  border-radius: 50%;
+}
+.doc-text { font-size: 11px; color: var(--text); line-height: 1.6; }
+.doc-text em { color: var(--ice-l); font-style: normal; font-size: 10px; }
+
+/* Universal required docs notice */
+.universal-docs {
+  padding: 8px 12px;
+  background: var(--ice-d); border: 1px solid rgba(77,168,232,.15);
+  border-radius: var(--r3); margin-bottom: 8px;
+}
+.ud-label {
+  font-family: var(--ff-mono); font-size: 8px; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--ice);
+  margin-bottom: 4px;
+}
+.ud-items {
+  font-size: 10px; color: var(--text-2); line-height: 1.7;
+}
+.ud-item { display: flex; gap: 6px; }
+.ud-item::before { content: '·'; color: var(--ice); flex-shrink: 0; }
+
+/* AR 40-501 block */
+.ar-card {
+  background: rgba(37,99,235,.06); border: 1px solid rgba(37,99,235,.2);
+  border-radius: var(--r6); padding: 11px 13px;
+}
+.ar-hdr {
+  font-family: var(--ff-mono); font-size: 8px; font-weight: 700;
+  letter-spacing: .12em; text-transform: uppercase; color: var(--ice-l);
+  margin-bottom: 5px; display: flex; align-items: center; gap: 7px;
+}
+.ar-hdr::after { content: ''; flex: 1; height: 1px; background: rgba(77,168,232,.2); }
+.ar-body { font-size: 10.5px; color: var(--text-2); line-height: 1.65; }
+
+/* Sources */
+.src-row { display: flex; gap: 5px; flex-wrap: wrap; }
+
+/* Recruiter tips */
+.tip-card {
+  background: linear-gradient(135deg, rgba(212,144,42,.06), rgba(212,144,42,.02));
+  border: 1px solid rgba(212,144,42,.2); border-radius: var(--r6);
+  padding: 11px 13px;
+}
+.tip-hdr {
+  font-family: var(--ff-mono); font-size: 8px; font-weight: 700;
+  letter-spacing: .12em; color: var(--al); margin-bottom: 6px;
+  display: flex; align-items: center; gap: 6px;
+}
+.tip-hdr::after { content: ''; flex: 1; height: 1px; background: rgba(212,144,42,.2); }
+.tip-body { font-size: 10.5px; color: var(--text-2); line-height: 1.65; }
+.tip-body strong { color: var(--al); font-weight: 600; }
+
+/* ══ SCROLLBARS ══════════════════════════════════════════════════ */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--wire-c); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(--ice); }
+</style>
+</head>
+<body>
+
+<!-- ══ TOP BAR ═══════════════════════════════════════════════════ -->
+<div class="topbar">
+  <div class="tb-mark">⚕</div>
+  <div>
+    <div class="tb-brand">ARMY MEDICAL DQ &amp; <strong>WAIVER REFERENCE</strong></div>
+  </div>
+  <div class="tb-pipe"></div>
+  <div class="tb-meta">RSID 4D5E · DoWI 6130.03-V1 CH6 FEB 2026 · AR 40-501 · SWA 5/2/24 · AR 601-210 NOV 2023</div>
+
+  <div class="tb-search">
+    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input id="gsearch" type="text"
+      placeholder="Search condition, ICD-10 code, or category — e.g. keratoconus, H18.40, depression…"
+      autocomplete="off" oninput="onSearch(this.value)" onblur="closeDropDelay()">
+    <div class="sdrop" id="sdrop"></div>
+  </div>
+
+  <div class="tb-right">
+    <span id="tbCount" class="tb-count"></span>
+    <span class="tb-warning">⚠ NOT MEDICAL/LEGAL ADVICE</span>
+  </div>
+</div>
+
+<!-- ══ APP ════════════════════════════════════════════════════════ -->
+<div class="app">
+
+  <!-- LEFT: CATEGORIES + PROCESS INFO -->
+  <div class="cat-panel">
+    <div class="cp-top">
+      <span class="cp-label">Categories</span>
+      <span class="cp-cnt" id="cpCnt"></span>
+    </div>
+    <div class="cat-scroll" id="catList"></div>
+
+    <!-- Process accordion -->
+    <div class="proc-panel">
+      <button class="proc-toggle" id="procToggle" onclick="toggleProc()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        WAIVER PROCESS
+      </button>
+      <div class="proc-body" id="procBody">
+        <div style="margin-bottom:8px;padding:6px 8px;background:rgba(77,168,232,.06);border:1px solid rgba(77,168,232,.12);border-radius:3px;font-size:9.5px;color:var(--ice-l);line-height:1.6;">
+          <strong style="display:block;margin-bottom:3px;font-family:var(--ff-mono);font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--ice);">REQUIRED FOR ALL MEDICAL WAIVERS</strong>
+          DD 2807-2 (CMO) · DD 2808 · 680-ADP · USMEPCOM 680-3A · All medical records stamped/initialed by CMO
+        </div>
+        <div class="proc-step"><div class="proc-num">1</div><div class="proc-text"><strong>DQ at MEPS</strong> — GC notified, initiate medical waiver workflow in ERM</div></div>
+        <div class="proc-step"><div class="proc-num">2</div><div class="proc-text"><strong>Upload docs to ERM</strong> — all records in chronological order, CMO stamp/initials required</div></div>
+        <div class="proc-step"><div class="proc-num">3</div><div class="proc-text"><strong>Route to CMO</strong> — prescreen BEFORE submitting waiver. All changes stamped by CMO</div></div>
+        <div class="proc-step"><div class="proc-num">4</div><div class="proc-text"><strong>Submit workflow</strong> — USAREC Command Surgeon is disposition authority for all medical waivers</div></div>
+        <div class="proc-step"><div class="proc-num">5</div><div class="proc-text"><strong>Dual waivers</strong> — conduct waiver MUST be approved first before submitting medical waiver</div></div>
+        <div style="margin-top:7px;font-size:9.5px;color:var(--text-3);line-height:1.7;">
+          <strong style="color:var(--al)">Validity:</strong> Medical waivers valid until physical expires (not 6 months).<br>
+          <strong style="color:var(--al)">Resubmit:</strong> Not authorized unless original condition changed.<br>
+          <strong style="color:var(--al)">BH waivers:</strong> DCS G-1 DMPM is approval authority.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CENTER: LIST -->
+  <div class="list-panel">
+    <div class="lp-hdr">
+      <div class="lp-dot" id="lpDot" style="background:var(--text-3)"></div>
+      <span class="lp-name" id="lpName">Select a Category</span>
+      <span class="lp-cnt" id="lpCnt"></span>
+    </div>
+    <div class="filter-row">
+      <button class="fpill on" onclick="setFilter('all',this)">ALL</button>
+      <button class="fpill fl" onclick="setFilter('likely',this)">✓ WAIVER LIKELY</button>
+      <button class="fpill fc" onclick="setFilter('case',this)">~ CASE BY CASE</button>
+      <button class="fpill fu" onclick="setFilter('unlikely',this)">✗ UNLIKELY</button>
+      <button class="fpill fh" onclick="setFilter('hardno',this)">✗✗ HARD DQ</button>
+    </div>
+    <div class="cscroll" id="cscroll">
+      <div class="cempty">
+        <div class="cempty-icon">⚕</div>
+        Select a category on the left, or<br>
+        search any condition above.<br><br>
+        <span style="font-family:var(--ff-mono);font-size:10px;">e.g. "keratoconus" · "F90" · "depression"</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: DETAIL -->
+  <div class="det-panel">
+    <div class="det-empty" id="detEmpty">
+      <div class="det-empty-cross"></div>
+      <h3>Select a Condition</h3>
+      <p>Full DQ standards, waiver criteria, required documents, ICD-10 codes, and regulatory references will appear here.</p>
+    </div>
+    <div class="det-body" id="detBody"></div>
+  </div>
+
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+// WAIVER VERDICT LABELS / DESCRIPTIONS
+// ══════════════════════════════════════════════════════════════
+const WM = {
+  likely:  'WAIVER LIKELY',
+  case:    'CASE BY CASE',
+  unlikely:'WAIVER UNLIKELY',
+  hardno:  'HARD DQ — NO WAIVER'
+};
+const WICON = { likely:'✓', case:'~', unlikely:'✗', hardno:'✗✗' };
+const WSUB = {
+  likely:  'Waiver is generally approvable if all criteria are met and documents submitted correctly.',
+  case:    'Case-by-case review required. Outcome depends on specifics — do not guarantee to applicant.',
+  unlikely:'Significant barriers to approval. Proceed cautiously before investing significant time.',
+  hardno:  'Statutory or DoWI hard disqualifier. No waiver pathway exists at accession.'
+};
+const WAUTH = {
+  likely:  'USAREC Command Surgeon · AR 601-210 §4-5g',
+  case:    'USAREC Command Surgeon · AR 601-210 §4-5g',
+  unlikely:'USAREC Command Surgeon · AR 601-210 §4-5g',
+  hardno:  'NO WAIVER AUTHORITY — INELIGIBLE'
+};
+
+// UNIVERSAL required documents for ALL medical waivers (UR 601-210 §15-4)
+const UNIVERSAL_DOCS = [
+  'DD Form 2807-2 (Accessions Medical History Report) — completed by CMO',
+  'DD Form 2808 (Report of Medical Examination)',
+  '680-ADP (USMEPCOM Applicant Medical Prescreen)',
+  'USMEPCOM 680-3A (up-to-date required for all medical actions)',
+  'All applicable medical records — stamped and initialed by CMO, pages numbered per USMEPCOM Reg 601-23'
+];
+
+// ══════════════════════════════════════════════════════════════
+// PROCESS ACCORDION
+// ══════════════════════════════════════════════════════════════
+function toggleProc() {
+  const btn = document.getElementById('procToggle');
+  const body = document.getElementById('procBody');
+  btn.classList.toggle('open');
+  body.classList.toggle('open');
+}
+
+// ══════════════════════════════════════════════════════════════
+// CATEGORY SYSTEM BUILD
+// ══════════════════════════════════════════════════════════════
+function buildCats() {
+  const el = document.getElementById('catList');
+  let total = 0;
+  CATS.forEach(cat => {
+    total += cat.conditions.length;
+    const b = document.createElement('button');
+    b.className = 'cat-btn'; b.id = 'cb-' + cat.id;
+    b.innerHTML = `<div class="cdot" style="background:${cat.color}"></div>${cat.label}<span class="cnum">${cat.conditions.length}</span>`;
+    b.onclick = () => selCat(cat.id);
+    el.appendChild(b);
+  });
+  document.getElementById('tbCount').textContent = total + ' conditions';
+  document.getElementById('cpCnt').textContent = total;
+}
+
+// ══════════════════════════════════════════════════════════════
+// FLAT INDEX
+// ══════════════════════════════════════════════════════════════
+let ALL = [];
+function buildIndex() {
+  CATS.forEach(cat => {
+    cat.conditions.forEach(c => {
+      ALL.push({ ...c, catId: cat.id, catLabel: cat.label, catColor: cat.color });
+    });
+  });
+}
+
+// ══════════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════════
+let activeCat = null, activeIdx = null, wFilter = 'all', searchQ = '';
+let curList = [];
+
+// ══════════════════════════════════════════════════════════════
+// CATEGORY SELECT
+// ══════════════════════════════════════════════════════════════
+function selCat(id) {
+  activeCat = id; activeIdx = null; searchQ = '';
+  document.getElementById('gsearch').value = '';
+  closeDrop();
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('cb-' + id).classList.add('active');
+  const cat = CATS.find(c => c.id === id);
+  document.getElementById('lpDot').style.background = cat.color;
+  document.getElementById('lpName').textContent = cat.label;
+  clearDetail();
+  buildList(); renderList();
+}
+
+// ══════════════════════════════════════════════════════════════
+// BUILD + RENDER LIST
+// ══════════════════════════════════════════════════════════════
+function buildList() {
+  let src;
+  if (searchQ.trim()) {
+    const q = searchQ.toLowerCase();
+    src = ALL.filter(c =>
+      c.name.toLowerCase().includes(q) ||
+      c.icd.some(i => i.toLowerCase().includes(q)) ||
+      c.dq.toLowerCase().includes(q) ||
+      (c.waiv && c.waiv.toLowerCase().includes(q)) ||
+      c.catLabel.toLowerCase().includes(q)
+    );
+  } else if (activeCat) {
+    const cat = CATS.find(c => c.id === activeCat);
+    src = (cat?.conditions || []).map(c => ({ ...c, catId: activeCat, catLabel: cat.label, catColor: cat.color }));
+  } else {
+    src = [];
+  }
+  if (wFilter !== 'all') src = src.filter(c => c.waiver === wFilter);
+  curList = src;
+  document.getElementById('lpCnt').textContent = src.length + ' condition' + (src.length !== 1 ? 's' : '');
+}
+
+function renderList(hl) {
+  const el = document.getElementById('cscroll');
+  if (!curList.length) {
+    el.innerHTML = '<div class="cempty"><div class="cempty-icon">○</div>No conditions match.</div>';
+    return;
+  }
+  el.innerHTML = '';
+  curList.forEach((c, i) => {
+    const d = document.createElement('div');
+    d.className = 'cc' + (activeIdx === i ? ' act' : '');
+    const nm = hl ? hlText(c.name, hl) : c.name;
+    const icdStr = c.icd.slice(0, 4).join('  ') + (c.icd.length > 4 ? ` +${c.icd.length - 4}` : '');
+    const showCat = searchQ.trim() ? `<span class="cc-cat">${c.catLabel} ·</span>` : '';
+    d.innerHTML = `
+      <div class="cc-top">
+        <span class="cc-name">${nm}</span>
+        <span class="wbadge ${c.waiver}">${WICON[c.waiver]} ${WM[c.waiver]}</span>
+      </div>
+      <div class="cc-icd">${icdStr}</div>
+      <div class="cc-bottom">${showCat}${c.src.map(s => `<span class="src-chip">${s}</span>`).join('')}</div>`;
+    d.onclick = () => selCond(i);
+    el.appendChild(d);
+  });
+}
+
+function hlText(t, q) {
+  const re = new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+  return t.replace(re, '<mark>$1</mark>');
+}
+
+// ══════════════════════════════════════════════════════════════
+// SELECT CONDITION + SHOW DETAIL
+// ══════════════════════════════════════════════════════════════
+function selCond(i) {
+  activeIdx = i;
+  document.querySelectorAll('.cc').forEach((e, j) => e.classList.toggle('act', j === i));
+  showDetail(curList[i]);
+  // Scroll detail to top
+  document.getElementById('detBody').scrollTop = 0;
+}
+
+function clearDetail() {
+  document.getElementById('detEmpty').style.display = 'flex';
+  document.getElementById('detBody').classList.remove('show');
+  activeIdx = null;
+  document.querySelectorAll('.cc').forEach(e => e.classList.remove('act'));
+}
+
+function showDetail(c) {
+  document.getElementById('detEmpty').style.display = 'none';
+  const db = document.getElementById('detBody');
+  db.classList.add('show');
+
+  const icdHtml = c.icd.map(x => `<span class="icd-chip" title="Click to copy">${x}</span>`).join('');
+
+  const docsHtml = (() => {
+    if (!c.docs || !c.docs.length) return '';
+    return `
+    <div class="ds">
+      <div class="ds-hdr"><span class="ds-hdr-label">Required Documents</span></div>
+      <div class="universal-docs">
+        <div class="ud-label">Universal — All Medical Waivers (UR 601-210 §15-4)</div>
+        <div class="ud-items">
+          ${UNIVERSAL_DOCS.map(d => `<div class="ud-item">${d}</div>`).join('')}
+        </div>
+      </div>
+      <div class="docs-grid">
+        ${c.docs.map((d, idx) => `
+        <div class="doc-row">
+          <div class="doc-icon">${idx + 1}</div>
+          <div class="doc-text">${d}</div>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  })();
+
+  const arHtml = c.ar ? `
+    <div class="ds">
+      <div class="ds-hdr"><span class="ds-hdr-label">AR 40-501 Cross-Reference</span></div>
+      <div class="ar-card">
+        <div class="ar-hdr">AR 40-501 Standards of Medical Fitness</div>
+        <div class="ar-body">${c.ar}</div>
+      </div>
+    </div>` : '';
+
+  const tipHtml = c.tip ? `
+    <div class="ds">
+      <div class="ds-hdr"><span class="ds-hdr-label">Recruiter Tips</span></div>
+      <div class="tip-card">
+        <div class="tip-hdr">⚑ FIELD GUIDANCE</div>
+        <div class="tip-body">${c.tip}</div>
+      </div>
+    </div>` : '';
+
+  db.innerHTML = `
+    <!-- Verdict Banner -->
+    <div class="verdict-banner ${c.waiver}">
+      <div class="vb-top">
+        <div class="vb-icon ${c.waiver}">${WICON[c.waiver]}</div>
+        <div>
+          <div class="vb-verdict ${c.waiver}">${WM[c.waiver]}</div>
+          <div class="vb-sub">${WSUB[c.waiver]}</div>
+        </div>
+      </div>
+      <div class="vb-authority">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Authority: ${WAUTH[c.waiver]}
+      </div>
+    </div>
+
+    <!-- Condition ID -->
+    <div class="ds">
+      <div class="ds-hdr"><span class="ds-hdr-label">Condition</span></div>
+      <div class="ds-title">${c.name}</div>
+      <div class="ds-sys">System: <span>${c.catLabel || ''}</span></div>
+      <div style="margin-top:10px;">
+        <div class="ds-hdr" style="margin-bottom:7px;"><span class="ds-hdr-label">ICD-10 Codes <span style="color:var(--text-3);font-weight:400">(click to copy)</span></span></div>
+        <div class="icd-grid">${icdHtml}</div>
+      </div>
+    </div>
+
+    <!-- DQ Standard -->
+    <div class="ds">
+      <div class="ds-hdr"><span class="ds-hdr-label">Disqualifying Standard</span></div>
+      <div class="dq-card">
+        <div class="dq-pre">DoWI 6130.03-V1 / AR 40-501 Accession Standard</div>
+        <div class="dq-body">${c.dq}</div>
+      </div>
+    </div>
+
+    <!-- Waiver Guidance -->
+    <div class="ds">
+      <div class="ds-hdr"><span class="ds-hdr-label">Waiver Guidance</span></div>
+      <div class="wc-card ${c.waiver}">
+        <div class="wc-label ${c.waiver}">${WM[c.waiver]}</div>
+        ${c.waiv}
+      </div>
+    </div>
+
+    ${docsHtml}
+    ${arHtml}
+    ${tipHtml}
+
+    <!-- Sources -->
+    <div class="ds">
+      <div class="ds-hdr"><span class="ds-hdr-label">Regulatory Sources</span></div>
+      <div class="src-row">${c.src.map(s => `<span class="src-chip">${s}</span>`).join('')}</div>
+    </div>
+  `;
+
+  // ICD click to copy
+  db.querySelectorAll('.icd-chip').forEach(el => {
+    el.onclick = () => {
+      navigator.clipboard?.writeText(el.textContent).then(() => {
+        el.classList.add('copied');
+        const orig = el.textContent;
+        el.textContent = orig + ' ✓';
+        setTimeout(() => { el.textContent = orig; el.classList.remove('copied'); }, 1400);
+      });
+    };
+  });
+}
+
+// ══════════════════════════════════════════════════════════════
+// WAIVER FILTER
+// ══════════════════════════════════════════════════════════════
+function setFilter(f, btn) {
+  wFilter = f;
+  document.querySelectorAll('.fpill').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  buildList(); renderList(searchQ.trim() || undefined);
+}
+
+// ══════════════════════════════════════════════════════════════
+// GLOBAL SEARCH
+// ══════════════════════════════════════════════════════════════
+let dropTimer = null;
+
+function onSearch(val) {
+  searchQ = val;
+  const q = val.trim().toLowerCase();
+
+  if (!q) {
+    closeDrop();
+    if (activeCat) { buildList(); renderList(); }
+    else document.getElementById('cscroll').innerHTML = '<div class="cempty"><div class="cempty-icon">⚕</div>Select a category or search above.</div>';
+    return;
+  }
+
+  // Update center panel
+  activeCat = null;
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('lpDot').style.background = 'var(--text-3)';
+  document.getElementById('lpName').textContent = `"${val}"`;
+  buildList(); renderList(q);
+
+  // Build dropdown
+  const results = ALL.filter(c =>
+    c.name.toLowerCase().includes(q) ||
+    c.icd.some(i => i.toLowerCase().includes(q)) ||
+    c.dq.toLowerCase().includes(q) ||
+    c.catLabel.toLowerCase().includes(q)
+  ).slice(0, 22);
+
+  const drop = document.getElementById('sdrop');
+  if (!results.length) {
+    drop.innerHTML = '<div style="padding:14px 16px;font-size:11px;color:var(--text-3)">No results found.</div>';
+    drop.classList.add('open'); return;
+  }
+
+  const byCat = {};
+  results.forEach(c => { if (!byCat[c.catId]) byCat[c.catId] = []; byCat[c.catId].push(c); });
+
+  drop.innerHTML = '';
+  Object.entries(byCat).forEach(([cid, conds]) => {
+    const cat = CATS.find(c => c.id === cid);
+    const g = document.createElement('div');
+    g.innerHTML = `<div class="sd-grp-hdr">${cat.label}</div>`;
+    conds.forEach(c => {
+      const item = document.createElement('div'); item.className = 'sd-item';
+      item.innerHTML = `
+        <div class="sdi-dot" style="background:${c.catColor}"></div>
+        <div style="flex:1;min-width:0;">
+          <div class="sdi-name">${hlText(c.name, q)}</div>
+          <div class="sdi-meta">
+            <span class="wbadge ${c.waiver}">${WM[c.waiver]}</span>
+            <span style="font-family:var(--ff-mono);font-size:9px;color:var(--pl)">${c.icd.slice(0,2).join(' · ')}</span>
+          </div>
+        </div>`;
+      item.onmousedown = () => {
+        selCat(c.catId);
+        document.getElementById('gsearch').value = c.name;
+        searchQ = '';
+        setTimeout(() => {
+          buildList(); renderList();
+          const idx = curList.findIndex(x => x.name === c.name);
+          if (idx >= 0) selCond(idx);
+        }, 60);
+        closeDrop();
+      };
+      g.appendChild(item);
+    });
+    drop.appendChild(g);
+  });
+  drop.classList.add('open');
+}
+
+function closeDrop() { document.getElementById('sdrop').classList.remove('open'); }
+function closeDropDelay() { dropTimer = setTimeout(closeDrop, 180); }
+
+// ══════════════════════════════════════════════════════════════
+// MEDICAL DATA — DoWI 6130.03-V1 Ch6 FEB 2026, AR 40-501, SWA 5/2/24
+// ══════════════════════════════════════════════════════════════
+const CATS=[
+{id:'OPHTH',label:'Ophthalmology',color:'#2563eb',conditions:[
+  {name:'Keratoconus (Any Degree)',icd:['H18.40','H18.9','H18.609','H18.623'],waiver:'case',
+   dq:'Corneal dystrophy or degeneration of any type, including keratoconus of any degree.',
+   waiv:'Waive keratoconus when cross-linked (CXL) and stable for at least 6 months, OR keratoconus stable without CXL for > 2 years. Astigmatism must be < 3.00D post-CXL. Stability confirmed by serial topography. Contact lens dependency is a separate hard DQ.',
+   docs:['Applicant statement','Serial corneal topography maps showing stability','Documentation of CXL procedure if applicable','Ophthalmology evaluation letter'],
+   ar:'AR 40-501 §2-12a: Keratoconus is DQ. Post-CXL pathway per SWA guidance.',
+   src:['SWA Guidance','DoWI V1 §6.3c','AR 40-501 §2-12'],
+   tip:'<strong>Critical case:</strong> SWA standard changed — CXL must be performed AND stable >= 6 months, OR stable without CXL for > 2 full years. Post-CXL: astigmatism must clear 3.00D threshold. Contact lens dependency = separate hard DQ. Expect 9-12 month timeline minimum. Recommend bilateral CXL consultation. Do not promise a waiver.'},
+  {name:'Refractive Error > ±8.00D Spherical Equivalent',icd:['H52.10','H52.00','H52.7'],waiver:'unlikely',
+   dq:'Refractive error in excess of ±8.00 diopters spherical equivalent in either eye.',
+   waiv:'Waiver unlikely. Must fall within ±8.00D SE threshold. Applicants who had pre-surgical refractive error exceeding ±8.00D remain DQ even if corrected by refractive surgery.',
+   docs:['Pre-surgical refraction records (if refractive surgery performed)','Current refraction from ophthalmologist'],
+   ar:'AR 40-501 §2-12: Refractive error > ±8.00D SE DQ.',
+   src:['DoWI V1 §6.4d','AR 40-501 §2-12']},
+  {name:'Astigmatism > 3.00 Diopters',icd:['H52.201','H52.211','H52.221'],waiver:'unlikely',
+   dq:'Astigmatism in excess of 3.00 diopters in either eye.',
+   waiv:'Waiver unlikely above 3.00D. Post-CXL for keratoconus: possible only if astigmatism reduces below 3.00D and is stable. Must be documented by serial topography.',
+   docs:['Serial topography showing stability and astigmatism < 3.00D','Ophthalmology letter of clearance'],
+   ar:'AR 40-501 §2-12: Astigmatism > 3.00D DQ.',
+   src:['DoWI V1 §6.4d','AR 40-501 §2-12']},
+  {name:'Contact Lens Dependency',icd:['H18.89','Z46.0'],waiver:'hardno',
+   dq:'Any condition requiring contact lenses for adequate correction (corneal scars, irregular astigmatism, keratoconus, etc.).',
+   waiv:'HARD DISQUALIFIER — no waiver authorized per DoWI §6.4e. Cannot meet visual standards without contacts = DQ regardless of underlying cause.',
+   docs:[],
+   ar:'AR 40-501 §2-12: Contact lens dependency DQ.',
+   src:['DoWI V1 §6.4e','AR 40-501 §2-12']},
+  {name:'Corneal Refractive Surgery (LASIK/PRK/SMILE)',icd:['Z98.890'],waiver:'likely',
+   dq:'Laser corneal refractive surgery within 180 days of exam OR if pre-surgical error exceeded ±8.00D SE or astigmatism > 3.00D.',
+   waiv:'Waive if stable ≥ 90 days post-op AND meets post-surgical vision requirements AND pre-surgical thresholds not exceeded.',
+   docs:['Surgical records showing pre-surgical refraction','Post-op stability documentation (90+ days)','Ophthalmology clearance letter'],
+   ar:'AR 40-501 §2-12: Refractive surgery not DQ if accession standards met post-op.',
+   src:['SWA Guidance','DoWI V1 §6.3c(3)','AR 40-501 §2-12']},
+  {name:'Radial Keratotomy / Incisional Corneal Surgery',icd:['H18.89','Z96.1'],waiver:'hardno',
+   dq:'Any incisional corneal surgery (RK, AK, astigmatic keratotomy) or corneal implants (Intacs) or corneal transplant.',
+   waiv:'HARD DISQUALIFIER per DoWI §6.3c(2). Incisional (not laser) corneal surgery is not waiverable.',
+   docs:[],
+   ar:'AR 40-501 §2-12b: Incisional corneal surgery DQ.',
+   src:['DoWI V1 §6.3c(2)','AR 40-501 §2-12']},
+  {name:'Blepharitis / Blepharospasm',icd:['H01.009','H01.019','H01.029','G24.5'],waiver:'likely',
+   dq:'Current symptomatic blepharitis or blepharospasm interfering with vision or requiring steroid treatment.',
+   waiv:'Waive unless currently on steroid treatment or interferes with vision. Unilateral blepharospasm with no evidence of hemifacial spasm — waiverable.',
+   docs:['Ophthalmology evaluation','Current medication list'],
+   ar:'',src:['SWA Guidance','DoWI V1 §6.3a']},
+  {name:'Pterygium (Symptomatic / Progressive)',icd:['H11.009','H11.069'],waiver:'likely',
+   dq:'Pterygium encroaching > 3mm on cornea, symptomatic, or progressive. Recurrence after surgery is DQ.',
+   waiv:'Waive if normal VA and < 3mm onto cornea with no other eye pathology. Recurrence after prior surgical removal is DQ.',
+   docs:['Ophthalmology evaluation noting extent and VA'],
+   ar:'',src:['SWA Guidance','DoWI V1 §6.3b']},
+  {name:'Strabismus / Esotropia / Exotropia',icd:['H50.00','H50.10','H50.21','H50.22'],waiver:'likely',
+   dq:'Ocular misalignment.',
+   waiv:'Waive if non-diplopic (no active double vision) and vision correctable to 20/20.',
+   docs:['Orthoptic evaluation confirming non-diplopic status'],
+   ar:'',src:['SWA Guidance','DoWI V1 §6.3g']},
+  {name:'Glaucoma / Ocular Hypertension',icd:['H40','H40.059','H40.009','H40.0','H57.8','H57.9'],waiver:'case',
+   dq:'Established glaucoma or elevated intraocular pressure.',
+   waiv:'Waive ONLY if history of pre-glaucoma or glaucoma suspect with no true glaucoma or ocular hypertension in past 5 years. IOP must be < 25 for consideration.',
+   docs:['5-year ophthalmology records','IOP measurements','Visual field testing'],
+   ar:'AR 40-501 §2-12: Glaucoma DQ.',
+   src:['SWA Guidance','DoWI V1 §6.3h','AR 40-501 §2-12']},
+  {name:'Cataracts / Lens Opacities',icd:['H27.9','H26.009','H26.9'],waiver:'likely',
+   dq:'Cataract or lens opacity.',
+   waiv:'Waive if no visual functional impact and meets vision correction requirements. Note: Aphakia (missing lens without replacement) is HIGH RISK — requires ophthalmology consult.',
+   docs:['Ophthalmology evaluation confirming VA meets standards'],
+   ar:'',src:['SWA Guidance','DoWI V1 §6.3f']},
+  {name:'Lens Implant (IOL / ICL)',icd:['Z96.1'],waiver:'likely',
+   dq:'Implantable collamer or intraocular lens.',
+   waiv:'Waive ICL if no documented complications and meets vision requirements. Aphakia is HIGH RISK requiring consultation.',
+   docs:['Surgical records','Ophthalmology clearance letter','Post-op stability documentation'],
+   ar:'',src:['SWA Guidance']},
+  {name:'Keratitis / HSV Keratitis / Corneal Ulcer',icd:['H16.8','H16.9','B00.52'],waiver:'likely',
+   dq:'Corneal inflammation or infection.',
+   waiv:'Waive if no recurrence in last 12 months regardless of antiviral therapy status.',
+   docs:['Ophthalmology records showing 12-month recurrence-free period'],
+   ar:'',src:['SWA Guidance','DoWI V1 §6.3c']},
+  {name:'Uveitis / Iridocyclitis',icd:['H44.139','H20.00','H20.019','H20.029','H20.039','H31.9','H21.9'],waiver:'case',
+   dq:'Inflammation of uveal tract.',
+   waiv:'Waive if single episode > 2 years ago with no recurrence.',
+   docs:['Complete ophthalmology records documenting single episode and 2-year recurrence-free period'],
+   ar:'',src:['SWA Guidance','DoWI V1 §6.3']},
+  {name:'Retinal Abnormality (Lattice / Detachment)',icd:['H35.9','H31.9','H43.9','H33.009'],waiver:'case',
+   dq:'Any history of abnormality of retina, choroid, or vitreous.',
+   waiv:'Lattice degeneration with pigment, asymptomatic — waiverable. Retinal detachment history requires full ophthalmology evaluation. Case-by-case based on functional impact.',
+   docs:['Retinal examination records','Ophthalmology evaluation letter'],
+   ar:'',src:['SWA Guidance','DoWI V1 §6.3d']},
+  {name:'Visual Acuity Not Correctable to 20/40 Each Eye',icd:['H54.50'],waiver:'case',
+   dq:'Current distant visual acuity that does not correct to at least 20/40 in each eye.',
+   waiv:'Waive if visual acuity in one eye does not correct to 20/80 when better eye corrects to 20/40, OR does not correct to 20/200 when better eye corrects to 20/20. Case-by-case based on MOS requirements.',
+   docs:['Ophthalmology refraction records'],
+   ar:'',src:['SWA Guidance','DoWI V1 §6.4']},
+]},
+
+{id:'AUDIO',label:'Audiology & ENT',color:'#0891b2',conditions:[
+  {name:'Hearing Loss — Exceeds Standards',icd:['H91.9','H90.3','H90.5'],waiver:'case',
+   dq:'Threshold > 25dB avg at 500/1000/2000 Hz; OR > 30dB at any single freq 500/1000/2000; OR > 35dB at 3000 Hz; OR > 45dB at 4000 Hz. Asymmetric loss ≥ 30dB between ears at any freq 500–2000 Hz also DQ.',
+   waiv:'Assessed using DA PAM 40-502 and OTSG audiology recommendations. Case-by-case based on degree and frequency distribution. Must demonstrate functional communication capacity.',
+   docs:['Audiometric evaluation (pure tone audiogram)','Speech discrimination testing','ENT evaluation if needed'],
+   ar:'AR 40-501 §2-11: Hearing thresholds evaluated per audiometric standards.',
+   src:['DoWI V1 §6.6b','SWA Guidance','AR 40-501 §2-11']},
+  {name:'Hearing Aid History',icd:['Z96.8','Z46.1'],waiver:'hardno',
+   dq:'Any history of using hearing aids for any purpose.',
+   waiv:'HARD DISQUALIFIER — not waiverable per DoWI §6.6d.',
+   docs:[],ar:'AR 40-501 §2-11: Hearing aid dependency DQ.',
+   src:['DoWI V1 §6.6d','AR 40-501 §2-11']},
+  {name:"Ménière's Syndrome / Chronic Vestibular Disease",icd:['H81.09','H81.39','H81.399'],waiver:'hardno',
+   dq:"Any history of Ménière's syndrome, recurrent labyrinthitis, or chronic vestibular disease.",
+   waiv:'HARD DISQUALIFIER — not waiverable.',
+   docs:[],ar:'AR 40-501 §2-11: Ménière\'s disease DQ.',
+   src:['DoWI V1 §6.5b','AR 40-501 §2-11']},
+  {name:'Recurrent / Persistent Vertigo (< 12 months)',icd:['H81.39','R42'],waiver:'hardno',
+   dq:'Recurrent or persistent vertigo in the last 12 months.',
+   waiv:'HARD DISQUALIFIER.',
+   docs:[],ar:'',src:['DoWI V1 §6.5c']},
+  {name:'Cholesteatoma',icd:['H71.90','H71.00','H71.10'],waiver:'hardno',
+   dq:'History of cholesteatoma.',
+   waiv:'HARD DISQUALIFIER.',
+   docs:[],ar:'',src:['DoWI V1 §6.5e']},
+  {name:'Tympanic Membrane Perforation',icd:['H72.90','H72.00','H72.10'],waiver:'case',
+   dq:'Current perforation of tympanic membrane or surgery to correct within last 6 months.',
+   waiv:'Healed perforation > 6 months with adequate hearing and normal mobility — case-by-case. Current or recent surgery: DQ.',
+   docs:['ENT evaluation documenting healed TM','Audiogram','Tympanometry results'],
+   ar:'AR 40-501 §2-11: Chronic TM perforation DQ.',
+   src:['DoWI V1 §6.5g','AR 40-501 §2-11']},
+  {name:'Surgically Implanted Hearing Device',icd:['Z96.29','Z96.21'],waiver:'hardno',
+   dq:'Any surgically implanted hearing device (cochlear implant, BAHA).',
+   waiv:'HARD DISQUALIFIER.',
+   docs:[],ar:'',src:['DoWI V1 §6.5a']},
+  {name:'Chronic Sinusitis / Nasal Polyps',icd:['J32.9','J32.0','J33.9'],waiver:'unlikely',
+   dq:'Current chronic sinusitis, nasal polyp, or sinus surgery within last 24 months.',
+   waiv:'Resolved and outside 24 months without recurrence — case-by-case. Active or recent: generally DQ.',
+   docs:['ENT records','CT sinus if applicable','Applicant statement on symptom status'],
+   ar:'AR 40-501 §2-14: Chronic sinusitis DQ.',
+   src:['DoWI V1 §6.7f','AR 40-501 §2-14']},
+  {name:'Vocal Cord Dysfunction / Paralysis',icd:['J38.00','J38.3','J38.01'],waiver:'unlikely',
+   dq:'Symptomatic VCD including paralysis, paradoxical movement, spasmodic dysphonia, chronic hoarseness > 21 days.',
+   waiv:'Active or symptomatic: generally DQ. Resolved acute single episode — case-by-case.',
+   docs:['ENT evaluation','Laryngoscopy results if applicable'],
+   ar:'AR 40-501 §2-14: Symptomatic vocal cord conditions DQ.',
+   src:['DoWI V1 §6.7c','AR 40-501 §2-14']},
+]},
+
+{id:'CARDIO',label:'Cardiology',color:'#dc2626',conditions:[
+  {name:'Valvular Stenosis (Any)',icd:['I34.2','I05.0','I35.0','I06.0','I07.0','I37.0'],waiver:'case',
+   dq:'Any degree of valvular stenosis.',
+   waiv:'Waive if mild with no associated conditions. Must be confirmed by echocardiogram within the past 12 months.',
+   docs:['Echo within past 12 months showing mild stenosis','Cardiology evaluation letter'],
+   ar:'AR 40-501 §2-18i: Valvular disease with NYHA Class II+ DQ.',
+   src:['SWA Guidance','DoWI V1 §6.11','AR 40-501 §2-18']},
+  {name:'Aortic / Mitral Regurgitation',icd:['I34.0','I35.1','I06.1','I05.1'],waiver:'case',
+   dq:'Any degree of valvular regurgitation.',
+   waiv:'Waive up to MILD aortic/mitral regurgitation proven by Echo within last 12 months.',
+   docs:['Echo within past 12 months','Cardiology evaluation'],
+   ar:'',src:['SWA Guidance','DoWI V1 §6.11']},
+  {name:'Bicuspid Aortic Valve',icd:['Q23.1','I35.0','I35.1','I77.819'],waiver:'case',
+   dq:'Bicuspid aortic valve with any degree of stenosis or aortic dilation.',
+   waiv:'Waive if: no aortic dilation on dedicated imaging within 12 months AND no stenosis on Echo within 12 months AND no more than mild aortic regurgitation.',
+   docs:['Echo within 12 months','Dedicated aortic imaging (CT or MRI) within 12 months','Cardiology letter'],
+   ar:'',src:['SWA Guidance']},
+  {name:'SVT / Atrial Flutter / Atrial Fibrillation',icd:['I48.91','I48.92','I47.1','I48.0'],waiver:'case',
+   dq:'SVT, atrial flutter, or atrial fibrillation.',
+   waiv:'Waive ONLY for atrial flutter successfully treated with catheter ablation without recurrence for ≥ 90 days. A-fib generally not waiverable without specific cardiology clearance.',
+   docs:['Cardiology evaluation','Ablation procedure records','90-day post-ablation monitoring records','EKG'],
+   ar:'AR 40-501 §2-18: Cardiac arrhythmias requiring medication DQ.',
+   src:['SWA Guidance','AR 40-501 §2-18']},
+  {name:'Hypertension / Elevated BP',icd:['I10','R03.0'],waiver:'likely',
+   dq:'Hypertension of any degree.',
+   waiv:'Waive all cases UNLESS current uncontrolled hypertension despite medications. Well-controlled HTN on medication is waiverable.',
+   docs:['Recent BP measurements (home log or medical records)','Current medication list','Primary care evaluation'],
+   ar:'',src:['SWA Guidance','AR 40-501 §2-18']},
+  {name:'DVT / Pulmonary Embolism',icd:['I82.90','I82.91','Z86.711','I26.99'],waiver:'case',
+   dq:'Deep vein thrombosis or pulmonary embolism.',
+   waiv:'Waive if single, clearly provoked case (surgery or injury) AND off all anticoagulants (except aspirin) for ≥ 6 months.',
+   docs:['Hematology/vascular records','Documentation of provoked event (surgery/trauma)','Current anticoagulation status','Hypercoagulability workup'],
+   ar:'',src:['SWA Guidance','DoWI V1 §6.11']},
+  {name:'Coronary Artery Disease (Atherosclerotic)',icd:['I25.10','I25.119'],waiver:'case',
+   dq:'Atherosclerotic CAD.',
+   waiv:'Waive if no history of intervention (surgical or percutaneous) AND asymptomatic without myocardial ischemia on objective testing.',
+   docs:['Cardiology evaluation','Stress test results','Imaging (Echo, nuclear if applicable)'],
+   ar:'AR 40-501 §2-18o: Coronary revascularization DQ.',
+   src:['SWA Guidance','AR 40-501 §2-18']},
+  {name:'Hypertrophic Cardiomyopathy (Family History)',icd:['I42.2','Z82.49'],waiver:'likely',
+   dq:'Family history of hypertrophic cardiomyopathy.',
+   waiv:'Waive for family history ONLY if applicant is asymptomatic with normal Echo within 12 months OR documented genotype negative.',
+   docs:['Echo within past 12 months','Family history documentation','Genetic testing results if available'],
+   ar:'',src:['SWA Guidance']},
+  {name:'Pacemaker / ICD / Implanted Cardiac Device',icd:['Z95.0','Z95.810','Z95.811'],waiver:'hardno',
+   dq:'Implantation of permanent pacemaker, ICD, or anti-tachycardia device.',
+   waiv:'HARD DISQUALIFIER — permanent cardiac implants incompatible with military service.',
+   docs:[],ar:'AR 40-501 §2-18o(2): Permanent pacemaker/ICD DQ.',
+   src:['DoWI V1 §6.11','AR 40-501 §2-18']},
+  {name:'EKG Variants (Normal: Sinus Brady / PVCs / Incomplete BBB)',icd:['I45.10','R00.1','I49.8','I44.0','I44.1'],waiver:'likely',
+   dq:'Benign EKG variants found on routine examination.',
+   waiv:'Waive if determined normal variant per USUHS cardiologist resource. Sinus bradycardia, incomplete RBBB, early repolarization, isolated PVCs — typically waiverable.',
+   docs:['12-lead EKG','Cardiology clearance if needed'],
+   ar:'AR 40-501: QTc > 430ms requires further evaluation for waiver.',
+   src:['SWA Guidance','AR 40-501 §4-12']},
+  {name:'Vena Cava Filter / Stent / Angioplasty',icd:['Z95.828','Z98.61','Z98.62'],waiver:'likely',
+   dq:'Vascular procedures.',
+   waiv:'Waive unless associated with another disqualifying condition.',
+   docs:['Vascular surgery records','Current functional status documentation'],
+   ar:'',src:['SWA Guidance']},
+  {name:'Kawasaki\'s Disease / Arteritis',icd:['M30.3','I77.6'],waiver:'likely',
+   dq:'History of Kawasaki\'s disease.',
+   waiv:'Waive if arteritis in remission ≥ 6 months with no coronary artery involvement.',
+   docs:['Cardiology records documenting remission','Echo confirming no coronary involvement'],
+   ar:'',src:['SWA Guidance']},
+]},
+
+{id:'PULM',label:'Pulmonology',color:'#2563eb',conditions:[
+  {name:'Asthma / Reactive Airway / EIB',icd:['J45.909','J45.990','J45.20','J45.30','J68.3'],waiver:'case',
+   dq:'Any history of asthma, reactive airway disease, or exercise-induced bronchospasm after age 13.',
+   waiv:'Waive if: proven HS athlete (basketball or track — NOT baseball/softball) OR proven aerobic/endurance athlete AND ≤ 2 albuterol prescription fills in last 5 years AND no oral steroid use in 5 years.',
+   docs:['Applicant statement (athletic participation)','5-year pharmacy records','Pulmonary function testing (spirometry) if available'],
+   ar:'AR 40-501 §2-17: Reactive airway disease DQ if symptomatic.',
+   src:['SWA Guidance','DoWI V1 §6.10e','AR 40-501 §2-17'],
+   tip:`<strong>Key differentiator:</strong> Basketball or track athlete = waiverable pathway. Baseball/softball does NOT qualify. Get pharmacy records first — if > 2 albuterol fills in 5 years or any oral steroid, stop there. A well-written applicant statement describing high-school athletics is the difference between approval and denial.`},
+  {name:'Obstructive Sleep Apnea',icd:['G47.30','G47.33'],waiver:'case',
+   dq:'History of OSA.',
+   waiv:'Waive if: (1) Mild OSA (AHI < 15) asymptomatic, OR (2) Mild OSA managed with APAP/CPAP/oral appliance, OR (3) Moderate OSA (AHI 15-29) with CPAP compliance report showing ≥ 4hrs/night for ≥ 70% of nights over 30-day period.',
+   docs:['Sleep study (polysomnography) report','CPAP/APAP compliance data (30-day minimum)','Pulmonology evaluation letter'],
+   ar:'AR 40-501 §2-36: Sleep-related breathing disorders evaluated per severity.',
+   src:['SWA Guidance','AR 40-501 §2-36']},
+  {name:'Pulmonary Nodules',icd:['R91.8','R93.8'],waiver:'likely',
+   dq:'Pulmonary nodules on imaging.',
+   waiv:'Waive if: < 6mm in non-smoker OR ≤ 3 calcified nodules per Fleischner criteria.',
+   docs:['Chest CT or X-ray with radiology read','Pulmonology evaluation if > 6mm'],
+   ar:'',src:['SWA Guidance']},
+  {name:'Spontaneous Pneumothorax',icd:['J93.1','J93.9'],waiver:'case',
+   dq:'History of spontaneous pneumothorax.',
+   waiv:'Waive if > 10 years ago OR surgically corrected > 6 months ago with complete resolution.',
+   docs:['Medical records documenting event','Chest imaging showing resolution','Pulmonology clearance'],
+   ar:'AR 40-501 §2-17: Recurrent spontaneous pneumothorax DQ.',
+   src:['SWA Guidance','DoWI V1 §6.10f','AR 40-501 §2-17']},
+  {name:'Latent Tuberculosis (LTBI)',icd:['R76.11','R76.12','A15.9'],waiver:'likely',
+   dq:'Positive IGRA or TST.',
+   waiv:'Waive if appropriate documentation of completed LTBI treatment.',
+   docs:['IGRA or TST documentation','Proof of completed LTBI treatment (ISONIAZID, RIFAMPIN, or equivalent)','Chest X-ray within past 12 months'],
+   ar:'AR 40-501 §2-17: LTBI warrants antimicrobial therapy but is not itself DQ.',
+   src:['SWA Guidance','AR 40-501 §2-17']},
+  {name:'Traumatic Pneumothorax',icd:['S27.0'],waiver:'likely',
+   dq:'Pneumothorax caused by trauma.',
+   waiv:'Waive if > 90 days prior with complete resolution.',
+   docs:['Medical records','Chest imaging showing resolution'],
+   ar:'',src:['SWA Guidance']},
+  {name:'Pleurisy / Pleural Effusion',icd:['R09.1','J91.8'],waiver:'likely',
+   dq:'Pleurisy or pleural effusion.',
+   waiv:'Waive if imaging shows complete resolution with no current pleural effusion.',
+   docs:['Chest imaging (X-ray or CT) showing no effusion'],
+   ar:'',src:['SWA Guidance','DoWI V1 §6.10']},
+  {name:'Bronchiectasis',icd:['J47.1','J47.9'],waiver:'case',
+   dq:'Bronchiectasis.',
+   waiv:'Waive if no evidence of exacerbations or chronic pleurisy in past 10 years.',
+   docs:['Pulmonology records','CT chest documenting extent','10-year symptom history'],
+   ar:'',src:['SWA Guidance','DoWI V1 §6.10']},
+  {name:'Cystic Fibrosis',icd:['E84.9','E84.0'],waiver:'hardno',
+   dq:'Cystic fibrosis.',
+   waiv:'HARD DISQUALIFIER — not waiverable.',
+   docs:[],ar:'AR 40-501 §2-17: Cystic fibrosis DQ.',
+   src:['DoWI V1 §6.10i','AR 40-501 §2-17']},
+  {name:'COPD / Emphysema / Interstitial Lung Disease',icd:['J44.1','J43.9','J84.9'],waiver:'hardno',
+   dq:'COPD, emphysema, or interstitial lung disease.',
+   waiv:'HARD DISQUALIFIER.',
+   docs:[],ar:'AR 40-501 §2-17: COPD/ILD DQ.',
+   src:['DoWI V1 §6.10','AR 40-501 §2-17']},
+  {name:'Pulmonary / Systemic Embolism',icd:['I26.99','I74.9','I82.90'],waiver:'case',
+   dq:'Pulmonary or systemic embolism.',
+   waiv:'Waive if single and clearly provoked (car accident or surgery) AND off anticoagulants (except aspirin) for ≥ 6 months.',
+   docs:['Medical records documenting provoked event','Hypercoagulability workup results','Hematology clearance'],
+   ar:'',src:['SWA Guidance','DoWI V1 §6.10h']},
+]},
+
+{id:'GI',label:'Gastroenterology',color:'#d97706',conditions:[
+  {name:'GERD / Gastroesophageal Reflux Disease',icd:['K22.2','K21.9','K21.0','K22.70'],waiver:'likely',
+   dq:'GERD.',
+   waiv:'Waive unless evidence of stricture dilation, dysphagia, or dysplasia within the past year.',
+   docs:['Applicant statement on current symptoms (pain/difficulty swallowing)','GI records if treated for complications'],
+   ar:'',src:['SWA Guidance','DoWI V1 §6.12']},
+  {name:'Esophageal Disease / Ulceration',icd:['K22.9','I85.00','K23','Z85.01'],waiver:'case',
+   dq:'Esophageal disease including ulceration or varices.',
+   waiv:'Waive ulceration with completed treatment or asymptomatic for ≥ 6 months.',
+   docs:['Applicant statement on current symptoms','GI records showing completed treatment','Endoscopy results if available'],
+   ar:'',src:['SWA Guidance','DoWI V1 §6.12']},
+  {name:'Gastric / Duodenal Ulcers',icd:['K25.9','K26.9','K27.9','K28.9','K26.4','K29','K29.81'],waiver:'case',
+   dq:'Gastric or duodenal ulcers.',
+   waiv:'Waive if treated and resolved (including bleeding) > 3 months with benign etiology. DO NOT waive if current ulcer in GI tract, recurrent perforations, or obstructive ulcers.',
+   docs:['GI records showing treatment completion','Endoscopy confirming resolution','H. pylori treatment documentation if applicable'],
+   ar:'',src:['SWA Guidance','DoWI V1 §6.12']},
+  {name:'Bariatric Surgery (Gastric Sleeve / Bypass)',icd:['Z98.84'],waiver:'case',
+   dq:'History of bariatric surgery.',
+   waiv:'Waive sleeve gastrectomy if > 6 months without complications. Gastric bypass and other procedures have less favorable consideration. Must demonstrate: no surgical complications, stable weight × 3 months, normal hemoglobin values, no prescription meds × 3 months, asymptomatic with regular fitness program.',
+   docs:['Surgical records (type of procedure)','Surgeon clearance letter','Lab work (CBC, metabolic panel, B12, iron studies)','Weight stability documentation × 3 months','Pharmacy records (no meds × 3 months)'],
+   ar:'',src:['SWA Guidance','DoWI V1 §6.12'],
+   tip:`<strong>Gastric sleeve only</strong> has any pathway (> 6 months, no complications). Gastric bypass is essentially DQ. Requires surgeon clearance letter, stable weight × 3 months, normal labs, no prescription meds × 3 months, and an active fitness program. Collect all required docs before submitting — missing any one item = returned without action.`},
+  {name:'Constipation (Chronic)',icd:['K59.0','K59.04','K59.09'],waiver:'likely',
+   dq:'Chronic constipation.',
+   waiv:'Waive if no evidence of pelvic floor PT or biofeedback therapy within last year. Low risk if responding to medication.',
+   docs:['Applicant statement (current symptom management)','Medication list'],
+   ar:'',src:['SWA Guidance']},
+  {name:'Irritable Bowel Syndrome (IBS)',icd:['K58.9','K58.0'],waiver:'likely',
+   dq:'Irritable bowel syndrome.',
+   waiv:'Waive if symptoms controlled without biofeedback therapy.',
+   docs:['Applicant statement (pain frequency, diarrhea/constipation pattern, management)'],
+   ar:'',src:['SWA Guidance','DoWI V1 §6.12']},
+  {name:'Crohn\'s Disease / Ulcerative Colitis (IBD)',icd:['K50.90','K51.90','K51.30'],waiver:'unlikely',
+   dq:'Inflammatory bowel disease.',
+   waiv:'Generally DQ. Prolonged remission completely off all medications — rare case-by-case.',
+   docs:['GI records showing disease extent and treatment history','Current medication status','Colonoscopy results','Lab inflammatory markers'],
+   ar:'AR 40-501 §2-19: Chronic IBD DQ.',
+   src:['DoWI V1 §6.12','AR 40-501 §2-19']},
+  {name:'Appendectomy (Resolved)',icd:['Z87.09'],waiver:'likely',
+   dq:'History of appendectomy.',
+   waiv:'Simple resolved appendectomy — generally waiverable after full recovery.',
+   docs:['Operative records','Discharge summary showing uncomplicated recovery'],
+   ar:'',src:['SWA Guidance','DoWI V1 §6.12']},
+  {name:'Cholecystectomy (Resolved)',icd:['Z87.39'],waiver:'likely',
+   dq:'History of cholecystectomy.',
+   waiv:'Waiverable if resolved with no residual complications.',
+   docs:['Operative records','Post-op records showing full recovery'],
+   ar:'',src:['SWA Guidance','DoWI V1 §6.12']},
+]},
+
+{id:'DERM',label:'Dermatology',color:'#d97706',conditions:[
+  {name:'Acne (Including Accutane History)',icd:['L56.8','Z79.899','L70.0','L70.9'],waiver:'likely',
+   dq:'Acne requiring treatment. Accutane use is DQ until off drug.',
+   waiv:'Waive if acne will not interfere with wear of military equipment AND not currently on Accutane. Off Accutane more than 4 weeks.',
+   docs:['Applicant statement (last Accutane use date if applicable)','MEPS CMO physical exam documenting extent','Pharmacy records if Accutane prescribed'],
+   ar:'',src:['SWA Guidance','DoWI V1 §6.23']},
+  {name:'Atopic Dermatitis / Eczema',icd:['L20.9','L20.84','L30.9','L30.1','L25.9'],waiver:'case',
+   dq:'Atopic dermatitis / eczema.',
+   waiv:'Waive if: no active lesions or residual hyperpigmented areas on MEPS focused exam AND controlled with topical OTC steroids/moisturizer AND no prescription meds for condition ≥ 6 months AND no sleep/exercise/activity impacts.',
+   docs:['Pharmacy records (showing OTC management only ≥ 6 months)','MEPS focused physical exam results','Applicant statement on activity/sleep impacts'],
+   ar:'AR 40-501 §2-28: Skin conditions interfering with equipment DQ.',
+   src:['SWA Guidance','AR 40-501 §2-28']},
+  {name:'Psoriasis',icd:['L40.9'],waiver:'case',
+   dq:'Psoriasis.',
+   waiv:'Waive if: no active lesions on MEPS exam AND controlled with topical OTC steroids/moisturizer AND no prescription meds ≥ 6 months AND no sleep/exercise/activity impacts.',
+   docs:['Pharmacy report (OTC only ≥ 6 months)','Applicant statement on activity impacts'],
+   ar:'AR 40-501 §4-22b: Psoriasis with systemic implications DQ for aviation.',
+   src:['SWA Guidance','AR 40-501 §4-22']},
+  {name:'Hyperhidrosis',icd:['L74.512','L74.513','L74.52'],waiver:'likely',
+   dq:'Hyperhidrosis (excessive sweating).',
+   waiv:'Waive if no evidence of impact on daily activity AND no recurring skin infections/dermatitis.',
+   docs:['Applicant statement (functional impact)'],
+   ar:'',src:['SWA Guidance']},
+  {name:'Plantar Warts',icd:['B07.0'],waiver:'likely',
+   dq:'Plantar warts.',
+   waiv:'Waive if no evidence of hindrance of running, wearing boots, walking, or daily activity. Applicant can be put through OPAT/ACFT to demonstrate capability.',
+   docs:['Applicant statement (pain level, sports participation)','OPAT or ACFT results if available'],
+   ar:'',src:['SWA Guidance']},
+  {name:'Keloid Scarring (Extensive)',icd:['L91.0'],waiver:'case',
+   dq:'Keloid scarring that interferes with equipment wearing.',
+   waiv:'Limited scarring not affecting equipment: not DQ. Extensive interfering with equipment: case-by-case.',
+   docs:['MEPS exam documentation','Applicant statement on equipment impact'],
+   ar:'AR 40-501 §2-28: Skin conditions interfering with equipment DQ.',
+   src:['DoWI V1 §6.23','AR 40-501 §2-28']},
+  {name:'Tattoos (Location / Content Violations)',icd:['Z98.8'],waiver:'case',
+   dq:'Tattoos on face, neck above collar, scalp, hands (except single ring band), or with extremist/indecent/sexist/racist content.',
+   waiv:'Content violations: generally non-waiverable. Location violations: case-by-case with CO recommendation.',
+   docs:['Photographs of all tattoos','Applicant statement on tattoo meaning if content concern'],
+   ar:'AR 670-1: Army Tattoo Policy governs location and content standards.',
+   src:['AR 670-1']},
+]},
+
+{id:'ENDO',label:'Endocrinology',color:'#7c3aed',conditions:[
+  {name:'Type 1 Diabetes Mellitus (Insulin-Dependent)',icd:['E10.9','E10.65'],waiver:'hardno',
+   dq:'Type 1 diabetes mellitus.',
+   waiv:'HARD DISQUALIFIER — insulin-dependent DM incompatible with military service.',
+   docs:[],ar:'AR 40-501 §2-19: Insulin-dependent diabetes DQ.',
+   src:['DoWI V1 §6.13','AR 40-501 §2-19']},
+  {name:'Pre-Diabetes / Diabetic Disorders',icd:['R73.03','Z86.32'],waiver:'likely',
+   dq:'Pre-diabetes or history of diabetic disorder.',
+   waiv:'Waive if normal HbA1c < 5.7 within past 6 months WITHOUT use of insulin or other diabetes medicines.',
+   docs:['HbA1c lab result within past 6 months','Fasting glucose labs','Medication history'],
+   ar:'',src:['SWA Guidance','DoWI V1 §6.13']},
+  {name:'Hypothyroidism (Stable)',icd:['E03.9','E03.0'],waiver:'likely',
+   dq:'Hypothyroidism requiring medication.',
+   waiv:'Waive with euthyroid labs with or without medication in the last 12 months.',
+   docs:['TSH and free T4 within past 12 months','Pharmacy records showing stable medication dose','Endocrinology or PCP letter if needed'],
+   ar:'AR 40-501 §4-25d: Hypothyroidism requiring meds DQ for aviation.',
+   src:['SWA Guidance','DoWI V1 §6.13','AR 40-501 §4-25']},
+  {name:'Thyroid Nodule / Goiter / Cyst',icd:['E04.9','E04.1','E07.9'],waiver:'likely',
+   dq:'Thyroid nodule, goiter, or cyst.',
+   waiv:'Waive if no requirement for biopsy/surveillance by TIRADS criteria OR has been proven benign by biopsy.',
+   docs:['Thyroid ultrasound with TIRADS score','Pathology report if biopsied','Endocrinology evaluation letter'],
+   ar:'',src:['SWA Guidance','DoWI V1 §6.13']},
+  {name:'Pituitary Dysfunction / Tumor',icd:['E23.7'],waiver:'case',
+   dq:'Pituitary dysfunction or tumor.',
+   waiv:'Waive if ONLY low prolactin OR tumor size < 0.5cm OR stable in size for 5 years.',
+   docs:['MRI pituitary with measurements','Endocrinology records','Hormone panel (prolactin, IGF-1, cortisol)'],
+   ar:'',src:['SWA Guidance']},
+  {name:'Hypogonadism',icd:['E29.1'],waiver:'case',
+   dq:'Hypogonadism.',
+   waiv:'Waive with topical testosterone replacement stable for ≥ 12 months.',
+   docs:['Pharmacy records showing stable TRT × 12 months','Labs (testosterone, LH, FSH)','Endocrinology letter'],
+   ar:'',src:['SWA Guidance']},
+  {name:'Nutritional Deficiency Diseases',icd:['Z86.39','E51.11','E51.9','E52','E54','E55.9','D51.9'],waiver:'likely',
+   dq:'Nutritional deficiency diseases (B12, folate, vitamin C, vitamin D, thiamine, etc.).',
+   waiv:'Waive all conditions.',
+   docs:['Lab documentation','Treatment records'],
+   ar:'',src:['SWA Guidance']},
+  {name:'Height/Weight — H&W Failure',icd:['E66.9'],waiver:'hardno',
+   dq:'Failure to meet AR 600-9 height/weight or body fat standards.',
+   waiv:'HARD DISQUALIFIER — H&W waivers NOT authorized per AR 601-210 §2-9f. Must meet standards to enlist.',
+   docs:[],ar:'AR 40-501 §2-3 / AR 601-210 §2-9f: H&W waivers not authorized.',
+   src:['AR 601-210 §2-9f','AR 40-501 §2-3','AR 600-9']},
+]},
+
+{id:'ORTHO',label:'Orthopedics',color:'#0d9488',conditions:[
+  {name:'Shoulder Stiffness — Limited ROM',icd:['M25.619','M75.0'],waiver:'likely',
+   dq:'Limited shoulder range of motion.',
+   waiv:'Waive if documented ROM: forward flexion ≥ 90°, abduction ≥ 90°, external rotation ≥ 45°, internal rotation ≥ 60°.',
+   docs:['Orthopedic or physical therapy ROM documentation','Exercise/sports activity statement — ACFT or OPAT strongly recommended'],
+   ar:'AR 40-501 §2-26: Upper extremity ROM limitations DQ.',
+   src:['SWA Guidance','AR 40-501 §2-26']},
+  {name:'Elbow Stiffness — Limited ROM',icd:['M25.729'],waiver:'likely',
+   dq:'Limited elbow ROM.',
+   waiv:'Waive if flexion ≥ 100° OR extension ≥ 60°.',
+   docs:['ROM documentation','Activity statement'],
+   ar:'',src:['SWA Guidance']},
+  {name:'Wrist Stiffness — Limited ROM',icd:['M25.639'],waiver:'likely',
+   dq:'Limited wrist ROM.',
+   waiv:'Waive if total extension + flexion ≥ 15°. Forearm: pronation/supination ≥ 40°. Radial-ulnar deviation combined ≥ 20°.',
+   docs:['ROM documentation','Activity statement'],
+   ar:'',src:['SWA Guidance']},
+  {name:'AC (Acromioclavicular) Separation',icd:['S43.109S','S43.119S'],waiver:'likely',
+   dq:'AC joint separation.',
+   waiv:'Waive if > 6 months ago and currently asymptomatic.',
+   docs:['Orthopedic records','Current imaging if applicable','Activity statement'],
+   ar:'',src:['SWA Guidance']},
+  {name:'Finger Amputation',icd:['S68.129S','S68.119S'],waiver:'case',
+   dq:'Amputation of a finger.',
+   waiv:'Waive if single finger amputation at MCPJ or more distal — EXCLUDING thumb. Thumb amputation: generally DQ.',
+   docs:['Operative records','Functional assessment'],
+   ar:'AR 40-501 §5-4k(3): Loss of any digit from either hand DQ for SF.',
+   src:['SWA Guidance','AR 40-501 §5-4']},
+  {name:'Orthopedic Implants / Retained Hardware',icd:['Z96.60'],waiver:'likely',
+   dq:'Retained orthopedic implants, bone anchors, plates, rods, screws.',
+   waiv:'Waive if fractures healed, ligaments stable, and no pain. Applicant statement required.',
+   docs:['Applicant statement (functional status)','Orthopedic records confirming healing','Imaging if applicable'],
+   ar:'',src:['SWA Guidance']},
+  {name:'Hip Stiffness — Limited ROM',icd:['M25.659'],waiver:'likely',
+   dq:'Limited hip ROM.',
+   waiv:'Waive if: flexion ≥ 90°, extension beyond 0°, abduction beyond 30°.',
+   docs:['ROM documentation','Activity/sports statement'],
+   ar:'',src:['SWA Guidance']},
+  {name:'Hip Arthroscopy / FAI (Femoroacetabular Impingement)',icd:['M76.20','M12.559','M25.559'],waiver:'likely',
+   dq:'Hip arthroscopy or FAI.',
+   waiv:'Waive if asymptomatic and applicant is physically active.',
+   docs:['Orthopedic records','Activity/sports statement — ACFT or OPAT strongly recommended'],
+   ar:'',src:['SWA Guidance']},
+  {name:'Knee Stiffness — Limited ROM',icd:['M25.669'],waiver:'likely',
+   dq:'Limited knee ROM.',
+   waiv:'Waive if: flexion ≥ 90°, extension ≥ 15°.',
+   docs:['ROM documentation','Activity statement'],
+   ar:'',src:['SWA Guidance']},
+  {name:'Anterior Knee Pain / Patellofemoral Syndrome',icd:['M22.2X9','M22.40','M17.9'],waiver:'likely',
+   dq:'Anterior knee pain.',
+   waiv:'Waive all without question per SWA guidance.',
+   docs:['Applicant statement if needed'],
+   ar:'',src:['SWA Guidance']},
+  {name:'ACL / PCL Reconstruction',icd:['M23.619','Z87.39'],waiver:'case',
+   dq:'Knee ligament reconstruction or instability.',
+   waiv:'Post-surgical, asymptomatic, full return to unrestricted activity — case-by-case. Active instability: DQ.',
+   docs:['Operative records','Orthopedic clearance letter','Activity statement — ACFT or OPAT strongly recommended'],
+   ar:'AR 40-501 §2-26: Instability after reconstruction DQ.',
+   src:['SWA Guidance','DoWI V1 §6.17c','AR 40-501 §2-26']},
+  {name:'Chondromalacia Patella',icd:['M24.28'],waiver:'likely',
+   dq:'Chondromalacia of the patella.',
+   waiv:'Waive up to Grade II on radiographic evidence if asymptomatic, active lifestyle, and no surgical history.',
+   docs:['Imaging records','Activity/sports statement'],
+   ar:'',src:['SWA Guidance']},
+  {name:'Osgood-Schlatter Disease',icd:['M92.50'],waiver:'likely',
+   dq:'Osteochondritis of tibial tuberosity.',
+   waiv:'Waive if asymptomatic.',
+   docs:['Applicant statement confirming asymptomatic status'],
+   ar:'',src:['SWA Guidance']},
+  {name:'Chondromalacia / Osteochondritis Dissecans',icd:['M24.28','M93.209'],waiver:'likely',
+   dq:'Osteochondral pathology.',
+   waiv:'Waive up to Grade II evidence if asymptomatic and active lifestyle without surgery.',
+   docs:['Imaging','Activity statement'],
+   ar:'',src:['SWA Guidance']},
+  {name:'Compartment Syndrome (Post-Traumatic)',icd:['T79.A0XS'],waiver:'likely',
+   dq:'History of post-traumatic compartment syndrome.',
+   waiv:'Waive if history > 6 months ago and currently asymptomatic.',
+   docs:['Medical records','Applicant statement confirming asymptomatic status'],
+   ar:'',src:['SWA Guidance']},
+  {name:'Ankle Stiffness — Limited ROM',icd:['M25.673'],waiver:'likely',
+   dq:'Limited ankle ROM.',
+   waiv:'Waive if dorsiflexion ≥ 10°.',
+   docs:['ROM documentation'],
+   ar:'',src:['SWA Guidance']},
+  {name:'Pes Planus (Flat Feet)',icd:['M21.40','Q66.50','M25.676'],waiver:'likely',
+   dq:'Flat feet.',
+   waiv:'Waive if no impact on wearing military footwear. Applicant statement required. Rigid pes planus is more restrictive.',
+   docs:['Applicant statement on footwear tolerance','ACFT or OPAT results (strongly recommended)'],
+   ar:'AR 40-501 §2-26: Pes planus symptomatic or preventing footwear wear DQ.',
+   src:['SWA Guidance','AR 40-501 §2-26']},
+  {name:'Plantar Fasciitis',icd:['M72.2'],waiver:'likely',
+   dq:'Plantar fasciitis.',
+   waiv:'Waive if documented treatment and resolution. If still active: may waive with 507 statement endorsing resolution before ship.',
+   docs:['Medical records showing treatment','Applicant statement confirming resolution','507 from provider if active'],
+   ar:'',src:['SWA Guidance']},
+  {name:'Shin Splints / Tibial Stress Syndrome',icd:['M76.811','M76.8112'],waiver:'likely',
+   dq:'Periostitis / tibial stress syndrome.',
+   waiv:'Waive if asymptomatic.',
+   docs:['Applicant statement'],
+   ar:'',src:['SWA Guidance']},
+  {name:'Neuroma (Morton\'s)',icd:['G57.60'],waiver:'likely',
+   dq:'Neuroma of the foot.',
+   waiv:'Waive and recommend treatment before ship. Cannot ship unless documented resolution.',
+   docs:['Medical records showing treatment','Provider documentation of resolution before ship date'],
+   ar:'',src:['SWA Guidance']},
+  {name:'Leg-Length Discrepancy',icd:['M21.70'],waiver:'likely',
+   dq:'Leg length discrepancy.',
+   waiv:'Waive if no pain and applicant demonstrates sports/ACFT/physical fitness.',
+   docs:['Activity/sports statement','ACFT or OPAT (strongly recommended)'],
+   ar:'',src:['SWA Guidance']},
+  {name:'Bone Contusion',icd:['T79.9XXS'],waiver:'likely',
+   dq:'Bone contusion without fracture.',
+   waiv:'Waive if > 60 days ago, no fracture/nerve injury/open wound, and evidence of return to physically active lifestyle.',
+   docs:['Applicant statement on current activity level'],
+   ar:'',src:['SWA Guidance']},
+  {name:'Loose / Foreign Body in Knee',icd:['M23.40'],waiver:'likely',
+   dq:'Loose or foreign body in knee joint.',
+   waiv:'Waive if asymptomatic.',
+   docs:['Imaging confirming status','Applicant statement'],
+   ar:'',src:['SWA Guidance']},
+]},
+
+{id:'SPINE',label:'Spine / Back',color:'#0d9488',conditions:[
+  {name:'Back Pain / Spine Condition (Active or Recent 24 mo)',icd:['M54.5','M54.6','M54.40','M53.2X9'],waiver:'case',
+   dq:'Spine/sacroiliac condition in last 24 months that: prevented physically active lifestyle; required external support; required frequent treatment; required medication > 6 weeks; caused pain > 6 weeks; required spinal injections/nerve blocks.',
+   waiv:'Waive if history > 12 months ago OR medication limited to NSAIDs/Acetaminophen.',
+   docs:['Applicant statement (date of onset, current activity level)','Medical records showing treatment history'],
+   ar:'AR 40-501 §2-27a: Spinal conditions causing limitations DQ.',
+   src:['SWA Guidance','DoWI V1 §6.16b','AR 40-501 §2-27'],
+   tip:`<strong>24-month rule is strict.</strong> If medication was limited to OTC NSAIDs/Tylenol and history is > 12 months ago = likely waiverable. Any injections (epidural, nerve block, RFA) are a hard DQ criterion in DoWI §6.16b(7). Applicant statement on current unrestricted physical activity is essential. ACFT or OPAT is the best supporting evidence.`},
+  {name:'Scoliosis (Symptomatic or > 30° Cobb)',icd:['M41.34','M41.20','M40.205'],waiver:'case',
+   dq:'Spinal curvature symptomatic within 24 months OR > 30° lumbar/thoracic scoliosis OR > 50° thoracic kyphosis by Cobb method.',
+   waiv:'Waive if asymptomatic for > 12 months AND evidence of physically active lifestyle. Cobb angle must be: lumbar/thoracic < 30°, thoracic kyphosis < 50°.',
+   docs:['Applicant statement (asymptomatic status, activity level)','Standing scoliosis X-rays with Cobb angle measurement','Orthopedic evaluation letter'],
+   ar:'AR 40-501 §2-27: Symptomatic scoliosis or requiring surgical correction DQ.',
+   src:['SWA Guidance','DoWI V1 §6.16c','AR 40-501 §2-27']},
+  {name:'Spondylolysis / Spondylolisthesis',icd:['M43.00','M43.10','M43.16'],waiver:'hardno',
+   dq:'History of spondylolysis or spondylolisthesis, congenital or acquired.',
+   waiv:'HARD DISQUALIFIER per DoWI §6.16k — not waiverable.',
+   docs:[],ar:'AR 40-501 §2-27g: Spondylolysis/spondylolisthesis DQ.',
+   src:['DoWI V1 §6.16k','AR 40-501 §2-27'],
+   tip:`<strong>Hard DQ per DoWI §6.16k — no waiver pathway.</strong> Even asymptomatic, even if only found incidentally on imaging. Do not invest time building a packet. If applicant wants to serve, counsel them that this is a statutory bar.`},
+  {name:'Herniated Disc / Lumbar Disc Pathology',icd:['M51.16','M51.17','M51.26'],waiver:'case',
+   dq:'Lumbar disc pathology with symptoms, treatment, or activity limitations in last 24 months or recurrent symptoms.',
+   waiv:'Single-level discectomy, asymptomatic, full unrestricted activity ≥ 12 months — may waive. Active symptoms or multi-level: unlikely.',
+   docs:['Applicant statement (12+ months unrestricted activity)','Orthopedic clearance letter','MRI or operative records'],
+   ar:'AR 40-501 §2-27: HNP DQ. Single-level surgery waiverable.',
+   src:['DoWI V1 §6.16h,i','AR 40-501 §2-27']},
+  {name:'Vertebral Fracture',icd:['S32.009S','S22.009S','S12.9XXS'],waiver:'case',
+   dq:'Vertebral body fracture. Cervical fractures: generally DQ. Thoracic/lumbar > 25% height or < 12 months old.',
+   waiv:'Non-surgical treatment, asymptomatic T/L fracture < 25% body height — may waive. Cervical fractures: generally not waiverable.',
+   docs:['Applicant statement','Imaging (X-ray or CT) with radiologist read','Orthopedic evaluation'],
+   ar:'AR 40-501 §2-27f: Vertebral fractures DQ with regional criteria.',
+   src:['SWA Guidance','DoWI V1 §6.16f','AR 40-501 §2-27']},
+  {name:'Ankylosing Spondylitis / Inflammatory Spondylopathy',icd:['M45.9','M45.0','M46.80'],waiver:'hardno',
+   dq:'Ankylosing spondylitis or other inflammatory spondylopathies.',
+   waiv:'HARD DISQUALIFIER.',
+   docs:[],ar:'AR 40-501 §2-27: Ankylosing spondylitis DQ.',
+   src:['DoWI V1 §6.16a','AR 40-501 §2-27']},
+  {name:'Spinal Injections / Nerve Blocks (History)',icd:['M54.6','M54.50'],waiver:'unlikely',
+   dq:'History of spinal injections, nerve blocks, or radiofrequency ablation for spine conditions.',
+   waiv:'DoWI §6.16b(7) DQ criterion. History > 24 months with no recurrence — case-by-case.',
+   docs:['Medical records documenting injection type and date','Current clinical status','Orthopedic evaluation'],
+   ar:'',src:['DoWI V1 §6.16b(7)']},
+  {name:'Scheuermann\'s Kyphosis / Juvenile Epiphysitis',icd:['M42.9','M42.00','M42.09'],waiver:'case',
+   dq:'Juvenile epiphysitis with residual X-ray changes.',
+   waiv:'Waive if Cobb angle: lumbar/thoracic scoliosis < 30° and thoracic kyphosis < 50°.',
+   docs:['Standing X-rays with Cobb angle','Applicant statement on current activity'],
+   ar:'',src:['SWA Guidance','DoWI V1 §6.16g']},
+]},
+
+{id:'NEURO',label:'Neurology',color:'#7c3aed',conditions:[
+  {name:'Skull Fracture',icd:['S02.91XS','S02.91'],waiver:'case',
+   dq:'History of skull fracture.',
+   waiv:'Waive if history before age 12 with no functional limitations.',
+   docs:['Medical records','Imaging (CT head if available)','Neurology evaluation'],
+   ar:'AR 40-501 §2-36: Head injuries DQ depending on severity.',
+   src:['SWA Guidance','DoWI V1 §6.2','AR 40-501 §2-36']},
+  {name:'Mild TBI / Concussion',icd:['Z87.820','S06.0X0S','S06.0X1S'],waiver:'likely',
+   dq:'History of mild TBI/concussion. DQ if LOC in past 6 months or residual symptoms.',
+   waiv:'Waive all without residual symptoms AND no LOC in past 6 months. Cannot ship < 4 weeks from incident.',
+   docs:['Applicant statement (date of injury, symptom resolution)','Medical records if treated'],
+   ar:'AR 40-501 §2-36: Head injuries with LOC DQ depending on severity.',
+   src:['SWA Guidance','DoWI V1 §6.2','AR 40-501 §2-36']},
+  {name:'Moderate/Severe TBI (EDH/SDH/SAH)',icd:['S06.5X0S','S06.6X0S','S06.360S'],waiver:'case',
+   dq:'Moderate/severe TBI with intracranial hemorrhage.',
+   waiv:'Waive ONLY if occurrence before age 5 without any functional limitations. Any residuals: DQ.',
+   docs:['Complete medical records','Neurology evaluation','Neuropsychological testing if applicable'],
+   ar:'AR 40-501 §2-36: Intracranial hemorrhage DQ.',
+   src:['SWA Guidance','DoWI V1 §6.2','AR 40-501 §2-36']},
+  {name:'Post-Traumatic Seizures',icd:['R56.1'],waiver:'case',
+   dq:'Seizures following head trauma.',
+   waiv:'Waive if seizures lasted ≤ 7 days beyond injury AND applicant is ≥ 12 months free of seizures AND ≥ 12 months off seizure medication.',
+   docs:['Neurology records','Medication history (off seizure meds ≥ 12 months)','EEG results'],
+   ar:'AR 40-501 §2-36: Post-traumatic seizures DQ.',
+   src:['SWA Guidance','AR 40-501 §2-36']},
+  {name:'Headaches / Migraines',icd:['R51','G43.911','G44.221','G44.229'],waiver:'likely',
+   dq:'Recurrent headaches or migraines with functional impact.',
+   waiv:'Waive if: no missed work/school/sports > 8 times in any 12-month period AND only OTC or low-toxicity medications or therapy.',
+   docs:['Pharmacy records','Applicant statement (frequency, impact, medications used)'],
+   ar:'AR 40-501 §4-27c: Chronic/incapacitating headaches DQ for aviation.',
+   src:['SWA Guidance','AR 40-501 §4-27']},
+  {name:'Epilepsy / Non-Febrile Seizure Disorder',icd:['G40.909','G40.309','G40.209'],waiver:'unlikely',
+   dq:'History of epilepsy or non-febrile seizure disorder.',
+   waiv:'Generally DQ. Single febrile seizure before age 5 with normal EEG and no recurrence — not DQ. Post-traumatic seizures have separate criteria.',
+   docs:['Complete neurology records','EEG','Medication history'],
+   ar:'AR 40-501 §2-36: Epilepsy DQ.',
+   src:['DoWI V1 §6.21','AR 40-501 §2-36']},
+  {name:'Multiple Sclerosis / Demyelinating Disease',icd:['G35','G36.9'],waiver:'hardno',
+   dq:'Multiple sclerosis or demyelinating disease.',
+   waiv:'HARD DISQUALIFIER.',
+   docs:[],ar:'AR 40-501 §2-36: MS DQ.',
+   src:['DoWI V1 §6.21','AR 40-501 §2-36']},
+  {name:'Stroke / TIA / Cerebrovascular Disease',icd:['I63.9','G45.9','I67.9'],waiver:'hardno',
+   dq:'History of CVA, TIA, cerebrovascular stenosis, aneurysm, or AVM.',
+   waiv:'HARD DISQUALIFIER.',
+   docs:[],ar:'AR 40-501 §4-27a: Cerebrovascular conditions DQ.',
+   src:['DoWI V1 §6.21','AR 40-501 §4-27']},
+]},
+
+{id:'MH',label:'Behavioral Health',color:'#7c3aed',conditions:[
+  {name:'ADHD — With Functional Criteria',icd:['F90.0','F90.1','F90.2','F90.9'],waiver:'unlikely',
+   dq:'ADHD with any of: IEP/504/accommodations after age 14; comorbid mental disorders; prescribed medication in previous 24 months; documented adverse academic or occupational performance.',
+   waiv:'Waiver UNLIKELY if any criterion present. Off ALL meds > 24 months, no IEP/504, no comorbid conditions, no documented adverse performance — case-by-case.',
+   docs:['Pharmacy records (confirming off meds ≥ 24 months)','School transcripts showing no IEP/504 after age 14','Applicant statement'],
+   ar:'AR 40-501 §2-35: ADHD with adverse academic/occupational performance DQ.',
+   src:['DoWI V1 §6.28a','AR 40-501 §2-35'],
+   tip:`<strong>Most common BH DQ.</strong> Off meds > 24 months is baseline. IEP or 504 plan after age 14 = waiver unlikely regardless of med status. Get school records and transcripts early. If applicant says "I stopped meds at 18" but has an active 504 in senior year, that's a DQ. 5-year pharmacy records are non-negotiable.`},
+  {name:'Depression / Depressive Disorder (Single Episode)',icd:['F32.9','F32.0','F32.1'],waiver:'unlikely',
+   dq:'Depressive disorder if: outpatient care > 12 cumulative months; symptomatic/treated within 36 months; inpatient treatment; recurrence; any suicidality.',
+   waiv:'Waiver UNLIKELY. Must demonstrate ≥ 1 year mental health stability AND ≥ 1 year off mental health medications. No suicidality. No inpatient. BH consult required. BH consult CANNOT be ordered until full treatment history is understood.',
+   docs:['ALL mental health encounter notes (diagnosis, treatment plan, prescriptions)','5-year pharmacy records','Applicant statement (onset, treatment duration, current status)','BH consult (ordered after complete record review)'],
+   ar:'AR 40-501 §2-35 / AR 601-210 §4-5c: DCS G-1 DMPM waiver authority for psychiatric conditions.',
+   src:['SWA Guidance','DoWI V1 §6.28f','AR 601-210 §4-5c'],
+   tip:`<strong>Timeline matters most.</strong> Must be ≥ 1yr stability AND ≥ 1yr off meds BEFORE BH consult is ordered. BH consult cannot be ordered until SWA has all treatment records. Collect ALL mental health encounter notes, treatment plans, prescriptions first. 5-year pharmacy records required. MDD recurrent = 2 years, not 1.`},
+  {name:'Major Depressive Disorder (Recurrent)',icd:['F33.9','F33.0','F33.1'],waiver:'unlikely',
+   dq:'Recurrent major depressive disorder.',
+   waiv:'Waiver UNLIKELY. Must demonstrate ≥ 2 years of mental health stability AND ≥ 1 year off mental health medications. No suicidality. No inpatient treatment. BH consult required. 5-year pharmacy records required.',
+   docs:['ALL mental health encounter notes','5-year pharmacy records','BH consult','Applicant statement'],
+   ar:'AR 601-210 §4-5c: DCS G-1 DMPM waiver authority.',
+   src:['SWA Guidance','DoWI V1 §6.28f','AR 601-210 §4-5c'],
+   tip:`<strong>Recurrent = 2 years stability required, not 1.</strong> BH consult CANNOT be ordered until SWA has complete treatment history. All mental health encounter notes required (diagnosis, treatment plan, prescriptions, follow-up plan). 5-year pharmacy records mandatory. BH consult order by GC = return without action.`},
+  {name:'Anxiety Disorder',icd:['F41.1','F41.9','F40.10','F41.0'],waiver:'unlikely',
+   dq:'Anxiety disorder if: outpatient care > 12 cumulative months; symptomatic/treated within 36 months; inpatient; recurrence; suicidality.',
+   waiv:'Waiver UNLIKELY. ≥ 1 year stability AND ≥ 1 year off meds. BH consult required. 5-year pharmacy records required.',
+   docs:['ALL mental health encounter notes','5-year pharmacy records','Applicant statement','BH consult'],
+   ar:'AR 40-501 §2-35 / AR 601-210 §4-5c.',
+   src:['SWA Guidance','DoWI V1 §6.28q','AR 601-210 §4-5c']},
+  {name:'Bipolar Disorder (Any Type)',icd:['F31.9','F31.10','F31.30','F31.81'],waiver:'hardno',
+   dq:'Any history of bipolar disorder (I, II, cyclothymia, substance-induced bipolar).',
+   waiv:'Waiver UNLIKELY TO IMPOSSIBLE. Even with extended stability, confirmed bipolar after adolescence presents lifelong recurrence risk under military stress. Waiver authority: DCS G-1 DMPM.',
+   docs:['Complete psychiatric records'],
+   ar:'AR 601-210 §4-5c: DCS G-1 DMPM waiver authority.',
+   src:['SWA Guidance','DoWI V1 §6.28e','AR 601-210 §4-5c']},
+  {name:'Schizophrenia / Psychotic Disorder',icd:['F20.9','F29','F22','F25.9'],waiver:'hardno',
+   dq:'Any history of disorders with psychotic features.',
+   waiv:'HARD DISQUALIFIER — not waiverable.',
+   docs:[],ar:'AR 601-210 §4-5c: DCS G-1 DMPM waiver authority.',
+   src:['DoWI V1 §6.28d','AR 601-210 §4-5c']},
+  {name:'Suicidality (Any History)',icd:['R45.851','T14.91XA','Z91.51'],waiver:'hardno',
+   dq:'Any history of: suicide attempt, suicidal gesture, suicidal ideation with plan, or any ideation within past 12 months.',
+   waiv:'HARD DISQUALIFIER. Waiver authority: DCS G-1 DMPM. Self-mutilation: single episode before age 14 AND no incident within 5 years AND no BH condition on psychiatric evaluation AND adequate coping — may be considered.',
+   docs:['Complete psychiatric evaluation (ordered by MEPS CMO)','Medical records','Applicant statement on coping'],
+   ar:'AR 601-210 §4-5c,e: DCS G-1 DMPM waiver authority. Self-mutilation specific criteria in §4-5e.',
+   src:['DoWI V1 §6.28m','AR 601-210 §4-5c,e'],
+   tip:`<strong>Hardest DQ to waive.</strong> Waiver authority is DCS G-1 DMPM — not Command Surgeon. Practical approval rate is extremely low. Self-mutilation has a narrow exception path: single episode before age 14, no incident within 5 years, no BH condition on psych eval, evidence of adequate coping (AR 601-210 §4-5e). Do not build a false pipeline around this case.`},
+  {name:'PTSD',icd:['F43.10','F43.11','F43.12'],waiver:'hardno',
+   dq:'History of PTSD or other trauma/stressor-related disorders.',
+   waiv:'HARD DISQUALIFIER — not waiverable at accession.',
+   docs:[],ar:'AR 40-501 §2-35: PTSD DQ.',
+   src:['DoWI V1 §6.28p','AR 40-501 §2-35']},
+  {name:'OCD (Obsessive-Compulsive Disorder)',icd:['F42.9','F42.2'],waiver:'hardno',
+   dq:'History of OCD.',
+   waiv:'HARD DISQUALIFIER.',
+   docs:[],ar:'',src:['DoWI V1 §6.28o']},
+  {name:'Eating Disorder (Anorexia / Bulimia / Binge-Eating)',icd:['F50.9','F50.00','F50.2','F50.82'],waiver:'unlikely',
+   dq:'Any history of eating disorder.',
+   waiv:'If diagnosed as adolescent ONLY: SWA will want period of remission — case-by-case. If diagnosed as adult: default disapproval. Extensive remission required. Waiver NOT entertained for underweight or borderline applicants.',
+   docs:['Applicant statement (onset/offset of symptoms, treatment history, current status)','HT/WT review — applicant must meet standards','Clinical notes from treating clinician showing when treatment stopped'],
+   ar:'',src:['DoWI V1 §6.28k','SWA Guidance'],
+   tip:`<strong>Adult diagnosis = default disapproval.</strong> Do not send for consult without clinical notes showing exact onset date. Adolescent-only = possible with extensive remission. SWA will not consider if applicant is underweight or borderline HT/WT. Get HT/WT verified first before investing time.`},
+  {name:'Prior Psychiatric Hospitalization (Any Cause)',icd:['Z87.39'],waiver:'hardno',
+   dq:'Any prior psychiatric hospitalization.',
+   waiv:'HARD DISQUALIFIER per DoWI §6.28y.',
+   docs:[],ar:'',src:['DoWI V1 §6.28y']},
+  {name:'Psychotropic Medication (Within 36 Months)',icd:['Z79.899'],waiver:'unlikely',
+   dq:'Prescription psychotropic medication within previous 36 months.',
+   waiv:'Waiver UNLIKELY if within 36 months. Off all meds > 36 months with no underlying DQ condition — case-by-case.',
+   docs:['5-year pharmacy records'],
+   ar:'',src:['DoWI V1 §6.28w']},
+  {name:'Adjustment Disorder',icd:['F43.20','F43.21','F43.22','F43.23'],waiver:'case',
+   dq:'Single adjustment disorder treated/symptomatic within 6 months OR chronic (> 6 months) or recurrent.',
+   waiv:'Single episode, resolved > 6 months, no recurrence — likely waiverable. Chronic/recurrent: unlikely.',
+   docs:['Mental health records','Applicant statement','Pharmacy records'],
+   ar:'',src:['DoWI V1 §6.28g']},
+  {name:'Autism Spectrum Disorder',icd:['F84.0','F84.9'],waiver:'hardno',
+   dq:'Autism spectrum disorder.',
+   waiv:'HARD DISQUALIFIER per DoWI §6.28c.',
+   docs:[],ar:'AR 40-501 §2-35: ASD DQ.',
+   src:['DoWI V1 §6.28c','AR 40-501 §2-35']},
+  {name:'Gender Dysphoria',icd:['F64.0'],waiver:'hardno',
+   dq:'Current diagnosis or history of gender dysphoria or symptoms consistent with gender dysphoria.',
+   waiv:'HARD DISQUALIFIER per DoWI 6130.03-V1 §6.28t, EO 14168, and EO 14183.',
+   docs:[],ar:'',
+   src:['DoWI V1 §6.28t','EO 14168','EO 14183']},
+]},
+
+{id:'SLEEP',label:'Sleep Disorders',color:'#6366f1',conditions:[
+  {name:'Obstructive Sleep Apnea',icd:['G47.30','G47.33'],waiver:'case',
+   dq:'History of OSA.',
+   waiv:'Waive if: (1) Mild OSA (AHI < 15) asymptomatic, OR (2) Mild OSA managed with APAP/CPAP/oral appliance, OR (3) Moderate OSA (AHI 15-29) with CPAP compliance report ≥ 4hrs/night for ≥ 70% of nights over 30 days.',
+   docs:['Sleep study (polysomnography)','CPAP/APAP 30-day compliance report','Pulmonology/sleep medicine letter'],
+   ar:'',src:['SWA Guidance','AR 40-501 §2-36']},
+  {name:'Chronic Insomnia',icd:['G47.00','G47.01','F51.01'],waiver:'unlikely',
+   dq:'Chronic insomnia per DSM-5 OR use of sleep aids ≥ 15 times in past 12 months.',
+   waiv:'Resolved, off all sleep meds > 36 months — case-by-case. Chronic with medication: DQ.',
+   docs:['Pharmacy records (12-month period)','Medical records'],
+   ar:'',src:['DoWI V1 §6.27a']},
+  {name:'Sleepwalking / Night Terrors (After Age 13)',icd:['G47.52','F51.4','F51.3'],waiver:'unlikely',
+   dq:'History of parasomnia including sleepwalking or night terrors after the 13th birthday.',
+   waiv:'Generally DQ. Remote history (5+ years) with no recurrence — case-by-case.',
+   docs:['Medical records','Applicant statement on recurrence history'],
+   ar:'AR 40-501 §2-36: Parasomnias evaluated per risk.',
+   src:['DoWI V1 §6.27e','AR 40-501 §2-36']},
+]},
+
+{id:'KIDNEY',label:'Urology / Nephrology',color:'#7c3aed',conditions:[
+  {name:'Kidney Stones (Urolithiasis)',icd:['N20.0','N20.2','N20.9'],waiver:'case',
+   dq:'Current stone ≥ 3mm; multiple stones; symptomatic within 12 months; history requiring procedure; nephrocalcinosis.',
+   waiv:'Single small stone (< 3mm), asymptomatic, no procedure history — case-by-case. Recurrent or procedure-requiring: unlikely.',
+   docs:['Imaging (CT or ultrasound)','Urology records','Metabolic workup (24-hr urine if available)'],
+   ar:'AR 40-501 §2-22: Urolithiasis DQ per severity.',
+   src:['DoWI V1 §6.15t','AR 40-501 §2-22']},
+  {name:'HIV Positive',icd:['Z21','B20'],waiver:'hardno',
+   dq:'Confirmed positive HIV status.',
+   waiv:'HARD DISQUALIFIER — waivers not authorized per AR 601-210 §2-9c.',
+   docs:[],ar:'AR 601-210 §2-9c: HIV positive DQ without waiver.',
+   src:['AR 601-210 §2-9c','AR 40-501']},
+  {name:'Chronic Kidney Disease',icd:['N18.1','N18.2','N18.3','N18.9'],waiver:'unlikely',
+   dq:'CKD with abnormal imaging, casts, active urine sediment, or abnormal biopsy.',
+   waiv:'Generally DQ. Mild isolated lab abnormalities with normal function — case-by-case.',
+   docs:['Nephrology records','Lab work (GFR, creatinine, UA with microscopy)','Renal imaging'],
+   ar:'AR 40-501 §2-22: Chronic renal disease DQ.',
+   src:['DoWI V1 §6.15','AR 40-501 §2-22']},
+]},
+
+{id:'BLOOD',label:'Hematology / Oncology',color:'#dc2626',conditions:[
+  {name:'Sickle Cell Disease',icd:['D57.1','D57.00','D57.01'],waiver:'hardno',
+   dq:'Sickle cell disease (HbSS, HbSC, HbS/beta-thal). NOTE: Sickle cell TRAIT (HbAS) with HCT > 35% (F)/38% (M) and no vaso-occlusive crisis is NOT DQ.',
+   waiv:'HARD DISQUALIFIER. Trait is NOT DQ if meets hematocrit standards.',
+   docs:[],ar:'AR 40-501 §2-22: SCD DQ. Trait not DQ if meets HCT standards.',
+   src:['DoWI V1 §6.22','AR 40-501 §2-22']},
+  {name:'Stinging Insect Allergy (Anaphylaxis / Systemic Reaction)',icd:['T63.441A','Z91.010'],waiver:'unlikely',
+   dq:'Anaphylaxis or systemic reaction to stinging insects (bees, wasps, yellow jackets, hornets, fire ants).',
+   waiv:'Waiver UNLIKELY — anaphylaxis/systemic reaction is NOT waiverable because definitive treatment may not be immediately available in deployed/training environments. ONLY local reactions can be waived. Any history of systemic reaction requires self-procured allergist evaluation with clearance letter stating applicant does NOT require EpiPen.',
+   docs:['Allergist evaluation letter stating no EpiPen requirement','Dermal venom testing panel results (preferred by SWA)','Clinical notes and test results'],
+   ar:'',src:['SWA Guidance'],
+   tip:`<strong>Only local reactions can be waived.</strong> Any systemic/anaphylactic history requires self-procured allergist evaluation BEFORE waiver submission. Allergist letter must state applicant does NOT require EpiPen. SWA prefers dermal venom testing. If applicant carries an EpiPen = not waiverable. This is a safety-of-the-force issue in deployed environments.`},
+  {name:'Malignancy (Active or History)',icd:['C80.1','C80.9','Z85.9'],waiver:'unlikely',
+   dq:'History of malignancy.',
+   waiv:'Generally DQ. Remote history with confirmed, documented cure/remission — case-by-case based on tumor type and duration. Oncology clearance required.',
+   docs:['Oncology records','Pathology reports','Current surveillance imaging/labs','Oncology clearance letter'],
+   ar:'AR 40-501 §2-32: Malignancy DQ.',
+   src:['DoWI V1 §6.29b','AR 40-501 §2-32']},
+  {name:'Coagulopathy / Bleeding Disorder',icd:['D68.9','D68.0','D69.3'],waiver:'unlikely',
+   dq:'History of significant bleeding disorder (hemophilia, vWD, ITP).',
+   waiv:'Generally DQ. Mild vWD with no bleeding events — rare case-by-case.',
+   docs:['Hematology records','Coagulation studies','Von Willebrand factor levels if applicable'],
+   ar:'',src:['DoWI V1 §6.22','AR 40-501 §4-23']},
+  {name:'Lupus / Autoimmune Connective Tissue Disease',icd:['M32.9','M35.9'],waiver:'hardno',
+   dq:'Systemic lupus erythematosus or mixed connective tissue disease.',
+   waiv:'HARD DISQUALIFIER.',
+   docs:[],ar:'AR 40-501 §4-26a: Lupus DQ for aviation.',
+   src:['DoWI V1 §6.22','AR 40-501 §4-26']},
+]},
+];
+
+// ══════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════
+buildIndex();
+buildCats();
+</script>
+</body>
+</html>
