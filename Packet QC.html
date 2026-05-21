@@ -815,7 +815,10 @@ const App = () => {
 
   const handleReset = useCallback(() => {
     setProfile(PROFILE_DEFAULTS);
-    setStatuses(initStatuses());
+    // Force every item to pending — new applicant starts from zero
+    const blank = {};
+    SECTION_DEFS.forEach(s => s.items.forEach(i => { blank[i.id] = "pending"; }));
+    setStatuses(blank);
     setTimestamps({});
     setNotes({});
     localStorage.removeItem("pqc-notes");
