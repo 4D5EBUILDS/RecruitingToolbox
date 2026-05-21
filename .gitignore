@@ -1,0 +1,10 @@
+.DS_Store
+.claude/
+.superpowers/
+*.zip
+*backup*
+autopsy-preview*.html
+packet-qc-autopsy-edition*.html
+packetqcfinal.zip
+humanizer-main.zip
+index_backup.html
