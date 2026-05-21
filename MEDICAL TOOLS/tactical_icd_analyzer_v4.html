@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACCESSION ANALYSIS SYSTEM v4.0 • ICD-10 / MARP ANALYZER</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&amp;family=Inter:wght@400;500;600&amp;display=swap');
+        
+        :root {
+            --amber: #ffcc00;
+            --cyan: #00f0ff;
+            --red: #ff0033;
+        }
+        
+        body {
+            font-family: 'Inter', system_ui, sans-serif;
+        }
+        
+        .title-font {
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: -2px;
+        }
+
+        .tactical-bg {
+            background: 
+                linear-gradient(rgba(5, 10, 5, 0.95), rgba(10, 20, 10, 0.95)),
+                url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22 fill=%22none%22%3E%3Cpath stroke=%22%2300f0ff%22 stroke-opacity=%220.08%22 stroke-width=%220.5%22 d=%22M0 0h100v100H0V0z%22/%3E%3C/svg%27') repeat;
+        }
+
+        .hud-panel {
+            background: rgba(15, 23, 42, 0.92);
+            border: 1px solid #334155;
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.1);
+        }
+
+        .neon-text {
+            text-shadow: 0 0 10px var(--cyan);
+        }
+
+        .section-header {
+            font-size: 0.75rem;
+            letter-spacing: 3px;
+            font-weight: 600;
+            color: #64748b;
+        }
+
+        .data-table {
+            font-size: 0.875rem;
+        }
+
+        .data-table th {
+            background: #1e2937;
+            color: #94a3b8;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .marp-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+        }
+
+        .glow-cyan {
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.6);
+        }
+
+        .body-svg {
+            filter: drop-shadow(0 0 25px rgba(0, 240, 255, 0.3));
+        }
+
+        .body-part {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .body-part:hover {
+            filter: brightness(1.3);
+        }
+
+        .body-part.active {
+            filter: brightness(1.6) saturate(1.4);
+            animation: pulse-glow 1.5s infinite alternate;
+        }
+
+        @keyframes pulse-glow {
+            from { filter: brightness(1.6) saturate(1.4) drop-shadow(0 0 8px #00f0ff); }
+            to { filter: brightness(1.8) saturate(1.6) drop-shadow(0 0 20px #00f0ff); }
+        }
+
+        .condition-row {
+            transition: all 0.2s ease;
+        }
+
+        .condition-row:hover {
+            background-color: #1e2937;
+        }
+
+        .status-pill {
+            font-size: 0.7rem;
+            padding: 2px 10px;
+            border-radius: 9999px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body class="bg-zinc-950 text-white tactical-bg min-h-screen">
+    <!-- Top Bar -->
+    <div class="border-b border-slate-800 bg-zinc-950/80 backdrop-blur-xl sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-8 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-x-4">
+                <div class="flex items-center gap-x-3">
+                    <div class="w-11 h-11 bg-gradient-to-br from-amber-400 to-yellow-400 flex items-center justify-center rounded-2xl shadow-lg shadow-amber-500/30">
+                        <i class="fa-solid fa-user-shield text-black text-3xl"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-x-3">
+                            <span class="title-font text-3xl font-bold tracking-tighter">ACCESSION ANALYSIS SYSTEM</span>
+                            <span class="px-3 py-1 text-xs font-mono bg-red-900/60 text-red-400 rounded-full border border-red-700">v4.0</span>
+                        </div>
+                        <div class="text-xs text-slate-400 -mt-1">ICD-10 / MARP ANALYZER • REAL-TIME MEDICAL QUALIFICATION</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-x-6 text-sm">
+                <div class="flex items-center gap-x-2 px-4 py-1.5 bg-zinc-900 rounded-2xl border border-slate-700">
+                    <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                    <span class="font-mono text-emerald-400 text-xs tracking-[2px]">LIVE • 06 MAY 2026</span>
+                </div>
+                <div class="text-right">
+                    <div class="text-xs text-slate-400">POWERED BY</div>
+                    <div class="font-semibold text-amber-400">DoWI 6130.03-V1/V2 + MARP v3 + AR 40-501</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-8 pt-8 pb-12">
+        <!-- Header Stats -->
+        <div class="flex items-end justify-between mb-8">
+            <div>
+                <div class="flex items-center gap-x-3">
+                    <h1 class="title-font text-6xl font-bold tracking-tighter">ICD-10 / MARP</h1>
+                    <div class="px-5 py-1.5 bg-zinc-900 border border-amber-400/30 rounded-3xl text-amber-400 text-sm font-medium flex items-center gap-x-2">
+                        <i class="fa-solid fa-database"></i>
+                        <span>48 CONDITIONS LOADED</span>
+                    </div>
+                </div>
+                <p class="text-xl text-slate-400 mt-1">Real-time medical qualification lookup • Current DoWI 6130.03 + MARP Guide v3</p>
+            </div>
+            
+            <div class="flex items-center gap-x-3">
+                <button onclick="exportToCSV()" 
+                        class="flex items-center gap-x-2 px-6 py-3 bg-zinc-900 hover:bg-zinc-800 border border-slate-700 rounded-2xl text-sm font-medium transition-all active:scale-[0.985]">
+                    <i class="fa-solid fa-download mr-2"></i>
+                    EXPORT CSV
+                </button>
+                <button onclick="showDisclaimer()" 
+                        class="flex items-center gap-x-2 px-5 py-3 bg-zinc-900 hover:bg-zinc-800 border border-slate-700 rounded-2xl text-sm font-medium transition-all">
+                    <i class="fa-solid fa-exclamation-triangle mr-2 text-amber-400"></i>
+                    DISCLAIMER
+                </button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- LEFT: INTERACTIVE BODY -->
+            <div class="lg:col-span-5">
+                <div class="hud-panel rounded-3xl p-6 border border-slate-700">
+                    <div class="flex items-center justify-between mb-4 px-1">
+                        <div>
+                            <div class="section-header">ANATOMICAL THREAT MAP</div>
+                            <div class="text-xl font-semibold flex items-center gap-x-2">
+                                <span>Interactive PULHES Body Scan</span>
+                            </div>
+                        </div>
+                        <div class="px-3 py-1 text-[10px] font-mono bg-zinc-800 text-cyan-400 rounded-xl border border-cyan-900 flex items-center gap-x-1.5">
+                            <i class="fa-solid fa-satellite fa-sm"></i>
+                            <span>LIVE SCAN</span>
+                        </div>
+                    </div>
+
+                    <!-- INTERACTIVE SVG BODY -->
+                    <div class="bg-zinc-950 rounded-2xl p-4 border border-slate-800 mb-4">
+                        <svg id="body-svg" width="100%" height="420" viewBox="0 0 320 420" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Background glow -->
+                            <defs>
+                                <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                                    <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="coloredBlur"/>
+                                    <feMerge>
+                                        <feMergeNode in="coloredBlur"/>
+                                        <feMergeNode in="SourceGraphic"/>
+                                    </feMerge>
+                                </filter>
+                            </defs>
+                            
+                            <!-- Body Outline -->
+                            <path id="body-outline" d="M160 45 Q120 55 115 110 Q105 180 110 260 Q120 340 155 390 Q165 405 175 390 Q210 340 220 260 Q225 180 215 110 Q210 55 160 45" 
+                                  fill="#1e2937" stroke="#475569" stroke-width="3"/>
+                            
+                            <!-- Head -->
+                            <g id="head-group" class="body-part" data-system="neurological" onclick="filterBySystem('neurological')">
+                                <circle cx="160" cy="68" r="28" fill="#334155" stroke="#64748b" stroke-width="2"/>
+                                <ellipse cx="160" cy="62" rx="12" ry="8" fill="#475569"/>
+                                <!-- Eyes -->
+                                <ellipse cx="148" cy="62" rx="4" ry="3" fill="#00f0ff" class="glow-cyan"/>
+                                <ellipse cx="172" cy="62" rx="4" ry="3" fill="#00f0ff" class="glow-cyan"/>
+                            </g>
+                            
+                            <!-- Neck -->
+                            <rect x="145" y="92" width="30" height="18" rx="4" fill="#475569"/>
+                            
+                            <!-- Torso -->
+                            <g id="torso-group" class="body-part" data-system="cardiovascular" onclick="filterBySystem('cardiovascular')">
+                                <path d="M125 115 Q160 105 195 115 L200 200 Q160 215 120 200 Z" fill="#334155" stroke="#64748b" stroke-width="2"/>
+                                <!-- Heart highlight -->
+                                <path id="heart" d="M145 140 Q160 125 175 140 Q175 160 160 175 Q145 160 145 140" fill="#ff0033" opacity="0.3"/>
+                            </g>
+                            
+                            <!-- Lungs -->
+                            <g id="pulmonary-group" class="body-part" data-system="pulmonary" onclick="filterBySystem('pulmonary')">
+                                <ellipse cx="132" cy="145" rx="22" ry="32" fill="#475569" opacity="0.8"/>
+                                <ellipse cx="188" cy="145" rx="22" ry="32" fill="#475569" opacity="0.8"/>
+                                <ellipse id="left-lung" cx="132" cy="145" rx="18" ry="26" fill="#00f0ff" opacity="0.15"/>
+                                <ellipse id="right-lung" cx="188" cy="145" rx="18" ry="26" fill="#00f0ff" opacity="0.15"/>
+                            </g>
+                            
+                            <!-- Arms -->
+                            <g id="musculoskeletal-group" class="body-part" data-system="musculoskeletal" onclick="filterBySystem('musculoskeletal')">
+                                <!-- Left Arm -->
+                                <path d="M120 130 Q95 180 85 250 Q80 290 95 310" fill="none" stroke="#64748b" stroke-width="22" stroke-linecap="round"/>
+                                <path d="M120 130 Q95 180 85 250 Q80 290 95 310" fill="none" stroke="#475569" stroke-width="16" stroke-linecap="round"/>
+                                <!-- Right Arm -->
+                                <path d="M200 130 Q225 180 235 250 Q240 290 225 310" fill="none" stroke="#64748b" stroke-width="22" stroke-linecap="round"/>
+                                <path d="M200 130 Q225 180 235 250 Q240 290 225 310" fill="none" stroke="#475569" stroke-width="16" stroke-linecap="round"/>
+                                <!-- Shoulders -->
+                                <circle cx="118" cy="125" r="8" fill="#475569"/>
+                                <circle cx="202" cy="125" r="8" fill="#475569"/>
+                            </g>
+                            
+                            <!-- Abdomen / GI -->
+                            <g id="gi-group" class="body-part" data-system="gi" onclick="filterBySystem('gi')">
+                                <ellipse cx="160" cy="235" rx="38" ry="45" fill="#334155" stroke="#64748b" stroke-width="2"/>
+                            </g>
+                            
+                            <!-- Pelvis / Genitourinary -->
+                            <g id="gu-group" class="body-part" data-system="genitourinary" onclick="filterBySystem('genitourinary')">
+                                <path d="M128 275 Q160 290 192 275 L195 320 Q160 340 125 320 Z" fill="#475569" stroke="#64748b" stroke-width="2"/>
+                            </g>
+                            
+                            <!-- Legs -->
+                            <g id="musculoskeletal-group-2" class="body-part" data-system="musculoskeletal" onclick="filterBySystem('musculoskeletal')">
+                                <!-- Left Leg -->
+                                <path d="M138 320 Q125 380 130 410" fill="none" stroke="#64748b" stroke-width="26" stroke-linecap="round"/>
+                                <path d="M138 320 Q125 380 130 410" fill="none" stroke="#475569" stroke-width="18" stroke-linecap="round"/>
+                                <!-- Right Leg -->
+                                <path d="M182 320 Q195 380 190 410" fill="none" stroke="#64748b" stroke-width="26" stroke-linecap="round"/>
+                                <path d="M182 320 Q195 380 190 410" fill="none" stroke="#475569" stroke-width="18" stroke-linecap="round"/>
+                                <!-- Knees -->
+                                <circle cx="132" cy="355" r="9" fill="#475569"/>
+                                <circle cx="188" cy="355" r="9" fill="#475569"/>
+                            </g>
+                            
+                            <!-- Brain (Neurological) -->
+                            <g id="neurological-group" class="body-part" data-system="neurological" onclick="filterBySystem('neurological')">
+                                <ellipse cx="160" cy="55" rx="16" ry="11" fill="#00f0ff" opacity="0.2"/>
+                            </g>
+                            
+                            <!-- Eyes highlight layer -->
+                            <g id="eyes-group" class="body-part" data-system="eyes" onclick="filterBySystem('eyes')">
+                                <ellipse cx="148" cy="62" rx="5" ry="3.5" fill="#00f0ff" opacity="0.4"/>
+                                <ellipse cx="172" cy="62" rx="5" ry="3.5" fill="#00f0ff" opacity="0.4"/>
+                            </g>
+                        </svg>
+                    </div>
+
+                    <!-- Body System Filters -->
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <button onclick="filterBySystem('eyes')" class="system-btn flex items-center justify-center gap-x-2 px-4 py-2.5 bg-zinc-800 hover:bg-amber-400 hover:text-black border border-slate-700 hover:border-amber-400 rounded-2xl transition-all active:scale-[0.985]">
+                            <i class="fa-solid fa-eye"></i>
+                            <span class="font-medium">EYES</span>
+                        </button>
+                        <button onclick="filterBySystem('pulmonary')" class="system-btn flex items-center justify-center gap-x-2 px-4 py-2.5 bg-zinc-800 hover:bg-amber-400 hover:text-black border border-slate-700 hover:border-amber-400 rounded-2xl transition-all active:scale-[0.985]">
+                            <i class="fa-solid fa-lungs"></i>
+                            <span class="font-medium">PULMONARY</span>
+                        </button>
+                        <button onclick="filterBySystem('musculoskeletal')" class="system-btn flex items-center justify-center gap-x-2 px-4 py-2.5 bg-zinc-800 hover:bg-amber-400 hover:text-black border border-slate-700 hover:border-amber-400 rounded-2xl transition-all active:scale-[0.985]">
+                            <i class="fa-solid fa-bone"></i>
+                            <span class="font-medium">MUSCULOSKELETAL</span>
+                        </button>
+                        <button onclick="filterBySystem('neurological')" class="system-btn flex items-center justify-center gap-x-2 px-4 py-2.5 bg-zinc-800 hover:bg-amber-400 hover:text-black border border-slate-700 hover:border-amber-400 rounded-2xl transition-all active:scale-[0.985]">
+                            <i class="fa-solid fa-brain"></i>
+                            <span class="font-medium">NEUROLOGICAL</span>
+                        </button>
+                        <button onclick="filterBySystem('cardiovascular')" class="system-btn flex items-center justify-center gap-x-2 px-4 py-2.5 bg-zinc-800 hover:bg-amber-400 hover:text-black border border-slate-700 hover:border-amber-400 rounded-2xl transition-all active:scale-[0.985]">
+                            <i class="fa-solid fa-heart"></i>
+                            <span class="font-medium">CARDIOVASCULAR</span>
+                        </button>
+                        <button onclick="filterBySystem('gi')" class="system-btn flex items-center justify-center gap-x-2 px-4 py-2.5 bg-zinc-800 hover:bg-amber-400 hover:text-black border border-slate-700 hover:border-amber-400 rounded-2xl transition-all active:scale-[0.985]">
+                            <i class="fa-solid fa-stomach"></i>
+                            <span class="font-medium">GI / ABDOMEN</span>
+                        </button>
+                    </div>
+                    
+                    <div class="mt-3 text-center">
+                        <button onclick="resetFilters()" class="text-xs text-slate-400 hover:text-white flex items-center gap-x-1 mx-auto">
+                            <i class="fa-solid fa-undo fa-sm"></i>
+                            <span>RESET ALL FILTERS</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT: SEARCH + TABLE -->
+            <div class="lg:col-span-7">
+                <!-- Search -->
+                <div class="mb-4">
+                    <div class="relative">
+                        <i class="fa-solid fa-search absolute left-5 top-4 text-slate-400"></i>
+                        <input id="search-input" type="text" placeholder="Search ICD-10, condition, or keyword (e.g. H44, asthma, ADHD, knee, hernia...)" 
+                               class="w-full bg-zinc-900 border border-slate-700 focus:border-amber-400 pl-12 pr-5 py-4 rounded-2xl text-lg placeholder:text-slate-500 outline-none"
+                               onkeyup="filterTable()">
+                    </div>
+                </div>
+
+                <!-- Quick Filters -->
+                <div class="flex flex-wrap gap-2 mb-4">
+                    <button onclick="filterByStatus('all')" class="status-filter px-4 py-1.5 text-xs font-medium bg-zinc-800 hover:bg-white hover:text-black border border-slate-700 rounded-2xl active:scale-[0.985]">ALL</button>
+                    <button onclick="filterByStatus('marp')" class="status-filter px-4 py-1.5 text-xs font-medium bg-emerald-900/60 hover:bg-emerald-500 hover:text-black border border-emerald-700 text-emerald-400 rounded-2xl active:scale-[0.985]">
+                        <i class="fa-solid fa-check-double mr-1.5"></i>MARP ELIGIBLE
+                    </button>
+                    <button onclick="filterByStatus('case')" class="status-filter px-4 py-1.5 text-xs font-medium bg-amber-900/60 hover:bg-amber-400 hover:text-black border border-amber-700 text-amber-400 rounded-2xl active:scale-[0.985]">
+                        <i class="fa-solid fa-question mr-1.5"></i>CASE-BY-CASE
+                    </button>
+                    <button onclick="filterByStatus('hard')" class="status-filter px-4 py-1.5 text-xs font-medium bg-red-900/60 hover:bg-red-500 hover:text-black border border-red-700 text-red-400 rounded-2xl active:scale-[0.985]">
+                        <i class="fa-solid fa-ban mr-1.5"></i>HARD STOP
+                    </button>
+                </div>
+
+                <!-- Table -->
+                <div class="hud-panel rounded-3xl border border-slate-700 overflow-hidden">
+                    <div class="overflow-auto max-h-[520px]">
+                        <table class="w-full data-table">
+                            <thead class="sticky top-0 z-10">
+                                <tr>
+                                    <th class="px-5 py-3 text-left w-20">ICD-10</th>
+                                    <th class="px-5 py-3 text-left">CONDITION</th>
+                                    <th class="px-4 py-3 text-center w-28">MARP</th>
+                                    <th class="px-4 py-3 text-center w-24">WAIVER</th>
+                                    <th class="px-5 py-3 text-left">REQUIREMENTS / NOTES</th>
+                                </tr>
+                            </thead>
+                            <tbody id="data-table-body" class="text-sm divide-y divide-slate-800">
+                                <!-- Populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="flex justify-between items-center mt-3 px-1 text-xs text-slate-400">
+                    <div id="results-count">Showing 48 conditions</div>
+                    <div class="flex items-center gap-x-4">
+                        <div class="flex items-center gap-x-1.5">
+                            <div class="w-2.5 h-2.5 bg-emerald-400 rounded-full"></div>
+                            <span>MARP Eligible</span>
+                        </div>
+                        <div class="flex items-center gap-x-1.5">
+                            <div class="w-2.5 h-2.5 bg-amber-400 rounded-full"></div>
+                            <span>Case-by-Case</span>
+                        </div>
+                        <div class="flex items-center gap-x-1.5">
+                            <div class="w-2.5 h-2.5 bg-red-400 rounded-full"></div>
+                            <span>Hard Stop</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tailwind script
+        function initializeTailwind() {
+            document.documentElement.style.setProperty('--accent', '#ffcc00');
+        }
+
+        // Full dataset - 48 conditions from MARP v3 + DoWI 6130.03-V1/V2 + AR 40-501
+        const conditions = [
+            { icd: "H44.0", condition: "Purulent endophthalmitis", marp: "Yes (3 yrs)", waiver: "Likely", status: "marp", notes: "Requires ophthalmology consult + 3-year stability. MARP eligible after 3 years post-treatment." },
+            { icd: "H52.2", condition: "Astigmatism (refractive error)", marp: "Yes (1 yr)", waiver: "Likely", status: "marp", notes: "Correctable to 20/20 with contacts or glasses. MARP after 1 year stability." },
+            { icd: "H40.9", condition: "Glaucoma suspect / Ocular hypertension", marp: "No", waiver: "Case-by-Case", status: "case", notes: "Requires full ophthalmology workup + IOP control. Often disqualifying if on meds." },
+            { icd: "J45.909", condition: "Asthma (unspecified)", marp: "Yes (3 yrs)", waiver: "Likely", status: "marp", notes: "MARP eligible if no symptoms + no meds for 3 years. Spirometry required." },
+            { icd: "J45.20", condition: "Mild persistent asthma", marp: "No", waiver: "Hard Stop", status: "hard", notes: "Active asthma or recent inhaler use is disqualifying per DoWI 6130.03-V1." },
+            { icd: "M54.5", condition: "Low back pain (chronic)", marp: "No", waiver: "Case-by-Case", status: "case", notes: "Requires MRI + functional assessment. History of surgery or recurrent pain often hard stop." },
+            { icd: "M23.90", condition: "Internal derangement of knee", marp: "Yes (2 yrs)", waiver: "Likely", status: "marp", notes: "MARP after 2 years post-arthroscopy if full ROM and no instability." },
+            { icd: "M25.511", condition: "Pain in right shoulder", marp: "No", waiver: "Case-by-Case", status: "case", notes: "Full shoulder evaluation required. History of dislocation or rotator cuff often disqualifying." },
+            { icd: "F90.0", condition: "ADHD, predominantly inattentive", marp: "No", waiver: "Case-by-Case", status: "case", notes: "Requires full neuropsychological evaluation + academic/occupational history. Often approved with strong documentation." },
+            { icd: "F90.2", condition: "ADHD, combined type", marp: "No", waiver: "Case-by-Case", status: "case", notes: "Same as above. Stimulant medication history is closely scrutinized." },
+            { icd: "G40.909", condition: "Epilepsy / Seizure disorder", marp: "No", waiver: "Hard Stop", status: "hard", notes: "History of seizures after age 5 is generally disqualifying per DoWI V1." },
+            { icd: "G43.909", condition: "Migraine without aura", marp: "Yes (2 yrs)", waiver: "Likely", status: "marp", notes: "MARP eligible if no more than 2-3 headaches per year and no meds for 2 years." },
+            { icd: "F32.9", condition: "Major depressive disorder, single episode", marp: "No", waiver: "Case-by-Case", status: "case", notes: "Requires 2+ years stability off meds + psych eval. Multiple episodes often hard stop." },
+            { icd: "F41.1", condition: "Generalized anxiety disorder", marp: "No", waiver: "Case-by-Case", status: "case", notes: "Similar to depression. Strong occupational history helps." },
+            { icd: "K40.90", condition: "Inguinal hernia (unilateral)", marp: "Yes (1 yr)", waiver: "Likely", status: "marp", notes: "MARP after 1 year post-surgical repair with no recurrence." },
+            { icd: "K80.20", condition: "Cholelithiasis (gallstones)", marp: "Yes (1 yr)", waiver: "Likely", status: "marp", notes: "MARP after cholecystectomy with full recovery." },
+            { icd: "N20.0", condition: "Kidney stone (nephrolithiasis)", marp: "Yes (1 yr)", waiver: "Likely", status: "marp", notes: "Single stone with no recurrence for 1 year is usually MARP eligible." },
+            { icd: "N40.0", condition: "Benign prostatic hyperplasia", marp: "No", waiver: "Case-by-Case", status: "case", notes: "Rare in accession age group. Requires urology clearance." },
+            { icd: "E11.9", condition: "Type 2 diabetes mellitus", marp: "No", waiver: "Hard Stop", status: "hard", notes: "Active diabetes requiring medication is disqualifying." },
+            { icd: "E66.9", condition: "Obesity (BMI > 30)", marp: "No", waiver: "Case-by-Case", status: "case", notes: "Must meet body composition standards. Weight loss history reviewed." },
+            { icd: "I10", condition: "Essential hypertension", marp: "No", waiver: "Case-by-Case", status: "case", notes: "Controlled on single medication may be waiverable with strong documentation." },
+            { icd: "I25.10", condition: "Atherosclerotic heart disease", marp: "No", waiver: "Hard Stop", status: "hard", notes: "Any history of coronary artery disease is disqualifying." },
+            { icd: "R03.0", condition: "Elevated blood pressure reading", marp: "Yes", waiver: "Likely", status: "marp", notes: "White coat hypertension often resolves with repeat testing." },
+            { icd: "Z87.891", condition: "Personal history of nicotine dependence", marp: "Yes", waiver: "Likely", status: "marp", notes: "No current use required. Vaping/nicotine pouches scrutinized." },
+            { icd: "F17.210", condition: "Nicotine dependence, cigarettes", marp: "Yes (1 yr)", waiver: "Likely", status: "marp", notes: "Must be tobacco-free for 1 year." },
+            { icd: "Z86.73", condition: "Personal history of transient ischemic attack", marp: "No", waiver: "Hard Stop", status: "hard", notes: "Any TIA or stroke history is disqualifying." },
+            { icd: "S83.511", condition: "Sprain of ACL, right knee", marp: "Yes (2 yrs)", waiver: "Likely", status: "marp", notes: "Post-reconstruction with full stability and ROM after 2 years." },
+            { icd: "S42.001", condition: "Fracture of clavicle", marp: "Yes (1 yr)", waiver: "Likely", status: "marp", notes: "Healed with no residual pain or limitation." },
+            { icd: "S72.001", condition: "Fracture of femur", marp: "No", waiver: "Case-by-Case", status: "case", notes: "Long bone fractures require full orthopedic clearance and functional testing." },
+            { icd: "T14.90", condition: "Injury of unspecified body region", marp: "Varies", waiver: "Case-by-Case", status: "case", notes: "Depends on severity and residual effects. Full records required." },
+            { icd: "Z87.820", condition: "Personal history of traumatic brain injury", marp: "No", waiver: "Case-by-Case", status: "case", notes: "Mild TBI with full recovery may be waiverable. Moderate/severe often hard stop." },
+            { icd: "F07.81", condition: "Postconcussional syndrome", marp: "No", waiver: "Hard Stop", status: "hard", notes: "Ongoing symptoms after concussion are disqualifying." },
+            { icd: "H61.20", condition: "Impacted cerumen (ear wax)", marp: "Yes", waiver: "Likely", status: "marp", notes: "Easily resolved. No issue after removal." },
+            { icd: "H90.3", condition: "Sensorineural hearing loss", marp: "No", waiver: "Case-by-Case", status: "case", notes: "Must meet hearing standards (H1 or H2 profile). Severe loss disqualifying." },
+            { icd: "J30.9", condition: "Allergic rhinitis", marp: "Yes (1 yr)", waiver: "Likely", status: "marp", notes: "MARP after 1 year off meds or well-controlled on single agent." },
+            { icd: "J31.0", condition: "Chronic rhinitis", marp: "No", waiver: "Case-by-Case", status: "case", notes: "Requires ENT evaluation. Often waiverable if mild." },
+            { icd: "K21.9", condition: "Gastroesophageal reflux disease (GERD)", marp: "Yes (1 yr)", waiver: "Likely", status: "marp", notes: "MARP after 1 year controlled without daily medication." },
+            { icd: "K58.9", condition: "Irritable bowel syndrome", marp: "No", waiver: "Case-by-Case", status: "case", notes: "Requires gastroenterology consult. Severe cases often hard stop." },
+            { icd: "L40.0", condition: "Psoriasis", marp: "No", waiver: "Case-by-Case", status: "case", notes: "Mild plaque psoriasis often waiverable. Widespread or on face/hands usually hard stop." },
+            { icd: "L20.9", condition: "Atopic dermatitis (eczema)", marp: "Yes (1 yr)", waiver: "Likely", status: "marp", notes: "MARP after 1 year with minimal symptoms and no systemic meds." },
+            { icd: "M06.9", condition: "Rheumatoid arthritis", marp: "No", waiver: "Hard Stop", status: "hard", notes: "Autoimmune arthritides are generally disqualifying." },
+            { icd: "M19.90", condition: "Osteoarthritis", marp: "No", waiver: "Case-by-Case", status: "case", notes: "Depends on joint affected and functional impact. Knee/hip often problematic." },
+            { icd: "Q65.89", condition: "Congenital hip dysplasia (history)", marp: "No", waiver: "Case-by-Case", status: "case", notes: "Requires orthopedic evaluation + imaging. Often disqualifying if surgically corrected." },
+            { icd: "R10.9", condition: "Abdominal pain (unspecified)", marp: "Varies", waiver: "Case-by-Case", status: "case", notes: "Must rule out serious pathology. Recurrent pain requires workup." },
+            { icd: "R51", condition: "Headache (unspecified)", marp: "Varies", waiver: "Case-by-Case", status: "case", notes: "Frequent or severe headaches require full neurological evaluation." },
+            { icd: "Z87.19", condition: "Personal history of other diseases of digestive system", marp: "Varies", waiver: "Case-by-Case", status: "case", notes: "Depends on specific history (e.g., prior bowel obstruction, IBD)." },
+            { icd: "Z87.81", condition: "Personal history of malignant neoplasm", marp: "No", waiver: "Hard Stop", status: "hard", notes: "History of cancer is generally disqualifying." },
+            { icd: "Z88.0", condition: "Allergy to penicillin", marp: "Yes", waiver: "Likely", status: "marp", notes: "Documented allergy with no other issues is usually fine." }
+        ];
+
+        let currentFilter = 'all';
+        let currentSystem = null;
+
+        function renderTable(filteredConditions) {
+            const tbody = document.getElementById('data-table-body');
+            tbody.innerHTML = '';
+
+            filteredConditions.forEach(cond => {
+                const row = document.createElement('tr');
+                row.className = `condition-row border-b border-slate-800 hover:bg-zinc-900 cursor-pointer`;
+                
+                let marpHTML = '';
+                if (cond.status === 'marp') {
+                    marpHTML = `<span class="status-pill bg-emerald-900 text-emerald-400">${cond.marp}</span>`;
+                } else if (cond.status === 'case') {
+                    marpHTML = `<span class="status-pill bg-amber-900 text-amber-400">${cond.marp}</span>`;
+                } else {
+                    marpHTML = `<span class="status-pill bg-red-900 text-red-400">${cond.marp}</span>`;
+                }
+
+                let waiverHTML = '';
+                if (cond.status === 'marp') {
+                    waiverHTML = `<span class="px-2.5 py-0.5 text-[10px] font-bold bg-emerald-900 text-emerald-400 rounded">LIKELY</span>`;
+                } else if (cond.status === 'case') {
+                    waiverHTML = `<span class="px-2.5 py-0.5 text-[10px] font-bold bg-amber-900 text-amber-400 rounded">CASE-BY-CASE</span>`;
+                } else {
+                    waiverHTML = `<span class="px-2.5 py-0.5 text-[10px] font-bold bg-red-900 text-red-400 rounded">HARD STOP</span>`;
+                }
+
+                row.innerHTML = `
+                    <td class="px-5 py-3.5 font-mono text-amber-400 font-semibold">${cond.icd}</td>
+                    <td class="px-5 py-3.5 font-medium">${cond.condition}</td>
+                    <td class="px-4 py-3.5 text-center">${marpHTML}</td>
+                    <td class="px-4 py-3.5 text-center">${waiverHTML}</td>
+                    <td class="px-5 py-3.5 text-xs text-slate-300 leading-snug">${cond.notes}</td>
+                `;
+
+                row.onclick = () => highlightBodyPart(cond);
+                tbody.appendChild(row);
+            });
+
+            document.getElementById('results-count').textContent = `Showing ${filteredConditions.length} conditions`;
+        }
+
+        function filterTable() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase().trim();
+            
+            let filtered = conditions;
+
+            // Apply status filter
+            if (currentFilter !== 'all') {
+                if (currentFilter === 'marp') filtered = filtered.filter(c => c.status === 'marp');
+                if (currentFilter === 'case') filtered = filtered.filter(c => c.status === 'case');
+                if (currentFilter === 'hard') filtered = filtered.filter(c => c.status === 'hard');
+            }
+
+            // Apply search
+            if (searchTerm.length > 1) {
+                filtered = filtered.filter(c => 
+                    c.icd.toLowerCase().includes(searchTerm) ||
+                    c.condition.toLowerCase().includes(searchTerm) ||
+                    c.notes.toLowerCase().includes(searchTerm)
+                );
+            }
+
+            // Apply system filter if active
+            if (currentSystem) {
+                const systemMap = {
+                    'eyes': ['H44', 'H52', 'H40', 'H61', 'H90'],
+                    'pulmonary': ['J45', 'J30', 'J31'],
+                    'musculoskeletal': ['M54', 'M23', 'M25', 'S83', 'S42', 'S72', 'M19', 'M06'],
+                    'neurological': ['G40', 'G43', 'F90', 'F32', 'F41', 'F07', 'Z87.820'],
+                    'cardiovascular': ['I10', 'I25', 'R03'],
+                    'gi': ['K40', 'K80', 'K21', 'K58', 'R10'],
+                    'genitourinary': ['N20', 'N40']
+                };
+                
+                const codes = systemMap[currentSystem] || [];
+                filtered = filtered.filter(c => codes.some(code => c.icd.startsWith(code)));
+            }
+
+            renderTable(filtered);
+        }
+
+        function filterBySystem(system) {
+            currentSystem = system;
+            
+            // Highlight active button
+            document.querySelectorAll('.system-btn').forEach(btn => {
+                btn.classList.remove('!bg-amber-400', '!text-black', 'border-amber-400');
+                if (btn.textContent.toLowerCase().includes(system)) {
+                    btn.classList.add('!bg-amber-400', '!text-black', 'border-amber-400');
+                }
+            });
+
+            // Highlight body parts
+            highlightBodySystem(system);
+            
+            filterTable();
+        }
+
+        function highlightBodySystem(system) {
+            // Reset all highlights
+            document.querySelectorAll('#body-svg .body-part').forEach(el => {
+                el.classList.remove('active');
+            });
+
+            let targetGroup;
+            switch(system) {
+                case 'eyes':
+                    targetGroup = document.getElementById('eyes-group');
+                    break;
+                case 'pulmonary':
+                    targetGroup = document.getElementById('pulmonary-group');
+                    const leftLung = document.getElementById('left-lung');
+                    const rightLung = document.getElementById('right-lung');
+                    if (leftLung) leftLung.setAttribute('opacity', '0.65');
+                    if (rightLung) rightLung.setAttribute('opacity', '0.65');
+                    setTimeout(() => {
+                        if (leftLung) leftLung.setAttribute('opacity', '0.15');
+                        if (rightLung) rightLung.setAttribute('opacity', '0.15');
+                    }, 2200);
+                    break;
+                case 'musculoskeletal':
+                    targetGroup = document.getElementById('musculoskeletal-group');
+                    break;
+                case 'neurological':
+                    targetGroup = document.getElementById('neurological-group');
+                    break;
+                case 'cardiovascular':
+                    targetGroup = document.getElementById('torso-group');
+                    const heart = document.getElementById('heart');
+                    if (heart) {
+                        heart.setAttribute('opacity', '0.85');
+                        setTimeout(() => heart.setAttribute('opacity', '0.3'), 1800);
+                    }
+                    break;
+                case 'gi':
+                    targetGroup = document.getElementById('gi-group');
+                    break;
+                case 'genitourinary':
+                    targetGroup = document.getElementById('gu-group');
+                    break;
+            }
+
+            if (targetGroup) {
+                targetGroup.classList.add('active');
+                setTimeout(() => {
+                    if (targetGroup) targetGroup.classList.remove('active');
+                }, 2400);
+            }
+        }
+
+        function filterByStatus(status) {
+            currentFilter = status;
+            
+            // Update button styles
+            document.querySelectorAll('.status-filter').forEach(btn => btn.classList.remove('!bg-white', '!text-black'));
+            
+            if (status === 'all') {
+                // do nothing extra
+            } else if (status === 'marp') {
+                document.querySelectorAll('.status-filter')[1].classList.add('!bg-white', '!text-black');
+            } else if (status === 'case') {
+                document.querySelectorAll('.status-filter')[2].classList.add('!bg-white', '!text-black');
+            } else if (status === 'hard') {
+                document.querySelectorAll('.status-filter')[3].classList.add('!bg-white', '!text-black');
+            }
+
+            filterTable();
+        }
+
+        function resetFilters() {
+            currentFilter = 'all';
+            currentSystem = null;
+            document.getElementById('search-input').value = '';
+            
+            document.querySelectorAll('.system-btn').forEach(btn => btn.classList.remove('!bg-amber-400', '!text-black', 'border-amber-400'));
+            document.querySelectorAll('.status-filter').forEach(btn => btn.classList.remove('!bg-white', '!text-black'));
+            
+            // Reset body highlights
+            document.querySelectorAll('#body-svg .body-part').forEach(el => el.classList.remove('active'));
+            
+            renderTable(conditions);
+        }
+
+        function highlightBodyPart(condition) {
+            // Simple visual feedback - flash the relevant body part
+            const icd = condition.icd;
+            let system = null;
+
+            if (icd.startsWith('H4') || icd.startsWith('H5') || icd.startsWith('H6')) system = 'eyes';
+            else if (icd.startsWith('J')) system = 'pulmonary';
+            else if (icd.startsWith('M') || icd.startsWith('S')) system = 'musculoskeletal';
+            else if (icd.startsWith('G') || icd.startsWith('F9') || icd.startsWith('F3') || icd.startsWith('F4') || icd.startsWith('F0')) system = 'neurological';
+            else if (icd.startsWith('I') || icd.startsWith('R03')) system = 'cardiovascular';
+            else if (icd.startsWith('K')) system = 'gi';
+            else if (icd.startsWith('N')) system = 'genitourinary';
+
+            if (system) {
+                highlightBodySystem(system);
+            }
+
+            // Scroll to top of table
+            document.querySelector('.hud-panel').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function exportToCSV() {
+            let csv = 'ICD-10,Condition,MARP Status,Waiver Likelihood,Requirements/Notes\n';
+            
+            conditions.forEach(c => {
+                csv += `"${c.icd}","${c.condition}","${c.marp}","${c.status}","${c.notes}"\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'ICD_MARP_Analyzer_Export.csv';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function showDisclaimer() {
+            alert(`DISCLAIMER: This tool is for reference and training purposes only. Final medical qualification decisions rest exclusively with MEPS, the waiver authority, and the DoWI 6130.03 standards. Always verify with current regulations and consult your chain of command or medical personnel for official guidance.`);
+        }
+
+        function initializeData() {
+            renderTable(conditions);
+            
+            // Keyboard shortcut for search
+            document.addEventListener('keydown', function(e) {
+                if (e.key === '/' && document.activeElement.tagName === 'BODY') {
+                    e.preventDefault();
+                    document.getElementById('search-input').focus();
+                }
+            });
+
+            // Initial welcome message in console
+            console.log('%c[ACCESSION ANALYSIS SYSTEM v4.0] Tactical ICD/MARP Analyzer initialized successfully.', 'color:#64748b');
+        }
+
+        // Boot everything
+        function boot() {
+            initializeTailwind();
+            initializeData();
+            
+            // Random subtle pulse on heart at start
+            setTimeout(() => {
+                const heart = document.getElementById('heart');
+                if (heart) {
+                    heart.setAttribute('opacity', '0.6');
+                    setTimeout(() => heart.setAttribute('opacity', '0.3'), 1400);
+                }
+            }, 1800);
+        }
+
+        window.onload = boot;
+    </script>
+</body>
+</html>

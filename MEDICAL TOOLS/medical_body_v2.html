@@ -1,0 +1,1480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Medical DQ & Waiver Reference | RSID 4D5E</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&family=Exo+2:wght@300;400;500;600&display=swap');
+:root{
+  --bg:#050d1a;--panel:#071220;--panel2:#091828;
+  --line:#0d3a6e;--line-b:#1a6abf;
+  --grid:rgba(26,106,191,0.07);
+  --gold:#e8b84b;--gold2:#ffd166;
+  --cyan:#00d4ff;--cyan-d:rgba(0,212,255,0.1);
+  --green:#39ff9a;--green-d:rgba(57,255,154,0.1);
+  --red:#ff4d6d;--red-d:rgba(255,77,109,0.1);
+  --amber:#ffb347;--amber-d:rgba(255,179,71,0.1);
+  --purple:#c084fc;
+  --text:#c8ddf0;--text-d:#4a7aa8;--text-b:#e8f4ff;
+  --border:rgba(26,106,191,0.3);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Exo 2',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px),linear-gradient(rgba(26,106,191,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(26,106,191,0.025) 1px,transparent 1px);background-size:100px 100px,100px 100px,20px 20px,20px 20px;pointer-events:none;z-index:0;}
+
+/* ── HEADER ── */
+header{position:relative;z-index:200;background:rgba(5,13,26,0.98);border-bottom:1px solid var(--line-b);flex-shrink:0;}
+.hdr{display:flex;align-items:center;padding:9px 18px;gap:14px;}
+.hdr-emblem svg{width:40px;height:40px;}
+.hdr-title{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:900;letter-spacing:3px;color:var(--cyan);text-shadow:0 0 18px rgba(0,212,255,0.4);line-height:1.1;}
+.hdr-sub{font-family:'Share Tech Mono',monospace;font-size:8.5px;color:var(--text-d);letter-spacing:1.5px;margin-top:2px;}
+.hdr-right{margin-left:auto;font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text-d);text-align:right;line-height:1.9;}
+.hdr-right span{color:var(--gold);}
+
+/* ── APP LAYOUT ── */
+.app{display:flex;height:calc(100vh - 58px);position:relative;z-index:1;}
+
+/* ── LEFT: SYSTEM PANEL ── */
+.sys-panel{width:200px;flex-shrink:0;background:rgba(7,18,32,0.95);border-right:1px solid var(--line);overflow-y:auto;display:flex;flex-direction:column;}
+.sys-header{padding:10px 12px 6px;font-family:'Orbitron',sans-serif;font-size:8px;letter-spacing:3px;color:var(--gold);border-bottom:1px solid var(--line);}
+.sys-btn{display:flex;align-items:center;gap:7px;padding:7px 12px;cursor:pointer;border:none;background:transparent;color:var(--text);width:100%;text-align:left;font-family:'Exo 2',sans-serif;font-size:11px;transition:all 0.12s;border-left:3px solid transparent;line-height:1.3;}
+.sys-btn:hover{background:rgba(0,212,255,0.04);color:var(--text-b);}
+.sys-btn.active{background:rgba(0,212,255,0.07);border-left-color:var(--cyan);color:var(--cyan);}
+.sys-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.sys-count{margin-left:auto;font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text-d);}
+.npi-section{margin-top:auto;border-top:1px solid var(--line);padding:10px 12px;}
+.npi-label{font-family:'Orbitron',sans-serif;font-size:8px;letter-spacing:2px;color:var(--gold);margin-bottom:6px;}
+.npi-input{width:100%;background:rgba(0,212,255,0.04);border:1px solid var(--line);color:var(--cyan);font-family:'Share Tech Mono',monospace;font-size:11px;padding:6px 8px;letter-spacing:1px;margin-bottom:5px;}
+.npi-input:focus{outline:none;border-color:var(--cyan);}
+.npi-btn{width:100%;font-family:'Orbitron',sans-serif;font-size:9px;letter-spacing:2px;background:var(--gold);color:#050d1a;border:none;padding:7px;cursor:pointer;transition:all 0.15s;font-weight:700;}
+.npi-btn:hover{background:var(--gold2);}
+.npi-result{margin-top:8px;font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text);line-height:1.7;border-left:2px solid var(--cyan);padding-left:7px;display:none;}
+.npi-result.show{display:block;}
+.npi-result .npi-name{color:var(--gold);font-weight:bold;font-size:10px;}
+.npi-result .npi-spec{color:var(--cyan);}
+.npi-result .npi-addr{color:var(--text-d);}
+
+/* ── CENTER: BODY VIEWER ── */
+.body-viewer{flex:1;min-width:0;display:flex;flex-direction:column;background:#030810;position:relative;overflow:hidden;}
+.bv-controls{display:flex;gap:6px;padding:8px 12px;background:rgba(5,13,26,0.9);border-bottom:1px solid var(--line);z-index:10;flex-shrink:0;}
+.bv-btn{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1px;background:transparent;color:var(--text-d);border:1px solid var(--line);padding:5px 11px;cursor:pointer;transition:all 0.12s;}
+.bv-btn:hover{color:var(--cyan);border-color:var(--cyan);}
+.bv-btn.active{color:var(--gold);border-color:var(--gold);background:rgba(232,184,75,0.06);}
+.bv-hint{margin-left:auto;font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text-d);display:flex;align-items:center;gap:8px;}
+.bv-canvas-wrap{flex:1;position:relative;overflow:hidden;}
+canvas#c{display:block;width:100%;height:100%;}
+.zone-tip{position:absolute;pointer-events:none;background:rgba(5,13,26,0.96);border:1px solid var(--gold);padding:5px 10px;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--gold);letter-spacing:1px;display:none;white-space:nowrap;z-index:20;box-shadow:0 0 12px rgba(232,184,75,0.2);}
+.scan-badge{position:absolute;top:8px;left:10px;font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--text-d);letter-spacing:2px;background:rgba(5,13,26,0.8);padding:3px 7px;border:1px solid var(--line);}
+.sys-indicator{position:absolute;bottom:8px;left:10px;font-family:'Orbitron',monospace;font-size:10px;color:var(--cyan);letter-spacing:2px;background:rgba(5,13,26,0.9);padding:4px 10px;border:1px solid var(--cyan);text-shadow:0 0 8px rgba(0,212,255,0.4);display:none;}
+
+/* ── RIGHT: DETAIL PANEL ── */
+.detail-panel{width:360px;flex-shrink:0;background:rgba(7,18,32,0.95);border-left:1px solid var(--line);display:flex;flex-direction:column;overflow:hidden;}
+.det-hdr{padding:11px 14px;border-bottom:1px solid var(--line);flex-shrink:0;}
+.det-sys{font-family:'Orbitron',sans-serif;font-size:8px;letter-spacing:3px;color:var(--cyan);margin-bottom:3px;}
+.det-title{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;color:var(--gold);}
+.det-search{padding:8px 14px;border-bottom:1px solid var(--line);flex-shrink:0;}
+.det-search input{width:100%;background:rgba(0,212,255,0.04);border:1px solid var(--line);color:var(--text);font-family:'Share Tech Mono',monospace;font-size:11px;padding:6px 9px;}
+.det-search input:focus{outline:none;border-color:var(--cyan);}
+.cond-list{overflow-y:auto;padding:4px 0;}
+.cond-item{padding:8px 14px;border-bottom:1px solid rgba(13,58,110,0.35);cursor:pointer;transition:background 0.1s;}
+.cond-item:hover{background:rgba(0,212,255,0.04);}
+.cond-item.active{background:rgba(232,184,75,0.05);border-left:3px solid var(--gold);}
+.cond-name{font-weight:600;font-size:11.5px;color:var(--text-b);margin-bottom:2px;line-height:1.3;}
+.cond-icd{font-family:'Share Tech Mono',monospace;font-size:8.5px;color:var(--text-d);letter-spacing:0.5px;margin-bottom:3px;}
+.w-tag{display:inline-block;font-family:'Share Tech Mono',monospace;font-size:8px;letter-spacing:1px;padding:2px 6px;border:1px solid;margin-right:4px;}
+.w-likely{color:var(--green);border-color:var(--green);background:var(--green-d);}
+.w-case{color:var(--amber);border-color:var(--amber);background:var(--amber-d);}
+.w-unlikely{color:var(--red);border-color:var(--red);background:var(--red-d);}
+.w-hardno{color:var(--red);border-color:var(--red);background:var(--red-d);font-weight:700;}
+.src-tag{display:inline-block;font-family:'Share Tech Mono',monospace;font-size:8px;padding:1px 5px;border:1px solid rgba(192,132,252,0.4);color:var(--purple);background:rgba(192,132,252,0.05);}
+
+/* ── CONDITION DETAIL ── */
+.cond-det{border-top:1px solid var(--gold);background:rgba(5,13,26,0.97);overflow-y:auto;flex-shrink:0;max-height:52vh;}
+.cd{padding:12px 14px;}
+.cd-sec{font-family:'Orbitron',monospace;font-size:7.5px;letter-spacing:3px;color:var(--cyan);margin:8px 0 5px;padding-bottom:3px;border-bottom:1px solid var(--line);}
+.cd-row{display:flex;gap:8px;margin-bottom:6px;}
+.cd-key{font-family:'Share Tech Mono',monospace;font-size:8.5px;color:var(--text-d);letter-spacing:1px;min-width:78px;flex-shrink:0;padding-top:1px;}
+.cd-val{font-size:11px;color:var(--text);line-height:1.6;}
+.cd-val.gold{color:var(--gold);}
+.cd-val.cyan{color:var(--cyan);font-family:'Share Tech Mono',monospace;font-size:9px;}
+.cd-val.purple{color:var(--purple);font-family:'Share Tech Mono',monospace;font-size:9px;}
+.waiver-box{margin-top:8px;padding:9px 10px;border-left:3px solid;line-height:1.7;font-size:10.5px;}
+.waiver-box.w-likely{border-color:var(--green);background:rgba(57,255,154,0.04);}
+.waiver-box.w-case{border-color:var(--amber);background:rgba(255,179,71,0.04);}
+.waiver-box.w-unlikely{border-color:var(--red);background:rgba(255,77,109,0.04);}
+.waiver-box.w-hardno{border-color:var(--red);background:rgba(255,77,109,0.06);}
+.waiver-title{font-family:'Orbitron',monospace;font-size:9px;font-weight:700;margin-bottom:5px;}
+.waiver-title.w-likely{color:var(--green);}
+.waiver-title.w-case{color:var(--amber);}
+.waiver-title.w-unlikely,.waiver-title.w-hardno{color:var(--red);}
+.ar501-block{margin-top:8px;padding:7px 9px;background:rgba(26,106,191,0.05);border:1px solid rgba(26,106,191,0.25);font-size:10px;line-height:1.6;color:var(--text-d);}
+.ar501-block .ar-label{font-family:'Share Tech Mono',monospace;font-size:8px;color:#7ba8d4;letter-spacing:1px;margin-bottom:3px;}
+.no-sel{padding:30px 14px;text-align:center;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text-d);letter-spacing:1px;line-height:2.2;}
+
+/* SCROLLBARS */
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--line-b);}
+::-webkit-scrollbar-thumb:hover{background:var(--cyan);}
+
+/* SPLIT LAYOUT */
+.right-split{display:flex;flex-direction:column;flex:1;overflow:hidden;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hdr">
+    <svg viewBox="0 0 40 40" fill="none"><polygon points="20,2 24,14 37,14 27,22 31,36 20,28 9,36 13,22 3,14 16,14" fill="none" stroke="#e8b84b" stroke-width="1.5"/><circle cx="20" cy="20" r="6" fill="none" stroke="#00d4ff" stroke-width="1"/><circle cx="20" cy="20" r="2.5" fill="#00d4ff" opacity="0.5"/></svg>
+    <div>
+      <div class="hdr-title">MEDICAL DQ · WAIVER · BODY REFERENCE</div>
+      <div class="hdr-sub">RSID 4D5E · DoWI 6130.03-V1 CH6 FEB 2026 · AR 40-501 · SWA GUIDANCE · NPI REGISTRY</div>
+    </div>
+    <div class="hdr-right">SOURCE <span>DoWI / AR 40-501</span> | UPDATED <span>FEB 2026</span> | <span style="color:var(--red)">NOT LEGAL/MEDICAL ADVICE</span></div>
+  </div>
+</header>
+
+<div class="app">
+
+  <!-- LEFT PANEL -->
+  <div class="sys-panel">
+    <div class="sys-header">◆ BODY SYSTEMS</div>
+    <div id="sysPanel"></div>
+
+    <!-- NPI LOOKUP -->
+    <div class="npi-section">
+      <div class="npi-label">◆ NPI PROVIDER LOOKUP</div>
+      <input class="npi-input" id="npiInput" type="text" maxlength="10" placeholder="Enter 10-digit NPI…" oninput="this.value=this.value.replace(/\D/g,'')">
+      <button class="npi-btn" onclick="lookupNPI()">▶ LOOKUP</button>
+      <div class="npi-result" id="npiResult"></div>
+    </div>
+  </div>
+
+  <!-- CENTER: 3D BODY -->
+  <div class="body-viewer">
+    <div class="bv-controls">
+      <button class="bv-btn active" id="bFront" onclick="setView(0)">FRONT</button>
+      <button class="bv-btn" id="bBack" onclick="setView(Math.PI)">BACK</button>
+      <button class="bv-btn" id="bLeft" onclick="setView(-Math.PI/2)">LEFT</button>
+      <button class="bv-btn" id="bRight" onclick="setView(Math.PI/2)">RIGHT</button>
+      <button class="bv-btn" onclick="resetCam()">RESET</button>
+      <div class="bv-hint">DRAG · ROTATE &nbsp;|&nbsp; SCROLL · ZOOM &nbsp;|&nbsp; CLICK · SELECT ZONE</div>
+    </div>
+    <div class="bv-canvas-wrap">
+      <canvas id="c"></canvas>
+      <div class="scan-badge" id="scanBadge">INTERACTIVE ANATOMICAL REFERENCE</div>
+      <div class="zone-tip" id="zoneTip"></div>
+      <div class="sys-indicator" id="sysIndicator"></div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="detail-panel">
+    <div class="det-hdr">
+      <div class="det-sys" id="detSys">SELECT A BODY ZONE OR SYSTEM</div>
+      <div class="det-title" id="detTitle">DQ CONDITIONS & WAIVER GUIDANCE</div>
+    </div>
+    <div class="det-search"><input id="srch" type="text" placeholder="Search condition / ICD code…" oninput="filterConds()"></div>
+    <div class="right-split">
+      <div class="cond-list" id="condList" style="flex:1;"><div class="no-sel">← CLICK A BODY REGION ON THE MODEL<br>OR SELECT A SYSTEM FROM THE LEFT<br><br>◆ 200+ CONDITIONS INDEXED<br>◆ DoWI 6130.03 · AR 40-501 · SWA<br>◆ ICD-10 CODED · WAIVER GUIDANCE</div></div>
+      <div class="cond-det" id="condDet" style="display:none;"></div>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// MEDICAL DATA — DoWI 6130.03-V1 Ch6 (Feb 2026), AR 40-501 Ch2,
+// SWA Waiver Risk-Stratified Guidance
+// waiver: 'likely'|'case'|'unlikely'|'hardno'
+// src: array of source tags
+// ═══════════════════════════════════════════════════════════════════
+const SYSTEMS={
+HEAD:{label:"Head / Brain / Skull",color:"#8b5cf6",zone:"head",conditions:[
+  {name:"Skull Fracture",icd:["S02.91XS","S02.91"],waiver:"case",
+   dq:"History of skull fracture with retained bone fragments, brain herniation, CSF leak, or structural defect affecting equipment retention.",
+   waiv:"Waive if history before age 12 with no functional limitations. Otherwise: imaging required, no retained fragments, no CSF leak, no structural compromise of skull.",
+   ar501:"AR 40-501 §2-13a: Loss of bony substance of skull affecting retention of personal protective equipment is DQ. Head/neck conditions affecting equipment wear must be evaluated.",
+   src:["DoWI V1 §6.2","AR 40-501 §2-13"]},
+  {name:"Mild TBI / Concussion",icd:["Z87.820","S06.0X0S","S06.0X1S","S06.0X9S"],waiver:"likely",
+   dq:"History of mild TBI/concussion. DQ if LOC in past 6 months or residual symptoms present.",
+   waiv:"Waive all without residual symptoms AND no LOC in past 6 months. Cannot ship < 4 weeks from incident. Applicant statement required.",
+   ar501:"AR 40-501 §2-36: History of head injuries with loss of consciousness disqualifying depending on severity and residuals.",
+   src:["SWA Guidance","DoWI V1 §6.2","AR 40-501 §2-36"]},
+  {name:"Moderate/Severe TBI (EDH/SDH/SAH)",icd:["S06.5X0S","S06.6X0S","S06.360S","S06.369S"],waiver:"case",
+   dq:"Moderate or severe TBI with intracranial hemorrhage (epidural, subdural, subarachnoid).",
+   waiv:"Waive ONLY if occurrence before age 5 without any functional limitations. Any residuals: disqualifying. Neurology consult required.",
+   ar501:"AR 40-501 §2-36b: Subarachnoid or intracranial hemorrhage is disqualifying.",
+   src:["SWA Guidance","DoWI V1 §6.2","AR 40-501 §2-36"]},
+  {name:"CNS Anomaly / Meningocele",icd:["Q05.9","G96.19","I66.8","Q27.39","Q28.2"],waiver:"case",
+   dq:"Congenital or acquired anomalies of the CNS.",
+   waiv:"Waive asymptomatic meningoceles other than myelomeningoceles. Not waiverable if associated with cancer or autoimmune condition.",
+   ar501:"AR 40-501 §2-36: Congenital or developmental defects of CNS evaluated case-by-case based on functional impact.",
+   src:["SWA Guidance","DoWI V1 §6.2","AR 40-501 §2-36"]},
+  {name:"Post-Traumatic Seizures",icd:["R56.1","G40.909"],waiver:"case",
+   dq:"Seizures following head trauma.",
+   waiv:"Waive if seizures lasted no more than 7 days beyond injury AND applicant is 12+ months free of seizures AND 12+ months off seizure-controlling medication.",
+   ar501:"AR 40-501 §2-36: Post-traumatic seizure disorders disqualifying unless single febrile seizure before age 5 with normal EEG.",
+   src:["SWA Guidance","AR 40-501 §2-36"]},
+  {name:"Brain Abscess / Meningitis",icd:["G06.2","G03.9"],waiver:"case",
+   dq:"History of brain abscess or bacterial/viral meningitis.",
+   waiv:"Remote history (> 5 years) without functional limitations or neurological sequelae — case-by-case. Active or recent: disqualifying.",
+   ar501:"AR 40-501 §2-36: CNS infections disqualifying until full recovery without neurological deficits.",
+   src:["SWA Guidance","AR 40-501 §2-36"]},
+  {name:"Meningeal Cysts / Disorders",icd:["G96.19","G93.0"],waiver:"likely",
+   dq:"History of disorders of meninges including cysts.",
+   waiv:"Waive all unless condition is associated with cancer or autoimmune disease.",
+   ar501:"",src:["SWA Guidance","DoWI V1 §6.2"]},
+  {name:"Headaches / Migraines",icd:["R51","G43.911","G44.221","G44.229","G43.109"],waiver:"likely",
+   dq:"Recurrent headaches or migraines with functional impact.",
+   waiv:"Waive if no missed work/school/sports > 8 times in any 12-month period AND uses only OTC or low-toxicity medications or therapy only. Pharmacy records and applicant statement required.",
+   ar501:"AR 40-501 §4-27c: History of chronic, recurrent, or incapacitating headaches (including ocular/acephalic migraine with visual disturbance) is DQ for aviation.",
+   src:["SWA Guidance","AR 40-501 §4-27"]},
+]},
+
+EYES:{label:"Eyes & Vision",color:"#06b6d4",zone:"eyes",conditions:[
+  {name:"Refractive Error > ±8.00D Spherical",icd:["H52.10","H52.00","H52.7"],waiver:"unlikely",
+   dq:"Current refractive error (hyperopia, myopia, astigmatism) in excess of ±8.00 diopters spherical equivalent.",
+   waiv:"Waiver unlikely. Must fall within ±8.00D SE threshold. Post-LASIK applicants who originally exceeded threshold remain DQ even if corrected.",
+   ar501:"AR 40-501 §2-12: Refractive error exceeding ±8.00D spherical equivalent disqualifying. Applies to all components.",
+   src:["DoWI V1 §6.4d","AR 40-501 §2-12"]},
+  {name:"Astigmatism > 3.00 Diopters",icd:["H52.201","H52.211","H52.221"],waiver:"unlikely",
+   dq:"Astigmatism in excess of 3.00 diopters in either eye.",
+   waiv:"Waiver unlikely at > 3.00D. Post-CXL for keratoconus: waiver possible ONLY if astigmatism reduces below 3.00D AND documented as stable. 9–12 month minimum timeline before reprocessing.",
+   ar501:"AR 40-501 §2-12: Astigmatism > 3.00D disqualifying.",
+   src:["DoWI V1 §6.4d","AR 40-501 §2-12"]},
+  {name:"Keratoconus (Any Degree)",icd:["H18.623","H18.612","H18.613"],waiver:"unlikely",
+   dq:"Corneal dystrophy or degeneration of any type including keratoconus — DQ regardless of severity.",
+   waiv:"Hard DQ per DoWI §6.3c(1). Post-CXL waiver pathway ONLY: astigmatism must drop below 3.00D + condition stable for ≥ 12 months + bilateral CXL consultation recommended. Contact lens dependency = separate hard DQ. Min 9–12 months before reprocessing.",
+   ar501:"AR 40-501 §2-12a: Keratoconus DQ.",
+   src:["DoWI V1 §6.3c","DoWI V1 §6.4d,e","AR 40-501 §2-12"]},
+  {name:"Contact Lens Dependency",icd:["H18.89","Z46.0"],waiver:"hardno",
+   dq:"Any condition requiring contact lenses for adequate correction (corneal scars, irregular astigmatism, keratoconus, etc.).",
+   waiv:"HARD DISQUALIFIER — no waiver authorized. DoWI §6.4e is explicit and non-waiverable.",
+   ar501:"AR 40-501 §2-12: Contact lens dependency for adequate correction is DQ.",
+   src:["DoWI V1 §6.4e","AR 40-501 §2-12"]},
+  {name:"LASIK / PRK / SMILE Refractive Surgery",icd:["Z98.890","H52.7"],waiver:"likely",
+   dq:"Corneal laser refractive surgery within 180 days of exam; or if pre-surgical error exceeded ±8.00D SE or astigmatism > 3.00D.",
+   waiv:"Waive if stable ≥ 90 days and meets post-surgical vision requirements. Pre-surgical thresholds must not have been exceeded. LASIK, PRK, LASEK, SMILE — all covered.",
+   ar501:"AR 40-501 §2-12: History of refractive surgery not DQ if accession standards met post-op.",
+   src:["SWA Guidance","DoWI V1 §6.3c(3)","AR 40-501 §2-12"]},
+  {name:"Radial Keratotomy / Corneal Implants / Transplant",icd:["H18.89","Z94.7"],waiver:"hardno",
+   dq:"Any incisional corneal surgery (RK, AK, astigmatic keratotomy) OR corneal implants (Intacs) OR partial/full thickness corneal transplant.",
+   waiv:"HARD DISQUALIFIER — DoWI §6.3c(2). Incisional corneal surgery is not waiverable.",
+   ar501:"AR 40-501 §2-12b: Incisional corneal surgery DQ.",
+   src:["DoWI V1 §6.3c(2)","AR 40-501 §2-12"]},
+  {name:"Strabismus / Esotropia / Exotropia",icd:["H50.00","H50.10","H50.21","H50.22","H50.30"],waiver:"likely",
+   dq:"Ocular misalignment.",
+   waiv:"Waive if non-diplopic (no active double vision) and vision is correctable to 20/20.",
+   ar501:"AR 40-501 §2-12: Ocular mobility/motility conditions evaluated based on functional vision impact.",
+   src:["SWA Guidance","DoWI V1 §6.3g"]},
+  {name:"Glaucoma / Ocular Hypertension",icd:["H40","H40.059","H40.009","H40.0","H57.8"],waiver:"case",
+   dq:"Established glaucoma or elevated intraocular pressure.",
+   waiv:"Waive ONLY if history of pre-glaucoma or glaucoma suspect with no history of true glaucoma or ocular hypertension in past 5 years. IOP must be < 25 for consideration.",
+   ar501:"AR 40-501 §2-12: Glaucoma (open-angle or other) DQ.",
+   src:["SWA Guidance","DoWI V1 §6.3h","AR 40-501 §2-12"]},
+  {name:"Cataracts / Lens Opacities",icd:["H26.009","H26.9","H27.9"],waiver:"likely",
+   dq:"Cataract or lens opacity.",
+   waiv:"Waive if no visual functional impact and meets vision correction requirements. Aphakia is HIGH RISK — consult required.",
+   ar501:"",src:["SWA Guidance","DoWI V1 §6.3f"]},
+  {name:"Lens Implant (IOL / ICL)",icd:["Z96.1"],waiver:"likely",
+   dq:"Implantable collamer or intraocular lens.",
+   waiv:"Waive ICL if no documented complications and meets vision requirements. Aphakia (no lens without replacement) is HIGH RISK requiring consult.",
+   ar501:"",src:["SWA Guidance"]},
+  {name:"Retinal Abnormality (Lattice / Detachment History)",icd:["H35.9","H31.9","H43.9","H33.009"],waiver:"case",
+   dq:"Any history of abnormality of retina, choroid, or vitreous.",
+   waiv:"Lattice degeneration with pigment, asymptomatic — waiverable. Retinal detachment history: high risk, case-by-case with ophthalmology consult.",
+   ar501:"AR 40-501 §2-12: Retinal conditions evaluated based on functional vision impact.",
+   src:["SWA Guidance","DoWI V1 §6.3d","AR 40-501 §2-12"]},
+  {name:"Ptosis / Lid Defect / Blepharospasm",icd:["H02.40","H02.30","H02.00"],waiver:"case",
+   dq:"Defect or deformity of lids sufficient to interfere with vision, require head posturing, impair eye protection, or current blepharospasm.",
+   waiv:"Case-by-case based on severity and functional vision impact.",
+   ar501:"",src:["DoWI V1 §6.3a"]},
+  {name:"Keratitis / HSV Keratitis / Corneal Ulcer",icd:["H16.8","H16.9","B00.52","H16.009"],waiver:"likely",
+   dq:"Corneal inflammation or infection.",
+   waiv:"Waive if no recurrence in the last 12 months regardless of antiviral therapy status.",
+   ar501:"",src:["SWA Guidance","DoWI V1 §6.3c"]},
+  {name:"Uveitis / Iridocyclitis",icd:["H44.139","H20.00","H20.019","H20.029","H20.039","H31.9","H21.9"],waiver:"case",
+   dq:"Inflammation of uveal tract.",
+   waiv:"Waive if single episode > 2 years ago with no recurrence.",
+   ar501:"",src:["SWA Guidance","DoWI V1 §6.3"]},
+  {name:"Dacryocystitis (Acute or Chronic)",icd:["H04.301","H04.311"],waiver:"case",
+   dq:"Current dacryocystitis (lacrimal sac infection).",
+   waiv:"Must be resolved and treated. Active dacryocystitis is DQ. Remote resolved history — case-by-case.",
+   ar501:"",src:["DoWI V1 §6.3a(3)"]},
+  {name:"Pterygium (Progressive / Symptomatic)",icd:["H11.009"],waiver:"case",
+   dq:"Pterygium encroaching > 3mm on cornea, symptomatic, interfering with vision, or progressive. History of pterygium recurrence after surgery.",
+   waiv:"Stable, non-progressive, non-symptomatic, non-encroaching — may qualify. Recurrence after surgery is DQ.",
+   ar501:"",src:["DoWI V1 §6.3b"]},
+]},
+
+EARS:{label:"Ears & Hearing",color:"#f59e0b",zone:"ears",conditions:[
+  {name:"Hearing Loss — Exceeds Audiometric Standards",icd:["H91.9","H90.3","H90.5","H91.20"],waiver:"case",
+   dq:"Threshold > 25dB avg at 500/1000/2000 Hz; > 30dB at any single freq 500/1000/2000; > 35dB at 3000 Hz; > 45dB at 4000 Hz.",
+   waiv:"Assessed using DA PAM 40-502 and OTSG audiology recommendations. Case-by-case based on degree and frequency distribution. Unexplained asymmetric loss (≥ 30dB between ears at any single freq 500–2000 Hz) is also DQ.",
+   ar501:"AR 40-501 §2-11: Hearing thresholds evaluated per audiometric standards. Bilateral sensorineural hearing loss disqualifying.",
+   src:["DoWI V1 §6.6b","SWA Guidance","AR 40-501 §2-11"]},
+  {name:"Hearing Aid History",icd:["Z96.8","Z46.1"],waiver:"hardno",
+   dq:"Any history of using hearing aids for any purpose.",
+   waiv:"HARD DISQUALIFIER — not waiverable per DoWI §6.6d.",
+   ar501:"AR 40-501 §2-11: Hearing aid dependency is DQ.",
+   src:["DoWI V1 §6.6d","AR 40-501 §2-11"]},
+  {name:"Surgically Implanted Hearing Device",icd:["Z96.29","Z96.21"],waiver:"hardno",
+   dq:"Any surgically implanted hearing device (cochlear implant, BAHA, osseointegrated implant).",
+   waiv:"HARD DISQUALIFIER.",
+   ar501:"",src:["DoWI V1 §6.5a"]},
+  {name:"Ménière's Syndrome / Chronic Vestibular Disease",icd:["H81.09","H81.39","H81.399"],waiver:"hardno",
+   dq:"Any history of Ménière's syndrome, recurrent labyrinthitis, or other chronic vestibular disease.",
+   waiv:"HARD DISQUALIFIER — not waiverable.",
+   ar501:"AR 40-501 §2-11: Ménière's disease DQ.",
+   src:["DoWI V1 §6.5b","AR 40-501 §2-11"]},
+  {name:"Recurrent / Persistent Vertigo",icd:["H81.39","R42"],waiver:"hardno",
+   dq:"Recurrent or persistent vertigo in the last 12 months.",
+   waiv:"HARD DISQUALIFIER.",
+   ar501:"AR 40-501 §4-6d: History of vertigo attacks — DQ for aviation.",
+   src:["DoWI V1 §6.5c","AR 40-501 §4-6"]},
+  {name:"Cholesteatoma",icd:["H71.90","H71.00","H71.10","H71.20"],waiver:"hardno",
+   dq:"History of cholesteatoma.",
+   waiv:"HARD DISQUALIFIER.",
+   ar501:"",src:["DoWI V1 §6.5e"]},
+  {name:"Tympanic Membrane Perforation",icd:["H72.90","H72.00","H72.10","H72.819"],waiver:"case",
+   dq:"Current perforation of tympanic membrane or surgery to correct perforation within last 6 months.",
+   waiv:"Healed perforation > 6 months with adequate hearing and normal mobility — case-by-case. Current perforation or recent surgery: DQ.",
+   ar501:"AR 40-501 §2-11: Chronic tympanic membrane perforation DQ.",
+   src:["DoWI V1 §6.5g","AR 40-501 §2-11"]},
+  {name:"Chronic Eustachian Tube Dysfunction",icd:["H69.80","H69.00"],waiver:"unlikely",
+   dq:"More than one episode of AOM, SOM, or persistent middle ear effusion within past 24 months; or pressure equalization tubes; or atraumatic TM rupture.",
+   waiv:"Generally not waiverable if chronic/recurrent. Single resolved episode outside 24 months — may be considered.",
+   ar501:"",src:["DoWI V1 §6.5h"]},
+  {name:"Inner or Middle Ear Surgery",icd:["Z96.21","Z98.890"],waiver:"hardno",
+   dq:"History of any inner or middle ear surgery.",
+   waiv:"HARD DISQUALIFIER.",
+   ar501:"",src:["DoWI V1 §6.5f"]},
+  {name:"Chronic Otitis Externa / Severe Microtia / Atresia",icd:["H60.599","Q17.2","Q16.1"],waiver:"case",
+   dq:"Current defect requiring recurrent treatment or preventing proper wearing of hearing protection; severe external ear deformity.",
+   waiv:"Resolved otitis externa — case-by-case. Structural deformity preventing equipment wear: unlikely.",
+   ar501:"",src:["DoWI V1 §6.5a"]},
+]},
+
+NOSE:{label:"Nose / Sinuses / Mouth / Throat",color:"#10b981",zone:"nose",conditions:[
+  {name:"Chronic Sinusitis / Nasal Polyps",icd:["J32.9","J32.0","J32.4","J33.9","J33.0"],waiver:"unlikely",
+   dq:"Current chronic sinusitis, current nasal polyp or polypoid mass, or history of sinus surgery within last 24 months.",
+   waiv:"Resolved and outside 24 months without recurrence — case-by-case. Active or recent: generally DQ.",
+   ar501:"AR 40-501 §2-14: Chronic sinusitis DQ.",
+   src:["DoWI V1 §6.7f","AR 40-501 §2-14"]},
+  {name:"Cleft Lip / Palate",icd:["Q36.9","Q35.9","Q37.9"],waiver:"case",
+   dq:"Current cleft lip or palate not satisfactorily repaired by surgery, or that prevents drinking from a straw, or may interfere with military equipment use.",
+   waiv:"Satisfactorily repaired with normal function — likely waiverable. Unrepaired or functionally limiting: unlikely.",
+   ar501:"AR 40-501 §2-14: Cleft palate/lip evaluated based on repair and functional outcome.",
+   src:["DoWI V1 §6.7a","AR 40-501 §2-14"]},
+  {name:"Vocal Cord Dysfunction / Paralysis / Spasmodic Dysphonia",icd:["J38.00","J38.3","J38.01","J38.02"],waiver:"unlikely",
+   dq:"Symptomatic vocal cord dysfunction including paralysis, paradoxical movement, spasmodic dysphonia, non-benign polyps, chronic hoarseness, chronic laryngitis > 21 days, or history of VCD with respiratory symptoms.",
+   waiv:"Active or symptomatic: generally DQ. Resolved single episode — case-by-case.",
+   ar501:"AR 40-501 §2-14: Symptomatic vocal cord conditions DQ.",
+   src:["DoWI V1 §6.7c","AR 40-501 §2-14"]},
+  {name:"Recurrent Epistaxis",icd:["R04.0"],waiver:"case",
+   dq:"More than one episode of epistaxis requiring medical intervention (ER/UC treatment or procedure) in past 24 months.",
+   waiv:"Single resolved episode: likely waiverable. Recurrent requiring intervention: unlikely.",
+   ar501:"",src:["DoWI V1 §6.7e"]},
+  {name:"Olfactory Deficit (Anosmia / Hyposmia)",icd:["R43.0","R43.1"],waiver:"unlikely",
+   dq:"Current olfactory deficit.",
+   waiv:"Generally DQ if persistent. Treatable/resolved cause — case-by-case.",
+   ar501:"AR 40-501 §4-8f: Anosmia or parosmia DQ for aviation.",
+   src:["DoWI V1 §6.7d","AR 40-501 §4-8"]},
+  {name:"Nasal Septal Deviation (Symptomatic)",icd:["J34.2"],waiver:"case",
+   dq:"Deviation of nasal septum causing symptomatic airflow obstruction, chronic rhinitis, chronic sinusitis, or interference with sinus drainage.",
+   waiv:"Asymptomatic deviation: not DQ. Symptomatic causing recurrent sinusitis: case-by-case; surgical correction may resolve.",
+   ar501:"",src:["DoWI V1 §6.7","AR 40-501 §4-8g"]},
+]},
+
+DENTAL:{label:"Dental",color:"#64748b",zone:"mouth",conditions:[
+  {name:"Dental Class 3 / 4 — Active Treatment Required",icd:["K08.409","K04.7","K02.9","Z29.8"],waiver:"case",
+   dq:"Dental disease requiring active restorative treatment; pain-producing conditions likely to cause inability to perform duties.",
+   waiv:"Must be resolved to Dental Class 1 or 2 before ship. Dental Class 3/4 cannot ship. Some conditions waiverable if treatment plan completed.",
+   ar501:"AR 40-501 §2-15: Dental Class 3 and 4 conditions DQ until corrected.",
+   src:["DoWI V1 §6.8","AR 40-501 §2-15"]},
+  {name:"Jaw / TMJ Dysfunction (Symptomatic)",icd:["M26.60","M26.69","K07.6"],waiver:"case",
+   dq:"Temporomandibular joint dysfunction causing significant pain or functional limitation.",
+   waiv:"Asymptomatic: not DQ. Symptomatic requiring medication or treatment: case-by-case.",
+   ar501:"",src:["DoWI V1 §6.8"]},
+  {name:"Orthodontic Appliances (Active)",icd:["Z46.4"],waiver:"case",
+   dq:"Active orthodontic appliances that interfere with oral communication or equipment safety.",
+   waiv:"Must be removable or removed before ship. Fixed appliances interfering with equipment: DQ until resolved.",
+   ar501:"AR 40-501 §4-9a: Orthodontic appliances interfering with effective oral communication or flight safety DQ for aviation.",
+   src:["AR 40-501 §4-9","DoWI V1 §6.8"]},
+]},
+
+HEART:{label:"Heart & Cardiovascular",color:"#ef4444",zone:"chest",conditions:[
+  {name:"Valvular Stenosis (Any)",icd:["I34.2","I35.0","I05.0","I06.0","I07.0","I37.0"],waiver:"case",
+   dq:"Any degree of valvular stenosis.",
+   waiv:"Waive if mild with no associated conditions per Echo within past 12 months.",
+   ar501:"AR 40-501 §2-18i: Valvular heart disease with cardiac insufficiency NYHA Class II or worse DQ.",
+   src:["SWA Guidance","DoWI V1 §6.11","AR 40-501 §2-18"]},
+  {name:"Aortic / Mitral Regurgitation",icd:["I34.0","I35.1","I06.1","I05.1"],waiver:"case",
+   dq:"Valvular regurgitation.",
+   waiv:"Waive up to mild aortic/mitral regurgitation confirmed by Echo within last 12 months.",
+   ar501:"",src:["SWA Guidance","DoWI V1 §6.11"]},
+  {name:"Bicuspid Aortic Valve",icd:["Q23.1","I35.0","I35.1","I35.2","I77.819"],waiver:"case",
+   dq:"Bicuspid aortic valve with any degree of stenosis or aortic dilation.",
+   waiv:"Waive if: no aortic dilation on dedicated imaging within 12 months, no stenosis on Echo within 12 months, and no more than mild aortic regurgitation.",
+   ar501:"",src:["SWA Guidance"]},
+  {name:"Valve Replacement / Prosthetic Valve",icd:["Z95.2","Z95.3","Z95.4"],waiver:"case",
+   dq:"Any valve replacement. Generally not compatible with military service.",
+   waiv:"Congenital pulmonic stenosis not requiring anticoagulation — may consider. All other replacements: generally DQ.",
+   ar501:"AR 40-501 §2-18o(1): Permanent prosthetic valve implantation DQ.",
+   src:["SWA Guidance","DoWI V1 §6.11","AR 40-501 §2-18"]},
+  {name:"Atherosclerotic / Coronary Artery Disease",icd:["I25.10","I25.119","I25.110"],waiver:"case",
+   dq:"Atherosclerotic CAD.",
+   waiv:"Waive if no history of intervention (surgical or percutaneous) AND asymptomatic without myocardial ischemia on objective testing.",
+   ar501:"AR 40-501 §2-18o(3): Coronary artery revascularization DQ with limited waiver pathway.",
+   src:["SWA Guidance","AR 40-501 §2-18"]},
+  {name:"SVT / Atrial Flutter / Atrial Fibrillation",icd:["I48.91","I48.92","I47.1","I48.0"],waiver:"case",
+   dq:"Supraventricular tachycardia, atrial flutter, or atrial fibrillation.",
+   waiv:"Waive ONLY for atrial flutter successfully treated with catheter ablation without recurrence for 90 days. A-fib generally not waiverable.",
+   ar501:"AR 40-501 §2-18: Cardiac arrhythmias requiring medication to prevent potentially fatal events DQ.",
+   src:["SWA Guidance","AR 40-501 §2-18"]},
+  {name:"Hypertension / Elevated BP",icd:["I10","R03.0"],waiver:"likely",
+   dq:"Hypertension of any degree.",
+   waiv:"Waive all cases UNLESS current uncontrolled hypertension despite medications. Controlled HTN on medication is waiverable.",
+   ar501:"AR 40-501 §2-18l: Cardiovascular disorders requiring chronic drug therapy to prevent fatal/severely symptomatic events DQ — but controlled HTN is not in this category.",
+   src:["SWA Guidance","AR 40-501 §2-18"]},
+  {name:"DVT / Pulmonary Embolism",icd:["I82.90","I82.91","Z86.711","I26.99"],waiver:"case",
+   dq:"Deep vein thrombosis or pulmonary embolism.",
+   waiv:"Waive if single, clearly provoked case (surgery/injury) AND off all anticoagulants (except aspirin) for at least 6 months.",
+   ar501:"",src:["SWA Guidance","DoWI V1 §6.11"]},
+  {name:"Hypertrophic Cardiomyopathy (Family History)",icd:["I42.2","Z82.49"],waiver:"likely",
+   dq:"Family history of hypertrophic cardiomyopathy.",
+   waiv:"Waive for family Hx only if applicant is asymptomatic with normal Echo within 12 months OR documented genotype negative.",
+   ar501:"",src:["SWA Guidance"]},
+  {name:"Pacemaker / ICD / Implanted Cardiac Device",icd:["Z95.0","Z95.810","Z95.811"],waiver:"hardno",
+   dq:"Implantation of permanent pacemaker, anti-tachycardia device, or defibrillator.",
+   waiv:"HARD DISQUALIFIER — permanent cardiac implants incompatible with military service.",
+   ar501:"AR 40-501 §2-18o(2): Implantation of permanent pacemaker or defibrillator DQ.",
+   src:["DoWI V1 §6.11","AR 40-501 §2-18"]},
+  {name:"EKG Variants (Sinus Brady / PVCs / Incomplete BBB / ERP)",icd:["I45.10","I45.9","R00.1","I49.8","I44.0","I44.1","I44.3","I45.5"],waiver:"likely",
+   dq:"Benign EKG findings on routine examination.",
+   waiv:"Waive if determined to be normal variant per USUHS resource. Sinus bradycardia, incomplete RBBB, early repolarization, isolated PVCs — typically waiverable.",
+   ar501:"AR 40-501: EKG abnormalities evaluated by cardiologist. QTc > 430ms requires further evaluation.",
+   src:["SWA Guidance","AR 40-501 §4-12"]},
+  {name:"Kawasaki's Disease / Arteritis",icd:["M30.3","I77.6"],waiver:"likely",
+   dq:"History of Kawasaki's disease.",
+   waiv:"Waive if arteritis is in remission for at least 6 months with no coronary artery involvement.",
+   ar501:"",src:["SWA Guidance"]},
+  {name:"Vena Cava Filter / Stent / Angioplasty",icd:["Z95.828","Z98.61","Z98.62"],waiver:"likely",
+   dq:"Vascular procedures.",
+   waiv:"Waive unless associated with another disqualifying condition.",
+   ar501:"",src:["SWA Guidance"]},
+  {name:"Tachycardia (Isolated)",icd:["R00.0"],waiver:"likely",
+   dq:"Tachycardia without underlying disqualifying cardiac condition.",
+   waiv:"Waive if no evidence of another disqualifying condition. EKG and cardiologist clearance needed.",
+   ar501:"",src:["SWA Guidance"]},
+  {name:"Syncope / Near-Syncope (Recurrent)",icd:["R55","G90.3"],waiver:"unlikely",
+   dq:"Recurrent syncope or near-syncope not controlled.",
+   waiv:"Single vasovagal episode (documented) — typically not DQ. Recurrent or unexplained: generally DQ pending cardiac/neurological workup.",
+   ar501:"AR 40-501 §2-18k: Recurrent syncope or near syncope not controlled DQ.",
+   src:["DoWI V1 §6.11","AR 40-501 §2-18k"]},
+]},
+
+LUNGS:{label:"Lungs & Respiratory",color:"#3b82f6",zone:"chest",conditions:[
+  {name:"Asthma / Reactive Airway / EIB",icd:["J45.909","J45.990","J45.20","J45.30","J68.3"],waiver:"case",
+   dq:"Any history of asthma, reactive airway disease, or exercise-induced bronchospasm.",
+   waiv:"Waive if: proven HS athlete (basketball/track — NOT baseball/softball) or proven aerobic endurance athlete AND ≤ 2 albuterol fills in last 5 years AND no oral steroid use in 5 years. Applicant statement + pharmacy records required.",
+   ar501:"AR 40-501 §2-17: Reactive airway disease DQ if symptomatic or requiring medication.",
+   src:["SWA Guidance","DoWI V1 §6.10","AR 40-501 §2-17"]},
+  {name:"Pulmonary Nodules",icd:["R91.8","R93.8"],waiver:"likely",
+   dq:"Pulmonary nodules on imaging.",
+   waiv:"Waive if < 6mm in a non-smoker OR ≤ 3 calcified nodules meeting Fleischner criteria.",
+   ar501:"",src:["SWA Guidance"]},
+  {name:"Spontaneous Pneumothorax",icd:["J93.1","J93.9"],waiver:"case",
+   dq:"History of spontaneous pneumothorax.",
+   waiv:"Waive if > 10 years ago OR surgically corrected > 6 months ago.",
+   ar501:"AR 40-501 §2-17: Recurrent spontaneous pneumothorax where underlying defect not correctable DQ.",
+   src:["SWA Guidance","DoWI V1 §6.10f","AR 40-501 §2-17"]},
+  {name:"Traumatic Pneumothorax",icd:["S27.0"],waiver:"likely",
+   dq:"Pneumothorax caused by trauma.",
+   waiv:"Waive if > 90 days prior with complete resolution.",
+   ar501:"",src:["SWA Guidance"]},
+  {name:"Obstructive Sleep Apnea",icd:["G47.30","G47.33","G47.39"],waiver:"case",
+   dq:"History of OSA.",
+   waiv:"Waive if: mild OSA (AHI < 15) asymptomatic, OR mild OSA managed with APAP/CPAP/oral appliance, OR moderate OSA (AHI 15–29) with CPAP compliance report ≥ 4hrs/night for ≥ 70% of nights over 30-day period.",
+   ar501:"AR 40-501 §2-36: Sleep-related breathing disorders evaluated based on severity and treatment.",
+   src:["SWA Guidance","AR 40-501 §2-36"]},
+  {name:"Latent Tuberculosis (LTBI)",icd:["R76.11","R76.12","A15.9"],waiver:"likely",
+   dq:"Positive IGRA or TST (latent TB).",
+   waiv:"Waive if appropriate documentation of completed LTBI treatment.",
+   ar501:"AR 40-501 §2-17: LTBI warrants antimicrobial therapy but is not itself DQ.",
+   src:["SWA Guidance","AR 40-501 §2-17"]},
+  {name:"Active / Recent Pneumonia",icd:["J18.9","Z87.01"],waiver:"likely",
+   dq:"History of infectious pneumonia.",
+   waiv:"Waive if asymptomatic, no residual imaging abnormalities, no infection symptoms. If recurrent: waive if asymptomatic for last 5 years.",
+   ar501:"",src:["SWA Guidance"]},
+  {name:"Bronchiectasis",icd:["J47.1","J47.9"],waiver:"case",
+   dq:"Bronchiectasis.",
+   waiv:"Waive if no evidence of exacerbations or chronic pleurisy in past 10 years.",
+   ar501:"",src:["SWA Guidance","DoWI V1 §6.10"]},
+  {name:"Cystic Fibrosis",icd:["E84.9","E84.0","E84.11"],waiver:"hardno",
+   dq:"Cystic fibrosis.",
+   waiv:"HARD DISQUALIFIER — not waiverable.",
+   ar501:"AR 40-501 §2-17: Cystic fibrosis DQ.",
+   src:["DoWI V1 §6.10i","AR 40-501 §2-17"]},
+  {name:"Pleuritis / Pleural Effusion",icd:["R09.1","J91.8","J90"],waiver:"case",
+   dq:"Pleurisy or pleural effusion.",
+   waiv:"Waive if imaging shows no pleural effusion and condition fully resolved.",
+   ar501:"",src:["SWA Guidance","DoWI V1 §6.10"]},
+  {name:"Pulmonary / Systemic Embolism",icd:["I26.99","I74.9","I82.90"],waiver:"case",
+   dq:"Pulmonary or systemic embolism.",
+   waiv:"Waive if single and clearly provoked (car accident or surgery) AND off anticoagulants (except aspirin) for at least 6 months.",
+   ar501:"",src:["SWA Guidance","DoWI V1 §6.10h"]},
+  {name:"Thoracic Surgery",icd:["Z98.890","J95.811"],waiver:"case",
+   dq:"Prior thoracic surgery.",
+   waiv:"Waive if no functional limitations AND > 5 years since bronchoscopy, pneumothorax correction, pectus excavatum surgery, or fracture plating. All other procedures: asymptomatic and > 10 years.",
+   ar501:"",src:["SWA Guidance"]},
+  {name:"COPD / Emphysema / Interstitial Lung Disease",icd:["J44.1","J43.9","J84.9"],waiver:"hardno",
+   dq:"COPD, emphysema, interstitial lung disease, pulmonary sarcoidosis.",
+   waiv:"HARD DISQUALIFIER.",
+   ar501:"AR 40-501 §2-17: COPD, interstitial lung disease DQ.",
+   src:["DoWI V1 §6.10e","AR 40-501 §2-17"]},
+  {name:"Chronic Supplemental Oxygen Requirement",icd:["Z99.81"],waiver:"hardno",
+   dq:"Any condition requiring chronic supplemental oxygen.",
+   waiv:"HARD DISQUALIFIER.",
+   ar501:"",src:["DoWI V1 §6.10j"]},
+]},
+
+ABDOMEN:{label:"Abdomen & GI",color:"#f97316",zone:"abdomen",conditions:[
+  {name:"Bariatric Surgery",icd:["Z98.84","Z98.89","Y83.1"],waiver:"unlikely",
+   dq:"History of bariatric surgery (gastric bypass, sleeve gastrectomy, band).",
+   waiv:"WAIVER UNLIKELY. Gastric Sleeve Surgery (ONLY) may be considered if: no surgical complications, > 1yr post-op, surgeon letter of clearance, stable weight × 3 months, normal hemoglobin values, no prescription meds × 3 months, asymptomatic with regular fitness program.",
+   ar501:"AR 40-501 §2-19: GI conditions evaluated based on functional impact and complications.",
+   src:["SWA Guidance","AR 40-501 §2-19"]},
+  {name:"Crohn's Disease / Ulcerative Colitis (IBD)",icd:["K50.90","K51.90","K51.30"],waiver:"unlikely",
+   dq:"Inflammatory bowel disease.",
+   waiv:"Generally DQ. Prolonged remission completely off all medications — rare case-by-case consideration.",
+   ar501:"AR 40-501 §2-19: Chronic inflammatory bowel disease DQ.",
+   src:["DoWI V1 §6.12","AR 40-501 §2-19"]},
+  {name:"Appendectomy (Uncomplicated / Resolved)",icd:["Z87.09","K37"],waiver:"likely",
+   dq:"History of appendectomy.",
+   waiv:"Simple resolved appendectomy — generally waiverable after full recovery. Complicated (perforated, abscess): case-by-case.",
+   ar501:"",src:["DoWI V1 §6.12"]},
+  {name:"Hepatitis B or C (Chronic)",icd:["B18.1","B18.2","B18.9"],waiver:"unlikely",
+   dq:"Chronic active hepatitis B or C.",
+   waiv:"Chronic: generally DQ. Fully cleared/resolved (documented SVR for HCV, loss of HBsAg): case-by-case.",
+   ar501:"AR 40-501 §2-19: Chronic active hepatitis DQ.",
+   src:["DoWI V1 §6.12","AR 40-501 §2-19"]},
+  {name:"Cholecystectomy / Gallbladder Removal",icd:["Z87.39","K80.20"],waiver:"likely",
+   dq:"History of cholecystectomy.",
+   waiv:"Waiverable if resolved and no residual complications or symptoms.",
+   ar501:"",src:["DoWI V1 §6.12"]},
+  {name:"GERD / Peptic Ulcer Disease (Active)",icd:["K21.0","K21.9","K27.9","K25.9"],waiver:"case",
+   dq:"Active GERD requiring ongoing prescription medication or active peptic ulcer disease.",
+   waiv:"Controlled GERD on OTC meds: likely waiverable. Requiring chronic prescription meds or active ulcer: case-by-case.",
+   ar501:"",src:["DoWI V1 §6.12"]},
+  {name:"Unrepaired Hernia (Symptomatic)",icd:["K40.90","K43.9","K44.9"],waiver:"unlikely",
+   dq:"Unrepaired hernia causing functional limitation.",
+   waiv:"Must be repaired prior to accession. Post-repair (fully healed, no complications): likely waiverable.",
+   ar501:"AR 40-501 §5-4h(2): Unrepaired hernia DQ for SF/Ranger/Airborne.",
+   src:["DoWI V1 §6.12","AR 40-501 §5-4"]},
+  {name:"Intestinal Obstruction / Adhesions (History)",icd:["K56.60","K66.0"],waiver:"unlikely",
+   dq:"History of intestinal obstruction or surgical adhesions requiring treatment.",
+   waiv:"Generally DQ. Remote single episode with no recurrence — case-by-case.",
+   ar501:"AR 40-501 §5-4h(3): Operation for intestinal adhesions DQ for SF/Airborne.",
+   src:["DoWI V1 §6.12","AR 40-501 §5-4"]},
+  {name:"Colon Resection / Colostomy",icd:["Z93.3","Z93.2","Z43.3"],waiver:"unlikely",
+   dq:"History of colon resection or colostomy.",
+   waiv:"Generally DQ. Case-by-case for minor resection with no residuals.",
+   ar501:"",src:["DoWI V1 §6.12"]},
+]},
+
+KIDNEY:{label:"Kidneys & Urinary",color:"#8b5cf6",zone:"abdomen",conditions:[
+  {name:"Kidney Stones (Urolithiasis)",icd:["N20.0","N20.2","N20.9","N21.0"],waiver:"case",
+   dq:"Current stone ≥ 3mm; multiple stones of any size; symptomatic within 12 months; history requiring procedure; nephrocalcinosis; bilateral calculi.",
+   waiv:"Single small stone (< 3mm), asymptomatic, no procedure history, no bilateral stones — case-by-case. Recurrent or requiring procedures: unlikely.",
+   ar501:"AR 40-501 §2-22: Urolithiasis evaluated based on recurrence and functional impact.",
+   src:["DoWI V1 §6.15t","AR 40-501 §2-22"]},
+  {name:"Chronic Kidney Disease (CKD)",icd:["N18.1","N18.2","N18.3","N18.9"],waiver:"unlikely",
+   dq:"CKD with abnormal imaging, casts, active urine sediment, abnormal biopsy.",
+   waiv:"Generally DQ. Mild isolated lab abnormalities with normal function — case-by-case.",
+   ar501:"AR 40-501 §2-22: Chronic renal disease DQ.",
+   src:["DoWI V1 §6.15","AR 40-501 §2-22"]},
+  {name:"Acute Kidney Injury (History Requiring Dialysis)",icd:["N17.9","Z99.2"],waiver:"unlikely",
+   dq:"History of acute kidney injury requiring dialysis.",
+   waiv:"Generally DQ. Recovery with normal function documented — case-by-case.",
+   ar501:"",src:["DoWI V1 §6.15r"]},
+  {name:"Single Kidney (Congenital or Acquired)",icd:["Q60.0","Z90.5"],waiver:"unlikely",
+   dq:"Absence of one kidney.",
+   waiv:"Generally DQ given combat risk. Single functioning kidney — unlikely waiver.",
+   ar501:"",src:["DoWI V1 §6.15"]},
+  {name:"Persistent Proteinuria",icd:["R80.9","N04.9"],waiver:"unlikely",
+   dq:"Protein:creatinine ratio > 0.2 in random urine > 48hrs after strenuous activity.",
+   waiv:"Persistent: generally DQ. Transient exercise-induced proteinuria with normal resting UA: re-evaluate.",
+   ar501:"",src:["DoWI V1 §6.15s"]},
+  {name:"Urinary Tract — Congenital Anomaly",icd:["Q62.0","Q62.1","Q63.9"],waiver:"case",
+   dq:"Congenital anomalies of urinary tract.",
+   waiv:"Case-by-case depending on functional impact and recurrent infection history.",
+   ar501:"",src:["DoWI V1 §6.15"]},
+  {name:"HIV Positive",icd:["Z21","B20"],waiver:"hardno",
+   dq:"Confirmed positive HIV status.",
+   waiv:"HARD DISQUALIFIER — waivers not authorized per AR 601-210 §2-9c and AR 600-110.",
+   ar501:"AR 40-501: HIV positive is DQ without waiver authority.",
+   src:["AR 601-210 §2-9c","AR 40-501"]},
+]},
+
+SPINE:{label:"Spine & Back",color:"#14b8a6",zone:"back",conditions:[
+  {name:"Back Pain / Spine Condition (Within 24 months)",icd:["M54.5","M54.6","M54.40","M54.9","M53.2X9"],waiver:"case",
+   dq:"Spine/sacroiliac condition in last 24 months that prevented physically active lifestyle, required external support, required frequent treatment, required medication > 6 weeks, caused back pain > 6 weeks requiring non-self-care treatment, or required spinal injections/nerve blocks.",
+   waiv:"Waive if history > 12 months ago OR medication limited to NSAIDs/Acetaminophen. Applicant statement required.",
+   ar501:"AR 40-501 §2-27a: Spinal conditions causing limitation of motion, pain, or requiring external support DQ.",
+   src:["SWA Guidance","DoWI V1 §6.16b","AR 40-501 §2-27"]},
+  {name:"Scoliosis (Symptomatic / > 30° Lumbar or > 50° Thoracic)",icd:["M41.34","M41.20","M41.30","M40.205"],waiver:"case",
+   dq:"Spinal curvature symptomatic within 24 months OR > 30° lumbar/thoracic scoliosis OR > 50° thoracic kyphosis by Cobb method.",
+   waiv:"Waive if asymptomatic for > 12 months AND physically active lifestyle. Curvature: lumbar/thoracic scoliosis < 30° and thoracic kyphosis < 50° (Cobb) required.",
+   ar501:"AR 40-501 §2-27: Scoliosis requiring surgical correction DQ. Symptomatic scoliosis DQ.",
+   src:["SWA Guidance","DoWI V1 §6.16c","AR 40-501 §2-27"]},
+  {name:"Spondylolysis / Spondylolisthesis",icd:["M43.00","M43.10","M43.16","M43.06"],waiver:"hardno",
+   dq:"History of spondylolysis or spondylolisthesis, congenital or acquired.",
+   waiv:"HARD DISQUALIFIER per DoWI §6.16k — not waiverable.",
+   ar501:"AR 40-501 §2-27g: Spondylolysis or spondylolisthesis DQ.",
+   src:["DoWI V1 §6.16k","AR 40-501 §2-27"]},
+  {name:"Lumbar Disc Herniation / Disc Pathology",icd:["M51.16","M51.17","M51.26","M51.06"],waiver:"case",
+   dq:"History of lumbar disc pathology with symptoms, treatment, or activity limitations in last 24 months or recurrent symptoms.",
+   waiv:"Single-level discectomy, asymptomatic, full unrestricted activity ≥ 12 months — may waive. Active symptoms or multi-level: unlikely.",
+   ar501:"AR 40-501 §2-27: Herniated nucleus pulposus DQ. Single-level surgery may be waiverable.",
+   src:["DoWI V1 §6.16h,i","AR 40-501 §2-27"]},
+  {name:"Spinal Fusion (Surgical)",icd:["M43.26","M43.28"],waiver:"unlikely",
+   dq:"History of surgical fusion of spinal vertebrae.",
+   waiv:"Congenital fusion ≤ 2 bodies — case-by-case. Any surgical fusion: generally DQ.",
+   ar501:"AR 40-501 §2-27: Spinal fusion DQ.",
+   src:["DoWI V1 §6.16d","AR 40-501 §2-27"]},
+  {name:"Vertebral Fracture",icd:["S32.009S","S22.009S","S12.9XXS","S12.030A"],waiver:"case",
+   dq:"Vertebral body fracture. Cervical fractures: always DQ. Posterior arch fractures: DQ if symptomatic. Thoracic/lumbar > 25% of body height or < 12 months ago.",
+   waiv:"Non-surgical treatment, currently asymptomatic thoracic/lumbar fracture < 25% body height — may waive. Cervical fractures: generally not waiverable.",
+   ar501:"AR 40-501 §2-27f: Vertebral fractures DQ with specific criteria by region.",
+   src:["SWA Guidance","DoWI V1 §6.16f","AR 40-501 §2-27"]},
+  {name:"Ankylosing Spondylitis / Inflammatory Spondylopathy",icd:["M45.9","M45.0","M46.80"],waiver:"hardno",
+   dq:"Ankylosing spondylitis or other inflammatory spondylopathies.",
+   waiv:"HARD DISQUALIFIER.",
+   ar501:"AR 40-501 §2-27: Ankylosing spondylitis DQ.",
+   src:["DoWI V1 §6.16a","AR 40-501 §2-27"]},
+  {name:"Scheuermann's Kyphosis / Juvenile Epiphysitis",icd:["M42.9","M42.00","M42.09"],waiver:"case",
+   dq:"History of juvenile epiphysitis with any residual X-ray change.",
+   waiv:"Waive if Cobb angle meets: lumbar/thoracic scoliosis < 30°, thoracic kyphosis < 50°.",
+   ar501:"AR 40-501 §2-27: Kyphosis/lordosis with functional limitations DQ.",
+   src:["SWA Guidance","DoWI V1 §6.16g"]},
+  {name:"Spinal Injections / Nerve Blocks (History)",icd:["M54.6","M54.50"],waiver:"unlikely",
+   dq:"History of spinal injections, nerve blocks, or radiofrequency ablation for back/spine conditions.",
+   waiv:"Occurrence of such procedures is a DoWI §6.16b(7) disqualifier. Outside 24 months with no recurrence: case-by-case.",
+   ar501:"",src:["DoWI V1 §6.16b(7)"]},
+]},
+
+SHOULDER:{label:"Shoulder / Elbow / Wrist / Hand",color:"#06b6d4",zone:"shoulder",conditions:[
+  {name:"Shoulder Stiffness / Limited ROM",icd:["M25.619","M75.0","M75.1"],waiver:"likely",
+   dq:"Limited shoulder range of motion affecting military duties.",
+   waiv:"Waive if documented ROM: forward flexion ≥ 90°, abduction ≥ 90°, external rotation ≥ 45°, internal rotation ≥ 60°. Exercise statement strongly recommended.",
+   ar501:"AR 40-501 §2-26: Upper extremity conditions with limitation of motion DQ.",
+   src:["SWA Guidance","AR 40-501 §2-26"]},
+  {name:"Acromioclavicular (AC) Separation",icd:["S43.109S","S43.119S"],waiver:"likely",
+   dq:"AC joint separation.",
+   waiv:"Waive if > 6 months ago and currently asymptomatic.",
+   ar501:"",src:["SWA Guidance"]},
+  {name:"Shoulder Dislocation / Instability",icd:["M24.319","S43.009S"],waiver:"case",
+   dq:"History of shoulder dislocation or instability.",
+   waiv:"Single episode with no recurrence and full ROM — case-by-case. Recurrent instability: DQ. More than 2 dislocations: DQ for SF/Airborne.",
+   ar501:"AR 40-501 §5-4k(2): More than 2 shoulder dislocations DQ for SF/Airborne.",
+   src:["SWA Guidance","AR 40-501 §5-4"]},
+  {name:"Rotator Cuff Tear / Surgery",icd:["M75.120","M75.122","Z87.39"],waiver:"case",
+   dq:"Rotator cuff tear requiring surgery or causing functional limitation.",
+   waiv:"Post-surgical with full ROM and no symptoms: case-by-case. Active limitation: DQ.",
+   ar501:"AR 40-501 §2-26: Shoulder conditions with strength/ROM deficits DQ.",
+   src:["SWA Guidance","AR 40-501 §2-26"]},
+  {name:"Elbow Stiffness / Limited ROM",icd:["M25.729","M77.10"],waiver:"likely",
+   dq:"Limited elbow range of motion.",
+   waiv:"Waive if ROM: flexion ≥ 100° OR extension ≥ 60°.",
+   ar501:"",src:["SWA Guidance"]},
+  {name:"Wrist Stiffness / Limited ROM",icd:["M25.639"],waiver:"likely",
+   dq:"Limited wrist range of motion.",
+   waiv:"Waive if total extension + flexion ≥ 15°. Forearm pronation/supination ≥ 40°. Radial-ulnar deviation combined ≥ 20°.",
+   ar501:"",src:["SWA Guidance"]},
+  {name:"Finger Amputation",icd:["S68.129S","S68.119S"],waiver:"case",
+   dq:"Amputation of a finger.",
+   waiv:"Waive if single finger amputation at MCPJ or more distal — EXCLUDING thumb. Thumb amputation: generally DQ.",
+   ar501:"AR 40-501 §5-4k(3): Loss of any digit from either hand DQ for SF.",
+   src:["SWA Guidance","AR 40-501 §5-4"]},
+  {name:"Retained Orthopedic Hardware",icd:["Z96.60","Z96.641","Z96.642"],waiver:"likely",
+   dq:"Retained orthopedic implants, bone anchors, plates, rods, screws.",
+   waiv:"Waive with retained hardware if: fractures healed, ligaments stable, no pain, no interference with equipment wearing. Applicant statement required.",
+   ar501:"AR 40-501 §4-21c: Retained hardware symptomatic or limiting ROM DQ for aviation.",
+   src:["SWA Guidance","AR 40-501 §4-21"]},
+  {name:"Carpal Tunnel Syndrome",icd:["G56.00","G56.01","G56.02"],waiver:"case",
+   dq:"Carpal tunnel syndrome requiring treatment.",
+   waiv:"Resolved post-surgical CTS with full strength and sensation: case-by-case. Active CTS requiring medication: DQ.",
+   ar501:"",src:["DoWI V1 §6.17"]},
+]},
+
+HIPKNEE:{label:"Hip / Knee / Thigh",color:"#f59e0b",zone:"hip",conditions:[
+  {name:"Hip Stiffness / Limited ROM",icd:["M25.659"],waiver:"likely",
+   dq:"Limited hip ROM affecting military duties.",
+   waiv:"Waive if: flexion ≥ 90°, extension beyond 0°, abduction beyond 30°.",
+   ar501:"",src:["SWA Guidance"]},
+  {name:"Hip Arthroscopy / Femoroacetabular Impingement (FAI)",icd:["M76.20","M12.559","M25.559"],waiver:"likely",
+   dq:"Hip arthroscopy or FAI.",
+   waiv:"Waive if asymptomatic and applicant is physically active.",
+   ar501:"",src:["SWA Guidance"]},
+  {name:"Leg-Length Discrepancy",icd:["M21.70"],waiver:"likely",
+   dq:"Leg length discrepancy.",
+   waiv:"Waive if no pain and applicant can demonstrate sports/ACFT/physical fitness participation.",
+   ar501:"",src:["SWA Guidance"]},
+  {name:"Anterior Knee Pain / Patellofemoral Syndrome",icd:["M22.2X9","M22.40","M17.9","M22.90","M22.8X9"],waiver:"likely",
+   dq:"Anterior knee pain or patellofemoral pain syndrome.",
+   waiv:"Waive all without question per SWA guidance.",
+   ar501:"",src:["SWA Guidance"]},
+  {name:"Knee Stiffness / Limited ROM",icd:["M25.669"],waiver:"likely",
+   dq:"Limited knee ROM.",
+   waiv:"Waive if: flexion ≥ 90°, extension ≥ 15°.",
+   ar501:"",src:["SWA Guidance"]},
+  {name:"ACL / PCL Reconstruction",icd:["M23.619","Z87.39","M23.609"],waiver:"case",
+   dq:"Knee ligament reconstruction.",
+   waiv:"Post-ACL/PCL reconstruction, asymptomatic with full return to activity — case-by-case. Active instability: DQ. Exercise/activity statement strongly recommended.",
+   ar501:"AR 40-501 §2-26: Instability after knee ligament reconstruction DQ.",
+   src:["SWA Guidance","DoWI V1 §6.18","AR 40-501 §2-26"]},
+  {name:"Meniscus Surgery / Tear",icd:["M23.209","M23.609","Z87.39"],waiver:"case",
+   dq:"History of meniscal pathology or surgery.",
+   waiv:"Resolved, asymptomatic, full return to activity — case-by-case. Active symptoms: DQ.",
+   ar501:"",src:["DoWI V1 §6.18"]},
+  {name:"Chondromalacia Patella",icd:["M24.28"],waiver:"likely",
+   dq:"Chondromalacia of the patella.",
+   waiv:"Waive up to Grade II on radiographic evidence if asymptomatic, active lifestyle, and no surgical history.",
+   ar501:"AR 40-501 §3-20e: Chondromalacia severe — DQ for retention.",
+   src:["SWA Guidance","AR 40-501 §3-20"]},
+  {name:"Osgood-Schlatter Disease",icd:["M92.50","M92.519"],waiver:"likely",
+   dq:"Osteochondritis of tibial tuberosity.",
+   waiv:"Waive if currently asymptomatic.",
+   ar501:"",src:["SWA Guidance"]},
+  {name:"Loose Body in Knee",icd:["M23.40","M23.409"],waiver:"likely",
+   dq:"Loose or foreign body in the knee joint.",
+   waiv:"Waive if asymptomatic.",
+   ar501:"",src:["SWA Guidance"]},
+  {name:"Compartment Syndrome (Post-Traumatic)",icd:["T79.A0XS"],waiver:"likely",
+   dq:"History of post-traumatic compartment syndrome.",
+   waiv:"Waive if > 6 months ago and currently asymptomatic.",
+   ar501:"",src:["SWA Guidance"]},
+  {name:"Hip Dislocation (History)",icd:["M24.059","S73.009S"],waiver:"case",
+   dq:"History of hip dislocation.",
+   waiv:"Resolved, no instability, full ROM, no avascular necrosis — case-by-case.",
+   ar501:"",src:["DoWI V1 §6.18"]},
+  {name:"Avascular Necrosis (Osteonecrosis)",icd:["M87.059","M87.159"],waiver:"unlikely",
+   dq:"Avascular necrosis of any bone.",
+   waiv:"Generally DQ. Early-stage with no functional limitation — rare case-by-case.",
+   ar501:"AR 40-501 §3-20d: Avascular necrosis of bone when severe DQ.",
+   src:["DoWI V1 §6.18","AR 40-501 §3-20"]},
+]},
+
+LEGFOOT:{label:"Lower Leg / Ankle / Foot",color:"#10b981",zone:"foot",conditions:[
+  {name:"Pes Planus (Flat Feet)",icd:["M21.40","Q66.50","M21.40","M25.676"],waiver:"likely",
+   dq:"Flat feet — rigid pes planus is more restrictive than flexible.",
+   waiv:"Waive if no impact on wearing military footwear and no pain with activity. Rigid pes planus: case-by-case. Applicant statement required.",
+   ar501:"AR 40-501 §2-26: Pes planus symptomatic or preventing military footwear wear DQ.",
+   src:["SWA Guidance","AR 40-501 §2-26"]},
+  {name:"Plantar Fasciitis",icd:["M72.2"],waiver:"likely",
+   dq:"Plantar fasciitis.",
+   waiv:"Waive if documented treatment and resolution. If still active: may waive with statement on 507 endorsing resolution before ship day.",
+   ar501:"",src:["SWA Guidance"]},
+  {name:"Shin Splints / Periostitis / Tibial Stress Syndrome",icd:["M76.811","M76.812"],waiver:"likely",
+   dq:"Tibial stress syndrome / shin splints.",
+   waiv:"Waive if asymptomatic.",
+   ar501:"",src:["SWA Guidance"]},
+  {name:"Ankle Stiffness / Limited ROM",icd:["M25.673","M25.671"],waiver:"likely",
+   dq:"Limited ankle range of motion.",
+   waiv:"Waive if dorsiflexion ≥ 10°.",
+   ar501:"",src:["SWA Guidance"]},
+  {name:"Ankle Instability / Ligament Reconstruction",icd:["M25.379","Z87.39"],waiver:"case",
+   dq:"Chronic ankle instability or ligament reconstruction.",
+   waiv:"Post-operative, asymptomatic, full ROM and strength — case-by-case. Persistent instability: DQ.",
+   ar501:"",src:["DoWI V1 §6.18"]},
+  {name:"Morton's Neuroma",icd:["G57.60","G57.62","G57.61"],waiver:"likely",
+   dq:"Neuroma of the foot.",
+   waiv:"Waive and recommend treatment and resolution before ship day. Cannot ship unless documented resolution.",
+   ar501:"",src:["SWA Guidance"]},
+  {name:"Ingrown Toenails",icd:["L60.0"],waiver:"likely",
+   dq:"Ingrown toenails.",
+   waiv:"Waive and recommend treatment and resolution before ship day.",
+   ar501:"",src:["SWA Guidance"]},
+  {name:"Recurrent Stress Fracture",icd:["M84.359","M84.352","M84.361"],waiver:"unlikely",
+   dq:"Recurrent stress fracture pattern.",
+   waiv:"Single resolved stress fracture: likely waiverable. Recurrent pattern suggesting bone fragility: unlikely.",
+   ar501:"AR 40-501 §2-26: Recurrent stress fractures DQ.",
+   src:["DoWI V1 §6.18","AR 40-501 §2-26"]},
+  {name:"Foot / Toe Amputation",icd:["S98.129S"],waiver:"unlikely",
+   dq:"Amputation of any part of the foot or toes preventing satisfactory military duty or footwear.",
+   waiv:"Generally DQ. Minor distal toe amputation with no functional impact: rare case-by-case.",
+   ar501:"AR 40-501 §2-26: Loss of digits affecting military performance DQ.",
+   src:["DoWI V2 §5.18","AR 40-501 §2-26"]},
+  {name:"Clubfoot (Talipes)",icd:["Q66.89","Q66.0"],waiver:"unlikely",
+   dq:"Clubfoot or rigid deformity of the foot preventing military footwear use.",
+   waiv:"Surgically corrected with normal function and footwear tolerance — case-by-case.",
+   ar501:"",src:["DoWI V2 §5.18"]},
+  {name:"Bone Contusion",icd:["T79.9XXS"],waiver:"likely",
+   dq:"Bone contusion without fracture.",
+   waiv:"Waive if > 60 days ago, no associated fracture/nerve injury, evidence of return to physically active lifestyle.",
+   ar501:"",src:["SWA Guidance"]},
+  {name:"Achilles Tendon Rupture / Repair",icd:["M66.369","Z87.39","S86.019S"],waiver:"case",
+   dq:"Achilles tendon rupture.",
+   waiv:"Surgically repaired, fully healed, asymptomatic with full ROM and strength — case-by-case. Recent: DQ.",
+   ar501:"",src:["DoWI V1 §6.18"]},
+]},
+
+NEURO:{label:"Neurology",color:"#a78bfa",zone:"head",conditions:[
+  {name:"Epilepsy / Seizure Disorder",icd:["G40.909","G40.309","G40.209","G40.109"],waiver:"unlikely",
+   dq:"History of epilepsy or non-febrile seizure disorder.",
+   waiv:"Generally DQ. Single febrile seizure before age 5 with normal EEG and no recurrence — not DQ. Post-traumatic seizures handled separately.",
+   ar501:"AR 40-501 §2-36: Epilepsy or history of seizures (except single febrile before age 5) DQ.",
+   src:["DoWI V1 §6.21","AR 40-501 §2-36"]},
+  {name:"Multiple Sclerosis / Demyelinating Disease",icd:["G35","G36.9","G37.9"],waiver:"hardno",
+   dq:"Multiple sclerosis or any demyelinating disease.",
+   waiv:"HARD DISQUALIFIER.",
+   ar501:"AR 40-501 §2-36: Demyelinating disease DQ.",
+   src:["DoWI V1 §6.21","AR 40-501 §2-36"]},
+  {name:"Stroke / TIA / Cerebrovascular Disease",icd:["I63.9","G45.9","I67.9","I66.9"],waiver:"hardno",
+   dq:"History of cerebrovascular accident, TIA, cerebrovascular stenosis, aneurysm, or AVM.",
+   waiv:"HARD DISQUALIFIER.",
+   ar501:"AR 40-501 §4-27a: Cerebrovascular conditions DQ.",
+   src:["DoWI V1 §6.21","AR 40-501 §4-27"]},
+  {name:"Peripheral Neuropathy",icd:["G62.9","G60.9","G63"],waiver:"unlikely",
+   dq:"Peripheral neuropathy.",
+   waiv:"Generally DQ if functional impairment. Isolated, asymptomatic, fully resolved — rare case-by-case.",
+   ar501:"AR 40-501 §4-27d: Neuritis, neuropathy, or radiculopathy DQ for aviation.",
+   src:["DoWI V1 §6.21","AR 40-501 §4-27"]},
+  {name:"Parkinson's Disease / Movement Disorders",icd:["G20","G25.9","G25.3"],waiver:"hardno",
+   dq:"Parkinson's disease or progressive movement disorders.",
+   waiv:"HARD DISQUALIFIER.",
+   ar501:"",src:["DoWI V1 §6.21"]},
+  {name:"Narcolepsy / Cataplexy",icd:["G47.419","G47.429","G47.411"],waiver:"hardno",
+   dq:"Narcolepsy or cataplexy.",
+   waiv:"HARD DISQUALIFIER.",
+   ar501:"AR 40-501 §2-36: Narcolepsy DQ.",
+   src:["DoWI V1 §6.27c","AR 40-501 §2-36"]},
+]},
+
+MENTAL:{label:"Mental Health & Behavioral",color:"#ec4899",zone:"head",conditions:[
+  {name:"ADHD — With Functional Criteria",icd:["F90.0","F90.1","F90.2","F90.8","F90.9"],waiver:"unlikely",
+   dq:"ADHD with any of: IEP/504/work accommodations after age 14; comorbid mental disorders; prescribed medication in previous 24 months; documentation of adverse academic, occupational, or work performance.",
+   waiv:"WAIVER UNLIKELY if any of those criteria present. Off all meds > 24 months, no functional limitations, no comorbid conditions, no IEP/504 — case-by-case. Pharmacy records and applicant statement required.",
+   ar501:"AR 40-501 §2-35: ADHD with adverse academic or occupational performance DQ.",
+   src:["DoWI V1 §6.28a","AR 40-501 §2-35"]},
+  {name:"Depression / Depressive Disorder",icd:["F33.9","F32.9","F32.0","F32.1","F33.0","F33.1"],waiver:"unlikely",
+   dq:"Depressive disorder if: outpatient care > 12 cumulative months; symptomatic/treated within 36 months; any inpatient treatment; any recurrence; any suicidality.",
+   waiv:"WAIVER UNLIKELY. Must demonstrate ≥ 1yr mental health stability AND ≥ 1yr off mental health medications. No suicidality. No inpatient. Single episode more favorable than recurrent. BH consult required. 5-year pharmacy records required.",
+   ar501:"AR 40-501 §2-35: Depressive disorders requiring treatment DQ.",
+   src:["SWA Guidance","DoWI V1 §6.28f","AR 40-501 §2-35"]},
+  {name:"Anxiety Disorder",icd:["F41.1","F41.9","F40.10","F41.0","F40.00"],waiver:"unlikely",
+   dq:"Anxiety disorder if: outpatient care > 12 cumulative months; symptomatic/treated within 36 months; inpatient treatment; recurrence; suicidality.",
+   waiv:"WAIVER UNLIKELY. Same criteria as depression. ≥ 1yr stability AND ≥ 1yr off meds required. BH consult required. BH consult cannot be ordered without full treatment history. 5-year pharmacy records required.",
+   ar501:"AR 40-501 §2-35: Anxiety disorders DQ.",
+   src:["SWA Guidance","DoWI V1 §6.28q","AR 40-501 §2-35"]},
+  {name:"Bipolar Disorder (Any Type)",icd:["F31.9","F31.0","F31.10","F31.30","F31.81"],waiver:"hardno",
+   dq:"Any history of bipolar disorder including Bipolar I, II, cyclothymia, or substance-induced bipolar.",
+   waiv:"WAIVER UNLIKELY TO IMPOSSIBLE. Even with extended stability, confirmed bipolar diagnosis after adolescence presents lifelong recurrence risk under military stress. Waiver authority: DCS G-1 DMPM.",
+   ar501:"AR 40-501 §2-35 / AR 601-210 §4-5c: Bipolar requires DCS G-1 DMPM waiver authority.",
+   src:["SWA Guidance","DoWI V1 §6.28e","AR 40-501 §2-35","AR 601-210 §4-5c"]},
+  {name:"Schizophrenia / Psychotic Disorder",icd:["F20.9","F29","F22","F25.9"],waiver:"hardno",
+   dq:"Any history of disorders with psychotic features.",
+   waiv:"HARD DISQUALIFIER — not waiverable.",
+   ar501:"AR 40-501 §2-35 / AR 601-210 §4-5c: DCS G-1 DMPM waiver authority.",
+   src:["DoWI V1 §6.28d","AR 40-501 §2-35"]},
+  {name:"Suicidality (Any History)",icd:["R45.851","T14.91XA","Z91.51","Z91.52"],waiver:"hardno",
+   dq:"Any history of suicide attempt, suicidal gesture, suicidal ideation with plan, or suicidal ideation within past 12 months.",
+   waiv:"HARD DISQUALIFIER. Waiver authority: DCS G-1 DMPM. Extremely rare approval — not practical.",
+   ar501:"AR 601-210 §4-5c: DCS G-1 DMPM is waiver authority for suicide attempt/gesture/ideation.",
+   src:["DoWI V1 §6.28m","AR 601-210 §4-5c"]},
+  {name:"Self-Harm History",icd:["Z91.52","T76.21XA","L98.1"],waiver:"hardno",
+   dq:"History of self-harm endorsed, documented, or clinically suspected based on scarring.",
+   waiv:"HARD DISQUALIFIER. Waiver authority: DCS G-1 DMPM.",
+   ar501:"AR 601-210 §4-5c: DCS G-1 DMPM waiver authority for self-mutilation.",
+   src:["DoWI V1 §6.28n","AR 601-210 §4-5c"]},
+  {name:"PTSD",icd:["F43.10","F43.11","F43.12"],waiver:"hardno",
+   dq:"History of trauma or stressor-related disorders including PTSD.",
+   waiv:"HARD DISQUALIFIER — not waiverable at accession.",
+   ar501:"AR 40-501 §2-35: PTSD DQ.",
+   src:["DoWI V1 §6.28p","AR 40-501 §2-35"]},
+  {name:"OCD (Obsessive-Compulsive Disorder)",icd:["F42.9","F42.2","F42.4"],waiver:"hardno",
+   dq:"History of OCD.",
+   waiv:"HARD DISQUALIFIER.",
+   ar501:"",src:["DoWI V1 §6.28o"]},
+  {name:"Eating Disorder",icd:["F50.9","F50.00","F50.2","F50.82"],waiver:"hardno",
+   dq:"Any history of eating disorder (anorexia, bulimia, binge-eating). If adolescent-only diagnosis: SWA will want to see period of remission. Adult diagnosis: default disapproval.",
+   waiv:"WAIVER UNLIKELY / IMPOSSIBLE. If adolescent diagnosis only: extensive remission period required + applicant statement + clinical notes + HT/WT review. Adult diagnosis: waiver denied. Not entertained for underweight/borderline applicants.",
+   ar501:"",src:["DoWI V1 §6.28k","SWA Guidance"]},
+  {name:"Substance Use / Abuse Disorder",icd:["F19.20","F10.20","F12.20","F11.20"],waiver:"hardno",
+   dq:"Any history of substance-related and addictive disorders (except caffeine/tobacco).",
+   waiv:"HARD DISQUALIFIER. Drug/alcohol abuse disorder not waiverable.",
+   ar501:"AR 601-210 §4-5c: DCS G-1 DMPM waiver authority for drug/alcohol dependence.",
+   src:["DoWI V1 §6.28v","AR 601-210 §4-5c"]},
+  {name:"Prior Psychiatric Hospitalization (Any Cause)",icd:["Z87.39"],waiver:"hardno",
+   dq:"Prior psychiatric hospitalization for any cause.",
+   waiv:"HARD DISQUALIFIER per DoWI §6.28y.",
+   ar501:"",src:["DoWI V1 §6.28y"]},
+  {name:"Psychotropic Medication (Within 36 Months)",icd:["Z79.899"],waiver:"unlikely",
+   dq:"History of prescription psychotropic medication within previous 36 months.",
+   waiv:"WAIVER UNLIKELY if within 36 months. Off all meds > 36 months with no underlying DQ condition: case-by-case. 5-year pharmacy records required.",
+   ar501:"",src:["DoWI V1 §6.28w"]},
+  {name:"Adjustment Disorder",icd:["F43.20","F43.21","F43.22","F43.23","F43.24","F43.29"],waiver:"case",
+   dq:"Single adjustment disorder treated/symptomatic within 6 months OR chronic (> 6 months) or recurrent episodes.",
+   waiv:"Single episode, resolved > 6 months, no recurrence: likely waiverable. Chronic/recurrent: unlikely.",
+   ar501:"",src:["DoWI V1 §6.28g"]},
+  {name:"Gender Dysphoria",icd:["F64.0","F64.8","F64.9"],waiver:"hardno",
+   dq:"Current diagnosis or history of gender dysphoria or symptoms consistent with gender dysphoria.",
+   waiv:"HARD DISQUALIFIER per DoWI 6130.03-V1 §6.28t, EO 14168, and EO 14183.",
+   ar501:"",src:["DoWI V1 §6.28t","EO 14168","EO 14183"]},
+  {name:"Conduct Disorder / ODD",icd:["F91.9","F91.3","F91.1"],waiver:"unlikely",
+   dq:"History of conduct disorder, oppositional defiance disorder, or other behavior disorders.",
+   waiv:"Generally DQ. Remote childhood history with clear behavioral change and no recurrence: rare case-by-case.",
+   ar501:"",src:["DoWI V1 §6.28h"]},
+  {name:"Learning Disorder (After Age 14 — With Functional Impact)",icd:["F81.9","F81.0","F81.2"],waiver:"case",
+   dq:"Learning disorder after 14th birthday with IEP/504, comorbid mental disorders, or documented adverse performance.",
+   waiv:"No IEP/504 after age 14 and no comorbid conditions: likely waiverable. With IEP/504 or documented poor performance: case-by-case.",
+   ar501:"AR 40-501 §2-35: Neurodevelopmental/learning disorders with IEP or performance impact DQ.",
+   src:["DoWI V1 §6.28b","AR 40-501 §2-35"]},
+  {name:"Autism Spectrum Disorder",icd:["F84.0","F84.9"],waiver:"hardno",
+   dq:"Autism spectrum disorder.",
+   waiv:"HARD DISQUALIFIER per DoWI §6.28c.",
+   ar501:"AR 40-501 §2-35: Autism spectrum disorder DQ.",
+   src:["DoWI V1 §6.28c","AR 40-501 §2-35"]},
+]},
+
+SLEEP:{label:"Sleep Disorders",color:"#6366f1",zone:"head",conditions:[
+  {name:"Chronic Insomnia",icd:["G47.00","G47.01","F51.01"],waiver:"unlikely",
+   dq:"Chronic insomnia per DSM-5 definition OR use of sleep-promoting medications/substances ≥ 15 times in past 12 months.",
+   waiv:"Resolved, off all sleep meds > 36 months: case-by-case. Chronic with medication: DQ.",
+   ar501:"",src:["DoWI V1 §6.27a"]},
+  {name:"Sleepwalking / Night Terrors (After Age 13)",icd:["G47.52","F51.4","F51.3"],waiver:"unlikely",
+   dq:"History of parasomnia including sleepwalking or night terrors after the 13th birthday.",
+   waiv:"Generally DQ. Remote history (5+ yrs) with no recurrence: case-by-case.",
+   ar501:"AR 40-501 §2-36: Parasomnias evaluated based on risk to self and others.",
+   src:["DoWI V1 §6.27e","AR 40-501 §2-36"]},
+  {name:"Restless Leg Syndrome (Prescription Medication Required)",icd:["G25.81"],waiver:"unlikely",
+   dq:"Sleep-related movement disorder requiring prescription medication to maintain wakefulness.",
+   waiv:"Requiring prescription medication: generally DQ. OTC/lifestyle managed: case-by-case.",
+   ar501:"",src:["DoWI V1 §6.27f"]},
+]},
+
+SKIN:{label:"Skin / Integumentary",color:"#d97706",zone:"body",conditions:[
+  {name:"Eczema / Atopic Dermatitis (Requiring Prescription Treatment)",icd:["L20.9","L20.0","L20.81"],waiver:"case",
+   dq:"Chronic/recurrent eczema requiring prescription treatment or with systemic involvement.",
+   waiv:"OTC-controlled, resolved: likely waiverable. Prescription-required: case-by-case. Widespread interfering with equipment wearing: unlikely.",
+   ar501:"AR 40-501 §2-28: Skin conditions interfering with military equipment wearing DQ.",
+   src:["DoWI V1 §6.23","AR 40-501 §2-28"]},
+  {name:"Psoriasis (Extensive / Systemic Treatment Required)",icd:["L40.9","L40.0","L40.1"],waiver:"case",
+   dq:"Psoriasis requiring systemic or biologic treatment.",
+   waiv:"Mild OTC-controlled: possibly waiverable. Systemic treatment required: unlikely.",
+   ar501:"AR 40-501 §4-22b: Psoriasis with systemic implications DQ for aviation.",
+   src:["DoWI V1 §6.23","AR 40-501 §4-22"]},
+  {name:"Cystic / Severe Acne (Active or Accutane)",icd:["L70.0","L70.1"],waiver:"case",
+   dq:"Cystic or severe acne, or active isotretinoin (Accutane) treatment.",
+   waiv:"Must complete Accutane course and be off drug (typically 6+ months). Resolved: likely waiverable.",
+   ar501:"",src:["DoWI V1 §6.23"]},
+  {name:"Tattoos (Location / Content Standards)",icd:["Z98.8"],waiver:"case",
+   dq:"Tattoos that are extremist, indecent, sexist, or racist content. Tattoos on the face, neck above collar, scalp, or hands (except single band ring).",
+   waiv:"AR 670-1 governs tattoo standards. Content violations: generally non-waiverable. Location violations on face/neck: generally DQ.",
+   ar501:"",src:["AR 670-1"]},
+  {name:"Keloid Scarring (Extensive / Interfering with Equipment)",icd:["L91.0"],waiver:"case",
+   dq:"Keloid scarring extensive enough to interfere with equipment wearing or military uniform.",
+   waiv:"Limited scarring not affecting equipment: not DQ. Extensive: case-by-case.",
+   ar501:"AR 40-501 §2-28: Skin conditions interfering with equipment DQ.",
+   src:["DoWI V1 §6.23","AR 40-501 §2-28"]},
+]},
+
+BLOOD:{label:"Blood / Hematology",color:"#ef4444",zone:"body",conditions:[
+  {name:"Malignancy (Active or History)",icd:["C80.1","C80.9","Z85.9"],waiver:"unlikely",
+   dq:"History of malignancy.",
+   waiv:"Generally DQ. Remote history with confirmed, documented cure/remission — case-by-case based on tumor type and duration. Oncology clearance required.",
+   ar501:"AR 40-501 §2-32: Malignancy DQ.",
+   src:["DoWI V1 §6.29b","AR 40-501 §2-32"]},
+  {name:"Sickle Cell Disease",icd:["D57.1","D57.00","D57.01","D57.02"],waiver:"hardno",
+   dq:"Sickle cell disease (HbSS, HbSC, HbS/beta-thal).",
+   waiv:"HARD DISQUALIFIER. Sickle cell TRAIT (HbAS) with HCT > 35 (F)/38 (M) and no vaso-occlusive crisis is NOT DQ.",
+   ar501:"AR 40-501 §2-22: Sickle cell disease DQ. Trait not DQ if meets hematocrit standards.",
+   src:["DoWI V1 §6.22","AR 40-501 §2-22"]},
+  {name:"Bleeding Disorder / Coagulopathy",icd:["D68.9","D68.0","D68.1","D69.3"],waiver:"unlikely",
+   dq:"History of significant bleeding disorder (hemophilia, von Willebrand's, ITP, etc.).",
+   waiv:"Generally DQ. Mild vWD with no bleeding events: rare case-by-case.",
+   ar501:"AR 40-501 §4-23b: Coagulation defects DQ for aviation.",
+   src:["DoWI V1 §6.22","AR 40-501 §4-23"]},
+  {name:"Iron Deficiency Anemia (Significant)",icd:["D50.9","D64.9"],waiver:"case",
+   dq:"Significant anemia (HCT < 37% F / < 40% M).",
+   waiv:"Iron deficiency anemia, treated and documented as resolved — waiverable. Hemolytic or chronic: case-by-case.",
+   ar501:"AR 40-501 §2-22: Anemia DQ based on severity and etiology.",
+   src:["DoWI V1 §6.22","AR 40-501 §2-22"]},
+  {name:"Lupus / Autoimmune Connective Tissue Disease",icd:["M32.9","M35.9","M34.9"],waiver:"hardno",
+   dq:"Systemic lupus erythematosus or mixed connective tissue disease.",
+   waiv:"HARD DISQUALIFIER.",
+   ar501:"AR 40-501 §4-26a: Lupus DQ for aviation.",
+   src:["DoWI V1 §6.22","AR 40-501 §4-26"]},
+  {name:"Gout (Active or Requiring Medication)",icd:["M10.9","M10.00","M1A.9XX0"],waiver:"case",
+   dq:"Gout requiring medication.",
+   waiv:"Resolved, off medication, no recurrence > 2 years: case-by-case. Active or medicated: DQ.",
+   ar501:"AR 40-501 §4-26b: History of gout DQ for aviation.",
+   src:["DoWI V1 §6.22","AR 40-501 §4-26"]},
+  {name:"Rheumatoid Arthritis / Inflammatory Arthritis",icd:["M06.9","M06.00","M05.9"],waiver:"unlikely",
+   dq:"Rheumatoid or other inflammatory arthritis.",
+   waiv:"Generally DQ if requiring medication. Early seronegative arthritis in prolonged remission off meds: rare case-by-case.",
+   ar501:"AR 40-501 §3-20: Arthritis DQ if severe with functional impairment.",
+   src:["DoWI V1 §6.22","AR 40-501 §3-20"]},
+]},
+
+ENDOCRINE:{label:"Endocrine / Metabolic",color:"#f97316",zone:"abdomen",conditions:[
+  {name:"Type 1 Diabetes Mellitus",icd:["E10.9","E10.65","E10.649"],waiver:"hardno",
+   dq:"Type 1 diabetes mellitus (insulin-dependent).",
+   waiv:"HARD DISQUALIFIER — insulin-dependent DM not compatible with military service.",
+   ar501:"AR 40-501 §2-19: Insulin-dependent diabetes DQ.",
+   src:["DoWI V1 §6.13","AR 40-501 §2-19"]},
+  {name:"Type 2 Diabetes (Medication-Controlled)",icd:["E11.9","E11.65","E11.649"],waiver:"unlikely",
+   dq:"Type 2 diabetes requiring any oral medication or insulin.",
+   waiv:"Generally DQ if requiring medication. Diet-controlled T2DM without complications: case-by-case.",
+   ar501:"AR 40-501 §2-19: Diabetes mellitus DQ.",
+   src:["DoWI V1 §6.13","AR 40-501 §2-19"]},
+  {name:"Hypothyroidism (Stable on Levothyroxine)",icd:["E03.9","E03.0"],waiver:"case",
+   dq:"Hypothyroidism requiring medication.",
+   waiv:"Well-controlled hypothyroidism on stable levothyroxine dose with normal labs: typically waiverable. Unstable or requiring dose changes: case-by-case.",
+   ar501:"AR 40-501 §4-25d: Hypothyroidism requiring medication DQ for aviation.",
+   src:["DoWI V1 §6.13","AR 40-501 §4-25"]},
+  {name:"Hyperthyroidism / Thyroid Disease (Active)",icd:["E05.90","E05.00","E05.10"],waiver:"case",
+   dq:"Active hyperthyroidism.",
+   waiv:"Treated and in euthyroid state > 12 months off anti-thyroid medications: case-by-case.",
+   ar501:"AR 40-501 §4-25e: History of hyperthyroidism DQ for aviation.",
+   src:["DoWI V1 §6.13","AR 40-501 §4-25"]},
+  {name:"Height / Weight — H&W Failure",icd:["E66.9","E64.9"],waiver:"hardno",
+   dq:"Failure to meet AR 600-9 height/weight or body fat standards.",
+   waiv:"HARD DISQUALIFIER — H&W waivers NOT authorized per AR 601-210. Applicant must meet standards to enlist.",
+   ar501:"AR 40-501 §2-3: Must meet height/weight per AR 600-9. Waiver not available.",
+   src:["AR 601-210 §2-9f","AR 40-501 §2-3","AR 600-9"]},
+]},
+};
+
+// ── SYS ORDER ──
+const SYS_ORDER=['HEAD','EYES','EARS','NOSE','DENTAL','HEART','LUNGS','ABDOMEN','KIDNEY','SPINE','SHOULDER','HIPKNEE','LEGFOOT','NEURO','MENTAL','SLEEP','SKIN','BLOOD','ENDOCRINE'];
+
+// ── STATE ──
+let activeSystem=null,activeCond=null,filtered=[];
+
+// ── BUILD LEFT PANEL ──
+const sp=document.getElementById('sysPanel');
+SYS_ORDER.forEach(k=>{
+  const s=SYSTEMS[k];
+  const b=document.createElement('button');
+  b.className='sys-btn';b.id='sb-'+k;
+  b.innerHTML=`<div class="sys-dot" style="background:${s.color}"></div>${s.label}<span class="sys-count">${s.conditions.length}</span>`;
+  b.onclick=()=>selectSys(k);
+  sp.appendChild(b);
+});
+
+function selectSys(k){
+  activeSystem=k;activeCond=null;
+  document.querySelectorAll('.sys-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sb-'+k).classList.add('active');
+  document.getElementById('detSys').textContent=SYSTEMS[k].label.toUpperCase();
+  document.getElementById('detTitle').textContent=SYSTEMS[k].conditions.length+' CONDITIONS';
+  document.getElementById('srch').value='';
+  document.getElementById('condDet').style.display='none';
+  filtered=[...SYSTEMS[k].conditions];
+  renderList();
+  // Highlight body zone
+  const z=SYSTEMS[k].zone;
+  highlightZone(z,true);
+  document.getElementById('sysIndicator').textContent=SYSTEMS[k].label.toUpperCase();
+  document.getElementById('sysIndicator').style.display='block';
+}
+
+function filterConds(){
+  if(!activeSystem)return;
+  const q=document.getElementById('srch').value.toLowerCase().trim();
+  filtered=q?SYSTEMS[activeSystem].conditions.filter(c=>
+    c.name.toLowerCase().includes(q)||c.icd.join(' ').toLowerCase().includes(q)
+  ):[...SYSTEMS[activeSystem].conditions];
+  renderList();
+}
+
+function renderList(){
+  const el=document.getElementById('condList');
+  if(!filtered.length){el.innerHTML='<div class="no-sel">NO CONDITIONS MATCH SEARCH</div>';return;}
+  el.innerHTML='';
+  filtered.forEach((c,i)=>{
+    const d=document.createElement('div');
+    d.className='cond-item'+(activeCond===i?' active':'');
+    const wm={likely:'WAIVER LIKELY',case:'CASE BY CASE',unlikely:'WAIVER UNLIKELY',hardno:'HARD DQ — NO WAIVER'};
+    const icdStr=c.icd.slice(0,3).join(' · ')+(c.icd.length>3?' +'+( c.icd.length-3):'');
+    d.innerHTML=`<div class="cond-name">${c.name}</div><div class="cond-icd">${icdStr}</div><span class="w-tag w-${c.waiver}">${wm[c.waiver]}</span>${c.src.map(s=>`<span class="src-tag">${s}</span>`).join('')}`;
+    d.onclick=()=>selectCond(i);
+    el.appendChild(d);
+  });
+}
+
+function selectCond(i){
+  activeCond=i;renderList();
+  const c=filtered[i];
+  const det=document.getElementById('condDet');
+  det.style.display='block';
+  const wm={likely:'✓ WAIVER LIKELY',case:'~ CASE-BY-CASE',unlikely:'✗ WAIVER UNLIKELY',hardno:'✗✗ HARD DQ — NO WAIVER'};
+  const icdList=c.icd.map(x=>`<code style="color:var(--purple);font-family:'Share Tech Mono',monospace;font-size:9px">${x}</code>`).join(' ');
+  det.innerHTML=`<div class="cd">
+    <div class="cd-sec">CONDITION OVERVIEW</div>
+    <div class="cd-row"><div class="cd-key">CONDITION</div><div class="cd-val gold">${c.name}</div></div>
+    <div class="cd-row"><div class="cd-key">ICD-10 CODES</div><div class="cd-val">${icdList}</div></div>
+    <div class="cd-row"><div class="cd-key">DQ STANDARD</div><div class="cd-val">${c.dq}</div></div>
+    <div class="cd-sec">WAIVER GUIDANCE</div>
+    <div class="waiver-box w-${c.waiver}"><div class="waiver-title w-${c.waiver}">${wm[c.waiver]}</div>${c.waiv}</div>
+    ${c.ar501?`<div class="ar501-block"><div class="ar-label">AR 40-501 CROSS-REFERENCE</div>${c.ar501}</div>`:''}
+    <div class="cd-row" style="margin-top:8px"><div class="cd-key">SOURCES</div><div class="cd-val purple">${c.src.join(' · ')}</div></div>
+  </div>`;
+}
+
+// ─── NPI LOOKUP ───
+async function lookupNPI(){
+  const npi=document.getElementById('npiInput').value.trim();
+  const res=document.getElementById('npiResult');
+  if(npi.length!==10||!/^\d{10}$/.test(npi)){
+    res.className='npi-result show';
+    res.innerHTML='<span style="color:var(--red)">INVALID — must be 10 digits</span>';
+    return;
+  }
+  res.className='npi-result show';
+  res.innerHTML='<span style="color:var(--text-d)">QUERYING NPPES…</span>';
+  try{
+    const r=await fetch(`https://npiregistry.cms.hhs.gov/api/?number=${npi}&version=2.1`);
+    const d=await r.json();
+    if(!d.results||d.results.length===0){
+      res.innerHTML='<span style="color:var(--red)">NPI NOT FOUND</span>';return;
+    }
+    const p=d.results[0];
+    const name=p.basic?.name||((p.basic?.first_name||'')+' '+(p.basic?.last_name||'')).trim()||'—';
+    const cred=p.basic?.credential||'';
+    const tax=p.taxonomies?.find(t=>t.primary)||p.taxonomies?.[0]||{};
+    const spec=tax.desc||'—';
+    const addr=p.addresses?.find(a=>a.address_purpose==='LOCATION')||p.addresses?.[0]||{};
+    const addrStr=[addr.address_1,addr.city,addr.state,addr.postal_code].filter(Boolean).join(', ');
+    res.innerHTML=`<div class="npi-name">${name}${cred?' '+cred:''}</div><div class="npi-spec">${spec}</div><div class="npi-addr">${addrStr||'—'}</div><div style="color:var(--text-d);font-size:8px;margin-top:2px">NPI: ${npi} · Status: ${p.basic?.status==='A'?'<span style="color:var(--green)">ACTIVE</span>':'<span style="color:var(--red)">INACTIVE</span>'}</div>`;
+  }catch(e){
+    res.innerHTML='<span style="color:var(--red)">LOOKUP FAILED — check connection</span>';
+  }
+}
+document.getElementById('npiInput').addEventListener('keydown',e=>{if(e.key==='Enter')lookupNPI();});
+
+// ═══════════════════════════════════════════════════════════════
+// THREE.JS — REALISTIC ANATOMICAL BODY
+// ═══════════════════════════════════════════════════════════════
+const canvas=document.getElementById('c');
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+renderer.setClearColor(0x030810,1);
+renderer.shadowMap.enabled=true;
+
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(42,1,0.1,100);
+camera.position.set(0,0.3,5.5);
+
+// LIGHTING
+scene.add(new THREE.AmbientLight(0x112244,0.7));
+const fl=new THREE.DirectionalLight(0x88ccff,0.7);fl.position.set(2,4,4);scene.add(fl);
+const bl=new THREE.DirectionalLight(0x4466aa,0.3);bl.position.set(-2,-1,-3);scene.add(bl);
+const rl=new THREE.PointLight(0x00aaff,0.3,10);rl.position.set(-3,2,2);scene.add(rl);
+const gl=new THREE.PointLight(0xe8b84b,0.15,8);gl.position.set(0,4,0);scene.add(gl);
+
+// Fog for depth
+scene.fog=new THREE.Fog(0x030810,8,20);
+
+// Grid
+const grid=new THREE.GridHelper(12,24,0x0d3a6e,0x071520);
+grid.position.y=-2.6;scene.add(grid);
+
+// ── MATERIALS ──
+function skinMat(col,op=0.88){
+  return new THREE.MeshPhongMaterial({
+    color:col,transparent:true,opacity:op,shininess:25,
+    emissive:new THREE.Color(col).multiplyScalar(0.06),
+    specular:0x224466
+  });
+}
+function wireMat(col,op=0.12){
+  return new THREE.MeshBasicMaterial({color:col,wireframe:true,transparent:true,opacity:op});
+}
+
+const bodyGroup=new THREE.Group();
+scene.add(bodyGroup);
+
+// ZONE→SYSTEM MAP for clicking
+const ZONE_SYS={
+  head:['HEAD','EYES','EARS','NOSE','DENTAL','NEURO','MENTAL','SLEEP'],
+  eyes:['EYES'],chest:['HEART','LUNGS'],abdomen:['ABDOMEN','KIDNEY','ENDOCRINE','BLOOD'],
+  back:['SPINE'],shoulder:['SHOULDER'],hip:['HIPKNEE'],foot:['LEGFOOT'],body:['SKIN'],
+};
+
+// ── BODY PART BUILDER ──
+function part(geo,pos,rot,zone,color,op=0.88){
+  const m=new THREE.Mesh(geo,skinMat(color,op));
+  m.position.set(...pos);
+  if(rot)m.rotation.set(...rot);
+  m.userData.zone=zone;m.userData.col=color;
+  bodyGroup.add(m);
+  const w=new THREE.Mesh(geo,wireMat(0x00ccff,0.1));
+  w.position.set(...pos);if(rot)w.rotation.set(...rot);
+  w.userData.isWire=true;bodyGroup.add(w);
+  return m;
+}
+
+// ─ ANATOMICAL COLOR PALETTE ─
+const C={head:0x3a6ea8,neck:0x345e93,torso:0x2a5e9a,abd:0x245488,pelv:0x1e4878,
+  shoulder:0x345e9a,uarm:0x2c5490,farm:0x244a80,hand:0x1e4070,
+  thigh:0x245490,calf:0x1e4878,foot:0x183d68,knee:0x2a5890};
+
+// ─ HEAD (realistic sphere with subtle squash) ─
+part(new THREE.SphereGeometry(0.36,20,16,[0,Math.PI*2,0,Math.PI]),[0,1.9,0],[0,0,0],'head',C.head);
+// Skull top slight flatten
+part(new THREE.SphereGeometry(0.34,16,12),[0,2.05,0],null,'head',0x4272b0,0.3);
+
+// ─ FACE FEATURES ─
+// Eye sockets / brow ridge (subtle)
+part(new THREE.SphereGeometry(0.055,8,8),[-0.13,1.94,0.33],null,'eyes',0x00d4ff,0.9);
+part(new THREE.SphereGeometry(0.055,8,8),[0.13,1.94,0.33],null,'eyes',0x00d4ff,0.9);
+// Nose bridge
+part(new THREE.BoxGeometry(0.05,0.12,0.08),[0,1.84,0.35],null,'nose',0x3a6ea8,0.6);
+// Ear indicators
+part(new THREE.SphereGeometry(0.055,8,6),[-0.36,1.88,0.02],null,'ears',0xf59e0b,0.85);
+part(new THREE.SphereGeometry(0.055,8,6),[0.36,1.88,0.02],null,'ears',0xf59e0b,0.85);
+
+// ─ NECK ─
+part(new THREE.CylinderGeometry(0.125,0.155,0.30,12),[0,1.52,0],null,'head',C.neck);
+
+// ─ CLAVICLES ─
+const clavGeo=new THREE.CylinderGeometry(0.03,0.03,0.38,8);
+part(clavGeo,[-0.22,1.34,0.1],[0,0,0.35],'shoulder',0x4070a8,0.7);
+part(clavGeo,[0.22,1.34,0.1],[0,0,-0.35],'shoulder',0x4070a8,0.7);
+
+// ─ UPPER TORSO (tapered chest) ─
+// Chest — wider at top
+part(new THREE.CylinderGeometry(0.36,0.32,0.72,14),[0,0.95,0],null,'chest',C.torso);
+// Chest front subtle depth
+part(new THREE.BoxGeometry(0.58,0.60,0.12),[0,0.98,0.16],[0,0,0],'chest',0x3060a0,0.5);
+
+// ─ RIB INDICATORS ─
+for(let i=0;i<5;i++){
+  const ry=1.22-i*0.13;
+  part(new THREE.TorusGeometry(0.28,0.012,6,12,[Math.PI]),[0,ry,0],[0.1,0,0],'chest',0x2a5a90,0.25);
+  part(new THREE.TorusGeometry(0.28,0.012,6,12,[Math.PI]),[0,ry,0],[-0.1,Math.PI,0],'chest',0x2a5a90,0.25);
+}
+
+// ─ STERNUM LINE ─
+part(new THREE.CylinderGeometry(0.012,0.012,0.62,6),[0,0.98,0.17],null,'chest',0x5088c0,0.4);
+
+// ─ ABDOMEN ─
+part(new THREE.CylinderGeometry(0.32,0.28,0.50,14),[0,0.44,0],null,'abdomen',C.abd);
+// Navel area
+part(new THREE.SphereGeometry(0.04,8,8),[0,0.46,0.28],null,'abdomen',0x1e4878,0.6);
+
+// ─ PELVIS ─
+part(new THREE.CylinderGeometry(0.34,0.28,0.28,14),[0,0.08,0],null,'hip',C.pelv);
+part(new THREE.SphereGeometry(0.38,12,8,Math.PI,Math.PI,0,Math.PI/2),[0,0.0,-0.1],null,'hip',0x1a4070,0.3);
+
+// ─ BACK SPINE ─
+for(let i=0;i<12;i++){
+  part(new THREE.SphereGeometry(0.03,6,6),[0,1.15-i*0.115,-0.175],null,'back',0x00d4ff,0.5);
+}
+// Spine connecting rod
+part(new THREE.CylinderGeometry(0.015,0.015,1.4,6),[0,0.55,-0.175],null,'back',0x00aacc,0.35);
+
+// ─ SHOULDER JOINTS ─
+part(new THREE.SphereGeometry(0.16,12,10),[-0.47,1.24,0],null,'shoulder',C.shoulder);
+part(new THREE.SphereGeometry(0.16,12,10),[0.47,1.24,0],null,'shoulder',C.shoulder);
+
+// ─ UPPER ARMS ─
+const ua=new THREE.CylinderGeometry(0.11,0.10,0.55,12);
+part(ua,[-0.6,0.82,0],[0,0,0.18],'shoulder',C.uarm);
+part(ua,[0.6,0.82,0],[0,0,-0.18],'shoulder',C.uarm);
+
+// Deltoid bulge
+part(new THREE.SphereGeometry(0.13,10,8),[-0.55,1.08,0],null,'shoulder',0x305898,0.5);
+part(new THREE.SphereGeometry(0.13,10,8),[0.55,1.08,0],null,'shoulder',0x305898,0.5);
+
+// ─ ELBOW JOINTS ─
+part(new THREE.SphereGeometry(0.085,10,8),[-0.68,0.52,0],null,'shoulder',0x2e5a90,0.9);
+part(new THREE.SphereGeometry(0.085,10,8),[0.68,0.52,0],null,'shoulder',0x2e5a90,0.9);
+
+// ─ FOREARMS ─
+const fa_g=new THREE.CylinderGeometry(0.085,0.07,0.46,12);
+part(fa_g,[-0.74,0.22,0],[0,0,0.28],'shoulder',C.farm);
+part(fa_g,[0.74,0.22,0],[0,0,-0.28],'shoulder',C.farm);
+
+// ─ WRIST / HANDS ─
+part(new THREE.SphereGeometry(0.065,8,8),[-0.82,-0.01,0],null,'shoulder',0x244888,0.9);
+part(new THREE.SphereGeometry(0.065,8,8),[0.82,-0.01,0],null,'shoulder',0x244888,0.9);
+part(new THREE.BoxGeometry(0.13,0.20,0.07),[-0.85,-0.16,0],null,'shoulder',C.hand);
+part(new THREE.BoxGeometry(0.13,0.20,0.07),[0.85,-0.16,0],null,'shoulder',C.hand);
+// Finger ridges
+for(let f=0;f<4;f++){
+  const fx=-0.90+f*0.065;
+  part(new THREE.BoxGeometry(0.035,0.09,0.04),[fx,-0.29,0],null,'shoulder',0x1a3c60,0.6);
+  part(new THREE.BoxGeometry(0.035,0.09,0.04),[-fx,-0.29,0],null,'shoulder',0x1a3c60,0.6);
+}
+
+// ─ UPPER LEGS (Thighs) ─
+part(new THREE.CylinderGeometry(0.155,0.13,0.68,12),[-0.19,-0.49,0],null,'hip',C.thigh);
+part(new THREE.CylinderGeometry(0.155,0.13,0.68,12),[0.19,-0.49,0],null,'hip',C.thigh);
+// Quad bulge
+part(new THREE.SphereGeometry(0.12,10,8),[-0.19,-0.38,0.08],null,'hip',0x205098,0.4);
+part(new THREE.SphereGeometry(0.12,10,8),[0.19,-0.38,0.08],null,'hip',0x205098,0.4);
+
+// ─ KNEE CAPS ─
+part(new THREE.SphereGeometry(0.11,12,8),[-0.19,-0.89,0.06],null,'hip',C.knee,0.95);
+part(new THREE.SphereGeometry(0.11,12,8),[0.19,-0.89,0.06],null,'hip',C.knee,0.95);
+
+// ─ LOWER LEGS ─
+part(new THREE.CylinderGeometry(0.10,0.078,0.60,12),[-0.19,-1.25,0],null,'foot',C.calf);
+part(new THREE.CylinderGeometry(0.10,0.078,0.60,12),[0.19,-1.25,0],null,'foot',C.calf);
+// Calf bulge
+part(new THREE.SphereGeometry(0.085,10,8),[-0.19,-1.15,-0.06],null,'foot',0x1a4270,0.4);
+part(new THREE.SphereGeometry(0.085,10,8),[0.19,-1.15,-0.06],null,'foot',0x1a4270,0.4);
+
+// ─ ANKLES ─
+part(new THREE.SphereGeometry(0.068,10,8),[-0.19,-1.60,0],null,'foot',0x183d68,0.9);
+part(new THREE.SphereGeometry(0.068,10,8),[0.19,-1.60,0],null,'foot',0x183d68,0.9);
+
+// ─ FEET ─
+const footGeo=new THREE.BoxGeometry(0.17,0.10,0.32);
+part(footGeo,[-0.19,-1.67,0.06],null,'foot',C.foot);
+part(footGeo,[0.19,-1.67,0.06],null,'foot',C.foot);
+// Heel
+part(new THREE.SphereGeometry(0.065,8,8),[-0.19,-1.64,-0.10],null,'foot',0x152e55,0.7);
+part(new THREE.SphereGeometry(0.065,8,8),[0.19,-1.64,-0.10],null,'foot',0x152e55,0.7);
+// Toes
+for(let t=0;t<4;t++){
+  const tx=-0.10+t*0.055;
+  part(new THREE.SphereGeometry(0.025,6,6),[tx-0.19,-1.64,0.22],null,'foot',0x122845,0.7);
+  part(new THREE.SphereGeometry(0.025,6,6),[tx+0.19,-1.64,0.22],null,'foot',0x122845,0.7);
+}
+// Big toes
+part(new THREE.SphereGeometry(0.032,6,6),[-0.28,-1.64,0.20],null,'foot',0x122845,0.7);
+part(new THREE.SphereGeometry(0.032,6,6),[0.28,-1.64,0.20],null,'foot',0x122845,0.7);
+
+// ─ SCAN PLANE ─
+const scanG=new THREE.PlaneGeometry(1.8,0.03);
+const scanM=new THREE.MeshBasicMaterial({color:0x00d4ff,transparent:true,opacity:0.12,side:THREE.DoubleSide});
+const scanPlane=new THREE.Mesh(scanG,scanM);
+scanPlane.rotation.x=Math.PI/2;
+bodyGroup.add(scanPlane);
+
+// ─ GLOW RINGS ─
+function addRing(y,col,r=0.55){
+  const g=new THREE.TorusGeometry(r,0.008,6,40);
+  const m=new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:0.18});
+  const mesh=new THREE.Mesh(g,m);
+  mesh.position.y=y;mesh.rotation.x=Math.PI/2;
+  mesh.userData.isRing=true;
+  bodyGroup.add(mesh);
+  return mesh;
+}
+addRing(1.9,0x00d4ff,0.4);// head
+addRing(0.9,0x0088ff,0.42);// chest
+addRing(0.1,0x0066cc,0.38);// abdomen
+addRing(-0.9,0x0044aa,0.35);// legs
+
+// RESIZE
+function resize(){
+  const vp=canvas.parentElement;
+  const w=vp.clientWidth,h=vp.clientHeight;
+  renderer.setSize(w,h,false);
+  camera.aspect=w/h;camera.updateProjectionMatrix();
+}
+resize();
+window.addEventListener('resize',resize);
+
+// ── MOUSE CONTROL ──
+let drag=false,lx=0,ly=0,rotY=0,rotX=0,tRotY=0,tRotX=0;
+const ray=new THREE.Raycaster(),mouse=new THREE.Vector2();
+let hovZone=null;
+
+canvas.addEventListener('mousedown',e=>{drag=true;lx=e.clientX;ly=e.clientY;canvas.style.cursor='grabbing';});
+canvas.addEventListener('mouseup',()=>{drag=false;canvas.style.cursor='grab';});
+canvas.addEventListener('mouseleave',()=>{drag=false;});
+canvas.addEventListener('mousemove',e=>{
+  const rect=canvas.getBoundingClientRect();
+  mouse.x=((e.clientX-rect.left)/rect.width)*2-1;
+  mouse.y=-((e.clientY-rect.top)/rect.height)*2+1;
+  if(drag){rotY+=(e.clientX-lx)*0.007;rotX+=(e.clientY-ly)*0.004;rotX=Math.max(-0.7,Math.min(0.7,rotX));lx=e.clientX;ly=e.clientY;}
+  ray.setFromCamera(mouse,camera);
+  const hits=ray.intersectObjects(bodyGroup.children);
+  const tip=document.getElementById('zoneTip');
+  const ZONE_LABELS={head:'HEAD · BRAIN · MENTAL',eyes:'EYES · VISION',ears:'EARS · HEARING',nose:'NOSE · SINUSES · THROAT',chest:'HEART · LUNGS · CHEST',abdomen:'ABDOMEN · KIDNEY · ENDOCRINE',back:'SPINE · BACK',shoulder:'SHOULDER · ARM · HAND',hip:'HIP · KNEE · THIGH',foot:'LOWER LEG · ANKLE · FOOT',body:'SKIN · SYSTEMIC',mouth:'DENTAL'};
+  if(hits.length>0&&hits[0].object.userData.zone&&!hits[0].object.userData.isWire&&!hits[0].object.userData.isRing){
+    const z=hits[0].object.userData.zone;
+    if(z!==hovZone){hovZone=z;setZoneHighlight(z,true);}
+    tip.style.display='block';
+    tip.style.left=(e.clientX-rect.left+14)+'px';
+    tip.style.top=(e.clientY-rect.top-14)+'px';
+    tip.textContent=ZONE_LABELS[z]||z.toUpperCase();
+    if(!drag)canvas.style.cursor='pointer';
+  } else {
+    if(hovZone){setZoneHighlight(hovZone,false);hovZone=null;}
+    tip.style.display='none';
+    if(!drag)canvas.style.cursor='grab';
+  }
+});
+
+canvas.addEventListener('click',e=>{
+  if(Math.abs(e.movementX)+Math.abs(e.movementY)>5)return;
+  ray.setFromCamera(mouse,camera);
+  const hits=ray.intersectObjects(bodyGroup.children);
+  if(hits.length>0&&!hits[0].object.userData.isWire&&!hits[0].object.userData.isRing){
+    const z=hits[0].object.userData.zone;
+    const keys=ZONE_SYS[z];
+    if(keys&&keys.length>0)selectSys(keys[0]);
+  }
+});
+
+canvas.addEventListener('wheel',e=>{
+  camera.position.z=Math.max(2.8,Math.min(9,camera.position.z+e.deltaY*0.005));
+});
+
+// Touch
+canvas.addEventListener('touchstart',e=>{drag=true;lx=e.touches[0].clientX;ly=e.touches[0].clientY;},{passive:true});
+canvas.addEventListener('touchend',()=>drag=false);
+canvas.addEventListener('touchmove',e=>{
+  if(!drag)return;
+  rotY+=(e.touches[0].clientX-lx)*0.007;lx=e.touches[0].clientX;
+},{passive:true});
+
+function setZoneHighlight(zone,on){
+  bodyGroup.children.forEach(m=>{
+    if(m.userData.zone===zone&&!m.userData.isWire&&!m.userData.isRing&&m.material&&!m.material.wireframe){
+      if(on){m.material.emissive=new THREE.Color(0x00aacc).multiplyScalar(0.4);m.material.opacity=Math.min(0.98,(m.userData.origOp||m.material.opacity)+0.08);}
+      else{m.material.emissive=new THREE.Color(m.userData.col||0x2a5e9a).multiplyScalar(0.06);m.material.opacity=m.userData.origOp||0.88;}
+    }
+  });
+}
+
+// VIEW PRESETS
+const V_BTNS=['bFront','bBack','bLeft','bRight'];
+function setView(y){tRotY=y;tRotX=0;V_BTNS.forEach(b=>document.getElementById(b)?.classList.remove('active'));}
+function resetCam(){rotY=0;rotX=0;tRotY=0;tRotX=0;camera.position.z=5.5;document.getElementById('bFront')?.classList.add('active');}
+
+// ── ANIMATE ──
+let frame=0;
+function animate(){
+  requestAnimationFrame(animate);frame++;
+  rotY+=(tRotY-rotY)*0.07;rotX+=(tRotX-rotX)*0.07;
+  bodyGroup.rotation.y=rotY;bodyGroup.rotation.x=rotX;
+  if(!drag)tRotY+=0.0006;
+  // Scan plane
+  scanPlane.position.y=Math.sin(frame*0.018)*2.1-0.8;
+  scanPlane.material.opacity=0.07+Math.sin(frame*0.04)*0.05;
+  // Rings pulse
+  bodyGroup.children.filter(m=>m.userData.isRing).forEach((m,i)=>{
+    m.material.opacity=0.10+Math.sin(frame*0.03+i*1.2)*0.06;
+  });
+  renderer.render(scene,camera);
+}
+animate();
+
+// Initial
+document.getElementById('bFront').classList.add('active');
+</script>
+</body>
+</html>

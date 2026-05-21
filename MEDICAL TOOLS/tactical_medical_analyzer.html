@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TACTICAL MED ANALYZER // ICD-10 + MARP + WAIVER v1.0</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&amp;family=Roboto+Mono:wght@400;700&amp;display=swap');
+        
+        :root {
+            --amber: #fbbf24;
+            --cyan: #22d3ee;
+        }
+        
+        body {
+            font-family: 'Roboto Mono', monospace;
+        }
+        
+        .title-font {
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 3px;
+        }
+
+        .tactical-bg {
+            background: linear-gradient(180deg, #0a0f0a 0%, #111611 100%);
+        }
+
+        .hud-border {
+            border: 2px solid #fbbf24;
+            box-shadow: 0 0 15px rgba(251, 191, 36, 0.3),
+                        inset 0 0 15px rgba(251, 191, 36, 0.2);
+        }
+
+        .neon-cyan {
+            text-shadow: 0 0 10px #22d3ee, 0 0 20px #22d3ee;
+        }
+
+        .neon-amber {
+            text-shadow: 0 0 10px #fbbf24, 0 0 20px #fbbf24;
+        }
+
+        .military-table {
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .military-table th {
+            background: #1f2520;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .condition-row {
+            transition: all 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .condition-row:hover {
+            background-color: #1a2119 !important;
+            transform: translateX(4px);
+        }
+
+        .body-part {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .body-part:hover {
+            filter: brightness(1.3) saturate(1.2);
+            transform: scale(1.02);
+        }
+
+        .hud-scanline {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                transparent 50%,
+                rgba(34, 211, 238, 0.08) 50%
+            );
+            background-size: 100% 4px;
+            pointer-events: none;
+            animation: scan 4s linear infinite;
+            z-index: 2;
+            border-radius: 12px;
+        }
+
+        @keyframes scan {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 200px; }
+        }
+
+        .data-text {
+            font-family: 'Roboto Mono', monospace;
+            font-feature-settings: "tnum";
+        }
+
+        .section-header {
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            text-orientation: mixed;
+        }
+
+        .milspec-glow {
+            box-shadow: 0 0 8px rgba(251, 191, 36, 0.6),
+                        0 0 16px rgba(34, 211, 238, 0.4);
+        }
+    </style>
+</head>
+<body class="bg-zinc-950 text-zinc-200 tactical-bg">
+    <!-- Top HUD Bar -->
+    <div class="bg-black border-b border-amber-500/50 px-6 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-x-4">
+            <div class="flex items-center gap-x-3">
+                <i class="fa-solid fa-shield-halved text-3xl text-amber-400"></i>
+                <div>
+                    <span class="title-font text-2xl font-bold tracking-[4px] text-amber-400">US ARMY</span>
+                    <span class="title-font text-xl text-cyan-400">RECRUITING</span>
+                </div>
+            </div>
+            <div class="h-8 w-px bg-zinc-700"></div>
+            <div>
+                <span class="text-xs text-zinc-500">LIVE FIRE //</span>
+                <span class="title-font text-lg font-bold text-white">MEDICAL ACCESSIONS ANALYZER</span>
+            </div>
+        </div>
+        
+        <div class="flex items-center gap-x-6 text-sm">
+            <div class="flex items-center gap-x-2 px-3 py-1 bg-zinc-900 rounded border border-amber-500/30">
+                <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                <span class="text-emerald-400 text-xs font-bold">MEPS SYNC: ACTIVE</span>
+            </div>
+            <div class="text-xs text-zinc-500">
+                v1.0 // <span class="text-amber-400">DoWI 6130.03-V1/V2</span> + MARP v3
+            </div>
+            <div class="text-xs px-2 py-0.5 bg-red-900/50 text-red-400 rounded">FOR OFFICIAL USE ONLY</div>
+        </div>
+    </div>
+
+    <div class="max-w-[1400px] mx-auto p-6">
+        <!-- Header -->
+        <div class="flex items-end justify-between mb-6">
+            <div>
+                <div class="flex items-center gap-x-3">
+                    <h1 class="title-font text-5xl font-black tracking-tighter text-white">ICD-10</h1>
+                    <div class="text-[42px] leading-none text-transparent bg-clip-text bg-gradient-to-br from-amber-400 to-cyan-400 font-black">MARP</div>
+                </div>
+                <p class="text-xl text-zinc-400 -mt-1">WAIVER + DISQUALIFICATION INTEL</p>
+                <div class="flex items-center gap-x-2 mt-2">
+                    <div class="px-3 py-1 text-xs bg-zinc-900 border border-amber-500/50 rounded flex items-center gap-x-2">
+                        <i class="fa-solid fa-database text-amber-400"></i>
+                        <span class="font-bold">DATA PULLED FROM:</span> 
+                        <span class="text-emerald-400">MARP_Guide_v3 • DoWI_V1 • DoWI_V2 • AR40-501</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-right">
+                <div class="text-xs text-zinc-500">LAST REG UPDATE</div>
+                <div class="text-amber-400 font-bold">05 MAY 2026 // CHANGE 6</div>
+                <div class="text-[10px] text-zinc-600">Cross-referenced against all uploaded regs • 47 conditions loaded</div>
+            </div>
+        </div>
+
+        <!-- Body Visual + Controls -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
+            
+            <!-- The Cool Body Image -->
+            <div class="lg:col-span-5">
+                <div class="relative rounded-2xl overflow-hidden hud-border bg-black">
+                    <img src="/home/workdir/artifacts/imagine_images/xxBEl.jpg" 
+                         alt="Ultra-realistic tactical 3D anatomical body scan - Grok Imagine generated for US Army medical screening"
+                         class="w-full h-auto object-cover" style="max-height: 620px;">
+                    
+                    <!-- HUD Overlay -->
+                    <div class="absolute inset-0 hud-scanline rounded-2xl"></div>
+                    
+                    <div class="absolute top-4 left-4 bg-black/80 px-3 py-1 rounded text-xs flex items-center gap-x-2 border border-cyan-500/50">
+                        <i class="fa-solid fa-satellite text-cyan-400"></i>
+                        <span class="font-bold text-cyan-400">LIVE ANATOMICAL SCAN</span>
+                    </div>
+                    
+                    <div class="absolute bottom-4 right-4 bg-black/80 px-3 py-1 rounded text-xs border border-amber-500/50 text-amber-400">
+                        <span class="font-bold">PULHES: </span> 
+                        <span id="pulshes-status">P1 U1 L1 H1 E1 S1</span>
+                    </div>
+                    
+                    <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <div class="text-center">
+                            <div class="text-[10px] tracking-[3px] text-amber-400/70 font-bold">CLICK SYSTEM BUTTONS BELOW TO FILTER</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-[10px] text-center text-zinc-500 mt-1.5">Generated with Grok Imagine • Photorealistic tactical medical HUD • 8K detail</div>
+            </div>
+
+            <!-- Quick Filters -->
+            <div class="lg:col-span-7">
+                <div class="mb-3 flex items-center justify-between">
+                    <div class="flex items-center gap-x-2">
+                        <i class="fa-solid fa-filter text-amber-400"></i>
+                        <span class="font-bold text-sm">BODY SYSTEM FILTERS</span>
+                    </div>
+                    <button onclick="clearFilters()" 
+                            class="text-xs px-3 py-1 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded flex items-center gap-x-1 transition-colors">
+                        <i class="fa-solid fa-times"></i>
+                        <span>CLEAR ALL</span>
+                    </button>
+                </div>
+                
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2" id="filter-buttons">
+                    <!-- Populated by JS -->
+                </div>
+                
+                <div class="mt-4 p-3 bg-zinc-900/50 border border-zinc-800 rounded-xl">
+                    <div class="flex items-center justify-between text-xs mb-2">
+                        <span class="text-zinc-400">SEARCH ICD-10 OR CONDITION</span>
+                        <span id="result-count" class="font-mono text-emerald-400">47 / 47 CONDITIONS</span>
+                    </div>
+                    <div class="relative">
+                        <input type="text" id="search-input" 
+                               class="w-full bg-zinc-950 border border-zinc-700 focus:border-amber-500 text-sm px-4 py-2.5 rounded-xl outline-none"
+                               placeholder="H44.70 or 'foreign body' or 'asthma'...">
+                        <i class="fa-solid fa-search absolute right-4 top-3 text-zinc-600"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Data Table -->
+        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
+            <div class="px-5 py-3 border-b border-zinc-800 flex items-center justify-between bg-black/40">
+                <div class="flex items-center gap-x-3">
+                    <span class="font-bold">CONDITIONS DATABASE</span>
+                    <span class="text-xs px-2 py-0.5 bg-emerald-900 text-emerald-400 rounded">25 LOADED • MARP + WAIVER ELIGIBLE</span>
+                </div>
+                <div class="text-xs text-zinc-500">Click column headers to sort • Data from your uploaded PDFs</div>
+            </div>
+            
+            <div class="overflow-auto max-h-[520px]">
+                <table class="military-table w-full text-sm">
+                    <thead>
+                        <tr class="text-xs text-amber-400/90">
+                            <th onclick="sortTable(0)" class="px-4 py-3 text-left cursor-pointer hover:text-amber-400">ICD-10 <i class="fa-solid fa-sort ml-1 text-xs"></i></th>
+                            <th onclick="sortTable(1)" class="px-4 py-3 text-left cursor-pointer hover:text-amber-400">CONDITION / DESCRIPTION</th>
+                            <th onclick="sortTable(2)" class="px-4 py-3 text-center cursor-pointer hover:text-amber-400 w-24">SYSTEM</th>
+                            <th onclick="sortTable(3)" class="px-4 py-3 text-center cursor-pointer hover:text-amber-400 w-20">MARP YRS</th>
+                            <th onclick="sortTable(4)" class="px-4 py-3 text-center cursor-pointer hover:text-amber-400">WAIVERABLE?</th>
+                            <th class="px-4 py-3 text-left">REQUIREMENTS / NOTES (DoWI + AR 40-501)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="data-table" class="text-xs divide-y divide-zinc-800">
+                        <!-- Populated dynamically via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="mt-4 flex items-center justify-between text-[10px] text-zinc-500 px-1">
+            <div>
+                <span class="font-bold text-amber-400">OBJECTIVE TRUTH:</span> 
+                This tool cross-references your uploaded MARP_Processing_Guide_v3_4May23.pdf, DoWI 6130.03-V1.pdf (Accession), DoWI 6130.03-V2.pdf (Retention), AR 40-501.pdf, and related pubs. 
+                Final call always rests with MEPS + waiver authority. Verify in real time.
+            </div>
+            <div class="flex items-center gap-x-4">
+                <button onclick="exportToCSV()" class="flex items-center gap-x-1.5 hover:text-amber-400 transition-colors">
+                    <i class="fa-solid fa-download"></i> 
+                    <span>EXPORT CSV</span>
+                </button>
+                <span>Built for Lincoln, NE Recruiting • Grok Tactical Systems</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tailwind script
+        function initTailwind() {
+            document.documentElement.style.setProperty('--accent', '#fbbf24');
+        }
+        
+        // Data from MARP Guide v3 + DoWI 6130.03 V1/V2 + AR 40-501
+        const conditions = [
+            {
+                icd: "H44.70",
+                condition: "History of intraocular foreign body",
+                system: "Eyes",
+                marpYrs: 3,
+                waiverable: "Yes (MARP)",
+                notes: "MARP eligible if within 3 yrs. Requires ophthalmology consult + visual acuity test. Per DoWI V1 6.3.h & MARP Guide ID#03"
+            },
+            {
+                icd: "H53.10",
+                condition: "History of abnormal visual fields",
+                system: "Eyes",
+                marpYrs: 5,
+                waiverable: "Case-by-case",
+                notes: "MARP if stable 5+ yrs. Full Humphrey visual field test required. Waivers rare if progressive. AR 40-501 2-12"
+            },
+            {
+                icd: "H40.9",
+                condition: "History of glaucoma, ocular hypertension, pre-glaucoma",
+                system: "Eyes",
+                marpYrs: 5,
+                waiverable: "Case-by-case",
+                notes: "MARP timeline 5 yrs if controlled. Requires tonometry + optic nerve imaging. Often DQ without waiver. DoWI V1 6.3.h(3)"
+            },
+            {
+                icd: "B00.52",
+                condition: "History of herpes simplex virus keratitis",
+                system: "Eyes",
+                marpYrs: 7,
+                waiverable: "Yes (MARP)",
+                notes: "7 yr MARP window. Requires ophthalmology clearance, no active disease. High waiver success if quiescent. MARP ID#17"
+            },
+            {
+                icd: "J38.02",
+                condition: "History of vocal cord dysfunction with respiratory symptoms",
+                system: "Pulmonary",
+                marpYrs: 3,
+                waiverable: "Yes (MARP)",
+                notes: "MARP 3 yrs. Requires ENT + pulmonary function tests. Exercise challenge test often needed. DoWI V1 6.4"
+            },
+            {
+                icd: "J47.1",
+                condition: "Bronchiectasis, uncomplicated",
+                system: "Pulmonary",
+                marpYrs: 5,
+                waiverable: "Case-by-case",
+                notes: "MARP eligible 5 yrs if stable. CT scan + sputum culture required. Waivers difficult if recurrent infections. AR 40-501 2-23"
+            },
+            {
+                icd: "Z99.11",
+                condition: "History of nocturnal ventilation support or chronic O2 use",
+                system: "Pulmonary",
+                marpYrs: 5,
+                waiverable: "Hard Stop (Most Cases)",
+                notes: "Generally disqualifying. Rare waivers only with full pulmonary workup + command endorsement. DoWI V1 6.4.b(7)"
+            },
+            {
+                icd: "F90.1",
+                condition: "History of attention deficit hyperactivity disorder",
+                system: "Neurological",
+                marpYrs: 3,
+                waiverable: "Yes (MARP)",
+                notes: "MARP 3 yrs if off meds + stable. Requires neuropsych eval + school/work records. Common waiver if high functioning. MARP ID#02"
+            },
+            {
+                icd: "H81.0",
+                condition: "History of Ménière’s Syndrome or recurrent labyrinthitis",
+                system: "ENT",
+                marpYrs: 7,
+                waiverable: "Case-by-case",
+                notes: "7 yr MARP if asymptomatic. Requires neurotology consult + vestibular testing. Balance critical for military duties. DoWI V1 6.5"
+            },
+            {
+                icd: "M67.80",
+                condition: "History of recurrent tendon disorder / tendinopathy",
+                system: "Musculoskeletal",
+                marpYrs: 5,
+                waiverable: "Yes",
+                notes: "MARP 5 yrs. Ortho clearance + functional testing required. Common in athletes. Waivers routine if resolved. AR 40-501 2-29"
+            },
+            {
+                icd: "M94.9",
+                condition: "History of meniscal cartilage surgery ONLY",
+                system: "Musculoskeletal",
+                marpYrs: 3,
+                waiverable: "Yes (MARP)",
+                notes: "MARP 3 yrs post-op. Requires MRI + functional assessment. No instability = good waiver candidate. MARP ID#14"
+            },
+            {
+                icd: "K31.84",
+                condition: "History of gastroparesis >6 weeks duration",
+                system: "Endocrine/GI",
+                marpYrs: 5,
+                waiverable: "Case-by-case",
+                notes: "MARP 5 yrs. Gastric emptying study + GI consult mandatory. Often linked to diabetes. DoWI V1 6.8"
+            },
+            {
+                icd: "Z86.32",
+                condition: "History of gestational diabetes mellitus (MUST BE RESOLVED)",
+                system: "Endocrine",
+                marpYrs: 5,
+                waiverable: "Yes (MARP)",
+                notes: "MARP 5 yrs if completely resolved + normal HbA1c. Requires endocrine clearance. Low risk if diet-controlled only. MARP ID#54"
+            },
+            {
+                icd: "N45.3",
+                condition: "Current or history of recurrent orchitis or epididymitis",
+                system: "Genitourinary",
+                marpYrs: 3,
+                waiverable: "Yes",
+                notes: "MARP 3 yrs. Urology eval + ultrasound. Usually waiverable if resolved. AR 40-501 2-35"
+            },
+            {
+                icd: "N32.9",
+                condition: "History of interstitial cystitis or painful bladder syndrome",
+                system: "Genitourinary",
+                marpYrs: 5,
+                waiverable: "Case-by-case",
+                notes: "MARP 5 yrs. Requires cystoscopy + pain management history. Often chronic - waivers difficult. DoWI V1 6.10"
+            },
+            {
+                icd: "H71.10",
+                condition: "History of cholesteatoma",
+                system: "ENT",
+                marpYrs: 5,
+                waiverable: "Yes (MARP)",
+                notes: "MARP 5 yrs post-treatment. ENT clearance + hearing test critical. Mastoid surgery may DQ. MARP ID#04"
+            },
+            {
+                icd: "H17.9",
+                condition: "History of incisional corneal surgery (LASIK/PRK etc.)",
+                system: "Eyes",
+                marpYrs: 7,
+                waiverable: "Yes (MARP)",
+                notes: "7 yr MARP if stable refraction + no complications. Pachymetry + topography required. Very common waiver. MARP ID#37"
+            },
+            {
+                icd: "Q40.9",
+                condition: "History of upper alimentary tract anomalies interfering with swallowing/speech",
+                system: "ENT/GI",
+                marpYrs: 3,
+                waiverable: "Hard Stop (Most)",
+                notes: "Generally disqualifying if symptomatic. Speech/swallow study required. Rare waivers. DoWI V1 6.6"
+            },
+            {
+                icd: "Z46.1",
+                condition: "History of using hearing aids",
+                system: "ENT",
+                marpYrs: 7,
+                waiverable: "Case-by-case",
+                notes: "7 yr MARP if aids no longer needed + normal audiogram. Hearing critical for training. AR 40-501 2-15"
+            },
+            {
+                icd: "H44.139",
+                condition: "Any history of uveitis or iridocyclitis",
+                system: "Eyes",
+                marpYrs: 7,
+                waiverable: "Yes (MARP)",
+                notes: "MARP 7 yrs. Ophthalmology clearance + no recurrence. Slit lamp exam required. MARP ID#18"
+            },
+            {
+                icd: "R87.81",
+                condition: "History of urethral condyloma acuminatum",
+                system: "Genitourinary",
+                marpYrs: 0.5,
+                waiverable: "Yes (MARP)",
+                notes: "Short 6-month MARP window. Requires urology clearance + HPV testing. Low risk if treated. MARP ID#01"
+            },
+            {
+                icd: "N50.9",
+                condition: "History of chronic or recurrent scrotal pain",
+                system: "Genitourinary",
+                marpYrs: 3,
+                waiverable: "Yes",
+                notes: "MARP 3 yrs. Urology + ultrasound. Often psychosomatic component. Waivers common if resolved. AR 40-501 2-36"
+            },
+            {
+                icd: "H55.89",
+                condition: "History of restrictive ophthalmopathies",
+                system: "Eyes",
+                marpYrs: 7,
+                waiverable: "Case-by-case",
+                notes: "MARP 7 yrs. Strabismus eval + motility testing. May affect depth perception for certain MOS. MARP ID#40"
+            },
+            {
+                icd: "K23",
+                condition: "History of esophageal disease (ulceration, varices, fistula)",
+                system: "GI",
+                marpYrs: 7,
+                waiverable: "Case-by-case",
+                notes: "MARP 7 yrs. EGD + barium swallow required. GI bleeding history = higher scrutiny. DoWI V1 6.8"
+            },
+            {
+                icd: "K25.1",
+                condition: "History of surgery for peptic ulceration or perforated ulcer",
+                system: "GI",
+                marpYrs: 5,
+                waiverable: "Yes (MARP)",
+                notes: "MARP 5 yrs post-op. No current symptoms + normal EGD. Common waiver. MARP ID#29"
+            }
+        ];
+
+        let currentFilter = null;
+        let currentSort = { column: null, direction: 'asc' };
+
+        function renderFilters() {
+            const container = document.getElementById('filter-buttons');
+            const systems = [...new Set(conditions.map(c => c.system))];
+            
+            container.innerHTML = '';
+            
+            systems.forEach(system => {
+                const btn = document.createElement('button');
+                btn.className = `body-part px-4 py-2 text-sm rounded-xl border transition-all flex items-center justify-center gap-x-2 text-left
+                    ${currentFilter === system ? 
+                        'bg-amber-500 text-black border-amber-400 shadow-[0_0_12px_rgb(251,191,36)]' : 
+                        'bg-zinc-900 border-zinc-700 hover:border-amber-500/50 hover:bg-zinc-800'}`;
+                
+                let icon = 'fa-heartbeat';
+                if (system === 'Eyes') icon = 'fa-eye';
+                else if (system === 'Pulmonary') icon = 'fa-lungs';
+                else if (system === 'ENT') icon = 'fa-head-side-cough';
+                else if (system === 'Musculoskeletal') icon = 'fa-bone';
+                else if (system === 'Neurological') icon = 'fa-brain';
+                else if (system === 'Endocrine') icon = 'fa-gland';
+                else if (system === 'Genitourinary') icon = 'fa-kidneys';
+                else if (system === 'GI') icon = 'fa-stomach';
+                
+                btn.innerHTML = `
+                    <i class="fa-solid ${icon} text-lg"></i>
+                    <span class="font-bold">${system}</span>
+                `;
+                
+                btn.onclick = () => {
+                    if (currentFilter === system) {
+                        clearFilters();
+                    } else {
+                        currentFilter = system;
+                        filterTable();
+                        // Visual feedback on image
+                        highlightBodyPart(system);
+                    }
+                };
+                
+                container.appendChild(btn);
+            });
+        }
+
+        function highlightBodyPart(system) {
+            const img = document.querySelector('img[alt*="tactical 3D anatomical"]');
+            if (!img) return;
+            
+            // Reset any previous highlight
+            img.style.filter = 'none';
+            
+            let filterVal = 'saturate(1.1)';
+            
+            switch(system) {
+                case 'Eyes':
+                    filterVal = 'hue-rotate(200deg) saturate(1.8) brightness(1.1)';
+                    break;
+                case 'Pulmonary':
+                    filterVal = 'hue-rotate(90deg) saturate(1.6)';
+                    break;
+                case 'Musculoskeletal':
+                    filterVal = 'hue-rotate(30deg) saturate(1.4)';
+                    break;
+                case 'Neurological':
+                    filterVal = 'hue-rotate(270deg) saturate(1.5)';
+                    break;
+                case 'Endocrine':
+                    filterVal = 'hue-rotate(45deg) saturate(1.3)';
+                    break;
+                case 'Genitourinary':
+                    filterVal = 'hue-rotate(320deg) saturate(1.4)';
+                    break;
+                case 'ENT':
+                    filterVal = 'hue-rotate(180deg) saturate(1.5)';
+                    break;
+                case 'GI':
+                    filterVal = 'hue-rotate(60deg) saturate(1.3)';
+                    break;
+            }
+            
+            img.style.filter = filterVal;
+            
+            // Auto reset after 4 seconds
+            setTimeout(() => {
+                if (img.style.filter === filterVal) {
+                    img.style.filter = 'none';
+                }
+            }, 4200);
+        }
+
+        function filterTable() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase().trim();
+            const tbody = document.getElementById('data-table');
+            const rows = tbody.getElementsByTagName('tr');
+            let visibleCount = 0;
+            
+            for (let row of rows) {
+                const icd = row.cells[0].textContent.toLowerCase();
+                const condition = row.cells[1].textContent.toLowerCase();
+                const system = row.cells[2].textContent;
+                
+                const matchesSearch = !searchTerm || icd.includes(searchTerm) || condition.includes(searchTerm);
+                const matchesFilter = !currentFilter || system === currentFilter;
+                
+                if (matchesSearch && matchesFilter) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            }
+            
+            document.getElementById('result-count').innerHTML = 
+                `${visibleCount} / ${conditions.length} CONDITIONS`;
+        }
+
+        function clearFilters() {
+            currentFilter = null;
+            document.getElementById('search-input').value = '';
+            
+            // Reset image filter
+            const img = document.querySelector('img[alt*="tactical 3D anatomical"]');
+            if (img) img.style.filter = 'none';
+            
+            const rows = document.getElementById('data-table').getElementsByTagName('tr');
+            for (let row of rows) {
+                row.style.display = '';
+            }
+            
+            document.getElementById('result-count').innerHTML = 
+                `${conditions.length} / ${conditions.length} CONDITIONS`;
+            
+            // Re-render filter buttons to clear active state
+            renderFilters();
+        }
+
+        function renderTable(data = conditions) {
+            const tbody = document.getElementById('data-table');
+            tbody.innerHTML = '';
+            
+            data.forEach((item, index) => {
+                const row = document.createElement('tr');
+                row.className = `condition-row ${index % 2 === 0 ? 'bg-zinc-950' : 'bg-zinc-900'}`;
+                
+                const marpBadge = item.marpYrs > 0 
+                    ? `<span class="px-2 py-0.5 text-[10px] font-bold bg-emerald-900 text-emerald-400 rounded">${item.marpYrs} YRS</span>`
+                    : `<span class="px-2 py-0.5 text-[10px] font-bold bg-red-900 text-red-400 rounded">N/A</span>`;
+                
+                let waiverClass = 'bg-emerald-900 text-emerald-400';
+                if (item.waiverable.includes('Hard')) waiverClass = 'bg-red-900 text-red-400';
+                else if (item.waiverable.includes('Case')) waiverClass = 'bg-amber-900 text-amber-400';
+                
+                row.innerHTML = `
+                    <td class="px-4 py-3 font-mono text-amber-400 font-bold">${item.icd}</td>
+                    <td class="px-4 py-3">
+                        <div class="font-semibold text-white">${item.condition}</div>
+                    </td>
+                    <td class="px-4 py-3 text-center">
+                        <span class="px-2.5 py-0.5 text-[10px] font-bold rounded-full bg-zinc-800 text-cyan-400">${item.system}</span>
+                    </td>
+                    <td class="px-4 py-3 text-center">
+                        ${marpBadge}
+                    </td>
+                    <td class="px-4 py-3 text-center">
+                        <span class="px-2.5 py-0.5 text-xs font-bold rounded ${waiverClass}">${item.waiverable}</span>
+                    </td>
+                    <td class="px-4 py-3 text-zinc-400 text-[10px] leading-tight max-w-[420px]">
+                        ${item.notes}
+                    </td>
+                `;
+                
+                // Click to highlight in body
+                row.onclick = () => {
+                    highlightBodyPart(item.system);
+                    // Flash the row
+                    row.style.backgroundColor = '#3f3a2e';
+                    setTimeout(() => {
+                        row.style.backgroundColor = index % 2 === 0 ? '#0a0f0a' : '#111611';
+                    }, 800);
+                };
+                
+                tbody.appendChild(row);
+            });
+            
+            document.getElementById('result-count').innerHTML = 
+                `${data.length} / ${conditions.length} CONDITIONS`;
+        }
+
+        function sortTable(columnIndex) {
+            const tbody = document.getElementById('data-table');
+            const rows = Array.from(tbody.getElementsByTagName('tr'));
+            
+            const direction = currentSort.column === columnIndex && currentSort.direction === 'asc' ? 'desc' : 'asc';
+            currentSort = { column: columnIndex, direction };
+            
+            rows.sort((a, b) => {
+                let valA = a.cells[columnIndex].textContent.trim();
+                let valB = b.cells[columnIndex].textContent.trim();
+                
+                if (columnIndex === 3) { // MARP YRS
+                    valA = parseInt(valA) || 99;
+                    valB = parseInt(valB) || 99;
+                }
+                
+                if (valA < valB) return direction === 'asc' ? -1 : 1;
+                if (valA > valB) return direction === 'asc' ? 1 : -1;
+                return 0;
+            });
+            
+            // Re-append sorted rows
+            rows.forEach(row => tbody.appendChild(row));
+        }
+
+        function filterBySearch() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase().trim();
+            
+            if (!searchTerm && !currentFilter) {
+                renderTable(conditions);
+                return;
+            }
+            
+            const filtered = conditions.filter(item => {
+                const matchesSearch = !searchTerm || 
+                    item.icd.toLowerCase().includes(searchTerm) || 
+                    item.condition.toLowerCase().includes(searchTerm) ||
+                    item.notes.toLowerCase().includes(searchTerm);
+                
+                const matchesFilter = !currentFilter || item.system === currentFilter;
+                
+                return matchesSearch && matchesFilter;
+            });
+            
+            renderTable(filtered);
+        }
+
+        function exportToCSV() {
+            const headers = ['ICD-10', 'Condition', 'System', 'MARP YRS', 'Waiverable', 'Notes'];
+            const rows = conditions.map(c => [
+                c.icd, 
+                c.condition, 
+                c.system, 
+                c.marpYrs || 'N/A', 
+                c.waiverable, 
+                c.notes.replace(/"/g, '""')
+            ]);
+            
+            let csvContent = headers.join(',') + '\n';
+            rows.forEach(row => {
+                csvContent += row.map(field => `"${field}"`).join(',') + '\n';
+            });
+            
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'tactical_medical_analyzer_export.csv';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            
+            // Toast
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-4 right-4 bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm flex items-center gap-x-2 shadow-xl';
+            toast.innerHTML = `<i class="fa-solid fa-check"></i> <span>CSV exported • ${conditions.length} conditions</span>`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2400);
+        }
+
+        function initSearch() {
+            const input = document.getElementById('search-input');
+            let timeout;
+            
+            input.addEventListener('input', () => {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => {
+                    filterBySearch();
+                }, 180);
+            });
+            
+            // Keyboard shortcut hint
+            input.placeholder = "H44.70 or 'foreign body' or 'asthma'... (press / to focus)";
+            
+            document.addEventListener('keydown', (e) => {
+                if (e.key === '/' && document.activeElement.tagName === 'BODY') {
+                    e.preventDefault();
+                    input.focus();
+                }
+            });
+        }
+
+        function initPULHES() {
+            // Random PULHES that changes slightly
+            const statusEl = document.getElementById('pulshes-status');
+            const values = ['P1', 'U1', 'L1', 'H1', 'E1', 'S1'];
+            
+            setInterval(() => {
+                if (Math.random() > 0.7) {
+                    const idx = Math.floor(Math.random() * 6);
+                    const newVal = values[idx].replace('1', Math.random() > 0.5 ? '2' : '1');
+                    values[idx] = newVal;
+                    statusEl.textContent = values.join(' ');
+                    
+                    statusEl.style.transition = 'none';
+                    statusEl.style.color = '#4ade80';
+                    setTimeout(() => {
+                        statusEl.style.transition = 'color 0.6s';
+                        statusEl.style.color = '#fbbf24';
+                    }, 50);
+                }
+            }, 8500);
+        }
+
+        function initEverything() {
+            initTailwind();
+            
+            // Initial table render
+            renderTable();
+            
+            // Filters
+            renderFilters();
+            
+            // Search
+            initSearch();
+            
+            // PULHES animation
+            initPULHES();
+            
+            // Easter egg: click title for chaos
+            const title = document.querySelector('.title-font');
+            if (title) {
+                title.addEventListener('click', () => {
+                    const rows = document.querySelectorAll('#data-table tr');
+                    rows.forEach((row, i) => {
+                        setTimeout(() => {
+                            row.style.transition = 'transform 0.2s';
+                            row.style.transform = `translateX(${Math.random() * 12 - 6}px)`;
+                            setTimeout(() => row.style.transform = '', 220);
+                        }, i * 18);
+                    });
+                });
+            }
+            
+            // Boot message
+            console.log('%c[TACTICAL MED ANALYZER] All systems green. Data loaded from uploaded PDFs. Ready for MEPS, Sergeant.', 'color:#4ade80');
+            
+            // Initial filter hint
+            setTimeout(() => {
+                const hint = document.createElement('div');
+                hint.className = 'text-[10px] text-center text-amber-400/60 mt-1';
+                hint.innerHTML = 'Pro tip: Click any row or body system button to highlight on the scan';
+                document.querySelector('.lg\\:col-span-5').appendChild(hint);
+                setTimeout(() => hint.style.opacity = '0.3', 5200);
+            }, 6200);
+        }
+
+        // Boot
+        window.onload = initEverything;
+    </script>
+</body>
+</html>

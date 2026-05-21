@@ -1,0 +1,229 @@
+
+<style>
+.hdr{display:flex;align-items:center;gap:12px;margin-bottom:1.25rem;flex-wrap:wrap;}
+.hdr label{font-size:13px;color:var(--color-text-secondary);margin-right:4px;}
+.hdr select{font-size:13px;padding:5px 10px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);}
+.evgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:1.25rem;}
+.ev{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px 16px;}
+.ev.fail{border-color:#E24B4A;} .ev.pass{border-color:#1D9E75;}
+.ev-name{font-size:11px;font-weight:500;color:var(--color-text-secondary);margin:0 0 4px;text-transform:uppercase;letter-spacing:.04em;}
+.ev-score{font-size:28px;font-weight:500;margin:0 0 6px;}
+.bar-bg{height:5px;border-radius:3px;background:var(--color-background-secondary);margin-bottom:10px;}
+.bar-fg{height:5px;border-radius:3px;transition:width .2s;}
+.slider-row{display:flex;align-items:center;gap:6px;margin-bottom:6px;}
+.slider-row input[type=range]{flex:1;min-width:0;}
+.range-disp{font-size:11px;color:var(--color-text-secondary);min-width:38px;text-align:right;white-space:nowrap;}
+.manual-row{display:flex;align-items:center;gap:6px;}
+.manual-row label{font-size:11px;color:var(--color-text-secondary);white-space:nowrap;}
+.manual{flex:1;font-size:13px;font-weight:500;padding:5px 8px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-secondary);color:var(--color-text-primary);text-align:center;}
+.manual:focus{outline:none;border-color:#378ADD;background:var(--color-background-primary);}
+.totals{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:1.25rem;}
+.tot{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px 14px;}
+.tot .lbl{font-size:11px;color:var(--color-text-secondary);margin:0 0 4px;}
+.tot .num{font-size:22px;font-weight:500;margin:0;}
+.badge{display:inline-block;font-size:11px;font-weight:500;padding:3px 10px;border-radius:var(--border-radius-md);margin-top:4px;}
+.ref{font-size:11px;color:var(--color-text-secondary);margin-top:.75rem;}
+</style>
+<div style="padding:1rem 0;">
+<div class="hdr">
+  <div><label>Age</label>
+  <select id="sel-age">
+    <option value="0">17–21</option><option value="1">22–26</option>
+    <option value="2">27–31</option><option value="3" selected>32–36</option>
+    <option value="4">37–41</option><option value="5">42–46</option>
+    <option value="6">47–51</option><option value="7">52–56</option>
+  </select></div>
+  <div><label>Standard</label>
+  <select id="sel-std">
+    <option value="300" selected>General (300 min)</option>
+    <option value="350">Combat MOS (350 min)</option>
+  </select></div>
+</div>
+<div class="evgrid" id="ev-container"></div>
+<div class="totals">
+  <div class="tot"><p class="lbl">Total score</p><p class="num" id="out-total">—</p></div>
+  <div class="tot"><p class="lbl">Min required</p><p class="num" id="out-req">300</p></div>
+  <div class="tot"><p class="lbl">Result</p><p class="num" id="out-status" style="font-size:18px;">—</p><span class="badge" id="out-badge"></span></div>
+</div>
+<div style="position:relative;width:100%;height:190px;"><canvas id="bar-chart"></canvas></div>
+<p class="ref">Source: armyapex.com / army.mil official AFT tables, effective 1 Jun 2025. 2MR 60pt min (male): 19:57 · 19:45 · 19:45 · <strong>20:44</strong> · 20:44 · 22:04 · 22:04 · 22:50. Plank 60pt min: 1:30 · 1:25 · 1:20 · 1:15 · 1:10+</p>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+// Age indices: 0=17-21, 1=22-26, 2=27-31, 3=32-36, 4=37-41, 5=42-46, 6=47-51, 7=52-56
+
+const MDL=[
+[[150,60],[160,63],[170,65],[180,67],[190,69],[200,70],[210,73],[220,75],[230,77],[240,79],[250,81],[260,83],[270,85],[280,87],[290,89],[300,92],[310,94],[320,96],[330,98],[340,100]],
+[[150,60],[160,63],[170,65],[180,67],[190,70],[200,71],[210,73],[220,75],[230,77],[240,79],[250,81],[260,83],[270,85],[280,87],[290,89],[300,91],[310,93],[320,95],[330,97],[340,99],[350,100]],
+[[150,60],[160,63],[170,65],[180,67],[190,70],[200,71],[210,73],[220,75],[230,77],[240,79],[250,81],[260,83],[270,85],[280,87],[290,89],[300,91],[310,93],[320,95],[330,97],[340,98],[350,100]],
+[[140,60],[150,61],[160,63],[170,65],[180,67],[190,70],[200,71],[210,73],[220,75],[230,77],[240,79],[250,81],[260,83],[270,85],[280,87],[290,89],[300,91],[310,93],[320,95],[330,97],[340,99],[350,100]],
+[[140,60],[150,62],[160,63],[170,65],[180,67],[190,70],[200,71],[210,73],[220,75],[230,77],[240,79],[250,81],[260,83],[270,85],[280,87],[290,89],[300,91],[310,93],[320,95],[330,97],[340,99],[350,100]],
+[[140,60],[150,62],[160,64],[170,66],[180,68],[190,70],[200,72],[210,74],[220,76],[230,78],[240,79],[250,82],[260,84],[270,86],[280,88],[290,90],[300,92],[310,93],[320,95],[330,97],[340,99],[350,100]],
+[[140,60],[150,62],[160,64],[170,66],[180,68],[190,70],[200,72],[210,74],[220,76],[230,78],[240,80],[250,82],[260,84],[270,86],[280,87],[290,89],[300,91],[310,93],[320,95],[330,97],[340,100]],
+[[140,60],[150,63],[160,65],[170,67],[180,70],[190,72],[200,74],[210,76],[220,78],[230,80],[240,82],[250,84],[260,86],[270,88],[280,90],[290,91],[300,93],[310,95],[320,97],[330,100]],
+];
+const HRP=[
+[[15,60],[17,61],[18,62],[19,63],[21,64],[22,65],[23,66],[24,67],[25,68],[26,69],[28,70],[29,72],[30,73],[32,75],[33,76],[34,77],[35,78],[36,79],[37,80],[38,81],[39,82],[40,84],[42,85],[43,86],[44,87],[45,88],[46,89],[47,91],[48,92],[49,93],[51,94],[52,95],[53,96],[54,97],[55,98],[58,100]],
+[[14,60],[15,61],[17,62],[18,63],[19,64],[21,65],[22,66],[23,67],[24,68],[25,69],[26,70],[27,71],[28,72],[29,73],[30,74],[31,75],[32,76],[34,77],[35,78],[36,79],[37,80],[38,81],[39,82],[40,83],[41,84],[42,85],[43,86],[44,87],[45,88],[46,89],[48,90],[49,91],[50,92],[51,93],[53,94],[55,95],[57,96],[59,97],[61,100]],
+[[14,60],[15,61],[17,62],[18,63],[20,64],[21,65],[22,66],[23,67],[24,68],[25,69],[26,70],[28,72],[29,73],[30,74],[31,75],[32,76],[33,77],[35,78],[36,79],[37,80],[38,81],[39,82],[41,83],[42,84],[43,85],[44,86],[45,87],[46,88],[47,89],[48,90],[49,91],[51,92],[53,93],[55,94],[57,95],[58,96],[60,97],[62,100]],
+[[13,60],[15,61],[16,62],[18,63],[19,64],[20,65],[21,66],[22,67],[24,68],[25,69],[26,70],[27,71],[28,72],[29,73],[30,74],[31,75],[32,76],[33,77],[34,78],[35,79],[36,80],[37,81],[39,82],[40,83],[41,84],[42,85],[43,86],[44,87],[45,88],[46,89],[47,90],[49,91],[51,92],[52,93],[53,94],[55,95],[57,96],[58,97],[60,100]],
+[[12,60],[14,61],[15,62],[17,63],[18,64],[19,65],[20,66],[21,67],[22,68],[23,69],[24,70],[25,71],[27,72],[28,73],[29,74],[30,75],[31,76],[32,77],[33,78],[34,79],[35,80],[36,81],[37,82],[38,83],[39,84],[40,85],[42,86],[43,87],[44,88],[45,89],[46,90],[47,91],[48,92],[49,93],[50,94],[51,95],[53,96],[54,97],[55,98],[57,99],[59,100]],
+[[11,60],[13,61],[15,62],[16,63],[17,64],[18,65],[19,66],[20,67],[21,68],[22,69],[23,70],[24,71],[25,72],[26,73],[28,74],[29,75],[30,76],[31,77],[32,78],[33,79],[34,80],[35,81],[36,82],[37,83],[38,84],[39,85],[40,86],[41,87],[42,88],[43,89],[44,90],[45,91],[46,92],[47,93],[48,94],[49,95],[51,96],[52,97],[53,98],[55,99],[57,100]],
+[[11,60],[12,61],[14,62],[15,63],[16,64],[17,65],[18,66],[19,67],[20,68],[21,69],[22,70],[23,71],[24,72],[25,73],[26,74],[27,75],[28,76],[29,77],[30,78],[31,79],[32,80],[33,81],[34,82],[35,83],[36,84],[37,85],[38,86],[39,87],[40,88],[41,89],[42,90],[43,91],[44,92],[45,93],[46,94],[48,95],[49,96],[50,97],[51,98],[53,99],[55,100]],
+[[10,60],[11,61],[13,62],[14,63],[15,64],[16,65],[17,66],[18,67],[19,68],[20,69],[21,70],[22,71],[23,72],[24,73],[25,74],[26,75],[27,76],[28,77],[29,78],[30,79],[31,80],[32,81],[33,82],[34,83],[35,84],[36,85],[37,86],[38,87],[39,88],[40,89],[41,90],[42,91],[43,92],[44,93],[45,94],[47,95],[48,96],[50,97],[51,100]],
+];
+const SDC=[
+[[89,100],[94,98],[97,95],[100,93],[103,90],[106,87],[109,84],[112,81],[115,78],[118,75],[121,72],[125,70],[129,68],[133,66],[137,64],[141,62],[148,60]],
+[[90,100],[93,98],[96,95],[99,93],[102,90],[105,87],[108,84],[111,81],[114,78],[117,75],[120,72],[125,70],[128,68],[131,66],[136,64],[141,62],[151,60]],
+[[90,100],[93,98],[96,95],[99,93],[102,90],[105,87],[108,84],[111,81],[114,78],[117,75],[120,72],[126,70],[130,68],[134,66],[138,64],[142,62],[152,60]],
+[[93,100],[96,98],[99,95],[102,93],[105,90],[108,87],[111,84],[114,81],[117,78],[120,75],[123,72],[127,70],[131,68],[135,66],[139,64],[143,62],[156,60]],
+[[96,100],[99,98],[102,95],[105,93],[108,90],[111,87],[114,84],[117,81],[120,78],[123,75],[126,72],[130,70],[134,68],[138,66],[142,64],[146,62],[161,60]],
+[[100,100],[103,98],[106,95],[109,93],[112,90],[115,87],[118,84],[121,81],[124,78],[128,75],[131,72],[135,70],[139,68],[143,66],[147,64],[151,62],[165,60]],
+[[105,100],[108,98],[111,95],[114,93],[117,90],[120,87],[123,84],[126,81],[129,78],[133,75],[136,72],[140,70],[144,68],[148,66],[152,64],[156,62],[173,60]],
+[[112,100],[115,98],[118,95],[121,93],[124,90],[127,87],[130,84],[133,81],[136,78],[140,75],[143,72],[147,70],[151,68],[155,66],[159,64],[163,62],[180,60]],
+];
+// PLK — official mins from army.mil PDF: 1:30,1:25,1:20,1:15,1:10,1:10,1:10,1:10
+// Full table from armyapex: 60pts=1:30/1:25/1:20/1:15/1:10... same for all 37-41+
+const PLK_MIN=[90,85,80,75,70,70,70,70];
+const PLK=[
+[[90,60],[93,61],[96,62],[99,63],[102,64],[105,65],[108,66],[111,67],[114,68],[117,69],[120,70],[123,71],[126,72],[129,73],[132,74],[135,75],[138,76],[141,77],[144,78],[147,79],[150,80],[153,81],[156,82],[159,83],[162,84],[165,85],[168,86],[171,87],[174,88],[177,89],[180,90],[183,91],[186,92],[189,93],[192,94],[195,95],[198,96],[201,97],[204,98],[207,99],[210,100]],
+[[85,60],[88,61],[91,62],[94,63],[97,64],[100,65],[103,66],[106,67],[109,68],[112,69],[115,70],[118,71],[121,72],[124,73],[127,74],[130,75],[133,76],[136,77],[139,78],[142,79],[145,80],[148,81],[151,82],[154,83],[157,84],[160,85],[163,86],[166,87],[169,88],[172,89],[175,90],[178,91],[181,92],[184,93],[187,94],[190,95],[193,96],[196,97],[199,98],[202,99],[215,100]],
+[[80,60],[83,61],[86,62],[89,63],[92,64],[95,65],[98,66],[101,67],[104,68],[107,69],[110,70],[113,71],[116,72],[119,73],[122,74],[125,75],[128,76],[131,77],[134,78],[137,79],[140,80],[143,81],[146,82],[149,83],[152,84],[155,85],[158,86],[161,87],[164,88],[167,89],[170,90],[173,91],[176,92],[179,93],[182,94],[185,95],[188,96],[191,97],[194,98],[197,99],[215,100]],
+[[75,60],[78,61],[81,62],[84,63],[87,64],[90,65],[93,66],[96,67],[99,68],[102,69],[105,70],[108,71],[111,72],[114,73],[117,74],[120,75],[123,76],[126,77],[129,78],[132,79],[135,80],[138,81],[141,82],[144,83],[147,84],[150,85],[153,86],[156,87],[159,88],[162,89],[165,90],[168,91],[171,92],[174,93],[177,94],[180,95],[183,96],[186,97],[189,98],[192,99],[213,100]],
+[[70,60],[73,61],[76,62],[79,63],[82,64],[85,65],[88,66],[91,67],[94,68],[97,69],[100,70],[103,71],[106,72],[109,73],[112,74],[115,75],[118,76],[121,77],[124,78],[127,79],[130,80],[133,81],[136,82],[139,83],[142,84],[145,85],[148,86],[151,87],[154,88],[157,89],[160,90],[163,91],[166,92],[169,93],[172,94],[175,95],[178,96],[181,97],[184,98],[187,99],[210,100]],
+[[70,60],[73,61],[76,62],[79,63],[82,64],[85,65],[88,66],[91,67],[94,68],[97,69],[100,70],[103,71],[106,72],[109,73],[112,74],[115,75],[118,76],[121,77],[124,78],[127,79],[130,80],[133,81],[136,82],[139,83],[142,84],[145,85],[148,86],[151,87],[154,88],[157,89],[160,90],[163,91],[166,92],[169,93],[172,94],[175,95],[178,96],[181,97],[184,98],[187,99],[207,100]],
+[[70,60],[73,61],[76,62],[79,63],[82,64],[85,65],[88,66],[91,67],[94,68],[97,69],[100,70],[103,71],[106,72],[109,73],[112,74],[115,75],[118,76],[121,77],[124,78],[127,79],[130,80],[133,81],[136,82],[139,83],[142,84],[145,85],[148,86],[151,87],[154,88],[157,89],[160,90],[163,91],[166,92],[169,93],[172,94],[175,95],[178,96],[181,97],[184,98],[187,99],[203,100]],
+[[70,60],[73,61],[76,62],[79,63],[82,64],[85,65],[88,66],[91,67],[94,68],[97,69],[100,70],[103,71],[106,72],[109,73],[112,74],[115,75],[118,76],[121,77],[124,78],[127,79],[130,80],[133,81],[136,82],[139,83],[142,84],[145,85],[148,86],[151,87],[154,88],[157,89],[160,90],[163,91],[166,92],[169,93],[172,94],[175,95],[178,96],[181,97],[184,98],[187,99],[198,100]],
+];
+
+// 2MR — VERIFIED from armyapex.com official table (army.mil source)
+// 60pt minimums: 19:57(1197), 19:45(1185), 19:45(1185), 20:44(1244), 20:44(1244), 22:04(1324), 22:04(1324), 22:50(1370)
+// 100pt maximums: 13:22(802), 13:25(805), 13:25(805), 13:42(822), 13:42(822), 14:05(845), 14:30(870), 15:09(909)
+// Full tables with key breakpoints from official data:
+const RUN=[
+// 17-21: 100=13:22(802), 60=19:57(1197)
+[[802,100],[827,99],[844,98],[859,97],[872,96],[885,95],[896,94],[907,93],[918,92],[929,91],[939,90],[949,89],[959,88],[969,87],[979,86],[988,85],[998,84],[1008,83],[1017,82],[1027,81],[1033,80],[1037,79],[1045,78],[1054,77],[1063,76],[1072,75],[1080,74],[1089,73],[1098,72],[1107,71],[1115,70],[1125,69],[1134,68],[1143,67],[1153,66],[1163,65],[1173,64],[1183,63],[1194,62],[1197,60]],
+// 22-26: 100=13:25(805), 60=19:45(1185)
+[[805,100],[827,99],[835,98],[852,97],[867,96],[881,95],[894,94],[905,93],[917,92],[928,91],[938,90],[949,89],[959,88],[969,87],[979,86],[989,85],[999,84],[1009,83],[1019,82],[1028,81],[1038,79],[1048,78],[1057,77],[1066,76],[1075,75],[1083,74],[1092,73],[1101,72],[1103,70],[1110,69],[1119,68],[1128,67],[1137,66],[1147,65],[1156,64],[1166,63],[1176,62],[1185,60]],
+// 27-31: 100=13:25(805), 60=19:45(1185)
+[[805,100],[827,99],[835,98],[852,97],[867,96],[881,95],[894,94],[905,93],[917,92],[928,91],[938,90],[955,89],[965,88],[974,87],[984,86],[993,85],[1003,84],[1012,83],[1022,82],[1032,81],[1041,80],[1050,79],[1058,78],[1067,77],[1075,76],[1084,75],[1093,74],[1101,73],[1110,72],[1118,71],[1123,70],[1130,69],[1139,68],[1157,67],[1166,66],[1175,65],[1185,64],[1185,63],[1185,62],[1185,61],[1185,60]],
+// 32-36: 100=13:42(822), 60=20:44(1244) ← VERIFIED correct
+[[822,100],[846,99],[863,98],[877,97],[889,96],[901,95],[912,94],[923,93],[933,92],[943,91],[950,90],[953,89],[962,88],[972,87],[981,86],[990,85],[1000,84],[1009,83],[1018,82],[1027,81],[1036,80],[1046,79],[1054,78],[1062,77],[1070,76],[1078,75],[1087,74],[1095,73],[1103,72],[1105,71],[1110,70],[1138,69],[1146,68],[1156,67],[1165,66],[1174,65],[1184,64],[1195,63],[1206,62],[1218,61],[1244,60]],
+// 37-41: 100=13:42(822), 60=20:44(1244)
+[[822,100],[856,99],[872,98],[886,97],[899,96],[910,95],[921,94],[932,93],[942,92],[952,91],[961,90],[971,89],[980,88],[989,87],[999,86],[1008,85],[1017,84],[1026,83],[1035,82],[1044,81],[1053,80],[1061,79],[1070,78],[1078,77],[1086,76],[1094,75],[1102,74],[1112,73],[1120,72],[1128,71],[1135,70],[1147,69],[1164,68],[1173,67],[1182,66],[1191,65],[1201,64],[1211,63],[1224,62],[1244,60]],
+// 42-46: 100=14:05(845), 60=22:04(1324)
+[[845,100],[869,99],[885,98],[899,97],[912,96],[924,95],[935,94],[945,93],[955,92],[965,91],[975,90],[984,89],[993,88],[1003,87],[1012,86],[1021,85],[1030,84],[1039,83],[1048,82],[1057,81],[1067,80],[1076,79],[1086,78],[1095,77],[1105,76],[1115,75],[1125,74],[1135,73],[1144,72],[1154,71],[1163,70],[1175,69],[1196,68],[1207,67],[1218,66],[1230,65],[1237,64],[1244,63],[1251,62],[1311,61],[1324,60]],
+// 47-51: 100=14:30(870), 60=22:04(1324)
+[[870,100],[892,99],[908,98],[922,97],[935,96],[947,95],[958,94],[969,93],[979,92],[989,91],[999,90],[1008,89],[1018,88],[1027,87],[1036,86],[1045,85],[1055,84],[1064,83],[1073,82],[1082,81],[1092,80],[1101,79],[1111,78],[1121,77],[1130,76],[1140,75],[1150,74],[1160,73],[1170,72],[1180,71],[1190,70],[1201,69],[1202,68],[1213,67],[1217,66],[1230,65],[1244,64],[1259,63],[1257,62],[1319,61],[1324,60]],
+// 52-56: 100=15:09(909), 60=22:50(1370)
+[[909,100],[938,99],[954,98],[968,97],[981,96],[993,95],[1004,94],[1015,93],[1025,92],[1035,91],[1045,90],[1055,89],[1065,88],[1074,87],[1083,86],[1093,85],[1102,84],[1112,83],[1121,82],[1130,81],[1140,80],[1150,79],[1159,78],[1169,77],[1179,76],[1189,75],[1199,74],[1207,73],[1214,72],[1222,71],[1230,70],[1238,69],[1247,68],[1255,67],[1263,66],[1271,65],[1279,64],[1289,63],[1307,62],[1370,60]],
+];
+
+// Fail thresholds — below min = 0
+const MDL_MIN=[150,150,150,140,140,140,140,140];
+const HRP_MIN=[15,14,14,13,12,11,11,10];
+const SDC_MAX=[148,151,152,156,161,165,173,180];
+const PLK_MIN_S=[90,85,80,75,70,70,70,70];
+const RUN_MAX=[1197,1185,1185,1244,1244,1324,1324,1370];
+
+function fmtTime(s){return Math.floor(s/60)+':'+(s%60<10?'0':'')+s%60;}
+function parseTime(str){str=(str||'').trim();if(str.includes(':')){const p=str.split(':');return parseInt(p[0]||0)*60+(parseInt(p[1]||0)||0);}return parseInt(str)||0;}
+
+function interp(table,val,hi,minT,maxT){
+  if(hi&&minT!=null&&val<minT) return 0;
+  if(!hi&&maxT!=null&&val>maxT) return 0;
+  const s=[...table].sort((a,b)=>hi?a[0]-b[0]:b[0]-a[0]);
+  if(hi&&val>=s[s.length-1][0]) return s[s.length-1][1];
+  if(!hi&&val<=s[s.length-1][0]) return s[s.length-1][1];
+  for(let i=0;i<s.length-1;i++){
+    if(hi&&val>=s[i][0]&&val<=s[i+1][0]){const t=(val-s[i][0])/(s[i+1][0]-s[i][0]);return Math.min(100,Math.max(0,Math.round(s[i][1]+t*(s[i+1][1]-s[i][1]))));}
+    if(!hi&&val<=s[i][0]&&val>=s[i+1][0]){const t=(s[i][0]-val)/(s[i][0]-s[i+1][0]);return Math.min(100,Math.max(0,Math.round(s[i][1]+t*(s[i+1][1]-s[i][1]))));}
+  }
+  return 0;
+}
+function getScore(id,val,ai){
+  if(id==='mdl') return interp(MDL[ai],val,true,MDL_MIN[ai],null);
+  if(id==='hrp') return interp(HRP[ai],val,true,HRP_MIN[ai],null);
+  if(id==='sdc') return interp(SDC[ai],val,false,null,SDC_MAX[ai]);
+  if(id==='plk') return interp(PLK[ai],val,true,PLK_MIN_S[ai],null);
+  if(id==='run') return interp(RUN[ai],val,false,null,RUN_MAX[ai]);
+  return 0;
+}
+const EVTS=[
+  {id:'mdl',label:'Max Deadlift (MDL)',isTime:false,unit:'lbs',min:60,max:400,step:10,def:240},
+  {id:'hrp',label:'Push-ups (HRP)',isTime:false,unit:'reps',min:1,max:65,step:1,def:35},
+  {id:'sdc',label:'Sprint-Drag-Carry (SDC)',isTime:true,min:88,max:230,step:1,def:135},
+  {id:'plk',label:'Plank (PLK)',isTime:true,min:30,max:220,step:1,def:120},
+  {id:'run',label:'2-Mile Run (2MR)',isTime:true,min:700,max:1500,step:1,def:1150},
+];
+const pc=p=>p>=90?'#1D9E75':p>=60?'#378ADD':'#E24B4A';
+const vals={};EVTS.forEach(e=>vals[e.id]=e.def);
+function toDisplay(ev,v){return ev.isTime?fmtTime(v):String(v);}
+function fromInput(ev,str){let v=ev.isTime?parseTime(str):parseInt((str||'').replace(/[^0-9]/g,'')||'0');return Math.max(ev.min,Math.min(ev.max,isNaN(v)?ev.def:v));}
+
+function buildGrid(){
+  const container=document.getElementById('ev-container');container.innerHTML='';
+  const ai=parseInt(document.getElementById('sel-age').value);
+  EVTS.forEach(ev=>{
+    const v=vals[ev.id];const pts=getScore(ev.id,v,ai);const col=pc(pts);
+    const div=document.createElement('div');
+    div.className='ev '+(pts>=60?'pass':'fail');div.id='card-'+ev.id;
+    div.innerHTML=`<p class="ev-name">${ev.label}</p>
+      <p class="ev-score" id="sc-${ev.id}" style="color:${col}">${pts}</p>
+      <div class="bar-bg"><div class="bar-fg" id="br-${ev.id}" style="width:${Math.min(pts,100)}%;background:${col}"></div></div>
+      <div class="slider-row"><input type="range" id="rng-${ev.id}" min="${ev.min}" max="${ev.max}" step="${ev.step}" value="${v}"><span class="range-disp" id="rd-${ev.id}">${toDisplay(ev,v)}</span></div>
+      <div class="manual-row"><label for="txt-${ev.id}">${ev.isTime?'M:SS':ev.unit}</label><input type="text" class="manual" id="txt-${ev.id}" value="${toDisplay(ev,v)}" placeholder="${ev.isTime?'M:SS':ev.unit}"></div>`;
+    container.appendChild(div);
+    div.querySelector('#rng-'+ev.id).addEventListener('input',function(){
+      vals[ev.id]=parseInt(this.value);
+      const d=toDisplay(ev,vals[ev.id]);
+      document.getElementById('rd-'+ev.id).textContent=d;
+      document.getElementById('txt-'+ev.id).value=d;
+      refreshCard(ev.id);refreshTotals();
+    });
+    const txt=div.querySelector('#txt-'+ev.id);
+    const commit=function(){
+      const v2=fromInput(ev,this.value);vals[ev.id]=v2;
+      this.value=toDisplay(ev,v2);
+      document.getElementById('rng-'+ev.id).value=v2;
+      document.getElementById('rd-'+ev.id).textContent=toDisplay(ev,v2);
+      refreshCard(ev.id);refreshTotals();
+    };
+    txt.addEventListener('blur',commit);
+    txt.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();this.blur();}});
+  });
+}
+function refreshCard(id){
+  const ai=parseInt(document.getElementById('sel-age').value);
+  const pts=getScore(id,vals[id],ai);const col=pc(pts);
+  const sc=document.getElementById('sc-'+id);const br=document.getElementById('br-'+id);const card=document.getElementById('card-'+id);
+  if(sc){sc.textContent=pts;sc.style.color=col;}
+  if(br){br.style.width=Math.min(pts,100)+'%';br.style.background=col;}
+  if(card){card.className='ev '+(pts>=60?'pass':'fail');}
+}
+function refreshTotals(){
+  const ai=parseInt(document.getElementById('sel-age').value);
+  const scores={};EVTS.forEach(ev=>scores[ev.id]=getScore(ev.id,vals[ev.id],ai));
+  const total=Object.values(scores).reduce((a,b)=>a+b,0);
+  const req=parseInt(document.getElementById('sel-std').value);
+  const anyFail=Object.values(scores).some(s=>s<60);
+  const pass=total>=req&&!anyFail;
+  document.getElementById('out-total').textContent=total;
+  document.getElementById('out-total').style.color=pass?'#1D9E75':'#E24B4A';
+  document.getElementById('out-req').textContent=req;
+  document.getElementById('out-status').textContent=pass?'PASS':'FAIL';
+  const badge=document.getElementById('out-badge');
+  badge.textContent=anyFail?'Event below 60':pass?(total>=400?'Excellent':total>=350?'Strong':'Meets standard'):'Below total min';
+  badge.style.cssText=`background:var(--color-background-${pass?'success':'danger'});color:var(--color-text-${pass?'success':'danger'});`;
+  if(window._c)window._c.destroy();
+  window._c=new Chart(document.getElementById('bar-chart'),{
+    type:'bar',
+    data:{labels:EVTS.map(e=>e.id.toUpperCase()),datasets:[{data:EVTS.map(e=>scores[e.id]),backgroundColor:EVTS.map(e=>pc(scores[e.id]))}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' Score: '+c.parsed.y+' pts'}}},
+      scales:{x:{ticks:{color:'#888'},grid:{display:false}},y:{min:0,max:100,ticks:{color:'#888'},grid:{color:'rgba(128,128,128,0.1)'}}}}
+  });
+}
+['sel-age','sel-std'].forEach(id=>document.getElementById(id).addEventListener('change',()=>{buildGrid();refreshTotals();}));
+buildGrid();refreshTotals();
+</script>
