@@ -137,6 +137,29 @@ const AUTOPSY_CSS = `
   from { transform:translateX(100%); }
   to   { transform:translateX(-100%); }
 }
+@keyframes aut-fire-pulse {
+  0%   { transform:scale(1);    opacity:1; }
+  40%  { transform:scale(1.22); opacity:0.9; }
+  70%  { transform:scale(0.95); opacity:1; }
+  100% { transform:scale(1);    opacity:1; }
+}
+@keyframes aut-nuke-text {
+  0%   { letter-spacing:2px; opacity:0; transform:scale(0.85); }
+  60%  { letter-spacing:6px; opacity:1; transform:scale(1.04); }
+  100% { letter-spacing:4px; opacity:1; transform:scale(1); }
+}
+@keyframes aut-nuke-fade {
+  0%   { opacity:1; }
+  100% { opacity:0; }
+}
+@keyframes aut-sc-sending {
+  from { opacity:0; transform:translateY(16px); }
+  to   { opacity:1; transform:none; }
+}
+@keyframes aut-sc-row {
+  from { opacity:0; transform:translateX(-12px); }
+  to   { opacity:1; transform:none; }
+}
 .aut-full-autopsy-btn {
   font-family:'Press Start 2P',monospace; font-size:7px; padding:7px 14px;
   background:rgba(139,0,0,.15); border:1px solid rgba(139,0,0,.5);
@@ -571,8 +594,9 @@ const AutopsyMode = ({ sections, statuses, profile, aliasCheck, onToggle, onQuic
   const [confessResp,  setConfessResp]  = useState("");
   const [gcVoiceOpen,  setGcVoiceOpen]  = useState(false);
   const [gcVoiceLine,  setGcVoiceLine]  = useState("");
-  const [submitOpen,   setSubmitOpen]   = useState(false);
+  const [submitPhase,  setSubmitPhase]  = useState(0); // 0=closed 1=sending 2=returned
   const [submitRoast,  setSubmitRoast]  = useState("");
+  const [nuclearAnim,  setNuclearAnim]  = useState(false);
   const [openSections, setOpenSections] = useState(() => new Set());
   const [localStatuses,setLocalStatuses]= useState({});
   const [localProfile, setLocalProfile] = useState({
@@ -685,13 +709,19 @@ const AutopsyMode = ({ sections, statuses, profile, aliasCheck, onToggle, onQuic
   },[]);
 
   const handleNuclear = useCallback(()=>{
-    setLocalStatuses({});
-    setMorgueLog([
-      {time:_fmtTime(),color:"#f87171",text:"☢ NUCLEAR OPTION DEPLOYED"},
-      {time:_fmtTime(),color:"#f87171",text:"ALL ORGANS RESET TO PENDING. THE SLATE IS CLEAN."},
-      {time:_fmtTime(),color:"#fbbf24",text:"START FROM THE TOP. READ THE REG FIRST THIS TIME."},
-    ]);
-    onReset();
+    // Show full-screen incineration animation, then reset after 2.2s
+    setNuclearAnim(true);
+    setTimeout(()=>{
+      setLocalStatuses({});
+      setMorgueLog([
+        {time:_fmtTime(),color:"#f87171",text:"☢ NUCLEAR OPTION DEPLOYED"},
+        {time:_fmtTime(),color:"#f87171",text:"ALL ORGANS RESET TO PENDING. THE SLATE IS CLEAN."},
+        {time:_fmtTime(),color:"#fbbf24",text:"START FROM THE TOP. READ THE REG FIRST THIS TIME."},
+      ]);
+      onReset();
+      // Fade out the overlay (handled by CSS animation class swap)
+      setTimeout(()=>setNuclearAnim(false), 600);
+    }, 2200);
   },[onReset]);
 
   const openGCVoice = useCallback(()=>{
@@ -699,7 +729,8 @@ const AutopsyMode = ({ sections, statuses, profile, aliasCheck, onToggle, onQuic
   },[]);
 
   const handleSubmit = useCallback(()=>{
-    setSubmitRoast(_rand(SC_SUBMIT_ROASTS)); setSubmitOpen(true);
+    setSubmitRoast(_rand(SC_SUBMIT_ROASTS));
+    setSubmitPhase(1); // Show "SENDING TO SC..." phase
     setMorgueLog(p=>[...p,{time:_fmtTime(),color:"#FFCC01",
       text:"★ PACKET SUBMITTED TO STATION COMMANDER — INITIATING PRAYER PROTOCOL"}].slice(-80));
   },[]);
@@ -1454,46 +1485,127 @@ const AutopsyMode = ({ sections, statuses, profile, aliasCheck, onToggle, onQuic
         </div>
       )}
 
-      {/* ═══ SUBMIT TO SC MODAL ═══ */}
-      {submitOpen && (
-        <div className="aut-modal-overlay" onClick={()=>setSubmitOpen(false)}>
-          <div className="aut-modal-box" onClick={e=>e.stopPropagation()}
-            style={{ background:"#0A080C", borderRadius:24, overflow:"hidden",
-              border:`2px solid ${isReady?"#FFCC01":"#8B0000"}` }}>
-            <div style={{ padding:"24px 28px 20px",
-              background:isReady?"linear-gradient(135deg,rgba(255,204,1,.15),rgba(255,204,1,.05))":"rgba(139,0,0,.2)",
-              borderBottom:`1px solid ${isReady?"rgba(255,204,1,.3)":"#8B0000"}`,
-              textAlign:"center" }}>
-              <div style={{ fontSize:48, marginBottom:8 }}>{isReady?"✈️":"💀"}</div>
-              <div className="aut-pstart" style={{ fontSize:11, color:isReady?"#FFCC01":"#f87171",
-                letterSpacing:2, lineHeight:1.6 }}>
-                {isReady?"PACKET SUBMITTED TO STATION COMMANDER":"PACKET SUBMITTED ANYWAY (BOLD CHOICE)"}
+      {/* ═══ SUBMIT PHASE 1 — SENDING TO SC ═══ */}
+      {submitPhase===1 && (
+        <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,.96)", zIndex:2100,
+          display:"flex", alignItems:"center", justifyContent:"center", padding:24,
+          animation:"overlayIn .15s ease" }}>
+          <div style={{ maxWidth:420, width:"100%", textAlign:"center",
+            animation:"aut-sc-sending .3s cubic-bezier(.2,.6,0,1)" }}>
+            <div style={{ fontSize:72, marginBottom:20, lineHeight:1 }}>📨</div>
+            <div className="aut-pstart" style={{ fontSize:18, color:"#FFCC01",
+              letterSpacing:3, lineHeight:1.5 }}>SENDING TO SC...</div>
+            <div className="aut-vt323" style={{ fontSize:18, color:"#52525b", marginTop:8 }}>
+              GC is reviewing your life choices in real time.
+            </div>
+            {/* Processing checklist rows */}
+            <div style={{ marginTop:32, display:"flex", flexDirection:"column",
+              gap:10, textAlign:"left" }}>
+              {[
+                { label:"Validating documents...",         color:"#4ade80", status:"DONE" },
+                { label:"Judging your decisions...",       color:"#fbbf24", status:"IN PROGRESS" },
+                { label:"Finding reasons to return it...", color:"#f87171",
+                  status:`${flagCount+pendingCount} FOUND SO FAR` },
+              ].map(({label,color,status},i)=>(
+                <div key={i} style={{ display:"flex", justifyContent:"space-between",
+                  alignItems:"center", animation:`aut-sc-row .35s ${i*0.12}s both ease` }}>
+                  <span className="aut-vt323" style={{ fontSize:18, color:"#71717a" }}>{label}</span>
+                  <span className="aut-vt323" style={{ fontSize:18, color, whiteSpace:"nowrap",
+                    marginLeft:12 }}>{status}</span>
+                </div>
+              ))}
+            </div>
+            <button onClick={()=>setSubmitPhase(2)}
+              className="aut-pstart"
+              style={{ marginTop:36, padding:"14px 36px", background:"rgba(139,0,0,.2)",
+                border:"2px solid #8B0000", color:"#f87171", cursor:"pointer",
+                fontSize:7, letterSpacing:1.5, borderRadius:20,
+                transition:"background .15s" }}
+              onMouseEnter={e=>e.currentTarget.style.background="rgba(185,28,28,.3)"}
+              onMouseLeave={e=>e.currentTarget.style.background="rgba(139,0,0,.2)"}>
+              ACCEPT THE INEVITABLE RETURN
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ═══ SUBMIT PHASE 2 — VERDICT ═══ */}
+      {submitPhase===2 && (
+        <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,.96)", zIndex:2100,
+          display:"flex", alignItems:"center", justifyContent:"center", padding:24,
+          animation:"overlayIn .15s ease" }}>
+          <div style={{ maxWidth:480, width:"100%", textAlign:"center",
+            animation:"aut-sc-sending .28s cubic-bezier(.2,.6,0,1)" }}>
+            <div style={{ fontSize:80, marginBottom:16, lineHeight:1 }}>
+              {isReady ? "✈️" : "📬"}
+            </div>
+            <div className="aut-pstart" style={{
+              fontSize:20, letterSpacing:3, lineHeight:1.5,
+              color:isReady?"#FFCC01":"#f87171" }}>
+              {isReady ? "CLEARED FOR MEPS" : "PACKET RETURNED"}
+            </div>
+            <div style={{ margin:"20px 0",
+              background:isReady?"rgba(74,222,128,.06)":"rgba(139,0,0,.15)",
+              border:`1px solid ${isReady?"rgba(74,222,128,.25)":"rgba(139,0,0,.5)"}`,
+              borderRadius:16, padding:"18px 22px" }}>
+              <div className="aut-vt323" style={{ fontSize:20,
+                color:isReady?"#4ade80":"#fca5a5", lineHeight:1.6 }}>
+                "{submitRoast}"
               </div>
             </div>
-            <div style={{ padding:24 }}>
-              <div className="aut-vt323" style={{ fontSize:20, color:"#e5e5e5",
-                lineHeight:1.6, marginBottom:20 }}>{submitRoast}</div>
-              {!isReady && (
-                <div style={{ background:"rgba(139,0,0,.15)", border:"1px solid rgba(139,0,0,.4)",
-                  borderRadius:10, padding:"12px 16px", marginBottom:20 }}>
-                  <div className="aut-pstart" style={{ fontSize:7, color:"#f87171", marginBottom:8 }}>
-                    OUTSTANDING ISSUES:
+            {!isReady && (flagCount>0 || pendingCount>0) && (
+              <div style={{ display:"flex", flexDirection:"column", gap:6, marginBottom:20 }}>
+                {flagCount>0 && (
+                  <div className="aut-vt323" style={{ fontSize:16, color:"#f87171" }}>
+                    <i className="fas fa-skull" style={{ marginRight:8 }}></i>
+                    {flagCount} FLAGGED — GC has already circled them in red
                   </div>
-                  {flagCount>0 && <div className="aut-vt323" style={{ fontSize:16, color:"#fca5a5", marginBottom:4 }}>
-                    <i className="fas fa-skull" style={{ marginRight:8, fontSize:12 }}></i>
-                    {flagCount} FLAGGED ITEM{flagCount>1?"S":""} — GC HAS ALREADY NOTICED
-                  </div>}
-                  {pendingCount>0 && <div className="aut-vt323" style={{ fontSize:16, color:"#fbbf24" }}>
-                    <i className="fas fa-hourglass-half" style={{ marginRight:8, fontSize:12 }}></i>
-                    {pendingCount} PENDING ITEM{pendingCount>1?"S":""} — "PENDING" IS NOT A SUBMISSION STATUS
-                  </div>}
-                </div>
-              )}
-              <button onClick={()=>setSubmitOpen(false)}
-                className={`aut-submit-btn ${isReady?"ready":"blocked"}`} style={{ width:"100%", borderRadius:16 }}>
-                <i className={`fas fa-${isReady?"check":"wrench"}`}></i>
-                {isReady?"ACKNOWLEDGED — CLEARED FOR MEPS":"CLOSE AND FIX IT"}
-              </button>
+                )}
+                {pendingCount>0 && (
+                  <div className="aut-vt323" style={{ fontSize:16, color:"#fbbf24" }}>
+                    <i className="fas fa-hourglass-half" style={{ marginRight:8 }}></i>
+                    {pendingCount} PENDING — "PENDING" IS NOT A SUBMISSION STATUS
+                  </div>
+                )}
+              </div>
+            )}
+            <div className="aut-vt323" style={{ fontSize:15, color:"#3f3f46", marginBottom:20 }}>
+              {isReady?"Station Commander accepted it. GC is on the phone.":"GC has spoken. The suffering continues."}
+            </div>
+            <button onClick={()=>setSubmitPhase(0)}
+              className="aut-pstart"
+              style={{ padding:"14px 0", width:"100%",
+                background:isReady?"rgba(74,222,128,.08)":"rgba(255,255,255,.03)",
+                border:`1px solid ${isReady?"rgba(74,222,128,.3)":"#3f3f46"}`,
+                color:isReady?"#4ade80":"#52525b", cursor:"pointer",
+                fontSize:7, letterSpacing:1.5, borderRadius:16, transition:"background .15s" }}
+              onMouseEnter={e=>e.currentTarget.style.background=isReady?"rgba(74,222,128,.14)":"rgba(255,255,255,.06)"}
+              onMouseLeave={e=>e.currentTarget.style.background=isReady?"rgba(74,222,128,.08)":"rgba(255,255,255,.03)"}>
+              {isReady?"ACKNOWLEDGED — BACK TO AUTOPSY":"CRY AND RESUBMIT LATER"}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ═══ NUCLEAR ANIMATION OVERLAY ═══ */}
+      {nuclearAnim && (
+        <div style={{ position:"fixed", inset:0, background:"#000", zIndex:2200,
+          display:"flex", alignItems:"center", justifyContent:"center" }}>
+          <div style={{ textAlign:"center" }}>
+            <div style={{ fontSize:108, lineHeight:1, marginBottom:28,
+              animation:"aut-fire-pulse 0.75s ease-in-out infinite",
+              display:"inline-block" }}>🔥</div>
+            <div className="aut-pstart" style={{ fontSize:28, color:"#dc2626",
+              letterSpacing:4, lineHeight:1.4,
+              animation:"aut-nuke-text 0.55s cubic-bezier(.2,.6,0,1) both" }}>
+              PACKET INCINERATED
+            </div>
+            <div className="aut-vt323" style={{ fontSize:22, color:"#f87171",
+              marginTop:14, letterSpacing:1 }}>
+              ALL EVIDENCE DESTROYED. STARTING OVER.
+            </div>
+            <div className="aut-vt323" style={{ fontSize:16, color:"#3f3f46", marginTop:8 }}>
+              GC was not informed. This is between you and the fire.
             </div>
           </div>
         </div>
