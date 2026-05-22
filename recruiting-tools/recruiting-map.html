@@ -1495,30 +1495,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
       opacity: 1;
     }
     
-    /* STATION RADAR PULSE */
-    .sp {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      border: 2px solid var(--accent);
-      transform: translate(-50%, -50%);
-      animation: radarPulse 2.5s ease-out infinite;
-      pointer-events: none;
-    }
-    
-    @keyframes radarPulse {
-      0% {
-        transform: translate(-50%, -50%) scale(0.8);
-        opacity: 0.8;
-      }
-      100% {
-        transform: translate(-50%, -50%) scale(2.5);
-        opacity: 0;
-      }
-    }
+
     
     /* MAP GLOW PULSE FOR MARKERS */
     @keyframes markerGlow {
@@ -1794,43 +1771,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
       transform: scale(1.18);
     }
     
-    /* Map radar sweep styles */
-    #map-radar-sweep {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 1000;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.5s ease;
-      background: conic-gradient(from 0deg at 50% 50%, rgba(0, 230, 118, 0.22) 0deg, rgba(0, 230, 118, 0.03) 120deg, transparent 240deg);
-      mix-blend-mode: screen;
-    }
-    #map-radar-sweep.active {
-      opacity: 1;
-      animation: radarScanSweep 4s linear infinite;
-    }
-    #map-radar-sweep.scanning-fast {
-      opacity: 1;
-      animation: radarScanSweep 1.2s linear infinite;
-    }
-    @keyframes radarScanSweep {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-    body.scanning-active .marker-container {
-      animation: scanAcquire 0.4s ease-in-out infinite alternate;
-    }
-    @keyframes scanAcquire {
-      0% {
-        filter: drop-shadow(0 0 2px var(--accent)) brightness(1);
-      }
-      100% {
-        filter: drop-shadow(0 0 15px var(--accent)) brightness(1.6);
-      }
-    }
+
   </style>
 </head>
 <body style="display:flex;flex-direction:column;height:100%;">
@@ -1944,11 +1885,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
       <div class="zn">⚠ Boundaries are U.S. Census ZCTAs — loaded live from Census TIGERweb. Authoritative approximations of USPS service areas.</div>
     </div>
     
-    <!-- SCANNER CONSOLE -->
-    <div class="ss" style="background: rgba(0,0,0,0.15);">
-      <div class="st">TACTICAL SCANNER CONTROL</div>
-      <button class="db imp" id="scan-btn" onclick="triggerRadarScan()" style="color:var(--green); border-color:rgba(0, 230, 118, 0.2); margin-bottom: 0;">⚡ SCAN ACTIVE AO</button>
-    </div>
+
 
     <!-- RUNNING DIAGNOSTIC LOG FEED -->
     <div class="ss" style="flex:1;min-height:140px;display:flex;flex-direction:column;border-bottom:none;overflow:hidden;padding-bottom:10px;background:rgba(0,0,0,0.1);">
@@ -1967,9 +1904,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
     </div>
   </nav>
 
-  <!-- Relative Wrapper to constrain Radar Sweep to the Map element only -->
   <div style="flex: 1; position: relative; display: flex; flex-direction: column; overflow: hidden;">
-    <div id="map-radar-sweep"></div>
     <div id="map" style="flex: 1; height: 100%;"></div>
   </div>
 
@@ -2177,53 +2112,53 @@ const ZIP_PRI={'68503':'hot','68504':'hot','68507':'hot','68521':'hot',
                '68516':'warm','68517':'warm','68462':'warm'};
 
 /* ── LOCATION DATA ── */
-const STATION={id:"stn",name:"USAREC Recruiting Station Lincoln",address:"505 N 27th St, Lincoln, NE 68503",lat:40.8181,lng:-96.6828,rsid:"4D5E"};
+const STATION={id:"stn",name:"USAREC Recruiting Station Lincoln",address:"505 N 27th St, Lincoln, NE 68503",lat:40.8181,lng:-96.6828,rsid:"4D5E",commander:"SFC David Merrick"};
 
 const SCHOOLS=[
   {id:"s1", name:"Lincoln High School",           address:"2229 J St",          city:"Lincoln",zip:"68510",lat:40.8037,lng:-96.6879,enrollment:2150,gradeRange:"9-12",
-   principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
+   principal:"Mark Larson",counselor:"Renee McClure",counselorPhone:"402-436-1301",counselorEmail:"rmcclure@lps.org",recruitingContact:""},
   {id:"s2", name:"Lincoln Northeast High School", address:"2635 N 63rd St",     city:"Lincoln",zip:"68507",lat:40.8407,lng:-96.6289,enrollment:1850,gradeRange:"9-12",
-   principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
+   principal:"Liz Miller",counselor:"Kelsey Dady",counselorPhone:"402-436-1303",counselorEmail:"kdady@lps.org",recruitingContact:""},
   {id:"s3", name:"Lincoln East High School",      address:"1000 S 70th St",     city:"Lincoln",zip:"68510",lat:40.7923,lng:-96.6175,enrollment:2050,gradeRange:"9-12",
-   principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
+   principal:"Casey Fries",counselor:"Guidance Dept",counselorPhone:"402-436-1302",counselorEmail:"lehs-counseling@lps.org",recruitingContact:""},
   {id:"s4", name:"Lincoln Southeast High School", address:"2955 S 70th St",     city:"Lincoln",zip:"68506",lat:40.7742,lng:-96.6200,enrollment:2200,gradeRange:"9-12",
-   principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
+   principal:"Tanner Penrod",counselor:"Kendra Parson",counselorPhone:"402-436-1304",counselorEmail:"kparson@lps.org",recruitingContact:""},
   {id:"s5", name:"Lincoln Southwest High School", address:"7001 S 14th St",     city:"Lincoln",zip:"68512",lat:40.7581,lng:-96.7104,enrollment:2000,gradeRange:"9-12",
-   principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
+   principal:"John Matzen",counselor:"Tim Ernst",counselorPhone:"402-436-1306",counselorEmail:"ternst@lps.org",recruitingContact:""},
   {id:"s6", name:"Lincoln North Star High School",address:"5801 N 33rd St",     city:"Lincoln",zip:"68504",lat:40.8571,lng:-96.6693,enrollment:2100,gradeRange:"9-12",
-   principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
+   principal:"Megan Kroll",counselor:"Guidance Dept",counselorPhone:"402-436-1305",counselorEmail:"lnscounseling@lps.org",recruitingContact:""},
   {id:"s7", name:"Pius X High School",            address:"6000 A St",          city:"Lincoln",zip:"68510",lat:40.7975,lng:-96.6296,enrollment:900, gradeRange:"9-12",
-   principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
+   principal:"Jennifer Tran",counselor:"Jess Psota",counselorPhone:"402-488-0931",counselorEmail:"jess.psota@piusx.net",recruitingContact:""},
   {id:"s8", name:"Lincoln Christian High School", address:"5901 N 14th St",     city:"Lincoln",zip:"68521",lat:40.8652,lng:-96.7103,enrollment:480, gradeRange:"K-12",
-   principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
+   principal:"Brent Ailes",counselor:"Anita Ford",counselorPhone:"402-488-8888",counselorEmail:"aford@lincolnchristian.org",recruitingContact:""},
   {id:"s9", name:"Parkview Christian School",     address:"8701 Yankee Hill Rd",city:"Lincoln",zip:"68526",lat:40.7632,lng:-96.5938,enrollment:320, gradeRange:"K-12",
-   principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
+   principal:"Tracey Hagan",counselor:"Mrs. Niehus",counselorPhone:"402-474-5820",counselorEmail:"office@parkviewchristianschool.org",recruitingContact:""},
   {id:"s10",name:"Waverly High School",           address:"14511 Heywood St",   city:"Waverly",zip:"68462",lat:40.9121,lng:-96.5293,enrollment:600, gradeRange:"9-12",
-   principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
+   principal:"Jordan Cudney",counselor:"Jason Boitnott",counselorPhone:"402-786-2765",counselorEmail:"jason.boitnott@district145.org",recruitingContact:""},
   {id:"s11",name:"Raymond Central High School",   address:"315 W Vine St",      city:"Raymond",zip:"68428",lat:40.9574,lng:-96.7933,enrollment:280, gradeRange:"9-12",
-   principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
+   principal:"Troy Lurz",counselor:"Celia Newman",counselorPhone:"402-785-2685",counselorEmail:"cnewman@rcentral.org",recruitingContact:""},
   {id:"s12",name:"Bennet High School",            address:"230 S 4th St",       city:"Bennet", zip:"68317",lat:40.6825,lng:-96.5135,enrollment:120, gradeRange:"9-12",
-   principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
+   principal:"Heath Johnson",counselor:"Kori Vodicka",counselorPhone:"402-780-5327",counselorEmail:"vodicka.kor@districtor1.net",recruitingContact:""},
   {id:"s13",name:"Crete High School",             address:"1500 Linden Ave",    city:"Crete",  zip:"68333",lat:40.6285,lng:-96.9465,enrollment:350, gradeRange:"9-12",
-   principal:"",counselor:"",counselorPhone:"",counselorEmail:"",recruitingContact:""},
+   principal:"Cory Bohling",counselor:"Dawn Draeger",counselorPhone:"402-826-5811",counselorEmail:"dawn.draeger@creteschools.org",recruitingContact:""},
 ];
 
 const UNIS=[
-  {id:"u1",name:"University of Nebraska–Lincoln",       address:"1400 R St",          city:"Lincoln",zip:"68588",lat:40.8202,lng:-96.7005,type:"Public University",  enrollment:25000,rotcProgram:true},
-  {id:"u2",name:"Nebraska Wesleyan University",         address:"5000 Saint Paul Ave", city:"Lincoln",zip:"68504",lat:40.8538,lng:-96.6526,type:"Private University", enrollment:2100, rotcProgram:false},
-  {id:"u3",name:"Southeast Community College–Lincoln",  address:"8800 O St",           city:"Lincoln",zip:"68520",lat:40.7839,lng:-96.5774,type:"Community College",  enrollment:12000,rotcProgram:false},
-  {id:"u4",name:"Union College",                        address:"3800 S 48th St",       city:"Lincoln",zip:"68506",lat:40.7793,lng:-96.6558,type:"Private College",    enrollment:850,  rotcProgram:false},
+  {id:"u1",name:"University of Nebraska–Lincoln",       address:"1400 R St",          city:"Lincoln",zip:"68588",lat:40.8202,lng:-96.7005,type:"Public University",  enrollment:25000,rotcProgram:true,rotcContact:"Steven McCoy (402-472-5885, smccoy18@nebraska.edu)",recruitingContact:"Admissions: Landon Ellison (402-472-2023, lellison5@unl.edu)"},
+  {id:"u2",name:"Nebraska Wesleyan University",         address:"5000 Saint Paul Ave", city:"Lincoln",zip:"68504",lat:40.8538,lng:-96.6526,type:"Private University", enrollment:2100, rotcProgram:false,rotcContact:"N/A",recruitingContact:"Admissions: Drew Carr (402-465-2143, admissions@nebrwesleyan.edu)"},
+  {id:"u3",name:"Southeast Community College–Lincoln",  address:"8800 O St",           city:"Lincoln",zip:"68520",lat:40.7839,lng:-96.5774,type:"Community College",  enrollment:12000,rotcProgram:false,rotcContact:"N/A",recruitingContact:"Admissions: Kat Kreikemeier (402-437-2600, admissions@southeast.edu)"},
+  {id:"u4",name:"Union College",                        address:"3800 S 48th St",       city:"Lincoln",zip:"68506",lat:40.7793,lng:-96.6558,type:"Private College",    enrollment:850,  rotcProgram:false,rotcContact:"N/A",recruitingContact:"VP Enrollment: Ryan Teller (402-486-2504, enroll@uau.edu)"},
 ];
 
 const POLICE=[
-  {id:"p1",name:"Lincoln Police Department HQ",      address:"575 S 10th St, Lincoln, NE 68508",         zip:"68508",lat:40.8093,lng:-96.7087,jurisdiction:"City of Lincoln",   chief:""},
-  {id:"p2",name:"Lancaster County Sheriff's Office", address:"575 S 10th St, Lincoln, NE 68508",         zip:"68508",lat:40.8086,lng:-96.7095,jurisdiction:"Lancaster County",  chief:""},
-  {id:"p3",name:"UNL Police Department",             address:"1 Memorial Stadium Dr, Lincoln, NE 68588", zip:"68588",lat:40.8248,lng:-96.7054,jurisdiction:"Univ. of Nebraska",chief:""},
+  {id:"p1",name:"Lincoln Police Department HQ",      address:"575 S 10th St, Lincoln, NE 68508",         zip:"68508",lat:40.8093,lng:-96.7087,jurisdiction:"City of Lincoln",   chief:"Chief Michon Morrow",recruitingContact:"LPD Records / (402) 441-7210"},
+  {id:"p2",name:"Lancaster County Sheriff's Office", address:"575 S 10th St, Lincoln, NE 68508",         zip:"68508",lat:40.8086,lng:-96.7095,jurisdiction:"Lancaster County",  chief:"Sheriff Terry Wagner",recruitingContact:"LSO Records / (402) 441-6500"},
+  {id:"p3",name:"UNL Police Department",             address:"1 Memorial Stadium Dr, Lincoln, NE 68588", zip:"68588",lat:40.8248,lng:-96.7054,jurisdiction:"Univ. of Nebraska",chief:"Interim Chief Marty Fehringer",recruitingContact:"UNLPD Command / (402) 472-2222"},
 ];
 
 const COURTS=[
-  {id:"c1",name:"Lancaster County Courthouse",           address:"555 S 10th St, Lincoln, NE 68508",        zip:"68508",lat:40.8098,lng:-96.7082,type:"County Courthouse"},
-  {id:"c2",name:"U.S. District Court–Nebraska (Lincoln)",address:"100 Centennial Mall N, Lincoln, NE 68508",zip:"68508",lat:40.8147,lng:-96.7067,type:"Federal Courthouse"},
+  {id:"c1",name:"Lancaster County Courthouse",           address:"555 S 10th St, Lincoln, NE 68508",        zip:"68508",lat:40.8098,lng:-96.7082,type:"County Courthouse",judge:"Hon. Michael L. Long",recruitingContact:"Simon Rezac (District Court Clerk) / (402) 441-7328"},
+  {id:"c2",name:"U.S. District Court–Nebraska (Lincoln)",address:"100 Centennial Mall N, Lincoln, NE 68508",zip:"68508",lat:40.8147,lng:-96.7067,type:"Federal Courthouse",judge:"Hon. Susan M. Bazis",recruitingContact:"Denise Lucks (Clerk of Court) / (402) 437-1900"},
 ];
 
 const TACOBELL=[
@@ -2447,7 +2382,6 @@ function stnIcon(){
   const star=`<svg viewBox="0 0 16 16" width="18" height="18" fill="#221F20"><polygon points="8,1 9.9,6.2 15.5,6.5 11.2,9.9 12.6,15.4 8,12.3 3.4,15.4 4.8,9.9 0.5,6.5 6.1,6.2"/></svg>`;
   return L.divIcon({className:'custom-div-icon',
     html:`<div style="position:relative;width:44px;height:44px;display:flex;align-items:center;justify-content:center;">
-      <div class="sp"></div>
       <div style="width:34px;height:34px;background:#FFCC01;border:3px solid #080809;display:flex;align-items:center;justify-content:center;position:relative;z-index:1;box-shadow: 0 0 10px rgba(255,204,1,0.6);">${star}</div>
     </div>`,
     iconSize:[44,44],iconAnchor:[22,22],popupAnchor:[0,-26]});
@@ -2496,7 +2430,7 @@ function buildPts(key,cfg,items){
 function buildStation(){
   if(LYR.stn) MAP.removeLayer(LYR.stn);
   const m=L.marker([STATION.lat,STATION.lng],{icon:stnIcon(),zIndexOffset:1000});
-  m.bindPopup(`<div style="min-width:180px;"><div style="font-family:'Chakra Petch',sans-serif;font-size:16px;font-weight:700;color:var(--accent);letter-spacing:1px;margin-bottom:2px;">RSID ${STATION.rsid}</div><div style="font-size:12px;font-weight:600;margin-bottom:6px;color:#FFF;">${STATION.name}</div><div style="font-size:11px;color:var(--txt2);line-height:1.3;">${STATION.address}</div></div>`);
+  m.bindPopup(`<div style="min-width:180px;"><div style="font-family:'Chakra Petch',sans-serif;font-size:16px;font-weight:700;color:var(--accent);letter-spacing:1px;margin-bottom:2px;">RSID ${STATION.rsid}</div><div style="font-size:12px;font-weight:600;margin-bottom:4px;color:#FFF;">${STATION.name}</div><div style="font-size:11px;color:var(--txt2);line-height:1.3;margin-bottom:6px;">${STATION.address}</div><div style="font-size:11px;color:var(--accent);font-weight:600;">Station Commander: ${STATION.commander}</div></div>`);
   LYR.stn=L.layerGroup([m]);
   if(document.getElementById("l-stn")?.checked) LYR.stn.addTo(MAP);
 }
@@ -2908,15 +2842,15 @@ function renderActiveTab(){
           
           <div class="df"><label>ROTC Cadet Command POC</label>
             <div style="display:flex;gap:4px;width:100%;">
-              <input id="f-rotcContact" value="${n.rotcContact||''}" placeholder="ROTC recruiting officer / phone" style="flex:1;" />
-              ${n.rotcContact?`<button onclick="navigator.clipboard.writeText('${n.rotcContact.replace(/'/g,"\\'")}').then(()=>showToast('POC details copied ✓'))" class="sbtn-mini">📋</button>`:''}
+              <input id="f-rotcContact" value="${n.rotcContact||item.rotcContact||''}" placeholder="ROTC recruiting officer / phone" style="flex:1;" />
+              ${(n.rotcContact||item.rotcContact)?`<button onclick="navigator.clipboard.writeText('${(n.rotcContact||item.rotcContact||'').replace(/'/g,"\\'")}').then(()=>showToast('POC details copied ✓'))" class="sbtn-mini">📋</button>`:''}
             </div>
           </div>
           
           <div class="df"><label>Liaison / Campus Contact</label>
             <div style="display:flex;gap:4px;width:100%;">
-              <input id="f-recruitingContact" value="${n.recruitingContact||''}" placeholder="Liaison office / contact" style="flex:1;" />
-              ${n.recruitingContact?`<button onclick="navigator.clipboard.writeText('${n.recruitingContact.replace(/'/g,"\\'")}').then(()=>showToast('Contact copied ✓'))" class="sbtn-mini">📋</button>`:''}
+              <input id="f-recruitingContact" value="${n.recruitingContact||item.recruitingContact||''}" placeholder="Liaison office / contact" style="flex:1;" />
+              ${(n.recruitingContact||item.recruitingContact)?`<button onclick="navigator.clipboard.writeText('${(n.recruitingContact||item.recruitingContact||'').replace(/'/g,"\\'")}').then(()=>showToast('Contact copied ✓'))" class="sbtn-mini">📋</button>`:''}
             </div>
           </div>
         </div>`;
@@ -2927,15 +2861,15 @@ function renderActiveTab(){
           
           <div class="df"><label>Chief of Police / Sheriff</label>
             <div style="display:flex;gap:4px;width:100%;">
-              <input id="f-chief" value="${n.chief||''}" placeholder="Name / command details" style="flex:1;" />
-              ${n.chief?`<button onclick="navigator.clipboard.writeText('${n.chief.replace(/'/g,"\\'")}').then(()=>showToast('Name copied ✓'))" class="sbtn-mini">📋</button>`:''}
+              <input id="f-chief" value="${n.chief||item.chief||''}" placeholder="Name / command details" style="flex:1;" />
+              ${(n.chief||item.chief)?`<button onclick="navigator.clipboard.writeText('${(n.chief||item.chief||'').replace(/'/g,"\\'")}').then(()=>showToast('Name copied ✓'))" class="sbtn-mini">📋</button>`:''}
             </div>
           </div>
           
           <div class="df"><label>Background Check Liaison POC</label>
             <div style="display:flex;gap:4px;width:100%;">
-              <input id="f-recruitingContact" value="${n.recruitingContact||''}" placeholder="Records liaison officer" style="flex:1;" />
-              ${n.recruitingContact?`<button onclick="navigator.clipboard.writeText('${n.recruitingContact.replace(/'/g,"\\'")}').then(()=>showToast('Contact copied ✓'))" class="sbtn-mini">📋</button>`:''}
+              <input id="f-recruitingContact" value="${n.recruitingContact||item.recruitingContact||''}" placeholder="Records liaison officer" style="flex:1;" />
+              ${(n.recruitingContact||item.recruitingContact)?`<button onclick="navigator.clipboard.writeText('${(n.recruitingContact||item.recruitingContact||'').replace(/'/g,"\\'")}').then(()=>showToast('Contact copied ✓'))" class="sbtn-mini">📋</button>`:''}
             </div>
           </div>
         </div>`;
@@ -2946,15 +2880,15 @@ function renderActiveTab(){
           
           <div class="df"><label>Presiding Judge</label>
             <div style="display:flex;gap:4px;width:100%;">
-              <input id="f-judge" value="${n.judge||''}" placeholder="Judge / division" style="flex:1;" />
-              ${n.judge?`<button onclick="navigator.clipboard.writeText('${n.judge.replace(/'/g,"\\'")}').then(()=>showToast('Name copied ✓'))" class="sbtn-mini">📋</button>`:''}
+              <input id="f-judge" value="${n.judge||item.judge||''}" placeholder="Judge / division" style="flex:1;" />
+              ${(n.judge||item.judge)?`<button onclick="navigator.clipboard.writeText('${(n.judge||item.judge||'').replace(/'/g,"\\'")}').then(()=>showToast('Name copied ✓'))" class="sbtn-mini">📋</button>`:''}
             </div>
           </div>
           
           <div class="df"><label>Records / Court Clerk POC</label>
             <div style="display:flex;gap:4px;width:100%;">
-              <input id="f-recruitingContact" value="${n.recruitingContact||''}" placeholder="Court clerk division / background POC" style="flex:1;" />
-              ${n.recruitingContact?`<button onclick="navigator.clipboard.writeText('${n.recruitingContact.replace(/'/g,"\\'")}').then(()=>showToast('Contact copied ✓'))" class="sbtn-mini">📋</button>`:''}
+              <input id="f-recruitingContact" value="${n.recruitingContact||item.recruitingContact||''}" placeholder="Court clerk division / background POC" style="flex:1;" />
+              ${(n.recruitingContact||item.recruitingContact)?`<button onclick="navigator.clipboard.writeText('${(n.recruitingContact||item.recruitingContact||'').replace(/'/g,"\\'")}').then(()=>showToast('Contact copied ✓'))" class="sbtn-mini">📋</button>`:''}
             </div>
           </div>
         </div>`;
@@ -3615,53 +3549,7 @@ function loadFromLocalStorage(){
   }
 }
 
-/* ── RADAR SONAR SWEEP CONTROL ── */
-let scanningTimeout = null;
-function triggerRadarScan() {
-  if (scanningTimeout) return;
-  
-  AudioSys.play('sonar');
-  
-  const sweep = document.getElementById('map-radar-sweep');
-  const btn = document.getElementById('scan-btn');
-  
-  if (sweep) {
-    sweep.style.display = 'block';
-    sweep.className = 'scanning-fast';
-  }
-  document.body.classList.add('scanning-active');
-  
-  if (btn) {
-    btn.disabled = true;
-    btn.textContent = '📡 SCANNING AO...';
-    btn.style.opacity = '0.6';
-  }
-  
-  addLog(`<span style="color:#00E676;">[RADAR] ACTIVE SONAR PING EMITTED AT LAT: ${MAP.getCenter().lat.toFixed(4)} LNG: ${MAP.getCenter().lng.toFixed(4)}</span>`);
-  
-  // Simulated logs
-  setTimeout(() => addLog(`[RADAR] Scanning Sector Northeast: ZCTA 68503 - HOT priority acquired.`), 400);
-  setTimeout(() => addLog(`[RADAR] Resolving Targets: Lincoln Northeast High (1,850 enrollment) pinged.`), 800);
-  setTimeout(() => addLog(`[RADAR] Scanning Sector Southwest: ZCTA 68512 - WARM priority acquired.`), 1200);
-  setTimeout(() => addLog(`[RADAR] Background check databases synced with Lancaster County Courthouse.`), 1600);
-  
-  scanningTimeout = setTimeout(() => {
-    if (sweep) {
-      sweep.className = '';
-      sweep.style.display = 'none';
-    }
-    document.body.classList.remove('scanning-active');
-    if (btn) {
-      btn.disabled = false;
-      btn.textContent = '⚡ SCAN ACTIVE AO';
-      btn.style.opacity = '1';
-    }
-    const readinessVal = document.getElementById('gauge-pct')?.textContent || '0%';
-    addLog(`<span style="color:#00E676;">[RADAR] Scan complete. AO metrics validated. Station mission readiness: ${readinessVal}</span>`);
-    scanningTimeout = null;
-    AudioSys.play('confirm');
-  }, 3000);
-}
+
 
 /* ── BOOT RUNTIME ── */
 (async()=>{
