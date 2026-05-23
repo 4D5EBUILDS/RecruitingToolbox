@@ -683,24 +683,107 @@ const AutopsyMode = ({ sections, statuses, profile, aliasCheck, onToggle, onQuic
     setMorgueLog(p=>[...p,{time:_fmtTime(),color:col,text:msg}].slice(-80));
   },[getStatus, statuses, onToggle, sections]);
 
-  /* ── Full Autopsy — randomly flag some pending items ── */
+  /* ── Full Autopsy — profile-based predictive autopsy complications ── */
   const handleFullAutopsy = useCallback(()=>{
-    const pending = allItems.filter(i=>i.status==="pending");
-    const count   = Math.min(pending.length, Math.floor(Math.random()*4)+2);
-    const shuffled = [...pending].sort(()=>Math.random()-.5).slice(0,count);
-    setLocalStatuses(p=>{
-      const next={...p};
-      shuffled.forEach(i=>{ next[i.id]="flagged"; });
+    const p = { ...profile, ...localProfile };
+    const nextStatuses = {};
+    const logEntries = [];
+    const notesUpdates = {};
+
+    logEntries.push({ time:_fmtTime(), color:"#f87171", text:"☢ INITIATING PROFILE-BASED PACKET AUTOPSY..." });
+    logEntries.push({ time:_fmtTime(), color:"#fbbf24", text:`SUBJECT PROFILE: AGE ${p.ageGender.startsWith("17") ? "17" : "18+"} · CITIZENSHIP ${p.citizenship.toUpperCase()} · PRIOR SERVICE ${p.priorService.toUpperCase()}` });
+
+    let flaggedCount = 0;
+
+    // Helper to flag an item
+    const flag = (itemId, comment, sectionId) => {
+      // Check if the item is currently active for this profile
+      if (!allItems.some(i => i.id === itemId)) return;
+      nextStatuses[itemId] = "flagged";
+      flaggedCount++;
+      const itemDef = allItems.find(i => i.id === itemId);
+      const label = itemDef ? itemDef.label : itemId;
+      const org = (ORGAN_MAP[sectionId] || {}).organ || sectionId.toUpperCase();
+      
+      logEntries.push({
+        time: _fmtTime(),
+        color: "#f87171",
+        text: `[${org}] ${label.toUpperCase()} — ☠ ${comment.toUpperCase()}`
+      });
+
+      if (sectionId) {
+        if (!notesUpdates[sectionId]) notesUpdates[sectionId] = [];
+        notesUpdates[sectionId].push(`[${label}] ${comment}`);
+      }
+    };
+
+    // 1. Minor (17yo) Check
+    if (p.ageGender.startsWith("17")) {
+      flag("dd2807", "Minor consent date mismatch: parent signed UMF 680-3A/DD 2807-2 before applicant. Re-run forms.", "medical");
+      if (p.ageGender.includes("sp")) {
+        flag("dd1966-sp", "Parent signature missing from Section VI of DD 1966.", "identity");
+      } else {
+        flag("dd1966-bp", "Parent signature missing from Section VI of DD 1966.", "identity");
+      }
+    }
+
+    // 2. No Medical Check (B0M0)
+    if (p.programs.includes("nomed")) {
+      flag("stmt-b0m0", "Recruiter submitted DD 2807-2 in USMIRS, which voided the No Medical Required B0M0 processing status. Applicant must now take full physical.", "medical");
+      flag("b0m0-warn", "USMIRS prescreen submitted, permanently voiding B0M0 eligibility (USMEPCOM 40-1 para 2-11c).", "medical");
+    }
+
+    // 3. Moral or Suitability Waiver Check
+    if (p.waivers.includes("moral") || p.waivers.includes("suitability")) {
+      flag("dd369", "DD 369 run under alias was hand-jammed instead of run on a separate form.", "background");
+      if (p.waivers.includes("moral")) {
+        flag("mor-co", "SUBJECT LINE ERROR: Company Commander MFR subject line says 'Assumption of Command' instead of tattoo or moral waiver recommendation (referencing template error in MEMO.docx).", "moral-waiver");
+      } else {
+        flag("suit-co", "SUBJECT LINE ERROR: Company Commander MFR subject line says 'Assumption of Command' instead of tattoo or suitability waiver recommendation (referencing template error in MEMO.docx).", "suit-waiver");
+      }
+    }
+
+    // 4. Single Parent / Reserves Bound Check
+    if (p.dependents === "single-parent") {
+      flag("fcp-cmd", "DA 5305 Family Care Plan signed by readiness NCO instead of the TPU Unit Commander. Commander signature cannot be delegated.", "dependents");
+      flag("dep-da3072", "INCOME ERROR: DA Form 3072-2 lists annual salary instead of monthly salary.", "dep-waiver");
+    }
+
+    // 5. Prior Service Check
+    if (p.priorService !== "none") {
+      if (p.priorService === "usar-ng") {
+        flag("grade-ar", "Missing TPU Acceptance Letter specifying paragraph, line, and position number.", "prior-service");
+      } else {
+        flag("grade-ra", "Missing CG USAREC approval for E-5+ RA grade determination.", "prior-service");
+      }
+      flag("dd214", "Missing DD Form 214-1 (Reserve Component Addendum) for separations after May 17, 2025.", "prior-service");
+    }
+
+    // 6. Fallback if no specific profile-based flags were added
+    if (flaggedCount === 0) {
+      flag("dd369", "COURTHOUSE ERROR: DD 369 addressed to county courthouse instead of Police Department.", "background");
+      flag("uf15", "TIMING CRIME: UF 601-210.15 completed 12 days before MEPS appointment (expires after 7 days).", "enlistment");
+    }
+
+    // Apply statuses to local state
+    setLocalStatuses(prev => ({ ...prev, ...nextStatuses }));
+
+    // Apply custom return notes to section notes
+    setSectionNotes(prev => {
+      const next = { ...prev };
+      Object.entries(notesUpdates).forEach(([secId, msgs]) => {
+        const existing = next[secId] ? next[secId] + "\n\n" : "";
+        next[secId] = existing + msgs.join("\n");
+      });
+      localStorage.setItem("pqc-aut-notes", JSON.stringify(next));
       return next;
     });
-    const msg = _rand(FULL_AUTOPSY_COMMENTS);
-    setMorgueLog(p=>[...p,
-      {time:_fmtTime(),color:"#f87171",text:"☢ INITIATING FULL PACKET AUTOPSY..."},
-      {time:_fmtTime(),color:"#f87171",text:msg},
-      {time:_fmtTime(),color:"#f87171",text:`${count} ADDITIONAL CRITICAL ISSUES DISCOVERED AND FLAGGED.`},
-      {time:_fmtTime(),color:"#fbbf24",text:"RECOMMENDATION: BURN PACKET. START OVER. GC WILL THANK YOU."},
-    ].slice(-80));
-  },[allItems]);
+
+    logEntries.push({ time:_fmtTime(), color:"#f87171", text:`☠ AUTOPSY REPORT: ${flaggedCount} ANOMALIES IDENTIFIED & LOGGED.` });
+    logEntries.push({ time:_fmtTime(), color:"#fbbf24", text:"RECOMMENDATION: REDRAFT OR SECURE APPROVED COMMANDER EXCEPTION TO POLICY." });
+
+    setMorgueLog(prev => [...prev, ...logEntries].slice(-80));
+  }, [profile, localProfile, allItems]);
 
   /* ── Handlers ── */
   const randomizeGCMood = useCallback(()=>{

@@ -4,9 +4,9 @@
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Packet QC — Recruiter Toolbox 4D5E</title>
 <style>
-@font-face{font-family:"GI";src:url("fonts/G.I.-400.ttf");font-weight:400;font-display:swap}
-@font-face{font-family:"GI";src:url("fonts/G.I.-530.ttf");font-weight:500;font-display:swap}
-@font-face{font-family:"GI";src:url("fonts/G.I.-750.ttf");font-weight:700;font-display:swap}
+@font-face{font-family:"GI";src:url("../fonts/G.I.-400.ttf");font-weight:400;font-display:swap}
+@font-face{font-family:"GI";src:url("../fonts/G.I.-530.ttf");font-weight:500;font-display:swap}
+@font-face{font-family:"GI";src:url("../fonts/G.I.-750.ttf");font-weight:700;font-display:swap}
 
 :root,[data-theme="dark"]{
   --bg:#0f0c10;--bg-surface:#1a1719;--bg-card:#201d22;--bg-hover:rgba(255,204,1,.04);
@@ -66,8 +66,8 @@ button,select,textarea,input{font-family:inherit}
 </head>
 <body>
 <div id="root"></div>
-<script src="qc-data.js"></script>
-<script type="text/babel" src="reference-drawer.jsx"></script>
+<script src="../components/qc-data.js"></script>
+<script type="text/babel" src="../components/reference-drawer.jsx"></script>
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
@@ -352,7 +352,7 @@ const PacketOverview = ({ sections, statuses, activeSection, onSectionClick, pro
       {/* Applicant */}
       <div style={{ padding:"16px 16px 14px", borderBottom:"1px solid var(--border)", flexShrink:0 }}>
         <div style={{ display:"flex", alignItems:"center", gap:7, marginBottom:8 }}>
-          <img src="assets/logos/army-star.svg" alt="" style={{ width:16, height:16, opacity:.7 }}/>
+          <img src="../assets/logos/army-star.svg" alt="" style={{ width:16, height:16, opacity:.7 }}/>
           <span style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:8.5,
             textTransform:"uppercase", letterSpacing:".12em", color:"var(--fg)", opacity:.35 }}>4D5E · Lincoln NE</span>
         </div>
@@ -568,7 +568,7 @@ const Header = ({ theme, onThemeToggle, onRefOpen, total, done, flagged }) => {
   return (
     <div style={{ height:50, background:"#0c0a0e", borderBottom:"2px solid #FFCC01",
       display:"flex", alignItems:"center", padding:"0 20px", gap:14, flexShrink:0 }}>
-      <img src="assets/logos/army-logo-reverse.svg" alt="U.S. Army" style={{ height:24, opacity:.9 }}/>
+      <img src="../assets/logos/army-logo-reverse.svg" alt="U.S. Army" style={{ height:24, opacity:.9 }}/>
       <div style={{ width:1, height:22, background:"rgba(255,204,1,.2)" }}/>
       <div>
         <div style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:8, textTransform:"uppercase",
@@ -934,7 +934,7 @@ const App = () => {
         <div style={{ position:"fixed", bottom:80, right:28, zIndex:250, pointerEvents:"none",
           animation:"stickerLand 2.4s ease forwards",
           boxShadow:"0 8px 28px rgba(0,0,0,.45)", transform:"rotate(-7deg)" }}>
-          <img src="assets/stickers/stars-2.gif" alt="" style={{ width:128, height:128, display:"block" }}/>
+          <img src="../assets/stickers/stars-2.gif" alt="" style={{ width:128, height:128, display:"block" }}/>
         </div>
       )}
 

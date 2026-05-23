@@ -23,6 +23,9 @@ const REF_SECTIONS = [
       {type:"timing", label:"ASVAB / PICAT", text:"Valid 2 years from test date. Expired = must retest before submitting any program packet. PICAT requires a MEPS confirmation test before scores are final."},
       {type:"timing", label:"DD 368 (MSO)", text:"Must be approved and not expired before any MEPS processing. Verify the approval date and expiration before scheduling."},
       {type:"timing", label:"MIRS 1.1", text:"Print immediately before packet submission. Data changes after a retest or profile update. An outdated MIRS is a common waiver packet return reason."},
+      {type:"timing", label:"B0M0 PHA (DD 3024)", text:"Valid within 12 months (plus 90-day grace period, up to 15 months maximum). Gaining TPU Commander MFR required for RED MEDPROS/PHA items."},
+      {type:"timing", label:"B0M0 HIV test", text:"MEDPROS IMR must show valid HIV test within exactly 2 years of processing date. No exceptions or ETPs."},
+      {type:"timing", label:"DD Form 214-1", text:"Effective May 17, 2025 (IAW USAREC MSG 26-016), separations from National Guard/Reserve require BOTH a DD 214 and a DD 214-1 addendum. NGB 22 is deprecated."},
     ]
   },
   {
@@ -52,6 +55,14 @@ const REF_SECTIONS = [
       {type:"nogo", text:"Waiver packet initiated for a marijuana possession or use offense when none is required — per AR 601-210 para 4-6 (Mar 2026), marijuana possession and use offenses no longer require a formal waiver."},
       {type:"nogo", text:"GENESIS Alias Tab empty when applicant has a prior legal name (maiden name, name change, adoption)."},
       {type:"nogo", text:"LPR applicant — I-551 alien number, expiration date, or category code missing in GENESIS Citizenship Tab."},
+      {type:"nogo", text:"Minor Consent Dating Mismatch: Parent or Recruiter signed before the applicant (DD 2807-2 or DD 1966). Applicant signature date must be prior to or on the same date as parental and recruiter signatures."},
+      {type:"nogo", text:"Minor Consent Section VI: Parent signature missing from Section II or Section VI of the DD Form 2807-2."},
+      {type:"nogo", text:"B0M0 Voided: Submitting a prescreen (DD Form 2807-2) in USMIRS permanently voids 'No Medical Required' B0M0 eligibility (USMEPCOM 40-1 para 2-11c)."},
+      {type:"nogo", text:"DA Form 5305 Family Care Plan signed by unauthorized representative — must be Gaining TPU Unit Commander; authority cannot be delegated."},
+      {type:"nogo", text:"DA Form 3072-2: Financial disclosure income entered as annual or weekly figure (must be monthly)."},
+      {type:"nogo", text:"DD 369 addressed to Courthouse instead of Police/Sheriff/State law enforcement agency."},
+      {type:"nogo", text:"Prior Service E-5+: Missing Gaining TPU Unit Acceptance Letter specifying grade, MOS, paragraph/line, and position number (AR)."},
+      {type:"nogo", text:"MFR Subject Line Template Error: Memo (e.g. recommendation or self-ID) lists copy-paste subject like 'SUBJECT: Assumption of Command'."},
       {type:"nogo", text:"SF 86 Validation Report flags not reviewed or resolved before SC QC initiation."},
       {type:"nogo", text:"Source documents uploaded but mislabeled, blurry, or cut off — GC cannot verify what they can't read."},
       {type:"nogo", text:"Physical screening disclosures don't match moral screening — applicant disclosed DUI on moral but denied alcohol treatment on DD 2807-2."},
@@ -80,6 +91,8 @@ const REF_SECTIONS = [
       {type:"rule", label:"DD Form 370 references", text:"Three required: employment, school, and personal. College and vo-tech school references must include a transcript. No family members as personal references."},
       {type:"rule", label:"FL 601-210.04", text:"Required when the applicant was confined 24+ hours in any institution (jail, detention, juvenile facility, inpatient program). The institution fills out and signs the second page."},
       {type:"rule", label:"DA Form 3072-2 income", text:"All income entries must be MONTHLY — not annual, not weekly. Do not include anticipated military pay as other income."},
+      {type:"rule", label:"Family Care Plan (FCP)", text:"Sole parents enlisting require the full FCP bundle (DA 5304, 5840, 5841) and DA 5305. DA 5305 must be signed/approved by Gaining TPU Unit Commander specifically (cannot be delegated)."},
+      {type:"rule", label:"PS E-5+ Grade Determination", text:"Regular Army (RA) requires GCR request to USAREC, candidate preferences statement (3 locations), and MOS justification memo. Army Reserve (AR) requires TPU Acceptance Letter with paragraph, line, and position numbers, plus GCR approval if break in service exceeds 48 months."},
       {type:"highlight", text:"Marijuana/use offenses (AR 601-210 para 4-6, Mar 2026): no longer require a formal waiver. Process without a waiver packet. Confirm offense classification (possession/use vs. distribution) with GC before making any assumptions."},
     ]
   },

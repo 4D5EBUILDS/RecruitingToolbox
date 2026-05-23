@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KRAAT'S TOUR</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&amp;display=swap');
+        
+        body {
+            margin: 0;
+            padding: 0;
+            background: #0a080c;
+            color: #e5e5e5;
+            font-family: 'Press Start 2P', system-ui, monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        
+        .crt {
+            position: relative;
+            width: 1024px;
+            height: 576px;
+            border: 12px solid #222;
+            box-shadow: 0 0 40px rgba(0, 255, 0, 0.15),
+                        inset 0 0 120px rgba(0, 0, 0, 0.9);
+            background: #0a080c;
+            overflow: hidden;
+        }
+        
+        canvas {
+            display: block;
+            image-rendering: crisp-edges;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        
+        .title {
+            font-size: 32px;
+            color: #ffcc01;
+            text-shadow: 0 0 15px #ffcc01,
+                        4px 4px 0 #000;
+            margin: 0;
+            letter-spacing: 6px;
+        }
+        
+        .subtitle {
+            font-size: 12px;
+            color: #ff4444;
+            margin: 4px 0 0;
+            text-shadow: 2px 2px 0 #000;
+        }
+        
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 8, 12, 0.92);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 300;
+            text-align: center;
+        }
+        
+        .overlay h2 {
+            font-size: 28px;
+            color: #ffcc01;
+            margin: 0 0 15px;
+            text-shadow: 0 0 10px #ffcc01;
+        }
+        
+        button {
+            background: #111;
+            color: #ffcc01;
+            border: 4px solid #ffcc01;
+            padding: 14px 32px;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.1s;
+        }
+        
+        button:hover {
+            background: #ffcc01;
+            color: #0a080c;
+            box-shadow: 0 0 20px #ffcc01;
+        }
+        
+        .scanlines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                transparent 0px,
+                transparent 3px,
+                rgba(255, 255, 255, 0.025) 3px,
+                rgba(255, 255, 255, 0.025) 6px
+            );
+            pointer-events: none;
+            z-index: 200;
+        }
+        
+        .log {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 920px;
+            background: rgba(0,0,0,0.7);
+            border: 2px solid #ffcc01;
+            padding: 8px 12px;
+            font-size: 11px;
+            color: #aaaaaa;
+            max-height: 80px;
+            overflow-y: auto;
+            z-index: 250;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 class="title">KRAAT'S TOUR</h1>
+        <p class="subtitle">UNFILTERED • NARRATIVE • MANAGEMENT • 2026</p>
+    </div>
+    
+    <div class="crt" id="crt">
+        <canvas id="game" width="1024" height="576"></canvas>
+        <div class="scanlines"></div>
+        
+        <!-- Start Screen -->
+        <div id="start-screen" class="overlay">
+            <h2>KRAAT'S TOUR</h2>
+            <p style="color:#ffcc01; font-size:14px; margin-bottom:15px;">A 5-DAY RECRUITING SHIFT • YOUR CHOICES MATTER</p>
+            <p style="max-width:620px; color:#cccccc; font-size:12px; line-height:1.6; margin-bottom:20px;">
+                You are SSG Lucas Kraat. Handle a small group of future soldiers over five days.<br>
+                Every conversation and decision affects their commitment.<br>
+                Some will ship. Some will become DEP losses.<br>
+                This is what the job actually feels like.
+            </p>
+            <button onclick="startGame()">BEGIN YOUR TOUR</button>
+            <p style="margin-top:25px; font-size:10px; color:#666;">MOUSE — INTERACT &nbsp;|&nbsp; CLICK CHOICES &nbsp;|&nbsp; SPACE — ADVANCE TEXT</p>
+        </div>
+        
+        <!-- End Screen -->
+        <div id="end-screen" class="overlay" style="display:none;">
+            <h2 style="color:#ffcc01;">TOUR COMPLETE</h2>
+            <p id="end-stats" style="font-size:15px; color:#ffcc01; margin:10px 0 15px;"></p>
+            <p id="end-comment" style="max-width:520px; color:#ffaaaa; font-size:13px; line-height:1.5;"></p>
+            <button onclick="restartGame()">ANOTHER TOUR?</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('game');
+        const ctx = canvas.getContext('2d', { alpha: true });
+        
+        const WIDTH = 1024;
+        const HEIGHT = 576;
+        
+        // Game state
+        let gameState = 'start'; // start, management, dialogue, end
+        let currentDay = 1;
+        let maxDays = 5;
+        let timeLeft = 8; // action points per day
+        let score = 0;
+        let shipped = 0;
+        let losses = 0;
+        
+        // Player (KRAAT)
+        let player = {
+            name: "SSG KRAAT",
+            stress: 0,
+            favors: 2
+        };
+        
+        // Recruits with full narrative state
+        let recruits = [
+            {
+                id: "marcus",
+                name: "MARCUS REYES",
+                age: 19,
+                portraitColor: "#ffcc99",
+                commitment: 65,
+                storyFlags: {},
+                currentNeed: "Family pressure - mom doesn't want him to ship",
+                status: "active", // active, shipped, lost
+                expression: "neutral"
+            },
+            {
+                id: "jasmine",
+                name: "JASMINE TORRES",
+                age: 22,
+                portraitColor: "#ddaa88",
+                commitment: 78,
+                storyFlags: {},
+                currentNeed: "Waiver for old medical issue + packet corrections",
+                status: "active",
+                expression: "determined"
+            },
+            {
+                id: "devon",
+                name: "DEVON 'D' WASHINGTON",
+                age: 20,
+                portraitColor: "#bb9977",
+                commitment: 52,
+                storyFlags: {},
+                currentNeed: "Girlfriend is pressuring him to stay home",
+                status: "active",
+                expression: "worried"
+            }
+        ];
+        
+        // Dialogue system
+        let currentDialogue = null;
+        let dialogueIndex = 0;
+        let dialogueText = "";
+        let displayedText = "";
+        let textTimer = 0;
+        let choices = [];
+        let currentRecruit = null;
+        
+        // Management screen state
+        let hoveredRecruit = null;
+        
+        // Particles for polish
+        let particles = [];
+        
+        function addParticle(x, y, color) {
+            particles.push({
+                x, y,
+                vx: (Math.random() - 0.5) * 1.5,
+                vy: (Math.random() - 0.5) * 1.5 - 0.5,
+                life: 18 + Math.random() * 12,
+                color: color || '#ffcc01',
+                size: 2 + Math.random() * 2
+            });
+        }
+        
+        function resetGame() {
+            currentDay = 1;
+            timeLeft = 8;
+            score = 0;
+            shipped = 0;
+            losses = 0;
+            player.stress = 0;
+            player.favors = 2;
+            
+            recruits.forEach(r => {
+                r.commitment = r.id === "marcus" ? 65 : r.id === "jasmine" ? 78 : 52;
+                r.storyFlags = {};
+                r.status = "active";
+                r.expression = r.id === "devon" ? "worried" : (r.id === "jasmine" ? "determined" : "neutral");
+                r.currentNeed = r.id === "marcus" ? "Family pressure - mom doesn't want him to ship" :
+                               r.id === "jasmine" ? "Waiver for old medical issue + packet corrections" :
+                               "Girlfriend is pressuring him to stay home";
+            });
+            
+            particles = [];
+            currentDialogue = null;
+            gameState = 'management';
+        }
+        
+        function startGame() {
+            document.getElementById('start-screen').style.display = 'none';
+            resetGame();
+            gameState = 'management';
+        }
+        
+        function restartGame() {
+            document.getElementById('end-screen').style.display = 'none';
+            resetGame();
+        }
+        
+        // ==================== DIALOGUE SYSTEM ====================
+        const DIALOGUE = {
+            marcus: {
+                start: {
+                    text: "Hey Sergeant... my mom called again last night. She said if I ship she's gonna have a heart attack. I don't know what to do.",
+                    speaker: "MARCUS",
+                    expression: "worried",
+                    choices: [
+                        { text: "Your mom will be fine. The Army takes care of its own.", effect: { commitment: -8, flag: "mom_tough_love" } },
+                        { text: "Let's call her together right now. I'll talk to her.", effect: { commitment: +12, flag: "mom_call_done", cost: 1 } },
+                        { text: "You joined for a reason. Don't let anyone take that from you.", effect: { commitment: +6 } }
+                    ]
+                },
+                mom_call_done: {
+                    text: "She cried on the phone, Sergeant. Said she didn't raise me to be a soldier. But... she said she trusts you. That helped.",
+                    speaker: "MARCUS",
+                    expression: "relieved",
+                    choices: [
+                        { text: "Good. Now focus on getting through MEPS. One step at a time.", effect: { commitment: +10 } },
+                        { text: "Moms worry. It's their job. Yours is to ship.", effect: { commitment: +4 } }
+                    ]
+                },
+                mom_tough_love: {
+                    text: "She hung up on me after that. Said 'fine, go be a hero then.' I feel like shit.",
+                    speaker: "MARCUS",
+                    expression: "sad",
+                    choices: [
+                        { text: "She'll come around. Or she won't. Either way, you have a future here.", effect: { commitment: -5 } },
+                        { text: "Want me to try calling her later? No promises.", effect: { commitment: +8, flag: "mom_call_done", cost: 1 } }
+                    ]
+                }
+            },
+            jasmine: {
+                start: {
+                    text: "Sergeant, the waiver for my old ankle surgery came back. They want more records. And my packet has like three typos from when I first filled it out. I'm stressed.",
+                    speaker: "JASMINE",
+                    expression: "stressed",
+                    choices: [
+                        { text: "I'll handle the waiver. You fix the typos tonight.", effect: { commitment: +5, flag: "waiver_started" } },
+                        { text: "Give me the packet. I'll fix it myself. You focus on not screwing up MEPS.", effect: { commitment: +10, flag: "packet_fixed", cost: 1 } },
+                        { text: "This is part of the process. Every soldier deals with this.", effect: { commitment: -3 } }
+                    ]
+                },
+                waiver_started: {
+                    text: "Thanks for starting the waiver. The medical liaison said it might take a week. I don't have a week.",
+                    speaker: "JASMINE",
+                    expression: "worried",
+                    choices: [
+                        { text: "I'll call the liaison personally. Sometimes rank helps.", effect: { commitment: +15, flag: "waiver_pushed", cost: 1 } },
+                        { text: "Then we wait. Use the time to get your run time down.", effect: { commitment: +4 } }
+                    ]
+                },
+                packet_fixed: {
+                    text: "You actually fixed my packet? It looks... professional. I didn't think anyone cared that much.",
+                    speaker: "JASMINE",
+                    expression: "grateful",
+                    choices: [
+                        { text: "I care when people are worth the effort. You're worth it.", effect: { commitment: +12 } },
+                        { text: "Just don't make me do it again. Get it right the first time next time.", effect: { commitment: +6 } }
+                    ]
+                }
+            },
+            devon: {
+                start: {
+                    text: "Sarge... my girl said if I ship she's done with me. We've been together since high school. I don't know if I can do this to her.",
+                    speaker: "DEVON",
+                    expression: "torn",
+                    choices: [
+                        { text: "If she loved you she'd support you. This is your future.", effect: { commitment: -10, flag: "gf_tough" } },
+                        { text: "Relationships change. The Army doesn't. Choose the one that lasts.", effect: { commitment: +5 } },
+                        { text: "Want me to talk to her? Sometimes hearing it from someone else helps.", effect: { commitment: +14, flag: "gf_talked", cost: 1 } }
+                    ]
+                },
+                gf_talked: {
+                    text: "She still doesn't like it, but she said she won't leave if I ship. That's... something. Thanks, Sergeant.",
+                    speaker: "DEVON",
+                    expression: "hopeful",
+                    choices: [
+                        { text: "Good. Now stop overthinking and get your head in the game.", effect: { commitment: +10 } }
+                    ]
+                },
+                gf_tough: {
+                    text: "She blocked me. Said 'go be a soldier then.' I feel like I just lost everything.",
+                    speaker: "DEVON",
+                    expression: "devastated",
+                    choices: [
+                        { text: "You'll make new friends in Basic. Stronger ones.", effect: { commitment: -8 } },
+                        { text: "That sucks. I'm sorry. But you still have a shot here if you want it.", effect: { commitment: +6 } }
+                    ]
+                }
+            }
+        };
+        
+        function startDialogue(recruitId) {
+            currentRecruit = recruits.find(r => r.id === recruitId);
+            if (!currentRecruit || currentRecruit.status !== "active") return;
+            
+            gameState = 'dialogue';
+            dialogueIndex = 0;
+            
+            const dialogueTree = DIALOGUE[recruitId];
+            let key = 'start';
+            
+            // Check for story flags to jump to correct node
+            if (currentRecruit.storyFlags.mom_call_done && recruitId === 'marcus') key = 'mom_call_done';
+            else if (currentRecruit.storyFlags.mom_tough_love && recruitId === 'marcus') key = 'mom_tough_love';
+            else if (currentRecruit.storyFlags.waiver_started && recruitId === 'jasmine') key = 'waiver_started';
+            else if (currentRecruit.storyFlags.packet_fixed && recruitId === 'jasmine') key = 'packet_fixed';
+            else if (currentRecruit.storyFlags.gf_talked && recruitId === 'devon') key = 'gf_talked';
+            else if (currentRecruit.storyFlags.gf_tough && recruitId === 'devon') key = 'gf_tough';
+            
+            currentDialogue = dialogueTree[key];
+            displayedText = "";
+            textTimer = 0;
+            choices = [];
+        }
+        
+        function advanceDialogue() {
+            if (!currentDialogue) return;
+            
+            if (displayedText.length < currentDialogue.text.length) {
+                displayedText = currentDialogue.text;
+                return;
+            }
+            
+            // Show choices
+            if (choices.length === 0 && currentDialogue.choices) {
+                choices = currentDialogue.choices.map((c, i) => ({
+                    ...c,
+                    y: 380 + i * 38
+                }));
+            }
+        }
+        
+        function selectChoice(choiceIndex) {
+            if (!currentDialogue || !currentDialogue.choices || choiceIndex >= currentDialogue.choices.length) return;
+            
+            const choice = currentDialogue.choices[choiceIndex];
+            const recruit = currentRecruit;
+            
+            // Apply effects
+            if (choice.effect.commitment) {
+                recruit.commitment = Math.max(0, Math.min(100, recruit.commitment + choice.effect.commitment));
+            }
+            if (choice.effect.flag) {
+                recruit.storyFlags[choice.effect.flag] = true;
+            }
+            if (choice.effect.cost && player.favors > 0) {
+                player.favors--;
+            }
+            
+            // Check for win/lose conditions
+            if (recruit.commitment >= 95 && recruit.status === "active") {
+                recruit.status = "shipped";
+                shipped++;
+                score += 350;
+                createBigParticles(recruit);
+            } else if (recruit.commitment <= 15 && recruit.status === "active") {
+                recruit.status = "lost";
+                losses++;
+                score = Math.max(0, score - 150);
+            }
+            
+            // Move to next dialogue or end conversation
+            gameState = 'management';
+            currentDialogue = null;
+            choices = [];
+            displayedText = "";
+            
+            // Small stress increase
+            player.stress = Math.min(100, player.stress + 3);
+            
+            // Check if day should end
+            timeLeft--;
+            if (timeLeft <= 0) {
+                endDay();
+            }
+        }
+        
+        function createBigParticles(recruit) {
+            for (let i = 0; i < 25; i++) {
+                addParticle(
+                    300 + Math.random() * 400,
+                    200 + Math.random() * 150,
+                    '#ffcc01'
+                );
+            }
+        }
+        
+        // ==================== DRAWING ====================
+        function drawBackground() {
+            // Office background
+            ctx.fillStyle = '#1a2520';
+            ctx.fillRect(0, 0, WIDTH, HEIGHT);
+            
+            // Wall texture
+            ctx.fillStyle = '#15201a';
+            for (let x = 0; x < WIDTH; x += 40) {
+                ctx.fillRect(x, 0, 2, HEIGHT);
+            }
+            
+            // American flag
+            ctx.fillStyle = '#b22234';
+            ctx.fillRect(40, 40, 120, 70);
+            ctx.fillStyle = '#3c3b6e';
+            ctx.fillRect(40, 40, 48, 38);
+            
+            // Stars (simplified)
+            ctx.fillStyle = '#ffffff';
+            for (let i = 0; i < 6; i++) {
+                for (let j = 0; j < 4; j++) {
+                    ctx.fillRect(48 + i * 8, 46 + j * 8, 3, 3);
+                }
+            }
+            
+            // Desk
+            ctx.fillStyle = '#3a2a1a';
+            ctx.fillRect(0, 420, WIDTH, 160);
+            ctx.fillStyle = '#2a1a0a';
+            ctx.fillRect(0, 420, WIDTH, 12);
+            
+            // Filing cabinets
+            ctx.fillStyle = '#222';
+            ctx.fillRect(30, 280, 80, 140);
+            ctx.fillStyle = '#333';
+            ctx.fillRect(40, 300, 60, 8);
+            ctx.fillRect(40, 330, 60, 8);
+            ctx.fillRect(40, 360, 60, 8);
+            
+            // Window
+            ctx.fillStyle = '#334433';
+            ctx.fillRect(850, 60, 140, 120);
+            ctx.strokeStyle = '#222';
+            ctx.lineWidth = 4;
+            ctx.strokeRect(850, 60, 140, 120);
+            ctx.strokeRect(920, 60, 1, 120);
+            ctx.strokeRect(850, 120, 140, 1);
+            
+            // Army poster
+            ctx.fillStyle = '#ffcc01';
+            ctx.fillRect(700, 80, 100, 60);
+            ctx.fillStyle = '#0a080c';
+            ctx.font = 'bold 10px "Press Start 2P"';
+            ctx.fillText('BE ALL YOU', 710, 105);
+            ctx.fillText('CAN BE', 720, 120);
+        }
+        
+        function drawRecruitPortrait(recruit, x, y, size = 1) {
+            const s = size;
+            ctx.save();
+            ctx.translate(x, y);
+            
+            // Shadow
+            ctx.fillStyle = 'rgba(0,0,0,0.4)';
+            ctx.beginPath();
+            ctx.ellipse(0, 85 * s, 55 * s, 18 * s, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Body
+            ctx.fillStyle = '#2a3a22';
+            ctx.fillRect(-30 * s, 20 * s, 60 * s, 70 * s);
+            
+            // Vest
+            ctx.fillStyle = '#1a2a12';
+            ctx.fillRect(-26 * s, 24 * s, 52 * s, 55 * s);
+            
+            // Head
+            ctx.fillStyle = recruit.portraitColor || '#ffcc99';
+            ctx.beginPath();
+            ctx.arc(0, -5 * s, 28 * s, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Helmet / hair
+            ctx.fillStyle = '#2a3a22';
+            ctx.beginPath();
+            ctx.arc(0, -12 * s, 26 * s, Math.PI, 0);
+            ctx.fill();
+            
+            // Eyes
+            ctx.fillStyle = '#222';
+            const eyeY = -8 * s;
+            ctx.fillRect(-12 * s, eyeY, 6 * s, 5 * s);
+            ctx.fillRect(6 * s, eyeY, 6 * s, 5 * s);
+            
+            // Expression
+            ctx.strokeStyle = '#222';
+            ctx.lineWidth = 2 * s;
+            if (recruit.expression === "worried" || recruit.expression === "sad") {
+                ctx.beginPath();
+                ctx.arc(0, 5 * s, 10 * s, 0.2, Math.PI - 0.2);
+                ctx.stroke();
+            } else if (recruit.expression === "determined" || recruit.expression === "grateful") {
+                ctx.beginPath();
+                ctx.moveTo(-10 * s, 3 * s);
+                ctx.lineTo(10 * s, 3 * s);
+                ctx.stroke();
+            } else if (recruit.expression === "happy" || recruit.expression === "hopeful") {
+                ctx.beginPath();
+                ctx.arc(0, 2 * s, 10 * s, 0.1, Math.PI - 0.1);
+                ctx.stroke();
+            } else {
+                ctx.beginPath();
+                ctx.moveTo(-10 * s, 3 * s);
+                ctx.lineTo(10 * s, 3 * s);
+                ctx.stroke();
+            }
+            
+            // Name
+            ctx.fillStyle = '#ffcc01';
+            ctx.font = `bold ${11 * s}px "Press Start 2P"`;
+            ctx.textAlign = 'center';
+            ctx.fillText(recruit.name.split(' ')[0], 0, 105 * s);
+            
+            ctx.restore();
+        }
+        
+        function drawManagementScreen() {
+            drawBackground();
+            
+            // Title
+            ctx.fillStyle = '#ffcc01';
+            ctx.font = 'bold 18px "Press Start 2P"';
+            ctx.fillText(`DAY ${currentDay} / ${maxDays}`, 40, 50);
+            
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '12px "Press Start 2P"';
+            ctx.fillText(`ACTIONS LEFT: ${timeLeft}`, 40, 75);
+            ctx.fillText(`FAVORS: ${player.favors}`, 280, 75);
+            
+            // Recruits
+            const startX = 180;
+            const spacing = 280;
+            
+            recruits.forEach((r, i) => {
+                const x = startX + i * spacing;
+                const y = 220;
+                
+                // Card background
+                ctx.fillStyle = r.status === "active" ? '#1a2520' : (r.status === "shipped" ? '#1a3a1a' : '#2a1515');
+                ctx.fillRect(x - 110, y - 130, 220, 280);
+                ctx.strokeStyle = r.status === "active" ? '#ffcc01' : (r.status === "shipped" ? '#00ff00' : '#ff4444');
+                ctx.lineWidth = 3;
+                ctx.strokeRect(x - 110, y - 130, 220, 280);
+                
+                // Portrait
+                drawRecruitPortrait(r, x, y - 20, 1.1);
+                
+                // Status
+                ctx.fillStyle = r.status === "active" ? '#ffcc01' : (r.status === "shipped" ? '#00ff00' : '#ff4444');
+                ctx.font = 'bold 11px "Press Start 2P"';
+                ctx.fillText(r.status.toUpperCase(), x, y + 95);
+                
+                // Commitment bar
+                if (r.status === "active") {
+                    ctx.fillStyle = '#222';
+                    ctx.fillRect(x - 80, y + 110, 160, 12);
+                    const pct = r.commitment / 100;
+                    ctx.fillStyle = pct > 0.7 ? '#00ff00' : (pct > 0.4 ? '#ffaa00' : '#ff4444');
+                    ctx.fillRect(x - 80, y + 110, 160 * pct, 12);
+                    
+                    ctx.fillStyle = '#ffffff';
+                    ctx.font = '9px "Press Start 2P"';
+                    ctx.fillText(`${Math.floor(r.commitment)}%`, x, y + 120);
+                }
+                
+                // Need
+                if (r.status === "active") {
+                    ctx.fillStyle = '#aaaaaa';
+                    ctx.font = '8px "Press Start 2P"';
+                    const needText = r.currentNeed.length > 28 ? r.currentNeed.substring(0, 25) + "..." : r.currentNeed;
+                    ctx.fillText(needText, x, y + 145);
+                }
+                
+                // Hover effect
+                if (hoveredRecruit === r.id && r.status === "active") {
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(x - 115, y - 135, 230, 290);
+                }
+            });
+            
+            // Instructions
+            ctx.fillStyle = '#666666';
+            ctx.font = '10px "Press Start 2P"';
+            ctx.fillText("CLICK A RECRUIT TO TALK  •  MANAGE YOUR TIME WISELY", 40, HEIGHT - 30);
+            
+            // Particles
+            ctx.globalAlpha = 0.8;
+            for (const p of particles) {
+                ctx.fillStyle = p.color;
+                ctx.fillRect(p.x, p.y, p.size, p.size);
+            }
+            ctx.globalAlpha = 1;
+        }
+        
+        function drawDialogueScreen() {
+            if (!currentDialogue || !currentRecruit) return;
+            
+            // Background
+            ctx.fillStyle = '#0f1a15';
+            ctx.fillRect(0, 0, WIDTH, HEIGHT);
+            
+            // Subtle office elements
+            ctx.fillStyle = '#1a2520';
+            ctx.fillRect(0, 0, WIDTH, 180);
+            
+            // Large portrait on left
+            drawRecruitPortrait(currentRecruit, 220, 220, 2.2);
+            
+            // Dialogue box
+            ctx.fillStyle = 'rgba(10, 8, 12, 0.95)';
+            ctx.fillRect(420, 80, 560, 380);
+            ctx.strokeStyle = '#ffcc01';
+            ctx.lineWidth = 4;
+            ctx.strokeRect(420, 80, 560, 380);
+            
+            // Speaker name
+            ctx.fillStyle = '#ffcc01';
+            ctx.font = 'bold 16px "Press Start 2P"';
+            ctx.fillText(currentDialogue.speaker, 440, 115);
+            
+            // Dialogue text with typing effect
+            ctx.fillStyle = '#e5e5e5';
+            ctx.font = '13px "Press Start 2P"';
+            
+            const lines = [];
+            const words = displayedText.split(' ');
+            let currentLine = '';
+            
+            for (const word of words) {
+                const testLine = currentLine + word + ' ';
+                if (ctx.measureText(testLine).width > 510) {
+                    lines.push(currentLine.trim());
+                    currentLine = word + ' ';
+                } else {
+                    currentLine = testLine;
+                }
+            }
+            lines.push(currentLine.trim());
+            
+            lines.forEach((line, i) => {
+                ctx.fillText(line, 440, 155 + i * 24);
+            });
+            
+            // Choices
+            if (choices.length > 0 && displayedText.length >= currentDialogue.text.length) {
+                choices.forEach((choice, i) => {
+                    const y = choice.y;
+                    const isHover = false; // Could add mouse tracking
+                    
+                    ctx.fillStyle = '#1a2520';
+                    ctx.fillRect(440, y, 520, 32);
+                    ctx.strokeStyle = '#ffcc01';
+                    ctx.strokeRect(440, y, 520, 32);
+                    
+                    ctx.fillStyle = '#ffcc01';
+                    ctx.font = '12px "Press Start 2P"';
+                    ctx.fillText(choice.text, 455, y + 22);
+                });
+            }
+            
+            // Advance prompt
+            if (displayedText.length < currentDialogue.text.length) {
+                ctx.fillStyle = '#888888';
+                ctx.font = '10px "Press Start 2P"';
+                ctx.fillText("CLICK TO CONTINUE", 440, 440);
+            }
+        }
+        
+        function draw() {
+            ctx.fillStyle = '#0a080c';
+            ctx.fillRect(0, 0, WIDTH, HEIGHT);
+            
+            if (gameState === 'management') {
+                drawManagementScreen();
+            } else if (gameState === 'dialogue') {
+                drawDialogueScreen();
+            }
+            
+            // Top bar
+            ctx.fillStyle = 'rgba(0,0,0,0.6)';
+            ctx.fillRect(0, 0, WIDTH, 35);
+            ctx.fillStyle = '#ffcc01';
+            ctx.font = 'bold 11px "Press Start 2P"';
+            ctx.fillText(`DAY ${currentDay}  •  STRESS: ${player.stress}%  •  FAVORS: ${player.favors}`, 20, 24);
+            
+            // Particles update
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vy += 0.08;
+                p.life--;
+                if (p.life <= 0) particles.splice(i, 1);
+            }
+        }
+        
+        function update() {
+            if (gameState !== 'management') return;
+            
+            // Simple particle update already in draw
+        }
+        
+        function gameLoop() {
+            update();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+        
+        // Input
+        canvas.addEventListener('mousemove', (e) => {
+            if (gameState !== 'management') return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const mx = e.clientX - rect.left;
+            const my = e.clientY - rect.top;
+            
+            hoveredRecruit = null;
+            
+            const startX = 180;
+            const spacing = 280;
+            
+            recruits.forEach((r, i) => {
+                const x = startX + i * spacing;
+                if (mx > x - 110 && mx < x + 110 && my > 90 && my < 370 && r.status === "active") {
+                    hoveredRecruit = r.id;
+                    canvas.style.cursor = 'pointer';
+                }
+            });
+            
+            if (!hoveredRecruit) canvas.style.cursor = 'default';
+        });
+        
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mx = e.clientX - rect.left;
+            const my = e.clientY - rect.top;
+            
+            if (gameState === 'management') {
+                const startX = 180;
+                const spacing = 280;
+                
+                recruits.forEach((r, i) => {
+                    const x = startX + i * spacing;
+                    if (mx > x - 110 && mx < x + 110 && my > 90 && my < 370 && r.status === "active" && timeLeft > 0) {
+                        startDialogue(r.id);
+                    }
+                });
+            } 
+            else if (gameState === 'dialogue' && currentDialogue) {
+                if (displayedText.length < currentDialogue.text.length) {
+                    displayedText = currentDialogue.text;
+                } else if (choices.length > 0) {
+                    // Check which choice was clicked
+                    choices.forEach((choice, i) => {
+                        if (my > choice.y && my < choice.y + 32 && mx > 440 && mx < 960) {
+                            selectChoice(i);
+                        }
+                    });
+                } else {
+                    advanceDialogue();
+                }
+            }
+        });
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key === ' ' && gameState === 'dialogue') {
+                e.preventDefault();
+                if (displayedText.length < currentDialogue.text.length) {
+                    displayedText = currentDialogue.text;
+                } else {
+                    advanceDialogue();
+                }
+            }
+        });
+        
+        function endDay() {
+            currentDay++;
+            timeLeft = 8;
+            player.stress = Math.min(100, player.stress + 8);
+            
+            // Random event or auto progress
+            if (currentDay > maxDays) {
+                endTour();
+            } else {
+                // Small automatic progress for some recruits
+                recruits.forEach(r => {
+                    if (r.status === "active" && Math.random() < 0.3) {
+                        r.commitment = Math.min(100, r.commitment + 5);
+                    }
+                });
+                
+                // Check for end conditions
+                let activeLeft = recruits.filter(r => r.status === "active").length;
+                if (activeLeft === 0 || currentDay > maxDays) {
+                    endTour();
+                }
+            }
+        }
+        
+        function endTour() {
+            gameState = 'end';
+            
+            const overlay = document.getElementById('end-screen');
+            const stats = document.getElementById('end-stats');
+            const comment = document.getElementById('end-comment');
+            
+            stats.innerHTML = `SHIPPED: ${shipped} &nbsp;&nbsp; LOSSES: ${losses} &nbsp;&nbsp; FINAL SCORE: ${score}`;
+            
+            let grade = "ACCEPTABLE";
+            let msg = "You did the job. Some made it. Some didn't. That's recruiting.";
+            
+            if (losses >= 2) {
+                grade = "ROUGH TOUR";
+                msg = "Too many walked. GC is going to have questions. Good luck with that.";
+            } else if (shipped >= 2 && losses === 0) {
+                grade = "SOLID";
+                msg = "You actually got people shipped without total disaster. Rare.";
+            } else if (shipped >= 2) {
+                grade = "DECENT";
+                msg = "Better than most. Not great. Keep grinding.";
+            }
+            
+            comment.innerHTML = `${grade}<br>${msg}<br><br><span style="font-size:11px; color:#888;">(Some stories continue. Some don't. That's the job.)</span>`;
+            
+            overlay.style.display = 'flex';
+        }
+        
+        // Boot
+        window.onload = function() {
+            document.getElementById('start-screen').style.display = 'flex';
+            gameLoop();
+            
+            // Easter egg
+            console.log('%c[KRAAT\'S TOUR] Right-click or press certain keys for... something. Or don\'t.', 'color:#444');
+        };
+        
+        // Konami for fun
+        let konami = [];
+        document.addEventListener('keydown', function(e) {
+            konami.push(e.key);
+            if (konami.length > 10) konami.shift();
+            if (konami.join(',') === 'ArrowUp,ArrowUp,ArrowDown,ArrowDown,ArrowLeft,ArrowRight,ArrowLeft,ArrowRight,b,a') {
+                konami = [];
+                if (gameState === 'management') {
+                    recruits.forEach(r => {
+                        if (r.status === "active") r.commitment = Math.min(100, r.commitment + 25);
+                    });
+                    alert("CHEAT: +25 commitment to everyone. Use responsibly, Kraat.");
+                }
+            }
+        });
+    </script>
+</body>
+</html>
