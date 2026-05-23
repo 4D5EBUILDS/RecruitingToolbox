@@ -49,6 +49,7 @@ window.PROFILE_OPTIONS = {
   programs: [
     { v:"arms20", l:"ARMS 2.0" }, { v:"fspc3", l:"FSPC / IIIB" }, { v:"fspc-arms", l:"FSPC / ARMS 2.0" },
     { v:"flri", l:"FLRI" }, { v:"ocs", l:"OCS" }, { v:"smp", l:"SMP" }, { v:"woft", l:"WOFT" }, { v:"atp", l:"ATP" },
+    { v:"nomed", l:"No Medical Required (B0M0)" },
   ],
 };
 
@@ -77,6 +78,7 @@ const FLRI   = p => p.programs.includes("flri");
 const ATP    = p => p.programs.includes("atp");
 const ARMS   = p => p.programs.includes("arms20") || p.programs.includes("fspc-arms");
 const FSPC   = p => p.programs.some(x => x.startsWith("fspc"));
+const NOMED  = p => p.programs.includes("nomed");
 const PS     = p => p.priorService !== "none";
 const USAR   = p => p.priorService === "usar-ng";
 const MAR    = p => p.dependents === "married" || p.dependents === "married-kids";
@@ -235,7 +237,7 @@ window.SECTION_DEFS = [
       help:h("Live Scan","AR 601-210 · USMEPCOM 601-23","Valid for 120 days from the date of the scan. If expired, applicant must redo before projecting — no exceptions. SC must enter Live Scan authorization in Contact History in RZ (NOT SC Remarks).","Valid 120 days from scan date.",["Expired Live Scan — cannot project","Authorization in SC Remarks instead of Contact History — GC NO-GO"]) },
     { id:"dd369",     cond:A, init:"flagged",  label:"EBC Release — DD 369 (all 3 jurisdictions returned)",
       sub:"City police, county sheriff, AND state — all returned before projecting; run all aliases separately",
-      help:h("EBC Release — DD 369 Police Records Check","AR 601-210 para 6-3 · UM 21-022","Run DD 369s for all three jurisdictions: city police, county sheriff, and state law enforcement. All three returns must be in hand before projecting. Run a separate DD 369 for every alias — never hand-write an alias onto an existing form (IAW UM 21-022). Must be dated within 6 months AND cover all locations where the applicant lived, worked, attended school, or committed an offense during the last 3 years.","All 3 jurisdictions must be returned before projection.",["One or more jurisdictions not returned — CANNOT PROJECT","Alias not run on a separate DD 369 — RETURN","DD 369 not covering offense location — RETURN"]) },
+      help:h("EBC Release — DD 369 Police Records Check","AR 601-210 para 6-3 · UM 21-022","Run DD 369s for all three jurisdictions: city police, county sheriff, and state law enforcement. All three returns must be in hand before projecting. Run a separate DD 369 for every alias — never hand-write an alias onto an existing form (IAW UM 21-022). Must be dated within 6 months AND cover all locations where the applicant lived, worked, attended school, or committed an offense during the last 3 years.","All 3 jurisdictions must be returned before projection.",["One or more jurisdictions not returned — CANNOT PROJECT","Alias not run on a separate DD 369 — RETURN","DD 369 not covering offense location — RETURN","DD 369 addressed to Courthouse instead of Police/Sheriff/State — RETURN","Missing station name/address at bottom right block — RETURN"]) },
     { id:"sex-off",   cond:A, init:"pending",  label:"Sex Offender Registry Check",
       sub:"National registry check — document results in GENESIS remarks",
       help:h("Sex Offender Registry Check","AR 601-210","Check the National Sex Offender Public Website (NSOPW.gov) and any applicable state registry. Document the results (clear or hit) in GENESIS remarks before SC QC initiation. A hit requires immediate consultation with GC — do not project.",null,["Registry hit — stop and contact GC immediately before any further action"]) },
@@ -246,24 +248,44 @@ window.SECTION_DEFS = [
 
   // ── 5. MEDICAL & PHYSICAL ────────────────────────────────────────────────────
   { id:"medical", title:"Medical & Physical", short:"Medical", reg:"USMEPCOM 40-1", cond:A, items:[
-    { id:"umf680",    cond:A, init:"complete", label:"UMF 680-3A — Applicant Medical Prescreening Form",
+    { id:"umf680",    cond:p => !NOMED(p), init:"complete", label:"UMF 680-3A — Applicant Medical Prescreening Form",
       sub:"All sections filled — signature witnessed by recruiter in person",
       help:h("UMF 680-3A","USMEPCOM 40-1","Complete all sections. Applicant must sign in front of the recruiter — do not accept pre-signed forms. Dates must be consistent with DD 2807-2 and GENESIS. Use DD MON YYYY format.",null,["Pre-signed forms — NOT ACCEPTABLE; signature must be witnessed","Date inconsistency with DD 2807-2 or GENESIS — GC return"]) },
-    { id:"umf680-2",  cond:A, init:"pending",  label:"UMF 680-3A-2 — Extended Prescreening Form",
+    { id:"umf680-2",  cond:p => !NOMED(p), init:"pending",  label:"UMF 680-3A-2 — Extended Prescreening Form",
       sub:"Required for all applicants — companion form to 680-3A",
       help:h("UMF 680-3A-2","USMEPCOM 40-1","Companion form to the 680-3A. Required for all applicants. Complete all applicable sections. Attach braces letter if applicant currently has orthodontic braces.",null,["Missing from packet — required for all applicants"]) },
-    { id:"umf408",    cond:A, init:"pending",  label:"UMF 40-8-1-E — Applicant Processing Form",
+    { id:"umf408",    cond:p => !NOMED(p), init:"pending",  label:"UMF 40-8-1-E — Applicant Processing Form",
       sub:"MEPS processing form — attach braces letter if applicant has braces",
       help:h("UMF 40-8-1-E","USMEPCOM 40-1","Required MEPS processing form. If the applicant currently has orthodontic braces, a braces letter from the orthodontist must be attached. Ensure all fields are complete.",null,["Missing from packet — required for all applicants","Braces present but no braces letter attached — MEPS return"]) },
-    { id:"dd2807",    cond:A, init:"complete", label:"DD 2807-2 — Medical Prescreen",
+    { id:"dd2807",    cond:p => !NOMED(p), init:"complete", label:"DD 2807-2 — Medical Prescreen",
       sub:"All blocks answered — write N/A if not applicable",
-      help:h("DD 2807-2","USMEPCOM 40-1","All blocks must be answered. Write 'N/A' for non-applicable blocks. Dates must be consistent with UMF 680-3A and GENESIS. Disclosures must be consistent with moral screening — inconsistency is a GC return.",null,["Blank blocks — write N/A","Disclosure inconsistency between DD 2807-2 and moral screening — GC return"]) },
-    { id:"dd2005",    cond:A, init:"pending",  label:"DD 2005 — Privacy Act Statement",
+      help:h("DD 2807-2","USMEPCOM 40-1","All blocks must be answered. Write 'N/A' for non-applicable blocks. Dates must be consistent with UMF 680-3A and GENESIS. Disclosures must be consistent with moral screening — inconsistency is a GC return. Note: For minors, parental signature must sign both Section II and VI, and dates must be equal to or after the applicant's signature date.",null,["Blank blocks — write N/A","Disclosure inconsistency between DD 2807-2 and moral screening — GC return","Minor consent: parent signed before applicant — RETURN","Minor consent: parent signature missing in Section II or VI — RETURN"]) },
+    { id:"dd2005",    cond:p => !NOMED(p), init:"pending",  label:"DD 2005 — Privacy Act Statement",
       sub:"Health care privacy notice — current signature required",
       help:h("DD 2005 — Privacy Act Statement for Health Care Records","USMEPCOM 40-1","Required for all MEPS applicants. The applicant must sign this acknowledging the Privacy Act statement for health care records. Current signature required — do not use a previously signed copy.",null,["Pre-signed or undated — NOT ACCEPTABLE"]) },
-    { id:"dates",     cond:A, init:"complete", label:"Dates consistent across all medical forms",
+    { id:"dates",     cond:p => !NOMED(p), init:"complete", label:"Dates consistent across all medical forms",
       sub:"DD 2807-2, UMF 680-3A, UMF 680-3A-2, and GENESIS must agree",
       help:h("Date Consistency Check","AR 601-210","Cross-check all dates on DD 2807-2, UMF 680-3A, UMF 680-3A-2, and GENESIS. Even a one-day discrepancy is a GC return. Do this before initiating SC QC every time.",null,["Any date inconsistency across forms — GC return"]) },
+
+    // B0M0 No-Medical Required Items
+    { id:"pha-b0m0", cond:NOMED, init:"pending", label:"Periodic Health Assessment (PHA) / DD 3024",
+      sub:"Current within 12 months (or 90-day grace) & Deployable",
+      help:h("Periodic Health Assessment (B0M0)","USAREC MSG 26-046 · DOWI 6025.19","The SM's current PHA (DD Form 3024) must show they are 'Fully' or 'Partially' Medically Ready and 'Deployable'. Valid for 12 months, plus a 90-day grace period ('Amber').",null,["Overdue PHA (>15 months) — RED / NOT ELIGIBLE","Status 'Not Medically Ready' without Commander MFR — RETURN"]) },
+    { id:"imr-b0m0", cond:NOMED, init:"pending", label:"MEDPROS IMR with current HIV test",
+      sub:"Valid within 2 years — no exceptions or ETPs",
+      help:h("MEDPROS IMR & HIV test","USAREC MSG 26-046","IMR must show current HIV results. Validity is exactly 2 years. No exceptions authorized.",null,["HIV test older than 2 years — CANNOT PROJECT"]) },
+    { id:"mfr-b0m0", cond:NOMED, init:"pending", label:"Unit Commander MFR (for RED/non-deployable items)",
+      sub:"Required if any IMR item is RED or PHA is non-deployable",
+      help:h("Unit Commander MFR","USAREC MSG 26-046","Required if the PHA lists the SM as 'Not Medically Ready' or 'Non-Deployable', or if any MEDPROS category is RED. Gaining TPU Commander must sign addressing the specific issues and stating they are deployable.",null,["RED categories on IMR without MFR — RETURN"]) },
+    { id:"stmt-b0m0", cond:NOMED, init:"pending", label:"DD 1966 Remarks — Verbal health statement input",
+      sub:"GC must ask the verbal declaration statement and enter in RZ Remarks",
+      help:h("DD 1966 Remarks Input","USAREC MSG 26-046","GC must ask: 'I underwent a Periodic Health Assessment (PHA) on (DATE) and to the best of my knowledge there has been no significant change in my medical readiness since the date of that PHA.' Enter verbatim in Remarks Review section of DD 1966.",null,["Missing verbal statement in DD 1966 remarks — RETURN"]) },
+    { id:"weight-b0m0", cond:NOMED, init:"pending", label:"Height & Weight Verification (DA 5500/5501 if over)",
+      sub:"SC confirms via PHA/IMR. If over, Commissioned Officer signs DA 5500/5501",
+      help:h("Height & Weight (B0M0)","USAREC MSG 26-046","SC confirms height and weight via PHA. If over weight-for-height screening table, a DA Form 5500/5501 body fat measurement signed by a Commissioned Officer is required.",null,["Overweight without DA 5500/5501 signed by Commissioned Officer — RETURN"]) },
+    { id:"b0m0-warn", cond:NOMED, init:"na", label:"⚠️ CRITICAL: DO NOT submit USMIRS prescreen (DD 2807-2)",
+      sub:"Submitting a prescreen starts MEPS processing and permanently voids B0M0",
+      help:h("USMIRS Prescreen Restriction","USMEPCOM 40-1 para 2-11c","Once a prescreen is submitted, MEPS medical processing starts and cannot be discontinued. This permanently voids 'No Medical Required' B0M0 eligibility. No ETP is authorized. Do NOT submit a prescreen in USMIRS.",null,["Prescreen submitted in USMIRS — B0M0 status VOIDED"]) },
   ]},
 
   // ── 6. ENLISTMENT ────────────────────────────────────────────────────────────
@@ -302,13 +324,19 @@ window.SECTION_DEFS = [
     { id:"child-sup", cond:KIDS, init:"pending", label:"Child Support Order",
       sub:"If applicable — N/A if no court-ordered support",
       help:h("Child Support Order","AR 608-99","Required if there is a court-ordered child support obligation. Mark N/A if no court order exists.",null,null) },
+    { id:"fcp-docs", cond:p => p.dependents === "single-parent", init:"pending", label:"Family Care Plan Bundle (Sole Parent)",
+      sub:"DA Form 5304, 5840, and 5841 completed and signed",
+      help:h("Family Care Plan Bundle","AR 601-210 Ch.5 · AR 600-20","Sole parent enlisting requires a Family Care Plan. Bundle consists of DA 5304 (Counseling), DA 5840 (Escort Agreement), and DA 5841 (Power of Attorney).",null,["Missing DA 5304, 5840, or 5841 — RETURN"]) },
+    { id:"fcp-cmd", cond:p => p.dependents === "single-parent", init:"pending", label:"DA Form 5305 — TPU Commander Approved (Reserve only)",
+      sub:"Family Care Plan signed by gaining Unit Commander — cannot be delegated",
+      help:h("DA Form 5305 Commander Approval","AR 600-20 para 5-5","For Reservists enlisting as sole parents, the DA Form 5305 must be signed and approved by the Commander of the gaining TPU unit. IAW AR 600-20, this authority cannot be delegated to the readiness NCO or recruiter.",null,["DA 5305 signed by anyone other than Gaining TPU Commander — RETURN"]) },
   ]},
 
   // ── 8. PRIOR SERVICE (conditional) ──────────────────────────────────────────
   { id:"prior-service", title:"Prior Service Documents", short:"Prior Svc", reg:"AR 601-210 · Ch.3", cond:PS, items:[
-    { id:"dd214",     cond:A,    init:"pending", label:"DD 214 (or NGB 22 for NG)",
-      sub:"Verify RE code, discharge character, and dates of service",
-      help:h("DD 214 / NGB 22","AR 601-210 Ch.3","DD 214 for active duty separations, NGB 22 for National Guard. Verify: RE code (must be eligible), character of discharge (Honorable or General), and dates of service match GENESIS. An RE code requiring waiver cannot be waived by the recruiter — contact GC.",null,["RE code requiring waiver — contact GC before proceeding","Character of discharge other than Honorable/General — contact GC"]) },
+    { id:"dd214",     cond:A,    init:"pending", label:"DD 214 & DD 214-1 (Reserve Discharges)",
+      sub:"Verify RE code, dates, and DD Form 214-1 (if Reserve/Guard separation post-May 17, 2025)",
+      help:h("DD 214 / DD 214-1","AR 601-210 Ch.3 · USAREC MSG 26-016","DD 214 for separations. Note: Effective May 17, 2025, applicants separating from any Reserve Component (Reserve or National Guard) receive BOTH a DD Form 214 and a DD Form 214-1 (Reserve Component Addendum). NGB 22 is deprecated. Verify both are uploaded together for discharges after this date.",null,["Missing DD 214-1 for Reserve/NG separation after 17 May 2025 — RETURN"]) },
     { id:"redd",      cond:A,    init:"pending", label:"REDDPORT — signed by applicant",
       help:h("REDDPORT","AR 601-210","Required for all prior service applicants. Applicant must sign acknowledging their prior service record and obligations.",null,null) },
     { id:"promo-ord", cond:A,    init:"pending", label:"Promotion Orders",
@@ -323,6 +351,12 @@ window.SECTION_DEFS = [
     { id:"dd368-irr", cond:p => p.priorService === "army", init:"pending", label:"DD 368 — IRR Release",
       sub:"If IRR/Reserves obligation remaining — N/A if no remaining obligation",
       help:h("DD 368 — IRR Release","AR 601-210","Required if the applicant has a remaining obligation in the Individual Ready Reserve. Must be approved before MEPS processing. N/A if no remaining obligation.",null,["Unapproved or expired — cannot process at MEPS"]) },
+    { id:"grade-ra", cond:p => p.priorService !== "none" && p.priorService !== "usar-ng", init:"pending", label:"RA Grade Determination (E-5+ only)",
+      sub:"Required for RA enlistment in grade E-5 or above — print statement preferences",
+      help:h("RA Grade Determination","USAREC RA Grade Worksheet","All Regular Army prior service applicants E-5+ require a GCR request to CG USAREC, including a signed statement listing 3 duty preferences, and an MOS change justification if applicable.",null,["Missing CG USAREC approval for E-5+ RA — CANNOT PROJECT"]) },
+    { id:"grade-ar", cond:p => p.priorService === "usar-ng", init:"pending", label:"AR Grade Determination (E-5+ only)",
+      sub:"For Reserves E-5+ with 48+ mo break — TPU acceptance letter (para/line/pos)",
+      help:h("AR Grade Determination","USAREC AR Grade Worksheet","For Reservists E-5+ with 48+ months break of service. Requires TPU Unit Acceptance Letter specifying accepted grade, MOS, paragraph/line, position number, and skills verification; and applicant statement requesting grade maintenance.",null,["Missing TPU Acceptance Letter — RETURN","GCR approval missing for break of service over 48 months — RETURN"]) },
   ]},
 
   // ── 9. MSO RELEASE (conditional) ────────────────────────────────────────────
@@ -348,7 +382,7 @@ window.SECTION_DEFS = [
       help:h("Court Dockets","AR 601-210 Ch.4","For every offense above traffic: (1) charging document (information docket), (2) court finding and sentencing, (3) final disposition. All three components required per offense. If the court will not furnish dockets, use UF 601-210.02.",null,["Missing any of the three docket components for an offense — RETURN"]) },
     { id:"dd370",      cond:A, init:"pending", label:"DD Form 370 — three character references",
       sub:"Employment, school, and personal — college references include transcript",
-      help:h("DD Form 370","AR 601-210 Ch.4","Three required references: employment, school, and personal. College/vo-tech references must include a transcript. Dates must match RZ entries exactly. No family members as personal references. All three must be returned and in hand before projecting.",null,["College reference without transcript — RETURN","Family member as personal reference — RETURN","Fewer than three references — incomplete"]) },
+      help:h("DD Form 370","AR 601-210 Ch.4","Three required references: employment, school, and personal. College/vo-tech references must include a transcript. Dates must match RZ entries exactly. No family members as personal references. All three must be returned and in hand before projecting.",null,["Dates of attendance/employment mismatch vs. RZ — RETURN","College reference without transcript — RETURN","Family member as personal reference — RETURN","Fewer than three references — incomplete"]) },
     { id:"uf601-02",   cond:A, init:"pending", label:"UF 601-210.02",
       sub:"Use when court will not furnish dockets, or for self-admittal offenses",
       help:h("UF 601-210.02","AR 601-210 Ch.4","Required when the court will not furnish dockets for an offense. Also required for self-admittal offenses (no arrest record). Mark N/A on individual items where official records were obtained.",null,null) },
@@ -357,7 +391,7 @@ window.SECTION_DEFS = [
       help:h("FL 601-210.04 — Request for Information","AR 601-210 Ch.4","Required if the applicant was confined 24+ hours in any institution (jail, detention center, juvenile facility, or inpatient program). The institution fills out and signs the second page. Mark N/A if applicant was never confined 24+ hours.",null,null) },
     { id:"mor-co",     cond:A, init:"pending", label:"CO Commander Interview MFR",
       sub:"Commanding Officer must interview applicant and document findings",
-      help:h("CO Commander Interview MFR","AR 601-210 Ch.4","The Company Commander must interview the applicant and produce a Memorandum for Record documenting the interview, findings, and recommendation. Must be on official letterhead, signed, and dated.",null,["Undated or unsigned MFR — RETURN"]) },
+      help:h("CO Commander Interview MFR","AR 601-210 Ch.4","The Company Commander must interview the applicant and produce a Memorandum for Record documenting the interview, findings, and recommendation. Must be on official letterhead, signed, and dated. Check that the subject line is NOT a default template copy-paste error (e.g. 'SUBJECT: Assumption of Command' for a tattoo waiver).",null,["Undated or unsigned MFR — RETURN","Template error: subject line says 'Assumption of Command' instead of 'Self-ID' or recommendation — RETURN"]) },
     { id:"mor-bn",     cond:A, init:"pending", label:"Battalion Commander Recommendation Memo",
       sub:"BN Commander memo recommending approval or disapproval of waiver",
       help:h("BN Commander Memo","AR 601-210 Ch.4","Battalion Commander endorsement memo recommending approval or disapproval of the waiver request. Must be on official letterhead, signed, and dated. Must reference the specific offense(s) being waived.",null,null) },
