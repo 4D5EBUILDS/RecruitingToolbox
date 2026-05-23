@@ -992,5 +992,356 @@ const DocumentVault = ({ profile }) => {
   );
 };
 
+/* =========================================================================
+   4. REFERENCE AUDITOR (DD Form 370 Verification Tool)
+   ========================================================================= */
+const ReferenceAuditor = ({ profile }) => {
+  const [refType, setRefType] = useState("personal");
+  const [inputs, setInputs] = useState({
+    name: "Martinez, Julia A.",
+    relationship: "Sister",
+    yearsKnown: "5",
+    schoolName: "Grand Island Community College",
+    schoolLevel: "college",
+    schoolStartDate: "2023-09-01",
+    schoolEndDate: "2025-05-30",
+    hasTranscript: "no",
+    hasDiscipline: "no",
+    employerName: "Target Corp",
+    jobTitle: "Sales Associate",
+    empStartDate: "2025-06-01",
+    empEndDate: "2026-04-30",
+    separationReason: "resigned",
+    recommendation: "recommended",
+    formSigned: true,
+    formDated: true,
+    noWiteout: true
+  });
+
+  const audit = useMemo(() => {
+    const errors = [];
+    const warnings = [];
+    
+    // 1. General form completion checks
+    if (!inputs.formSigned) {
+      errors.push("Signature Missing: Referee signature block is empty. Forms must be physically or digitally signed.");
+    }
+    if (!inputs.formDated) {
+      errors.push("Date Missing: Form lacks signature date. Back-dating or missing dates trigger an automatic GC kickback.");
+    }
+    if (!inputs.noWiteout) {
+      errors.push("unauthorized Edits: Document contains Wite-Out or uninitialed correction marks. Draw a single line and initial instead.");
+    }
+
+    // 2. Type-specific checks
+    if (refType === "personal") {
+      const appLastName = profile.name ? profile.name.split(",")[0].trim().toUpperCase() : "MARTINEZ";
+      const refNameClean = inputs.name.trim().toUpperCase();
+      
+      // Relative Name Check
+      if (refNameClean.includes(appLastName)) {
+        errors.push(`Relative Conflict: Reference last name matches applicant's last name "${appLastName}". Family members are strictly prohibited as personal references.`);
+      }
+      
+      // Relationship keyword check
+      const relClean = inputs.relationship.trim().toLowerCase();
+      const relativeKeywords = ["sister", "brother", "mother", "father", "parent", "sibling", "uncle", "aunt", "cousin", "wife", "husband", "spouse", "relative"];
+      if (relativeKeywords.some(kw => relClean.includes(kw))) {
+        errors.push(`Relative Conflict: Relationship is declared as "${inputs.relationship}". Personal references cannot be relatives.`);
+      }
+
+      // Years known check
+      const years = parseInt(inputs.yearsKnown, 10);
+      if (isNaN(years) || years < 3) {
+        warnings.push(`Short Coverage: Reference has only known applicant for ${inputs.yearsKnown} years. Standard moral/suitability references require a minimum of 3 years.`);
+      }
+    } else if (refType === "school") {
+      if (inputs.schoolLevel === "college" && inputs.hasTranscript === "no") {
+        errors.push("Missing Transcript: College/Vo-Tech references require an official transcript to be attached to the packet.");
+      }
+      if (inputs.hasDiscipline === "yes") {
+        warnings.push("Discipline Disclosure: Referee noted school disciplinary history. This requires a Station Commander clarification memo.");
+      }
+      if (inputs.schoolStartDate && inputs.schoolEndDate && inputs.schoolStartDate >= inputs.schoolEndDate) {
+        errors.push("Timeline Error: School start date cannot be after or equal to the end date.");
+      }
+    } else if (refType === "employment") {
+      if (inputs.separationReason === "terminated") {
+        warnings.push("Adverse Separation: Applicant was terminated. Recruiter must address this in the moral statement / SC interview MFR.");
+      }
+      if (inputs.recommendation === "not-recommended") {
+        errors.push("Negative Endorsement: Referee selected 'Not Recommended' for military service. GCs will automatically reject this reference.");
+      }
+      if (inputs.empStartDate && inputs.empEndDate && inputs.empStartDate >= inputs.empEndDate) {
+        errors.push("Timeline Error: Employment start date cannot be after or equal to the end date.");
+      }
+    }
+
+    return {
+      valid: errors.length === 0,
+      errors,
+      warnings
+    };
+  }, [refType, inputs, profile]);
+
+  return (
+    <div style={{ flex: 1, padding: "28px 32px 56px", overflow: "auto", background: "var(--bg)" }}>
+      <div style={{ maxWidth: 860, margin: "0 auto" }}>
+        
+        {/* Header */}
+        <div style={{ marginBottom: 24, paddingBottom: 16, borderBottom: "2px solid var(--gold)" }}>
+          <div style={{ fontFamily: '"GI",Arial,sans-serif', fontWeight: 700, fontSize: 8, textTransform: "uppercase", letterSpacing: ".16em", color: "rgba(255,204,1,.4)", marginBottom: 4 }}>
+            USAREC FORM 370 AUDITOR
+          </div>
+          <div style={{ fontFamily: '"GI",Arial,sans-serif', fontWeight: 700, fontSize: 20, textTransform: "uppercase", color: "var(--gold)", lineHeight: 1.1, marginBottom: 8 }}>
+            DD Form 370 Reference Auditor
+          </div>
+          <div style={{ fontFamily: '"GI",Arial,sans-serif', fontWeight: 400, fontSize: 13, color: "var(--fg-muted)", lineHeight: 1.55 }}>
+            Verify returned Request for Reference (DD Form 370) packets. Ensure correct timeline matching, resolve family conflict rules, and prevent transcript omissions.
+          </div>
+        </div>
+
+        {/* Reference Type Selector */}
+        <div style={{ display: "flex", gap: 10, marginBottom: 20 }}>
+          {[
+            { id: "personal", label: "👥 Personal Reference" },
+            { id: "school", label: "🎓 School Reference" },
+            { id: "employment", label: "💼 Employment Reference" }
+          ].map(t => (
+            <button key={t.id} onClick={() => setRefType(t.id)} style={{
+              background: refType === t.id ? "var(--gold)" : "rgba(255,204,1,.05)",
+              border: `1px solid ${refType === t.id ? "var(--gold)" : "var(--border)"}`,
+              color: refType === t.id ? "var(--black)" : "var(--fg-muted)",
+              padding: "8px 16px", fontWeight: 700, fontSize: 11, textTransform: "uppercase", cursor: "pointer"
+            }}>{t.label}</button>
+          ))}
+        </div>
+
+        {/* Twin panel setup */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: 24 }}>
+          
+          {/* Inputs Panel */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 12, background: "var(--bg-surface)", padding: 16, border: "1px solid var(--border-mid)" }}>
+            <div style={{ fontFamily: '"GI",Arial,sans-serif', fontWeight: 700, fontSize: 11, textTransform: "uppercase", color: "var(--gold)", borderBottom: "1px solid var(--border)", paddingBottom: 6, marginBottom: 4 }}>
+              Reference Parameters
+            </div>
+
+            {/* General Form Checkboxes */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 8, padding: 8, background: "rgba(255,255,255,0.02)", border: "1px dashed var(--border)", marginBottom: 8 }}>
+              <div style={{ fontSize: 10, textTransform: "uppercase", fontWeight: 700, color: "var(--fg-muted)" }}>Form Completion Checklist</div>
+              <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 11, cursor: "pointer", color: "var(--fg-alt)" }}>
+                <input type="checkbox" checked={inputs.formSigned} onChange={e => setInputs(p => ({ ...p, formSigned: e.target.checked }))} />
+                Referee Signature Present
+              </label>
+              <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 11, cursor: "pointer", color: "var(--fg-alt)" }}>
+                <input type="checkbox" checked={inputs.formDated} onChange={e => setInputs(p => ({ ...p, formDated: e.target.checked }))} />
+                Date of Signature Complete
+              </label>
+              <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 11, cursor: "pointer", color: "var(--fg-alt)" }}>
+                <input type="checkbox" checked={inputs.noWiteout} onChange={e => setInputs(p => ({ ...p, noWiteout: e.target.checked }))} />
+                No Wite-Out / Liquid Paper Used
+              </label>
+            </div>
+
+            {/* Personal Reference Specific */}
+            {refType === "personal" && (
+              <>
+                <label style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 11, color: "var(--fg-muted)" }}>
+                  Reference Full Name
+                  <input type="text" value={inputs.name} onChange={e => setInputs(p => ({ ...p, name: e.target.value }))} style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", padding: 6, fontSize: 12 }} />
+                </label>
+                <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: 10 }}>
+                  <label style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 11, color: "var(--fg-muted)" }}>
+                    Relationship to Applicant
+                    <input type="text" value={inputs.relationship} onChange={e => setInputs(p => ({ ...p, relationship: e.target.value }))} placeholder="e.g. Sister, Landlord, Friend" style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", padding: 6, fontSize: 12 }} />
+                  </label>
+                  <label style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 11, color: "var(--fg-muted)" }}>
+                    Years Known
+                    <input type="number" min="0" value={inputs.yearsKnown} onChange={e => setInputs(p => ({ ...p, yearsKnown: e.target.value }))} style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", padding: 6, fontSize: 12 }} />
+                  </label>
+                </div>
+              </>
+            )}
+
+            {/* School Reference Specific */}
+            {refType === "school" && (
+              <>
+                <label style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 11, color: "var(--fg-muted)" }}>
+                  School Name
+                  <input type="text" value={inputs.schoolName} onChange={e => setInputs(p => ({ ...p, schoolName: e.target.value }))} style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", padding: 6, fontSize: 12 }} />
+                </label>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                  <label style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 11, color: "var(--fg-muted)" }}>
+                    Educational Level
+                    <select value={inputs.schoolLevel} onChange={e => setInputs(p => ({ ...p, schoolLevel: e.target.value }))} style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", padding: 5, fontSize: 12 }}>
+                      <option value="high-school">High School</option>
+                      <option value="college">College / University</option>
+                      <option value="vo-tech">Vocational / Trade School</option>
+                    </select>
+                  </label>
+                  <label style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 11, color: "var(--fg-muted)" }}>
+                    Official Transcript Attached?
+                    <select value={inputs.hasTranscript} onChange={e => setInputs(p => ({ ...p, hasTranscript: e.target.value }))} style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", padding: 5, fontSize: 12 }}>
+                      <option value="yes">Yes</option>
+                      <option value="no">No</option>
+                    </select>
+                  </label>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                  <label style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 11, color: "var(--fg-muted)" }}>
+                    Attendance Start Date
+                    <input type="date" value={inputs.schoolStartDate} onChange={e => setInputs(p => ({ ...p, schoolStartDate: e.target.value }))} style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", padding: 5, fontSize: 12 }} />
+                  </label>
+                  <label style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 11, color: "var(--fg-muted)" }}>
+                    Attendance End Date
+                    <input type="date" value={inputs.schoolEndDate} onChange={e => setInputs(p => ({ ...p, schoolEndDate: e.target.value }))} style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", padding: 5, fontSize: 12 }} />
+                  </label>
+                </div>
+                <label style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 11, color: "var(--fg-muted)" }}>
+                  History of Disciplinary Actions?
+                  <select value={inputs.hasDiscipline} onChange={e => setInputs(p => ({ ...p, hasDiscipline: e.target.value }))} style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", padding: 5, fontSize: 12 }}>
+                    <option value="no">No disciplinary record noted</option>
+                    <option value="yes">Yes, suspensions/expulsions noted</option>
+                  </select>
+                </label>
+              </>
+            )}
+
+            {/* Employment Reference Specific */}
+            {refType === "employment" && (
+              <>
+                <label style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 11, color: "var(--fg-muted)" }}>
+                  Employer / Business Name
+                  <input type="text" value={inputs.employerName} onChange={e => setInputs(p => ({ ...p, employerName: e.target.value }))} style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", padding: 6, fontSize: 12 }} />
+                </label>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                  <label style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 11, color: "var(--fg-muted)" }}>
+                    Job Title / Position
+                    <input type="text" value={inputs.jobTitle} onChange={e => setInputs(p => ({ ...p, jobTitle: e.target.value }))} style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", padding: 6, fontSize: 12 }} />
+                  </label>
+                  <label style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 11, color: "var(--fg-muted)" }}>
+                    Separation Reason
+                    <select value={inputs.separationReason} onChange={e => setInputs(p => ({ ...p, separationReason: e.target.value }))} style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", padding: 5, fontSize: 12 }}>
+                      <option value="resigned">Resigned / Voluntarily Left</option>
+                      <option value="laid-off">Laid Off (Lack of Work)</option>
+                      <option value="terminated">Terminated / Fired (Adverse)</option>
+                    </select>
+                  </label>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                  <label style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 11, color: "var(--fg-muted)" }}>
+                    Employment Start Date
+                    <input type="date" value={inputs.empStartDate} onChange={e => setInputs(p => ({ ...p, empStartDate: e.target.value }))} style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", padding: 5, fontSize: 12 }} />
+                  </label>
+                  <label style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 11, color: "var(--fg-muted)" }}>
+                    Employment End Date
+                    <input type="date" value={inputs.empEndDate} onChange={e => setInputs(p => ({ ...p, empEndDate: e.target.value }))} style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", padding: 5, fontSize: 12 }} />
+                  </label>
+                </div>
+                <label style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 11, color: "var(--fg-muted)" }}>
+                  Military Service Recommendation
+                  <select value={inputs.recommendation} onChange={e => setInputs(p => ({ ...p, recommendation: e.target.value }))} style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", padding: 5, fontSize: 12 }}>
+                    <option value="highly-recommended">Highly Recommended</option>
+                    <option value="recommended">Recommended</option>
+                    <option value="neutral">Neutral / No Comment</option>
+                    <option value="not-recommended">Not Recommended (Adverse)</option>
+                  </select>
+                </label>
+              </>
+            )}
+          </div>
+
+          {/* Results Panel */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            <div style={{ 
+              flex: 1, 
+              border: `1px solid ${audit.errors.length > 0 ? "var(--danger)" : audit.warnings.length > 0 ? "rgba(255,204,1,.4)" : "rgba(74,222,128,.4)"}`, 
+              background: "var(--bg-surface)", 
+              padding: 20,
+              minHeight: 320
+            }}>
+              
+              {/* Header Status Card */}
+              <div style={{ 
+                padding: "12px 16px", 
+                background: audit.errors.length > 0 ? "rgba(207,0,0,.08)" : audit.warnings.length > 0 ? "rgba(255,204,1,.05)" : "rgba(74,222,128,.05)", 
+                border: `1px solid ${audit.errors.length > 0 ? "var(--danger)" : audit.warnings.length > 0 ? "rgba(255,204,1,.2)" : "rgba(74,222,128,.2)"}`, 
+                marginBottom: 16,
+                borderRadius: 2
+              }}>
+                <div style={{ fontSize: 9, textTransform: "uppercase", fontWeight: 700, color: "var(--fg-muted)", letterSpacing: ".05em", marginBottom: 2 }}>
+                  Audit Verdict
+                </div>
+                <div style={{ 
+                  fontFamily: '"GI",Arial,sans-serif', 
+                  fontWeight: 700, 
+                  fontSize: 16, 
+                  color: audit.errors.length > 0 ? "var(--danger)" : audit.warnings.length > 0 ? "var(--gold)" : "#4ade80",
+                  textTransform: "uppercase"
+                }}>
+                  {audit.errors.length > 0 ? "❌ RETURN TO RECRUITER" : audit.warnings.length > 0 ? "⚠️ ACTION REQUIRED" : "✅ COMPLIANT REFERENCE"}
+                </div>
+              </div>
+
+              {/* Mismatch & Rule Violations */}
+              {audit.errors.length > 0 && (
+                <div style={{ marginBottom: 16 }}>
+                  <div style={{ fontSize: 10, textTransform: "uppercase", fontWeight: 700, color: "var(--danger)", borderBottom: "1px solid rgba(207,0,0,.2)", paddingBottom: 4, marginBottom: 8 }}>
+                    Critical Discrepancies ({audit.errors.length})
+                  </div>
+                  {audit.errors.map((err, i) => (
+                    <div key={i} style={{ fontSize: 12.5, color: "var(--fg-alt)", padding: "4px 0", lineHeight: 1.5, display: "flex", gap: 6 }}>
+                      <span style={{ color: "var(--danger)" }}>•</span>
+                      <span>{err}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Warnings & Reminders */}
+              {audit.warnings.length > 0 && (
+                <div style={{ marginBottom: 16 }}>
+                  <div style={{ fontSize: 10, textTransform: "uppercase", fontWeight: 700, color: "var(--gold)", borderBottom: "1px solid rgba(255,204,1,.2)", paddingBottom: 4, marginBottom: 8 }}>
+                    Waiver Warnings ({audit.warnings.length})
+                  </div>
+                  {audit.warnings.map((warn, i) => (
+                    <div key={i} style={{ fontSize: 12.5, color: "var(--fg-alt)", padding: "4px 0", lineHeight: 1.5, display: "flex", gap: 6 }}>
+                      <span style={{ color: "var(--gold)" }}>•</span>
+                      <span>{warn}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Compliant state */}
+              {audit.errors.length === 0 && audit.warnings.length === 0 && (
+                <div style={{ fontSize: 12.5, color: "var(--fg-muted)", textAlign: "center", padding: "40px 20px", display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+                  <span style={{ fontSize: 28 }}>🌟</span>
+                  <div style={{ fontWeight: 700, color: "#4ade80", textTransform: "uppercase", fontSize: 12 }}>Reference Audit Clear</div>
+                  This DD Form 370 meets standard USAREC and Guidance Counselor compliance criteria. Date fields are structured and parent-child/relative flags are clear.
+                </div>
+              )}
+            </div>
+
+            {/* Quick Reference Card */}
+            <div style={{ background: "var(--bg-surface)", border: "1px solid var(--border-mid)", padding: 12, fontSize: 11.5, color: "var(--fg-muted)", lineHeight: 1.45 }}>
+              <div style={{ fontWeight: 700, color: "var(--gold)", textTransform: "uppercase", fontSize: 9, letterSpacing: ".05em", marginBottom: 4 }}>
+                DD Form 370 Regulations Quick Guide
+              </div>
+              • <strong>Dates</strong> must align <em>exactly</em> with Recruiter Zone history. A mismatch of even one day triggers a GC rejection.<br/>
+              • <strong>No Family Members</strong> can serve as character references. This applies to DD 370s and RZ reference logs.<br/>
+              • <strong>College References</strong> require an official transcript. High school references do not.<br/>
+              • <strong>Confinement History</strong>: If applicant discloses jail time, an institution DD 370 (or FL 601-210.04) is required.
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  );
+};
+
 // Expose to window for index files
-Object.assign(window, { GapFinder, MfrGenerator, DocumentVault });
+Object.assign(window, { GapFinder, MfrGenerator, DocumentVault, ReferenceAuditor });
+

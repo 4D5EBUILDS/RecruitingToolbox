@@ -81,7 +81,7 @@ button,select,textarea,input{font-family:inherit}
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
 <script type="text/babel">
 const { useState, useEffect, useMemo, useCallback, useRef } = React;
-const { SECTION_DEFS, PROFILE_DEFAULTS, PROFILE_OPTIONS, SECTION_ICONS, GapFinder, MfrGenerator, DocumentVault } = window;
+const { SECTION_DEFS, PROFILE_DEFAULTS, PROFILE_OPTIONS, SECTION_ICONS, GapFinder, MfrGenerator, DocumentVault, ReferenceAuditor } = window;
 
 /* ── Helpers ─────────────────────────────────────────── */
 const generateSections = p =>
@@ -1042,7 +1042,8 @@ const TabBar = ({ activeTab, setActiveTab }) => (
       { id:"autopsy",   label:"☠  Autopsy Edition" },
       { id:"gaps",      label:"📍  Gap Finder" },
       { id:"mfrs",      label:"✍️  MFR Generator" },
-      { id:"vault",     label:"🔒  Document Vault" }
+      { id:"vault",     label:"🔒  Document Vault" },
+      { id:"references",label:"👥  Reference Auditor" }
     ].map(({ id, label }) => (
       <button key={id} onClick={() => setActiveTab(id)} style={{
         background:"transparent", border:"none",
@@ -1276,6 +1277,8 @@ const App = () => {
         ? <div key="mfrs" style={{ flex:1, display:"flex", flexDirection:"column", overflow:"hidden", animation:"fadeUp .22s ease" }}><MfrGenerator profile={profile}/></div>
         : activeTab === "vault"
         ? <div key="vault" style={{ flex:1, display:"flex", flexDirection:"column", overflow:"hidden", animation:"fadeUp .22s ease" }}><DocumentVault profile={profile}/></div>
+        : activeTab === "references"
+        ? <div key="references" style={{ flex:1, display:"flex", flexDirection:"column", overflow:"hidden", animation:"fadeUp .22s ease" }}><ReferenceAuditor profile={profile}/></div>
         : <div key="rec" style={{ flex:1, display:"flex", overflow:"hidden", animation:"fadeUp .22s ease" }}>
 
         {/* ── LEFT PANEL ── */}
