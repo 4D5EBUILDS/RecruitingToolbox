@@ -738,6 +738,15 @@ const AutopsyMode = ({ sections, statuses, profile, aliasCheck, onToggle, onQuic
       flag("dd369", "DD 369 run under alias was hand-jammed instead of run on a separate form.", "background");
       if (p.waivers.includes("moral")) {
         flag("mor-co", "SUBJECT LINE ERROR: Company Commander MFR subject line says 'Assumption of Command' instead of tattoo or moral waiver recommendation (referencing template error in MEMO.docx).", "moral-waiver");
+        
+        // DD 370 Reference Auditor Checks
+        const appLastName = p.name ? p.name.split(",")[0].trim().toUpperCase() : "MARTINEZ";
+        if (["college", "some-college", "college-grad"].includes(p.education)) {
+          flag("dd370", "Missing Transcript: College reference (Grand Island Community College) lacks official academic transcript. GCs will return character reference without verifying documentation.", "moral-waiver");
+        } else {
+          flag("dd370", `Relative Conflict: Character reference "Martinez, Julia A." (Sister) matches applicant's last name "${appLastName}". Family members are strictly prohibited.`, "moral-waiver");
+        }
+        flag("dd370", "Timeline Mismatch: DD 370 employment reference attendance dates (2025-06-01 to 2026-04-30) do not align with Recruiter Zone history timeline (which lists employment ending on 2026-05-15).", "moral-waiver");
       } else {
         flag("suit-co", "SUBJECT LINE ERROR: Company Commander MFR subject line says 'Assumption of Command' instead of tattoo or suitability waiver recommendation (referencing template error in MEMO.docx).", "suit-waiver");
       }
