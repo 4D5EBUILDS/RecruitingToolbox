@@ -14,12 +14,13 @@
   --bd:rgba(255,204,1,.09);--bd-m:rgba(255,204,1,.16);--bd-s:rgba(255,204,1,.3);
   --gold:#FFCC01;--danger:#CF0000;--green:#2d7a4f;--blue:#1a5fa8;--amber:#b07800;
   --in-bg:rgba(255,255,255,.04);--in-bd:rgba(255,204,1,.2);
+  --sidebar-w:260px;--ref-w:300px;
 }
 [data-theme="light"]{
   --bg:#F1E4C7;--bg-s:#fff;--bg-c:#fff;--bg-h:rgba(34,31,32,.03);
   --fg:#221F20;--fg2:#221F20;--fg-m:#565557;--fg-d:#BBB;
   --bd:rgba(34,31,32,.1);--bd-m:rgba(34,31,32,.2);--bd-s:rgba(34,31,32,.3);
-  --gold:#FFCC01;--danger:#B00000;--green:#1a6338;--blue:#0d4a8f;--amber:#8a5e00;
+  --gold:#c9900a;--danger:#B00000;--green:#1a6338;--blue:#0d4a8f;--amber:#8a5e00;
   --in-bg:rgba(34,31,32,.04);--in-bd:rgba(34,31,32,.25);
 }
 
@@ -28,70 +29,167 @@ html,body{height:100%;overflow:hidden}
 body{font-family:"GI",Arial,sans-serif;background:var(--bg);color:var(--fg2);font-weight:500;-webkit-font-smoothing:antialiased;transition:background .3s,color .3s}
 button,select,textarea,input{font-family:inherit}
 ::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bd-s)}
-#root{height:100%;display:flex;flex-direction:column}
 
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-@keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
 @keyframes stampIn{0%{opacity:0;transform:scale(1.4) rotate(-5deg)}60%{transform:scale(.97) rotate(.5deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes progressFill{from{width:0}to{width:var(--target-w,0)}}
+@keyframes slideInLeft{from{opacity:0;transform:translateX(-16px)}to{opacity:1;transform:none}}
 
 .fade-up{animation:fadeUp .28s ease both}
 .fade-in{animation:fadeIn .2s ease both}
+.slide-left{animation:slideInLeft .2s ease both}
 
-/* HEADER */
-.hdr{flex-shrink:0;display:flex;align-items:center;gap:12px;padding:0 20px;height:52px;background:var(--bg-s);border-bottom:1px solid var(--bd);z-index:10}
-.hdr-badge{background:var(--gold);color:#000;font-weight:700;font-size:9px;padding:2px 7px;letter-spacing:.08em;text-transform:uppercase}
-.hdr-title{font-size:14px;font-weight:700;color:var(--fg);letter-spacing:.04em;text-transform:uppercase;flex:1}
-.hdr-sub{font-size:11px;color:var(--fg-m);margin-top:1px}
-.hdr-btn{background:none;border:1px solid var(--bd-m);color:var(--fg-m);padding:5px 10px;font-size:11px;cursor:pointer;transition:all .15s}
-.hdr-btn:hover{border-color:var(--bd-s);color:var(--fg2)}
+/* ── LAYOUT ────────────────────────────────────────────────── */
+#root{height:100%;display:flex;flex-direction:column}
+.app-shell{flex:1;display:flex;overflow:hidden}
 
-/* PHASE NAV */
-.phase-nav{flex-shrink:0;display:flex;align-items:stretch;background:var(--bg-s);border-bottom:1px solid var(--bd);padding:0 20px;gap:0}
-.phase-tab{display:flex;align-items:center;gap:8px;padding:10px 18px;cursor:pointer;border:none;background:none;color:var(--fg-m);font-family:inherit;font-size:12px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;border-bottom:2px solid transparent;transition:all .15s;position:relative}
-.phase-tab:disabled{opacity:.35;cursor:not-allowed}
-.phase-tab.active{color:var(--gold);border-bottom-color:var(--gold)}
-.phase-tab:not(:disabled):hover:not(.active){color:var(--fg2);border-bottom-color:var(--bd-m)}
-.phase-num{width:20px;height:20px;border-radius:50%;border:1.5px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
-.phase-tab.active .phase-num{background:var(--gold);border-color:var(--gold);color:#000}
-.phase-tab.done .phase-num{background:var(--green);border-color:var(--green);color:#fff}
+/* ── TOP BAR ───────────────────────────────────────────────── */
+.topbar{flex-shrink:0;height:52px;display:flex;align-items:center;gap:12px;padding:0 16px;background:var(--bg-s);border-bottom:1px solid var(--bd);z-index:20}
+.topbar-badge{background:var(--gold);color:#000;font-weight:700;font-size:9px;padding:2px 7px;letter-spacing:.08em;text-transform:uppercase;flex-shrink:0}
+.topbar-title{font-size:13px;font-weight:700;color:var(--fg);letter-spacing:.04em;text-transform:uppercase}
+.topbar-sub{font-size:10px;color:var(--fg-m)}
+.topbar-center{flex:1;display:flex;align-items:center;justify-content:center;gap:16px}
+.topbar-actions{display:flex;gap:6px;align-items:center}
+.topbar-btn{background:none;border:1px solid var(--bd-m);color:var(--fg-m);padding:5px 10px;font-size:11px;cursor:pointer;transition:all .15s;font-family:inherit}
+.topbar-btn:hover{border-color:var(--bd-s);color:var(--fg2)}
+.topbar-btn.active{background:var(--gold);border-color:var(--gold);color:#000}
 
-/* SCROLLABLE MAIN */
-.main{flex:1;overflow-y:auto;overflow-x:hidden;padding:24px 20px}
+/* ── READINESS RING ────────────────────────────────────────── */
+.readiness-wrap{display:flex;align-items:center;gap:10px}
+.readiness-ring{position:relative;width:36px;height:36px;flex-shrink:0}
+.readiness-ring svg{transform:rotate(-90deg)}
+.readiness-ring .ring-bg{fill:none;stroke:var(--bd-m);stroke-width:3}
+.readiness-ring .ring-fill{fill:none;stroke-width:3;stroke-linecap:round;transition:stroke-dashoffset .6s ease,stroke .3s}
+.readiness-pct{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700}
+.readiness-label{font-size:10px;color:var(--fg-m)}
+.readiness-pct-big{font-size:12px;font-weight:700;color:var(--fg)}
 
-/* CARDS & GRIDS */
+/* Authority Badge */
+.auth-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;font-weight:700;font-size:11px;letter-spacing:.04em;text-transform:uppercase;flex-shrink:0}
+.auth-BN{background:rgba(26,95,168,.2);border:1px solid rgba(26,95,168,.4);color:#5b9fd4}
+.auth-USAREC{background:rgba(255,204,1,.12);border:1px solid rgba(255,204,1,.3);color:var(--gold)}
+.auth-DMPM{background:rgba(207,0,0,.15);border:1px solid rgba(207,0,0,.3);color:#ff6b6b}
+.auth-NONE{background:rgba(255,255,255,.06);border:1px solid var(--bd-m);color:var(--fg-m)}
+
+/* ── SIDEBAR ───────────────────────────────────────────────── */
+.sidebar{width:var(--sidebar-w);flex-shrink:0;border-right:1px solid var(--bd);display:flex;flex-direction:column;background:var(--bg-s);overflow:hidden;transition:width .25s ease}
+.sidebar.collapsed{width:0}
+.sidebar-hdr{padding:12px 14px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:8px;flex-shrink:0}
+.sidebar-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--fg-m);flex:1}
+.sidebar-body{flex:1;overflow-y:auto;padding:8px}
+.sidebar-footer{padding:10px 12px;border-top:1px solid var(--bd);flex-shrink:0}
+
+/* Applicant Cards */
+.appl-card{border:1px solid var(--bd);padding:10px 12px;margin-bottom:6px;cursor:pointer;transition:all .15s;position:relative}
+.appl-card:hover{border-color:var(--bd-s);background:var(--bg-h)}
+.appl-card.active{border-color:var(--gold);background:rgba(255,204,1,.05)}
+.appl-card-name{font-size:12px;font-weight:700;color:var(--fg2);margin-bottom:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.appl-card-meta{font-size:10px;color:var(--fg-m)}
+.appl-card-status{position:absolute;top:8px;right:8px;width:8px;height:8px;border-radius:50%}
+.status-green{background:#5bc989}
+.status-yellow{background:var(--gold)}
+.status-red{background:#ff5555}
+.status-gray{background:var(--fg-d)}
+
+/* ── MAIN ──────────────────────────────────────────────────── */
+.main-panel{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.tab-nav{flex-shrink:0;display:flex;background:var(--bg-s);border-bottom:1px solid var(--bd);padding:0 16px}
+.tab-btn{display:flex;align-items:center;gap:7px;padding:10px 16px;border:none;background:none;color:var(--fg-m);font-family:inherit;font-size:11px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;border-bottom:2px solid transparent;cursor:pointer;transition:all .15s}
+.tab-btn:disabled{opacity:.3;cursor:not-allowed}
+.tab-btn.active{color:var(--gold);border-bottom-color:var(--gold)}
+.tab-btn:not(:disabled):hover:not(.active){color:var(--fg2);border-bottom-color:var(--bd-m)}
+.tab-num{width:18px;height:18px;border-radius:50%;border:1.5px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0}
+.tab-btn.active .tab-num{background:var(--gold);border-color:var(--gold);color:#000}
+.tab-btn.done .tab-num{background:var(--green);border-color:var(--green);color:#fff}
+.main-scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding:20px}
+
+/* ── RIGHT PANEL ───────────────────────────────────────────── */
+.ref-panel{width:var(--ref-w);flex-shrink:0;border-left:1px solid var(--bd);background:var(--bg-s);display:flex;flex-direction:column;overflow:hidden;transition:width .25s ease}
+.ref-panel.collapsed{width:0}
+.ref-panel-hdr{padding:12px 14px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:8px;flex-shrink:0}
+.ref-panel-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--fg-m);flex:1}
+.ref-panel-body{flex:1;overflow-y:auto;padding:12px}
+.ref-entry{padding:10px 12px;border:1px solid var(--bd);margin-bottom:8px;background:rgba(255,204,1,.02)}
+.ref-para-id{font-size:10px;font-weight:700;color:var(--gold);letter-spacing:.06em;margin-bottom:4px}
+.ref-para-text{font-size:11px;color:var(--fg2);line-height:1.6}
+.ref-tip{font-size:10px;color:var(--fg-m);padding:6px 8px;background:rgba(255,204,1,.04);border-left:2px solid var(--bd-m);margin-top:6px;line-height:1.5}
+
+/* ── CARDS ─────────────────────────────────────────────────── */
 .card{background:var(--bg-c);border:1px solid var(--bd);padding:20px}
-.card+.card{margin-top:16px}
+.card+.card{margin-top:14px}
 .card-hdr{display:flex;align-items:center;gap:10px;margin-bottom:16px}
 .card-title{font-size:13px;font-weight:700;color:var(--fg);text-transform:uppercase;letter-spacing:.05em}
 .card-sub{font-size:11px;color:var(--fg-m);margin-top:2px}
-.section-bar{width:3px;height:100%;background:var(--gold);flex-shrink:0;align-self:stretch;min-height:16px}
+.section-bar{width:3px;align-self:stretch;min-height:16px;background:var(--gold);flex-shrink:0}
 
-/* OFFENSE GRID */
-.offense-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
-.offense-card{background:var(--bg-s);border:1px solid var(--bd);padding:12px 14px;cursor:pointer;transition:all .15s;text-align:left}
+/* ── OFFENSE GRID ──────────────────────────────────────────── */
+.offense-group-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg-m);padding:8px 4px 4px;margin-top:4px}
+.offense-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:6px;margin-bottom:2px}
+.offense-card{background:var(--bg-s);border:1px solid var(--bd);padding:11px 13px;cursor:pointer;transition:all .15s;text-align:left}
 .offense-card:hover{border-color:var(--bd-s);background:var(--bg-h)}
 .offense-card.selected{border-color:var(--gold);background:rgba(255,204,1,.07)}
-.offense-card.bar{border-color:rgba(207,0,0,.3)}
-.offense-card.bar:hover{border-color:rgba(207,0,0,.7);background:rgba(207,0,0,.05)}
-.offense-card.bar.selected{border-color:var(--danger);background:rgba(207,0,0,.08)}
-.offense-label{font-size:12px;font-weight:700;color:var(--fg2);margin-bottom:4px}
-.offense-sub{font-size:10px;color:var(--fg-m);line-height:1.4}
-.offense-level-badge{display:inline-block;font-size:9px;font-weight:700;padding:1px 5px;letter-spacing:.06em;margin-top:6px;text-transform:uppercase}
+.offense-card.bar{border-color:rgba(207,0,0,.25)}
+.offense-card.bar:hover{border-color:rgba(207,0,0,.6);background:rgba(207,0,0,.04)}
+.offense-card.bar.selected{border-color:var(--danger);background:rgba(207,0,0,.07)}
+.offense-card.no-waiver{border-color:rgba(26,95,168,.25)}
+.offense-card.no-waiver.selected{border-color:rgba(26,95,168,.6);background:rgba(26,95,168,.07)}
+.offense-label{font-size:12px;font-weight:700;color:var(--fg2);margin-bottom:3px}
+.offense-sub{font-size:10px;color:var(--fg-m);line-height:1.35}
+.offense-level-badge{display:inline-block;font-size:9px;font-weight:700;padding:1px 5px;letter-spacing:.06em;margin-top:5px;text-transform:uppercase}
 .lvl-MAJOR{background:rgba(207,0,0,.2);color:#ff6b6b}
 .lvl-MISC{background:rgba(255,204,1,.15);color:var(--gold)}
-.lvl-TRAFFIC{background:rgba(255,204,1,.08);color:#c8a800}
-.lvl-VARIES{background:rgba(80,80,200,.2);color:#8899ff}
-.lvl-BAR{background:rgba(207,0,0,.25);color:#ff4444}
+.lvl-TRAFFIC{background:rgba(80,160,255,.15);color:#7eb8ff}
+.lvl-VARIES{background:rgba(160,80,255,.15);color:#cc99ff}
+.lvl-BAR{background:rgba(207,0,0,.3);color:#ff4444}
+.lvl-NO-WAIVER{background:rgba(26,95,168,.2);color:#5b9fd4}
 
-/* QUESTIONS */
-.q-wrap{max-width:580px}
+/* ── MULTI-OFFENSE SCREENER ────────────────────────────────── */
+.offense-stack{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.offense-chip{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--bg-s);border:1px solid var(--bd-m);position:relative;transition:background .2s,transform .2s;}
+.offense-chip.bar{border-color:rgba(207,0,0,.4);background:rgba(207,0,0,.05)}
+.offense-chip.waivable{border-color:rgba(45,122,79,.3);background:rgba(45,122,79,.04)}
+.offense-chip.waiting{border-color:rgba(176,120,0,.3);background:rgba(176,120,0,.04)}
+.offense-chip.etp{border-color:rgba(176,120,0,.3);background:rgba(176,120,0,.04)}
+.offense-chip.no-waiver{border-color:rgba(26,95,168,.3);background:rgba(26,95,168,.04)}
+.offense-chip.dragging{opacity:0.6;border-style:dashed;transform:scale(0.98);transition:transform .2s;}
+
+/* Tooltip for offense chips using title attribute */
+.offense-chip[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 4px;
+  background: rgba(0,0,0,0.85);
+  color: #fff;
+  padding: 5px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 1000;
+}
+.chip-verdict{font-size:9px;font-weight:700;padding:2px 6px;text-transform:uppercase;letter-spacing:.06em;flex-shrink:0}
+.chip-v-bar{background:rgba(207,0,0,.2);color:#ff5555}
+.chip-v-waivable{background:rgba(45,122,79,.2);color:#5bc989}
+.chip-v-waiting{background:rgba(176,120,0,.2);color:#ffb84d}
+.chip-v-etp{background:rgba(176,120,0,.2);color:#ffb84d}
+.chip-v-no-waiver{background:rgba(26,95,168,.2);color:#5b9fd4}
+.chip-v-unknown{background:rgba(255,255,255,.06);color:var(--fg-m)}
+.chip-label{flex:1;font-size:12px;color:var(--fg2);font-weight:600}
+.chip-auth{font-size:10px;color:var(--fg-m)}
+.chip-del{background:none;border:none;cursor:pointer;color:var(--fg-m);padding:4px;display:flex;align-items:center}
+.chip-del:hover{color:#ff6b6b}
+
+/* ── QUESTIONS ─────────────────────────────────────────────── */
+.q-wrap{max-width:560px}
 .q-card{background:var(--bg-c);border:1px solid var(--bd);padding:24px;animation:fadeUp .25s ease both}
 .q-num{font-size:10px;color:var(--fg-m);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
 .q-text{font-size:15px;font-weight:700;color:var(--fg2);margin-bottom:6px;line-height:1.4}
-.q-hint{font-size:11px;color:var(--fg-m);margin-bottom:16px;padding:8px 10px;background:rgba(255,255,255,.03);border-left:2px solid var(--bd-m)}
-.q-options{display:flex;flex-direction:column;gap:6px}
+.q-hint{font-size:11px;color:var(--fg-m);margin-bottom:16px;padding:8px 10px;background:rgba(255,255,255,.03);border-left:2px solid var(--bd-m);line-height:1.5}
+.q-options{display:flex;flex-direction:column;gap:5px}
 .q-opt{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:var(--bg-s);border:1px solid var(--bd);cursor:pointer;transition:all .15s}
 .q-opt:hover{border-color:var(--bd-s);background:var(--bg-h)}
 .q-opt.selected{border-color:var(--gold);background:rgba(255,204,1,.07)}
@@ -101,69 +199,101 @@ button,select,textarea,input{font-family:inherit}
 .q-opt-label{font-size:13px;color:var(--fg2)}
 .q-actions{display:flex;align-items:center;gap:10px;margin-top:16px}
 .q-progress{display:flex;gap:4px;margin-bottom:20px}
-.q-prog-dot{height:3px;flex:1;background:var(--bd-m);transition:background .2s}
+.q-prog-dot{height:3px;flex:1;background:var(--bd-m);transition:background .2s;border-radius:2px}
 .q-prog-dot.done{background:var(--gold)}
 .q-prog-dot.active{background:rgba(255,204,1,.5)}
 
-/* VERDICT */
-.verdict-card{padding:28px;animation:stampIn .35s ease both}
-.verdict-WAIVABLE{background:rgba(45,122,79,.12);border:2px solid rgba(45,122,79,.5)}
-.verdict-NO_WAIVER_REQUIRED{background:rgba(26,95,168,.12);border:2px solid rgba(26,95,168,.5)}
-.verdict-NOT_WAIVABLE{background:rgba(207,0,0,.12);border:2px solid rgba(207,0,0,.5)}
-.verdict-ETP_REQUIRED{background:rgba(176,120,0,.12);border:2px solid rgba(176,120,0,.5)}
-.verdict-WAITING_PERIOD{background:rgba(176,120,0,.08);border:2px solid rgba(176,120,0,.4)}
-.verdict-tag{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}
+/* ── EXPERT MODE ───────────────────────────────────────────── */
+.expert-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.expert-field{display:flex;flex-direction:column;gap:4px}
+.expert-label{font-size:10px;color:var(--fg-m);text-transform:uppercase;letter-spacing:.06em}
+.expert-select{background:var(--in-bg);border:1px solid var(--in-bd);color:var(--fg2);padding:7px 9px;font-family:inherit;font-size:12px;outline:none;cursor:pointer;transition:border-color .15s;width:100%}
+.expert-select:focus{border-color:var(--gold)}
+
+/* ── VERDICT ───────────────────────────────────────────────── */
+.verdict-card{padding:24px;animation:stampIn .35s ease both}
+.verdict-WAIVABLE{background:rgba(45,122,79,.1);border:2px solid rgba(45,122,79,.45)}
+.verdict-NO_WAIVER_REQUIRED{background:rgba(26,95,168,.1);border:2px solid rgba(26,95,168,.45)}
+.verdict-NOT_WAIVABLE{background:rgba(207,0,0,.1);border:2px solid rgba(207,0,0,.45)}
+.verdict-ETP_REQUIRED{background:rgba(176,120,0,.1);border:2px solid rgba(176,120,0,.4)}
+.verdict-WAITING_PERIOD{background:rgba(176,120,0,.07);border:2px solid rgba(176,120,0,.35)}
+.verdict-tag{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:7px}
 .verdict-WAIVABLE .verdict-tag{color:#5bc989}
 .verdict-NO_WAIVER_REQUIRED .verdict-tag{color:#5b9fd4}
 .verdict-NOT_WAIVABLE .verdict-tag{color:#ff5555}
 .verdict-ETP_REQUIRED .verdict-tag,.verdict-WAITING_PERIOD .verdict-tag{color:#ffb84d}
-.verdict-title{font-size:22px;font-weight:700;margin-bottom:10px}
+.verdict-title{font-size:20px;font-weight:700;margin-bottom:8px}
 .verdict-WAIVABLE .verdict-title{color:#5bc989}
 .verdict-NO_WAIVER_REQUIRED .verdict-title{color:#5b9fd4}
 .verdict-NOT_WAIVABLE .verdict-title{color:#ff5555}
 .verdict-ETP_REQUIRED .verdict-title,.verdict-WAITING_PERIOD .verdict-title{color:#ffb84d}
-.verdict-body{font-size:13px;color:var(--fg2);line-height:1.6;margin-bottom:14px}
-.verdict-cite{font-size:11px;color:var(--fg-m);padding:6px 10px;background:rgba(255,255,255,.03);border-left:2px solid var(--bd-m);display:inline-block;margin-bottom:14px}
-.authority-badge{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;background:var(--gold);color:#000;font-weight:700;font-size:13px;letter-spacing:.04em}
+.verdict-body{font-size:13px;color:var(--fg2);line-height:1.6;margin-bottom:12px}
+.verdict-cite{font-size:11px;color:var(--fg-m);padding:5px 9px;background:rgba(255,255,255,.03);border-left:2px solid var(--bd-m);display:inline-block;margin-bottom:12px}
+.authority-badge{display:inline-flex;align-items:center;gap:7px;padding:7px 14px;background:var(--gold);color:#000;font-weight:700;font-size:12px;letter-spacing:.04em}
 
-/* FORMS */
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.form-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+/* ── APPROVABILITY METER ───────────────────────────────────── */
+.approval-meter{padding:14px 16px;border:1px solid var(--bd);background:var(--bg-s);margin-top:12px}
+.approval-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.approval-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--fg-m)}
+.approval-score{font-size:18px;font-weight:700}
+.approval-bar-bg{height:6px;background:var(--bd-m);border-radius:3px;overflow:hidden}
+.approval-bar-fill{height:100%;border-radius:3px;transition:width .8s ease}
+.approval-factors{margin-top:10px;display:flex;flex-direction:column;gap:4px}
+.approval-factor{font-size:10px;color:var(--fg-m);display:flex;align-items:center;gap:6px}
+.factor-up{color:#5bc989}
+.factor-down{color:#ff7070}
+.approval-disclaimer{font-size:10px;color:var(--fg-d);margin-top:8px;padding-top:8px;border-top:1px solid var(--bd);font-style:italic}
+
+/* ── FORMS ─────────────────────────────────────────────────── */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.form-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.form-grid-4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px}
 .form-field{display:flex;flex-direction:column;gap:4px}
-.form-label{font-size:11px;color:var(--fg-m);text-transform:uppercase;letter-spacing:.06em}
-.form-input{background:var(--in-bg);border:1px solid var(--in-bd);color:var(--fg2);padding:8px 10px;font-family:inherit;font-size:13px;outline:none;transition:border-color .15s;width:100%}
+.form-label{font-size:10px;color:var(--fg-m);text-transform:uppercase;letter-spacing:.06em}
+.form-input{background:var(--in-bg);border:1px solid var(--in-bd);color:var(--fg2);padding:8px 10px;font-family:inherit;font-size:12px;outline:none;transition:border-color .15s;width:100%}
 .form-input:focus{border-color:var(--gold)}
 .form-input::placeholder{color:var(--fg-d)}
 select.form-input{cursor:pointer}
+.form-section{font-size:10px;font-weight:700;color:var(--fg-m);text-transform:uppercase;letter-spacing:.07em;margin:14px 0 8px}
 
-/* OFFENSE TABLE */
+/* ── OFFENSE TABLE ─────────────────────────────────────────── */
 .off-table{width:100%;border-collapse:collapse}
-.off-table th{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--fg-m);padding:8px 10px;border-bottom:1px solid var(--bd-m);text-align:left}
-.off-table td{font-size:12px;color:var(--fg2);padding:10px;border-bottom:1px solid var(--bd);vertical-align:top}
+.off-table th{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--fg-m);padding:7px 10px;border-bottom:1px solid var(--bd-m);text-align:left}
+.off-table td{font-size:12px;color:var(--fg2);padding:9px 10px;border-bottom:1px solid var(--bd);vertical-align:top}
 .off-table tr:hover td{background:var(--bg-h)}
-.off-docs-badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;padding:2px 6px;margin-right:4px}
+.off-docs-badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;padding:2px 6px;margin-right:3px}
 .docs-yes{background:rgba(45,122,79,.2);color:#5bc989}
 .docs-no{background:rgba(207,0,0,.15);color:#ff7070}
+.waived-star{color:var(--gold);font-weight:700;margin-right:4px}
 
-/* CHECKLIST */
-.cl-item{display:flex;align-items:flex-start;gap:12px;padding:10px 12px;border-bottom:1px solid var(--bd)}
+/* ── CHECKLIST ─────────────────────────────────────────────── */
+.cl-item{border-bottom:1px solid var(--bd);overflow:hidden}
 .cl-item:last-child{border-bottom:none}
-.cl-check{width:18px;height:18px;border:2px solid var(--bd-s);cursor:pointer;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.cl-row{display:flex;align-items:flex-start;gap:12px;padding:11px 14px;cursor:pointer}
+.cl-row:hover{background:var(--bg-h)}
+.cl-check{width:18px;height:18px;border:2px solid var(--bd-s);flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all .15s}
 .cl-check.checked{background:var(--gold);border-color:var(--gold)}
+.cl-check svg{width:10px;height:8px;display:none}
 .cl-check.checked svg{display:block}
-.cl-check svg{display:none;width:10px;height:8px}
 .cl-body{flex:1}
-.cl-label{font-size:12px;color:var(--fg2);margin-bottom:3px}
+.cl-label{font-size:12px;color:var(--fg2);margin-bottom:2px}
 .cl-meta{font-size:10px;color:var(--fg-m)}
 .cl-note{font-size:10px;color:rgba(255,204,1,.6);font-style:italic;margin-top:2px}
+.cl-expand-arrow{color:var(--fg-m);flex-shrink:0;transition:transform .2s;font-size:10px}
 .cl-status{flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:4px}
-.status-badge{font-size:9px;font-weight:700;letter-spacing:.06em;padding:2px 7px;text-transform:uppercase;cursor:pointer;transition:all .15s}
+.status-badge{font-size:9px;font-weight:700;letter-spacing:.06em;padding:2px 7px;text-transform:uppercase;cursor:pointer;transition:all .15s;user-select:none}
 .status-pending{background:rgba(255,255,255,.06);color:var(--fg-m)}
 .status-progress{background:rgba(255,204,1,.15);color:var(--gold)}
 .status-complete{background:rgba(45,122,79,.2);color:#5bc989}
+.cl-howto{padding:12px 14px 14px 44px;background:rgba(255,255,255,.02);border-top:1px solid var(--bd);animation:fadeIn .15s ease}
+.howto-label{font-size:10px;font-weight:700;color:var(--fg-m);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px}
+.howto-text{font-size:12px;color:var(--fg2);line-height:1.6;white-space:pre-wrap}
+.howto-tip{font-size:11px;color:#ffb84d;padding:7px 10px;background:rgba(255,184,77,.06);border-left:2px solid rgba(255,184,77,.4);margin-top:8px;line-height:1.5}
+.copy-btn{background:none;border:1px solid var(--gold);color:var(--gold);cursor:pointer;font-size:10px;margin-top:8px;padding:2px 6px;border-radius:3px;transition:background .2s;}
+.copy-btn:hover{background:var(--gold);color:#000;}
 
-/* EXPIRATION TRACKER */
-.exp-item{display:grid;grid-template-columns:1fr 140px 80px;align-items:center;gap:12px;padding:10px 12px;border-bottom:1px solid var(--bd)}
+/* ── EXPIRATION TRACKER ────────────────────────────────────── */
+.exp-item{display:grid;grid-template-columns:1fr 140px 90px;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--bd)}
 .exp-item:last-child{border-bottom:none}
 .exp-label{font-size:12px;color:var(--fg2)}
 .exp-valid{font-size:10px;color:var(--fg-m)}
@@ -173,66 +303,93 @@ select.form-input{cursor:pointer}
 .exp-red{background:rgba(207,0,0,.2);color:#ff6b6b}
 .exp-none{background:rgba(255,255,255,.05);color:var(--fg-m)}
 
-/* OUTPUT CARDS */
-.output-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
-.output-card{background:var(--bg-c);border:1px solid var(--bd);padding:16px}
-.output-icon{width:32px;height:32px;background:rgba(255,204,1,.1);border:1px solid var(--bd-m);display:flex;align-items:center;justify-content:center;margin-bottom:10px}
-.output-name{font-size:12px;font-weight:700;color:var(--fg);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
-.output-desc{font-size:11px;color:var(--fg-m);line-height:1.5;margin-bottom:12px}
+/* ── OUTPUT CARDS ──────────────────────────────────────────── */
+.output-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+.output-card{background:var(--bg-c);border:1px solid var(--bd);padding:16px;display:flex;flex-direction:column;gap:8px}
+.output-icon{width:30px;height:30px;background:rgba(255,204,1,.1);border:1px solid var(--bd-m);display:flex;align-items:center;justify-content:center}
+.output-name{font-size:12px;font-weight:700;color:var(--fg);text-transform:uppercase;letter-spacing:.05em}
+.output-desc{font-size:11px;color:var(--fg-m);line-height:1.5;flex:1}
+.output-actions{display:flex;gap:6px}
 
-/* MODAL */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:100;display:flex;align-items:flex-start;justify-content:center;padding:24px;overflow-y:auto;animation:fadeIn .15s ease}
-.modal{background:var(--bg-s);border:1px solid var(--bd-m);width:100%;max-width:700px;animation:fadeUp .2s ease}
-.modal-hdr{display:flex;align-items:center;gap:10px;padding:16px 20px;border-bottom:1px solid var(--bd)}
-.modal-title{font-size:13px;font-weight:700;color:var(--fg);text-transform:uppercase;letter-spacing:.05em;flex:1}
-.modal-body{padding:20px;max-height:70vh;overflow-y:auto}
-.modal-ftr{display:flex;justify-content:flex-end;gap:8px;padding:14px 20px;border-top:1px solid var(--bd)}
+/* ── MOS CHECKER ───────────────────────────────────────────── */
+.mos-result{border:1px solid var(--bd);padding:14px;margin-top:10px}
+.mos-result.high{border-color:rgba(207,0,0,.35);background:rgba(207,0,0,.05)}
+.mos-result.medium{border-color:rgba(255,204,1,.3);background:rgba(255,204,1,.04)}
+.mos-result.low{border-color:rgba(45,122,79,.3);background:rgba(45,122,79,.04)}
+.mos-result-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.mos-result.high .mos-result-label{color:#ff6b6b}
+.mos-result.medium .mos-result-label{color:var(--gold)}
+.mos-result.low .mos-result-label{color:#5bc989}
+.mos-restriction{font-size:11px;color:var(--fg2);padding:4px 0;display:flex;align-items:flex-start;gap:7px;border-bottom:1px solid var(--bd)}
+.mos-restriction:last-child{border-bottom:none}
 
-/* DOC PREVIEW */
-.doc-preview{background:var(--bg);border:1px solid var(--bd);padding:20px;font-family:"Courier New",monospace;font-size:12px;color:var(--fg2);white-space:pre-wrap;line-height:1.7;max-height:60vh;overflow-y:auto}
+/* ── KANBAN / TRACKER ──────────────────────────────────────── */
+.kanban-cols{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.kanban-col{border:1px solid var(--bd);padding:10px}
+.kanban-col-hdr{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--fg-m);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--bd)}
+.kanban-card{background:var(--bg-s);border:1px solid var(--bd);padding:10px;margin-bottom:6px;cursor:pointer;transition:all .15s}
+.kanban-card:hover{border-color:var(--bd-s)}
+.kanban-card-name{font-size:12px;font-weight:700;color:var(--fg2);margin-bottom:4px}
+.kanban-card-meta{font-size:10px;color:var(--fg-m)}
+.kanban-move{display:flex;gap:4px;margin-top:7px}
 
-/* BUTTONS */
+/* ── MODAL ─────────────────────────────────────────────────── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:100;display:flex;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto;animation:fadeIn .15s ease}
+.modal{background:var(--bg-s);border:1px solid var(--bd-m);width:100%;max-width:680px;animation:fadeUp .2s ease}
+.modal-hdr{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--bd)}
+.modal-title{font-size:12px;font-weight:700;color:var(--fg);text-transform:uppercase;letter-spacing:.05em;flex:1}
+.modal-body{padding:18px;max-height:72vh;overflow-y:auto}
+.modal-ftr{display:flex;justify-content:flex-end;gap:8px;padding:12px 18px;border-top:1px solid var(--bd)}
+
+/* ── DOC PREVIEW ───────────────────────────────────────────── */
+.doc-preview{background:var(--bg);border:1px solid var(--bd);padding:18px;font-family:"Courier New",monospace;font-size:12px;color:var(--fg2);white-space:pre-wrap;line-height:1.7;max-height:55vh;overflow-y:auto}
+
+/* ── BUTTONS ───────────────────────────────────────────────── */
 .btn{padding:8px 16px;font-family:inherit;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;transition:all .15s;border:none;outline:none}
 .btn-gold{background:var(--gold);color:#000}
-.btn-gold:hover{background:#e6b800}
+.btn-gold:hover{background:#e6b800;filter:brightness(1.05)}
 .btn-outline{background:none;border:1px solid var(--bd-m);color:var(--fg-m)}
 .btn-outline:hover{border-color:var(--bd-s);color:var(--fg2)}
-.btn-danger{background:rgba(207,0,0,.2);border:1px solid rgba(207,0,0,.4);color:#ff7070}
-.btn-danger:hover{background:rgba(207,0,0,.3)}
+.btn-danger{background:rgba(207,0,0,.15);border:1px solid rgba(207,0,0,.35);color:#ff7070}
+.btn-danger:hover{background:rgba(207,0,0,.25)}
+.btn-green{background:rgba(45,122,79,.2);border:1px solid rgba(45,122,79,.4);color:#5bc989}
+.btn-green:hover{background:rgba(45,122,79,.3)}
 .btn-sm{padding:5px 10px;font-size:11px}
-.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn:disabled{opacity:.35;cursor:not-allowed}
 
-/* REF PANEL */
-.ref-panel{background:rgba(255,204,1,.03);border:1px solid var(--bd);margin-top:16px}
-.ref-hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;cursor:pointer;user-select:none}
-.ref-hdr:hover{background:var(--bg-h)}
-.ref-title{font-size:11px;font-weight:700;color:var(--fg-m);text-transform:uppercase;letter-spacing:.06em}
-.ref-body{padding:12px 14px;display:flex;flex-direction:column;gap:8px}
-.ref-entry{font-size:11px;color:var(--fg2);line-height:1.6}
-.ref-para{font-weight:700;color:var(--gold);margin-right:6px}
+/* ── ALERTS / BANNERS ──────────────────────────────────────── */
+.alert{padding:10px 14px;font-size:12px;line-height:1.5;display:flex;gap:10px;align-items:flex-start;margin-bottom:12px}
+.alert-warn{background:rgba(176,120,0,.12);border:1px solid rgba(176,120,0,.35);color:#ffb84d}
+.alert-info{background:rgba(26,95,168,.1);border:1px solid rgba(26,95,168,.3);color:#5b9fd4}
+.alert-danger{background:rgba(207,0,0,.12);border:1px solid rgba(207,0,0,.35);color:#ff6b6b}
+.alert-success{background:rgba(45,122,79,.1);border:1px solid rgba(45,122,79,.3);color:#5bc989}
+.alert-icon{font-size:14px;flex-shrink:0;margin-top:1px}
 
-/* RESUME MODAL */
+/* ── RESUME MODAL ──────────────────────────────────────────── */
 .resume-modal{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:200;display:flex;align-items:center;justify-content:center;animation:fadeIn .15s}
 .resume-box{background:var(--bg-s);border:1px solid var(--bd-m);padding:28px;max-width:360px;width:100%;margin:16px;animation:fadeUp .2s ease}
 .resume-title{font-size:14px;font-weight:700;color:var(--fg);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
 .resume-applicant{font-size:18px;font-weight:700;color:var(--gold);margin-bottom:4px}
 .resume-ts{font-size:11px;color:var(--fg-m);margin-bottom:20px}
 
-/* UTILITY */
+/* ── UTILITY ───────────────────────────────────────────────── */
 .row{display:flex;align-items:center;gap:8px}
 .col{display:flex;flex-direction:column;gap:6px}
 .muted{color:var(--fg-m)}
 .gold{color:var(--gold)}
 .danger{color:#ff6b6b}
+.success{color:#5bc989}
 .label-sm{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--fg-m)}
-.divider{height:1px;background:var(--bd);margin:16px 0}
-.empty-state{text-align:center;padding:32px 20px;color:var(--fg-m);font-size:12px}
+.divider{height:1px;background:var(--bd);margin:14px 0}
+.empty-state{text-align:center;padding:28px 20px;color:var(--fg-m);font-size:12px}
+.new-badge{background:rgba(45,122,79,.2);color:#5bc989;font-size:9px;font-weight:700;padding:1px 5px;letter-spacing:.06em;text-transform:uppercase;vertical-align:middle;margin-left:5px}
 
-/* PRINT STYLES */
+/* ── PRINT ─────────────────────────────────────────────────── */
 @media print{
   body{background:#fff;color:#000}
-  .hdr,.phase-nav,.no-print{display:none!important}
-  .main{overflow:visible;padding:0}
+  .topbar,.sidebar,.tab-nav,.ref-panel,.no-print{display:none!important}
+  .main-scroll{overflow:visible;padding:0}
+  .app-shell{display:block}
 }
 </style>
 </head>
@@ -244,27 +401,54 @@ select.form-input{cursor:pointer}
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
 <script type="text/babel">
-const { useState, useEffect, useCallback, useRef } = React;
-const { OFFENSE_CATEGORIES, QUALIFYING_QUESTIONS, CHECKLIST_ITEMS, SAMPLE_SCENARIOS, PARA_TEXT, ED_LEVELS, US_STATES } = window;
+const { useState, useEffect, useCallback, useRef, useMemo } = React;
+const {
+  OFFENSE_CATEGORIES, QUALIFYING_QUESTIONS, CHECKLIST_ITEMS,
+  SAMPLE_SCENARIOS, PARA_TEXT, ED_LEVELS, US_STATES,
+  MOS_RESTRICTIONS, APPROVABILITY_FACTORS
+} = window;
 
-/* ── Icons ──────────────────────────────────────────────── */
+/* ── Icons ─────────────────────────────────────────────── */
 const IcoCheck  = () => <svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 3.8L3.8 7L9 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>;
 const IcoX      = ({s=10,c="currentColor"}) => <svg width={s} height={s} viewBox="0 0 10 10" fill="none"><path d="M1 1L9 9M9 1L1 9" stroke={c} strokeWidth="2" strokeLinecap="round"/></svg>;
-const IcoChev   = ({open}) => <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style={{transform:open?"rotate(180deg)":"none",transition:"transform .2s"}}><path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>;
-const IcoDoc    = () => <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 2h7l3 3v9H3V2z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"/><path d="M10 2v3h3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/><path d="M5 8h6M5 10.5h4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>;
-const IcoPrint  = () => <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="5" width="12" height="8" rx="1" stroke="currentColor" strokeWidth="1.3"/><path d="M4 5V3h8v2M5 10h6M5 12h4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>;
-const IcoClock  = () => <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.3"/><path d="M7 4v3l2 2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>;
-const IcoShield = () => <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1.5L2 4v4c0 2.5 2 4.5 5 5 3-0.5 5-2.5 5-5V4L7 1.5z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"/></svg>;
-const IcoPlus   = () => <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>;
-const IcoTrash  = () => <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1.5 3h9M5 3V2h2v1M3 3l.5 7h5L9 3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>;
+const IcoChev   = ({open,size=10}) => <svg width={size} height={size} viewBox="0 0 10 10" fill="none" style={{transform:open?"rotate(180deg)":"none",transition:"transform .2s"}}><path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>;
+const IcoDoc    = () => <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M3 2h7l3 3v9H3V2z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"/><path d="M10 2v3h3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/><path d="M5 8h6M5 10.5h4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>;
+const IcoPrint  = () => <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="2" y="5" width="12" height="8" rx="1" stroke="currentColor" strokeWidth="1.3"/><path d="M4 5V3h8v2M5 10h6M5 12h4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>;
+const IcoClock  = () => <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.3"/><path d="M7 4v3l2 2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>;
+const IcoShield = () => <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M7 1.5L2 4v4c0 2.5 2 4.5 5 5 3-0.5 5-2.5 5-5V4L7 1.5z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"/></svg>;
+const IcoPlus   = () => <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>;
+const IcoTrash  = () => <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M1.5 3h9M5 3V2h2v1M3 3l.5 7h5L9 3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>;
+const IcoUser   = () => <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="5" r="3" stroke="currentColor" strokeWidth="1.3"/><path d="M2 13c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>;
+const IcoStar   = () => <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1l1.4 3.1H11L8.1 6.4l1.1 3.2L6 7.7l-3.2 1.9L3.9 6.4 1 4.1h3.6z" stroke="currentColor" strokeWidth="1.1" fill="currentColor" fillOpacity=".3"/></svg>;
+const IcoGauge  = () => <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 11a5 5 0 1 1 10 0" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/><path d="M7 11L4.5 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>;
+const IcoMOS    = () => <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><rect x="1.5" y="3" width="11" height="8" rx="1" stroke="currentColor" strokeWidth="1.3"/><path d="M5 3V2h4v1M4 7h6M4 9.5h4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>;
 
-/* ── Helpers ─────────────────────────────────────────────── */
-const STORAGE_KEY = 'moral-waiver-draft';
+/* ── Storage ────────────────────────────────────────────── */
+const STORAGE_KEY = 'moral-waiver-v3';
 
-const loadDraft = () => { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)||'null'); } catch { return null; } };
-const saveDraft = (state) => { try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...state, savedAt: new Date().toISOString() })); } catch {} };
-const clearDraft = () => { try { localStorage.removeItem(STORAGE_KEY); } catch {} };
+const loadRoster = () => { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)||'null'); } catch { return null; } };
+const saveRoster = (roster) => { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(roster)); } catch {} };
 
+const blankApplicant = () => ({
+  id: `a${Date.now()}`,
+  savedAt: new Date().toISOString(),
+  // Applicant Info
+  lastName:'', firstName:'', mi:'', ssn:'', dob:'', rsid:'',
+  educationLevel:'', educationCode:'', afqt:'', psNps:'', maritalStatus:'',
+  numDependents:'', dependentAges:'',
+  // Recruiter Info
+  recruiterUnit:'', recruiterAddress:'', recruiterOfficeSym:'', recruiterName:'', recruiterRank:'',
+  // Screening
+  offenses: [],       // { id, categoryId, verdict, answers, ...offense log data }
+  // Packet
+  checklistStatus:{}, checklistNotes:{}, expDates:{},
+  // Tracker
+  trackerStatus:'building', trackerNotes:'', submittedDate:'', approvedDate:'',
+  // MOS
+  mosCode:'',
+});
+
+/* ── Helpers ────────────────────────────────────────────── */
 const fmtDate = iso => { if (!iso) return '—'; try { return new Date(iso).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); } catch { return iso; } };
 const today = () => new Date().toISOString().split('T')[0];
 
@@ -282,44 +466,125 @@ const getExpiryStatus = (days) => {
   return 'ok';
 };
 
-/* Determine authority from offense category + major_count answer */
-const computeAuthority = (offenseId, majorCount) => {
-  const cat = OFFENSE_CATEGORIES.find(c => c.id === offenseId);
-  if (!cat || cat.bar) return 'NONE';
-  if (cat.authority === 'DMPM') return 'DMPM';
-  if (cat.level === 'MAJOR') {
-    if (majorCount === '1') return 'USAREC';
-    return 'USAREC';
-  }
-  // Juvenile with adverse disposition → USAREC
-  return cat.authority || 'BN';
-};
-
+/* ── Core Logic ─────────────────────────────────────────── */
 const computeVerdictFromAnswers = (offenseId, answers) => {
   const cat = OFFENSE_CATEGORIES.find(c => c.id === offenseId);
   if (!cat) return null;
-  if (cat.bar) return { type:'NOT_WAIVABLE', reason: cat.barText, cite: `AR 601-210, ${cat.barPara}` };
 
-  const { is_adult, disposition, pending_charges, civil_restraint, major_count, lautenberg, sex_offender, confinement_days } = answers;
+  // No-waiver-required categories
+  if (cat.noWaiverRequired) return { type:'NO_WAIVER_REQUIRED', reason: cat.noWaiverText || 'No waiver required for this offense type.', cite:'AR 601-210, para 4-35' };
+  if (cat.bar) return { type:'NOT_WAIVABLE', reason: cat.barText, cite:`AR 601-210, ${cat.barPara}` };
 
-  if (disposition === 'dismissed') return { type:'NO_WAIVER_REQUIRED', reason:'No adverse court disposition — waiver not required.', cite:'AR 601-210, para 4-30' };
-  if (disposition === 'self_admit') return { type:'ETP_REQUIRED', reason:'Self-admittal with no court record. An Exception to Policy may be required before submission. Verify with battalion S1.', cite:'AR 601-210, para 4-30' };
-  if (pending_charges === 'yes') return { type:'NOT_WAIVABLE', reason:'Applicant has pending criminal or juvenile charges. Cannot process until resolved.', cite:'AR 601-210, para 4-22g' };
-  if (civil_restraint === 'yes') return { type:'NOT_WAIVABLE', reason:'Applicant is currently under civil restraint (confinement, parole, or probation). Cannot process.', cite:'AR 601-210, para 4-22h' };
-  if (major_count === '2plus') return { type:'NOT_WAIVABLE', reason:'Two or more major misconduct (felony-level) convictions — permanently disqualified.', cite:'AR 601-210, para 4-22i' };
-  if (lautenberg === 'yes') return { type:'NOT_WAIVABLE', reason:'Lautenberg Amendment conviction — absolute bar to enlistment.', cite:'AR 601-210, Table 4-4, Code 414' };
-  if (sex_offender === 'yes') return { type:'NOT_WAIVABLE', reason:'Sex offense or sex offender registration — absolute bar.', cite:'AR 601-210, para 4-22j' };
+  const { disposition, pending_charges, civil_restraint, major_count, lautenberg, sex_offender, confinement_days } = answers;
 
-  // Waiting period check
-  if (confinement_days === '15plus') return { type:'WAITING_PERIOD', waitMonths:6, reason:'6-month waiting period required after release from confinement (15+ days). BN CO may waive up to 3 months of this period.', cite:'AR 601-210, para 4-31' };
-  if (confinement_days === 'under15') return { type:'WAITING_PERIOD', waitMonths:3, reason:'3-month waiting period required after release from confinement (under 15 days). BN CO may waive up to 45 days.', cite:'AR 601-210, para 4-31' };
+  if (disposition === 'dismissed') return { type:'NO_WAIVER_REQUIRED', reason:'No adverse court disposition — waiver is not required. Document in GENESIS remarks.', cite:'AR 601-210, para 4-30' };
+  if (disposition === 'self_admit') return { type:'ETP_REQUIRED', reason:'Self-admittal with no court record. An Exception to Policy (ETP) may be required before submission. Verify with battalion S1 before building the packet.', cite:'AR 601-210, para 4-30' };
+  if (pending_charges === 'yes') return { type:'NOT_WAIVABLE', reason:'Applicant has pending criminal or juvenile charges. Cannot process until ALL charges are fully resolved.', cite:'AR 601-210, para 4-22g' };
+  if (civil_restraint === 'yes') return { type:'NOT_WAIVABLE', reason:'Applicant is currently under civil restraint (confinement, parole, or supervised probation). Cannot process.', cite:'AR 601-210, para 4-22h' };
+  if (major_count === '2plus') return { type:'NOT_WAIVABLE', reason:'Two or more major misconduct (felony-level) convictions — permanently disqualified. No waiver authority exists at any level.', cite:'AR 601-210, para 4-22i' };
+  if (lautenberg === 'yes') return { type:'NOT_WAIVABLE', reason:'Lautenberg Amendment conviction — absolute bar to enlistment at every level.', cite:'AR 601-210, Table 4-4, Code 414' };
+  if (sex_offender === 'yes') return { type:'NOT_WAIVABLE', reason:'Sex offense or sex offender registration requirement — absolute bar.', cite:'AR 601-210, para 4-22j' };
 
-  const authority = computeAuthority(offenseId, major_count);
+  if (confinement_days === '15plus') return { type:'WAITING_PERIOD', waitMonths:6, reason:'6-month waiting period required after release from confinement (15+ days). BN CO may waive up to 3 months of this waiting period.', cite:'AR 601-210, para 4-31' };
+  if (confinement_days === 'under15') return { type:'WAITING_PERIOD', waitMonths:3, reason:'3-month waiting period required after release from confinement (under 15 days). BN CO may waive up to 45 days of this waiting period.', cite:'AR 601-210, para 4-31' };
+
+  const authority = cat.authority || 'BN';
   return { type:'WAIVABLE', authority, cite:'AR 601-210, Chapter 4' };
 };
 
-/* Determine which checklist items are required */
-const getRequiredChecklist = (offenseId, authority, isTrafficOnly) => {
+// Determine the governing (highest) authority across all screened offenses
+const computeGoverningAuthority = (screenedOffenses) => {
+  const order = ['NONE','BN','USAREC','DMPM'];
+  let highest = 'BN';
+  for (const so of screenedOffenses) {
+    if (so.verdict?.type === 'NOT_WAIVABLE') return 'NONE';
+    if (so.verdict?.type === 'WAIVABLE') {
+      const auth = so.verdict.authority;
+      if (order.indexOf(auth) > order.indexOf(highest)) highest = auth;
+    }
+  }
+  return highest;
+};
+
+// Determine overall case verdict
+const computeOverallVerdict = (screenedOffenses) => {
+  if (!screenedOffenses || screenedOffenses.length === 0) return null;
+  // Any absolute bar → NOT_WAIVABLE
+  for (const so of screenedOffenses) {
+    if (so.verdict?.type === 'NOT_WAIVABLE') return 'NOT_WAIVABLE';
+  }
+  // Any waiting period
+  for (const so of screenedOffenses) {
+    if (so.verdict?.type === 'WAITING_PERIOD') return 'WAITING_PERIOD';
+  }
+  // Any ETP
+  for (const so of screenedOffenses) {
+    if (so.verdict?.type === 'ETP_REQUIRED') return 'ETP_REQUIRED';
+  }
+  // If any waivable, overall is waivable
+  if (screenedOffenses.some(so => so.verdict?.type === 'WAIVABLE')) return 'WAIVABLE';
+  // All no-waiver or dismissed
+  return 'NO_WAIVER_REQUIRED';
+};
+
+const computeApprovabilityScore = (screenedOffenses, applicant) => {
+  if (!screenedOffenses?.length) return null;
+  const ov = computeOverallVerdict(screenedOffenses);
+  if (ov === 'NOT_WAIVABLE') return null;
+
+  let score = 60; // baseline
+  const factors = [];
+
+  // Authority mod
+  const auth = computeGoverningAuthority(screenedOffenses);
+  const authMod = APPROVABILITY_FACTORS.authorityMods[auth] || 0;
+  if (authMod !== 0) factors.push({ label:`${auth} level authority`, mod:authMod });
+  score += authMod;
+
+  // Offense count
+  const cnt = screenedOffenses.filter(so => so.verdict?.type === 'WAIVABLE' || so.verdict?.type === 'ETP_REQUIRED').length;
+  const cntMod = cnt === 1 ? 15 : cnt === 2 ? -10 : cnt === 3 ? -20 : -35;
+  if (cntMod !== 0) factors.push({ label:`${cnt} waiver offense(s)`, mod:cntMod });
+  score += cntMod;
+
+  // Time since most recent offense (from offense log)
+  const offenseDates = screenedOffenses.flatMap(so => so.offenseDate ? [new Date(so.offenseDate)] : []).sort((a,b)=>b-a);
+  if (offenseDates.length > 0) {
+    const yearsAgo = (Date.now() - offenseDates[0].getTime()) / (365.25*24*3600*1000);
+    const tf = APPROVABILITY_FACTORS.timeFactors.slice().reverse().find(t => yearsAgo <= t.yearsAgo) || APPROVABILITY_FACTORS.timeFactors[APPROVABILITY_FACTORS.timeFactors.length-1];
+    if (tf.mod !== 0) factors.push({ label:tf.label, mod:tf.mod });
+    score += tf.mod;
+  }
+
+  // AFQT
+  const afqt = parseInt(applicant.afqt);
+  if (!isNaN(afqt)) {
+    const am = APPROVABILITY_FACTORS.afqtMods.find(a => afqt >= a.min);
+    if (am && am.mod !== 0) { factors.push({ label:am.label, mod:am.mod }); score += am.mod; }
+  }
+
+  // Education
+  const eduMod = APPROVABILITY_FACTORS.educationMods[applicant.educationLevel] ?? 0;
+  if (eduMod !== 0) factors.push({ label:applicant.educationLevel, mod:eduMod });
+  score += eduMod;
+
+  // Juvenile bonus
+  if (screenedOffenses.some(so => so.answers?.is_adult === 'no')) {
+    factors.push({ label:'Juvenile offense (more sympathetic)', mod:APPROVABILITY_FACTORS.juvenileMod });
+    score += APPROVABILITY_FACTORS.juvenileMod;
+  }
+
+  // First offense bonus
+  if (screenedOffenses.every(so => so.answers?.major_count === '0' || so.answers?.major_count === undefined)) {
+    factors.push({ label:'No prior major misconduct', mod:APPROVABILITY_FACTORS.firstOffenseMod });
+    score += APPROVABILITY_FACTORS.firstOffenseMod;
+  }
+
+  score = Math.max(5, Math.min(95, score));
+  return { score: Math.round(score), factors };
+};
+
+const getRequiredChecklist = (authority, isTrafficOnly) => {
   return CHECKLIST_ITEMS.filter(item => {
     if (item.group === 'all') return true;
     if (item.group === 'non_traffic' && !isTrafficOnly) return true;
@@ -330,290 +595,492 @@ const getRequiredChecklist = (offenseId, authority, isTrafficOnly) => {
   });
 };
 
-/* ── Header ─────────────────────────────────────────────── */
-const Header = ({ theme, setTheme, onLoadSample, onNewApplicant }) => {
-  const [menuOpen, setMenuOpen] = useState(false);
+const computeReadiness = (applicant, screenedOffenses, clStatus) => {
+  let score = 0;
+  const breakdown = [];
+
+  // Screener complete
+  const overallV = computeOverallVerdict(screenedOffenses);
+  if (overallV) { score += 15; breakdown.push({ label:'Eligibility determined', done:true }); }
+  else breakdown.push({ label:'Eligibility screener', done:false });
+
+  // Applicant info
+  const infoFields = ['lastName','firstName','dob','rsid'];
+  const infoFilled = infoFields.every(f => applicant[f]);
+  if (infoFilled) { score += 10; breakdown.push({ label:'Applicant info complete', done:true }); }
+  else breakdown.push({ label:'Applicant info', done:false });
+
+  // Offenses logged
+  if (screenedOffenses.some(so => so.offenseDate)) { score += 10; breakdown.push({ label:'Offenses logged', done:true }); }
+  else breakdown.push({ label:'Offense log', done:false });
+
+  // Checklist items
+  const auth = computeGoverningAuthority(screenedOffenses) || 'BN';
+  const isTrafficOnly = screenedOffenses.every(so => {
+    const cat = OFFENSE_CATEGORIES.find(c => c.id === so.categoryId);
+    return cat && cat.group === 'traffic';
+  });
+  const required = getRequiredChecklist(auth, isTrafficOnly);
+  const completedItems = required.filter(i => clStatus[i.id] === 'complete').length;
+  const itemPct = required.length > 0 ? Math.round((completedItems / required.length) * 65) : 0;
+  score += itemPct;
+  breakdown.push({ label:`Checklist (${completedItems}/${required.length})`, done: completedItems === required.length && required.length > 0 });
+
+  return { score: Math.min(100, score), breakdown };
+};
+
+/* ── Readiness Ring ─────────────────────────────────────── */
+const ReadinessRing = ({ score }) => {
+  const R = 15, C = 2*Math.PI*R;
+  const offset = C - (score/100)*C;
+  const color = score >= 80 ? '#5bc989' : score >= 50 ? 'var(--gold)' : '#ff7070';
   return (
-    <div className="hdr">
-      <span className="hdr-badge">4D5E</span>
-      <div style={{flex:1}}>
-        <div className="hdr-title">Moral Waiver Builder</div>
-        <div className="hdr-sub">AR 601-210, Chapter 4 · 8 Nov 2023</div>
-      </div>
-      <div style={{display:'flex',gap:6,alignItems:'center',position:'relative'}}>
-        <button className="hdr-btn" onClick={()=>setMenuOpen(v=>!v)}>Sample Scenarios</button>
-        {menuOpen && (
-          <div style={{position:'absolute',top:'100%',right:0,background:'var(--bg-s)',border:'1px solid var(--bd-m)',zIndex:50,minWidth:220,marginTop:4}} className="fade-in">
-            {SAMPLE_SCENARIOS.map(s => (
-              <button key={s.id} onClick={()=>{onLoadSample(s);setMenuOpen(false);}}
-                style={{display:'block',width:'100%',background:'none',border:'none',borderBottom:'1px solid var(--bd)',padding:'10px 14px',textAlign:'left',cursor:'pointer',color:'var(--fg2)',fontFamily:'inherit',fontSize:12}}
-                onMouseEnter={e=>e.currentTarget.style.background='var(--bg-h)'}
-                onMouseLeave={e=>e.currentTarget.style.background='none'}>
-                <div style={{fontWeight:700,fontSize:11}}>{s.title}</div>
-                <div style={{fontSize:10,color:'var(--fg-m)',marginTop:2}}>{s.tag}</div>
-              </button>
-            ))}
-          </div>
-        )}
-        <button className="hdr-btn" onClick={onNewApplicant}>New Applicant</button>
-        <button className="hdr-btn" onClick={()=>setTheme(t=>t==='dark'?'light':'dark')}>
-          {theme==='dark'?'Light':'Dark'}
-        </button>
-      </div>
+    <div className="readiness-ring" title={`Packet ${score}% ready`}>
+      <svg width="36" height="36" viewBox="0 0 36 36">
+        <circle className="ring-bg" cx="18" cy="18" r={R}/>
+        <circle className="ring-fill" cx="18" cy="18" r={R}
+          stroke={color} strokeDasharray={C} strokeDashoffset={offset}/>
+      </svg>
+      <div className="readiness-pct" style={{color}}>{score}%</div>
     </div>
   );
 };
 
-/* ── Phase Nav ──────────────────────────────────────────── */
-const PhaseNav = ({ phase, setPhase, p1Done, p2Done }) => (
-  <div className="phase-nav">
-    {[
-      { n:1, label:'Eligibility Screener' },
-      { n:2, label:'Applicant & Offenses' },
-      { n:3, label:'Build Packet' },
-    ].map(({ n, label }) => (
-      <button key={n} className={`phase-tab${phase===n?' active':''}${(n===1&&p1Done)||(n===2&&p2Done)?' done':''}`}
-        disabled={n===2&&!p1Done || n===3&&(!p1Done||!p2Done)}
-        onClick={()=>setPhase(n)}>
-        <span className="phase-num">{(n===1&&p1Done)||(n===2&&p2Done)?<IcoCheck/>:n}</span>
-        {label}
-      </button>
-    ))}
-  </div>
-);
+/* ── Applicant Card (Sidebar) ───────────────────────────── */
+const ApplicantCard = ({ appl, active, onClick, onDelete }) => {
+  const overallV = computeOverallVerdict(appl.offenses||[]);
+  const { score } = computeReadiness(appl, appl.offenses||[], appl.checklistStatus||{});
+  const statusColor = overallV === 'NOT_WAIVABLE' ? 'status-red' :
+    score >= 80 ? 'status-green' : score >= 30 ? 'status-yellow' : 'status-gray';
+  const name = [appl.firstName, appl.lastName].filter(Boolean).join(' ') || 'Unnamed Applicant';
+  const auth = computeGoverningAuthority(appl.offenses||[]);
+  return (
+    <div className={`appl-card${active?' active':''}`} onClick={onClick}>
+      <div className={`appl-card-status ${statusColor}`}/>
+      <div className="appl-card-name">{name}</div>
+      <div className="appl-card-meta">
+        {appl.rsid && <span style={{marginRight:6}}>{appl.rsid}</span>}
+        {auth !== 'BN' && auth !== 'NONE' && <span style={{color:'var(--gold)'}}>{auth}</span>}
+        <span style={{float:'right'}}>{score}% ready</span>
+      </div>
+      <button className="btn btn-danger btn-sm" style={{marginTop:6,width:'100%',padding:'3px 0',fontSize:10}}
+        onClick={e=>{e.stopPropagation();onDelete();}}>Remove</button>
+    </div>
+  );
+};
 
-/* ── Phase 1 ─────────────────────────────────────────────── */
-const Phase1 = ({ selectedOffense, setSelectedOffense, answers, setAnswers, verdict, setVerdict }) => {
-  const [step, setStep] = useState(-1); // -1 = selecting offense, 0+ = question index
+/* ── Phase 1: Multi-Offense Screener ───────────────────── */
+const Phase1 = ({ applicant, setApplicant, onReadinessChange }) => {
+
+  const [addingOffense, setAddingOffense] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [qStep, setQStep] = useState(0);
   const [tempAnswer, setTempAnswer] = useState(null);
+  const [currentAnswers, setCurrentAnswers] = useState({});
+  const [offenseDate, setOffenseDate] = useState('');
 
-  // Reset when offense changes
-  useEffect(() => {
-    if (selectedOffense) {
-      const cat = OFFENSE_CATEGORIES.find(c => c.id === selectedOffense);
-      if (cat && cat.bar) {
-        setVerdict({ type:'NOT_WAIVABLE', reason:cat.barText, cite:`AR 601-210, ${cat.barPara}` });
-        setAnswers({});
-        setStep(99);
-      } else {
-        setStep(0);
-        setAnswers({});
-        setVerdict(null);
-        setTempAnswer(null);
-      }
-    } else {
-      setStep(-1);
+  const screenedOffenses = applicant.offenses || [];
+  const overallV = computeOverallVerdict(screenedOffenses);
+  const auth = computeGoverningAuthority(screenedOffenses);
+  const authorityLabels = { BN:'Battalion Commander', USAREC:'Commanding General, USAREC', DMPM:'Deputy Chief of Staff, G-1 (DMPM)', NONE:'Not Applicable — Case Not Waivable' };
+  const approv = computeApprovabilityScore(screenedOffenses, applicant);
+
+  const updateOffenses = (offenses) => setApplicant(prev => ({...prev, offenses}));
+
+  const startAdd = () => {
+    setSelectedCategory(null); setQStep(0); setCurrentAnswers({}); setTempAnswer(null); setOffenseDate('');
+    setAddingOffense(true);
+  };
+
+  const cancelAdd = () => { setAddingOffense(false); setSelectedCategory(null); };
+
+  const selectCategory = (catId) => {
+    const cat = OFFENSE_CATEGORIES.find(c => c.id === catId);
+    setSelectedCategory(catId);
+    if (cat?.bar || cat?.noWaiverRequired) {
+      // Immediate verdict
+      const verdict = computeVerdictFromAnswers(catId, {});
+      finishScreening(catId, {}, verdict);
+      return;
     }
-  }, [selectedOffense]);
+    setQStep(0); setCurrentAnswers({}); setTempAnswer(null);
+  };
 
   const submitAnswer = () => {
     if (!tempAnswer) return;
-    const q = QUALIFYING_QUESTIONS[step];
-    const newAnswers = { ...answers, [q.id]: tempAnswer };
-    setAnswers(newAnswers);
+    const q = QUALIFYING_QUESTIONS[qStep];
+    const newAnswers = { ...currentAnswers, [q.id]: tempAnswer };
+    setCurrentAnswers(newAnswers);
     setTempAnswer(null);
 
-    // Check for early verdict
-    const v = computeVerdictFromAnswers(selectedOffense, newAnswers);
-    const isTerminal = v && (v.type === 'NOT_WAIVABLE' || v.type === 'NO_WAIVER_REQUIRED' || v.type === 'ETP_REQUIRED');
+    const v = computeVerdictFromAnswers(selectedCategory, newAnswers);
+    const earlyTermIds = ['disposition','pending_charges','civil_restraint','major_count','lautenberg','sex_offender'];
+    const isEarlyTerm = earlyTermIds.includes(q.id) && (v?.type === 'NOT_WAIVABLE' || v?.type === 'NO_WAIVER_REQUIRED' || v?.type === 'ETP_REQUIRED');
 
-    // Early terminate?
-    if (q.id === 'disposition' && (tempAnswer === 'dismissed' || tempAnswer === 'self_admit')) {
-      setVerdict(v); setStep(99); return;
-    }
-    if (q.id === 'pending_charges' && tempAnswer === 'yes') { setVerdict(v); setStep(99); return; }
-    if (q.id === 'civil_restraint' && tempAnswer === 'yes') { setVerdict(v); setStep(99); return; }
-    if (q.id === 'major_count' && tempAnswer === '2plus') { setVerdict(v); setStep(99); return; }
-    if (q.id === 'lautenberg' && tempAnswer === 'yes') { setVerdict(v); setStep(99); return; }
-    if (q.id === 'sex_offender' && tempAnswer === 'yes') { setVerdict(v); setStep(99); return; }
+    if (isEarlyTerm) { finishScreening(selectedCategory, newAnswers, v); return; }
 
-    // Advance to next question or compute final verdict
-    const nextStep = step + 1;
-    if (nextStep >= QUALIFYING_QUESTIONS.length) {
-      setVerdict(computeVerdictFromAnswers(selectedOffense, newAnswers));
-      setStep(99);
+    const next = qStep + 1;
+    if (next >= QUALIFYING_QUESTIONS.length) {
+      finishScreening(selectedCategory, newAnswers, computeVerdictFromAnswers(selectedCategory, newAnswers));
     } else {
-      setStep(nextStep);
+      setQStep(next);
     }
   };
 
-  const goBack = () => {
-    if (step === 0) { setSelectedOffense(null); setStep(-1); }
-    else {
-      const newStep = step - 1;
-      setStep(newStep);
-      const q = QUALIFYING_QUESTIONS[newStep];
-      setTempAnswer(answers[q.id] || null);
-      const reduced = { ...answers };
-      // Remove answers from current step onwards
-      QUALIFYING_QUESTIONS.slice(newStep).forEach(qq => delete reduced[qq.id]);
-      setAnswers(reduced);
-      setVerdict(null);
-    }
+  const finishScreening = (catId, answers, verdict) => {
+    const newEntry = {
+      id:`so${Date.now()}`, categoryId:catId, answers, verdict, offenseDate,
+      // offense log fields (to be filled in Phase 2 tab)
+      description:'', city:'', county:'', state:'', disposition:'', courtDocs:false, incidentRpt:false, waivedOffense:true
+    };
+    updateOffenses([...screenedOffenses, newEntry]);
+    setAddingOffense(false); setSelectedCategory(null);
   };
 
-  const resetAll = () => { setSelectedOffense(null); setAnswers({}); setVerdict(null); setStep(-1); setTempAnswer(null); };
+  const removeOffense = (id) => updateOffenses(screenedOffenses.filter(so => so.id !== id));
 
-  const totalQ = QUALIFYING_QUESTIONS.length;
+  const updateOffenseField = (id, field, val) => {
+    updateOffenses(screenedOffenses.map(so => so.id === id ? {...so, [field]:val} : so));
+  };
+
+  // Drag‑and‑drop reordering handlers
+  const handleDragStart = (e, id) => {
+    e.dataTransfer.setData('text/plain', id);
+    // Add visual cue
+    e.currentTarget.classList.add('dragging');
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    const draggedId = e.dataTransfer.getData('text/plain');
+    const targetElem = e.target.closest('.offense-chip');
+    const targetId = targetElem?.getAttribute('data-id');
+    if (!draggedId || !targetId || draggedId === targetId) return;
+    reorderOffenses(draggedId, targetId);
+    // Clean up visual cue
+    const draggingEl = document.querySelector('.offense-chip.dragging');
+    if (draggingEl) draggingEl.classList.remove('dragging');
+  };
+
+  const reorderOffenses = (fromId, toId) => {
+    const fromIdx = screenedOffenses.findIndex(o => o.id === fromId);
+    const toIdx = screenedOffenses.findIndex(o => o.id === toId);
+    if (fromIdx === -1 || toIdx === -1) return;
+    const newList = [...screenedOffenses];
+    const [moved] = newList.splice(fromIdx, 1);
+    newList.splice(toIdx, 0, moved);
+    updateOffenses(newList);
+  };
+
+  const goBackQ = () => {
+    if (qStep === 0) { setSelectedCategory(null); return; }
+    const prev = qStep - 1;
+    const q = QUALIFYING_QUESTIONS[prev];
+    setTempAnswer(currentAnswers[q.id]||null);
+    const reduced = {...currentAnswers};
+    QUALIFYING_QUESTIONS.slice(prev).forEach(qq => delete reduced[qq.id]);
+    setCurrentAnswers(reduced);
+    setQStep(prev);
+  };
+
+  // Group offense categories
+  const groups = [
+    { key:'bars',    label:'⛔ Absolute Bars (Not Waivable)', color:'#ff5555' },
+    { key:'major',   label:'🔴 Major Misconduct (Felony-Level)', color:'#ff6b6b' },
+    { key:'misc',    label:'🟡 Misconduct — Miscellaneous', color:'var(--gold)' },
+    { key:'traffic', label:'🔵 Traffic Offenses', color:'#7eb8ff' },
+    { key:'juvenile',label:'⚪ Juvenile Offenses', color:'var(--fg-m)' },
+    { key:'ps',      label:'🪖 Prior Service (PS Applicants)', color:'#cc99ff' },
+  ];
 
   return (
-    <div className="main">
-      {step === -1 && (
-        <div className="fade-up">
-          <div className="card">
-            <div className="card-hdr"><div className="section-bar"/><div><div className="card-title">Select Offense Category</div><div className="card-sub">Choose the category that best matches the offense requiring a waiver. Absolute bars (red) are not waivable.</div></div></div>
-            <div className="offense-grid">
-              {OFFENSE_CATEGORIES.map(cat => (
-                <button key={cat.id} className={`offense-card${selectedOffense===cat.id?' selected':''}${cat.bar?' bar':''}`} onClick={()=>setSelectedOffense(cat.id)}>
-                  <div className="offense-label">{cat.label}</div>
-                  <div className="offense-sub">{cat.sub}</div>
-                  <span className={`offense-level-badge lvl-${cat.level}`}>{cat.level === 'BAR' ? 'ABSOLUTE BAR' : cat.level}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {step >= 0 && step < 99 && (
-        <div className="q-wrap fade-up">
-          <div className="row" style={{marginBottom:16}}>
-            <button className="btn btn-outline btn-sm" onClick={step===0?resetAll:goBack}>← Back</button>
-            <span className="muted" style={{fontSize:11}}>{OFFENSE_CATEGORIES.find(c=>c.id===selectedOffense)?.label}</span>
-          </div>
-          <div className="q-progress">
-            {QUALIFYING_QUESTIONS.map((q,i) => (
-              <div key={q.id} className={`q-prog-dot${i<step?' done':i===step?' active':''}`}/>
-            ))}
-          </div>
-          <div className="q-card">
-            <div className="q-num">Question {step+1} of {totalQ}</div>
-            <div className="q-text">{QUALIFYING_QUESTIONS[step].q}</div>
-            {QUALIFYING_QUESTIONS[step].hint && <div className="q-hint">{QUALIFYING_QUESTIONS[step].hint}</div>}
-            <div className="q-options">
-              {QUALIFYING_QUESTIONS[step].options.map(opt => (
-                <div key={opt.v} className={`q-opt${tempAnswer===opt.v?' selected':''}`} onClick={()=>setTempAnswer(opt.v)}>
-                  <div className="q-opt-dot">{tempAnswer===opt.v && <div className="q-opt-dot-inner"/>}</div>
-                  <span className="q-opt-label">{opt.l}</span>
-                </div>
-              ))}
-            </div>
-            <div className="q-actions">
-              <button className="btn btn-gold" disabled={!tempAnswer} onClick={submitAnswer}>Next →</button>
-              <button className="btn btn-outline btn-sm" onClick={step===0?resetAll:goBack}>Back</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {step === 99 && verdict && (
-        <div className="fade-up">
-          <div className="row" style={{marginBottom:16}}>
-            <button className="btn btn-outline btn-sm" onClick={resetAll}>← Start Over</button>
-          </div>
-          <VerdictCard verdict={verdict} offenseId={selectedOffense} />
-        </div>
-      )}
-    </div>
-  );
-};
-
-/* ── Verdict Card ────────────────────────────────────────── */
-const VerdictCard = ({ verdict, offenseId }) => {
-  const cat = OFFENSE_CATEGORIES.find(c=>c.id===offenseId);
-  const authorityLabels = { BN:'Battalion Commander', USAREC:'Commanding General, USAREC', DMPM:'Deputy Chief of Staff, G-1 (DMPM)', NONE:'None — Not Waivable' };
-  const verdictLabels = { NOT_WAIVABLE:'Not Waivable', NO_WAIVER_REQUIRED:'No Waiver Required', WAIVABLE:'Waivable', ETP_REQUIRED:'ETP Required', WAITING_PERIOD:'Waiting Period' };
-
-  return (
-    <div className={`card verdict-card verdict-${verdict.type}`}>
-      <div className="verdict-tag">{verdictLabels[verdict.type] || verdict.type}</div>
-      <div className="verdict-title">{
-        verdict.type==='WAIVABLE' ? `Waivable — ${authorityLabels[verdict.authority]||verdict.authority}` :
-        verdict.type==='NO_WAIVER_REQUIRED' ? 'No Waiver Required' :
-        verdict.type==='NOT_WAIVABLE' ? 'Not Waivable — Absolute Bar' :
-        verdict.type==='ETP_REQUIRED' ? 'Exception to Policy Required' :
-        verdict.type==='WAITING_PERIOD' ? `Waiting Period — ${verdict.waitMonths} Month${verdict.waitMonths>1?'s':''}` : ''
-      }</div>
-      <div className="verdict-body">{verdict.reason}</div>
-      <div className="verdict-cite">{verdict.cite}</div>
-
-      {verdict.type==='WAIVABLE' && (
-        <div style={{display:'flex',flexDirection:'column',gap:10,marginTop:8}}>
-          <div className="authority-badge"><IcoShield/>{authorityLabels[verdict.authority]}</div>
-          <div style={{fontSize:11,color:'var(--fg-m)'}}>Waiver valid for <strong style={{color:'var(--fg2)'}}>6 months</strong> from approval date · AR 601-210, para 4-27</div>
-          <div style={{marginTop:6,fontSize:12,color:'var(--fg-m)'}}>Proceed to <strong style={{color:'var(--gold)'}}>Phase 2</strong> to enter applicant information and log offenses.</div>
-        </div>
-      )}
-      {verdict.type==='WAITING_PERIOD' && (
-        <div style={{fontSize:12,color:'var(--fg-m)',marginTop:4}}>All court-ordered requirements must be completed before submission. After the waiting period, proceed to Phase 2.</div>
-      )}
-    </div>
-  );
-};
-
-/* ── Phase 2 ─────────────────────────────────────────────── */
-const Phase2 = ({ applicant, setApplicant, offenses, setOffenses, verdict, answers }) => {
-  const [showModal, setShowModal] = useState(false);
-  const [editIdx, setEditIdx] = useState(null);
-  const [refOpen, setRefOpen] = useState(false);
-  const [offenseForm, setOffenseForm] = useState({ id:'', date:'', description:'', city:'', county:'', state:'', disposition:'', courtDocs:false, incidentRpt:false });
-
-  const authority = verdict?.type==='WAIVABLE' ? verdict.authority : null;
-  const authorityLabels = { BN:'BN CO', USAREC:'USAREC CG', DMPM:'DMPM' };
-
-  const openAdd = () => {
-    setOffenseForm({ id:`o${Date.now()}`, date:'', description:'', city:'', county:'', state:'', disposition:'', courtDocs:false, incidentRpt:false });
-    setEditIdx(null);
-    setShowModal(true);
-  };
-
-  const openEdit = (idx) => {
-    setOffenseForm({ ...offenses[idx] });
-    setEditIdx(idx);
-    setShowModal(true);
-  };
-
-  const saveOffense = () => {
-    if (editIdx !== null) {
-      setOffenses(prev => prev.map((o,i) => i===editIdx ? offenseForm : o));
-    } else {
-      setOffenses(prev => [...prev, offenseForm]);
-    }
-    setShowModal(false);
-  };
-
-  const deleteOffense = (idx) => setOffenses(prev => prev.filter((_,i)=>i!==idx));
-
-  const setAppl = (k,v) => setApplicant(prev=>({...prev,[k]:v}));
-  const setOff  = (k,v) => setOffenseForm(prev=>({...prev,[k]:v}));
-
-  // Relevant paragraphs based on offense / authority
-  const refParas = ['4-28','4-27','4-31'].filter(p=>PARA_TEXT[p]);
-  if (authority==='USAREC'||authority==='DMPM') refParas.push('4-28e4','4-28e5');
-
-  return (
-    <div className="main">
+    <div className="main-scroll">
       <div className="fade-up">
-        {/* Authority badge */}
-        {authority && (
-          <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:16,padding:'10px 14px',background:'var(--bg-c)',border:'1px solid var(--bd-m)'}}>
-            <div className="authority-badge"><IcoShield/>{authorityLabels[authority]||authority} Level</div>
-            <div style={{fontSize:12,color:'var(--fg-m)'}}>All outputs and checklists will be calibrated to this authority level.</div>
+        {/* 2026 Marijuana Update Banner */}
+        <div className="alert alert-success" style={{marginBottom:14}}>
+          <span className="alert-icon">📋</span>
+          <div>
+            <strong>2026 Update — Marijuana Possession:</strong> Per AR 601-210 para 4-6 (effective ~Apr 2026),
+            a <strong>single conviction</strong> for marijuana possession or paraphernalia <strong>no longer requires a waiver</strong>.
+            Select "Traffic — Minor" or see para 4-6. Distribution still requires DMPM waiver.
+          </div>
+        </div>
+
+        {/* Overall Determination */}
+        {screenedOffenses.length > 0 && (
+          <div style={{marginBottom:14}}>
+            <OverallVerdictBanner screenedOffenses={screenedOffenses} auth={auth} authorityLabels={authorityLabels} approv={approv} applicant={applicant}/>
           </div>
         )}
 
+        {/* Screened Offense Stack */}
+        {screenedOffenses.length > 0 && (
+          <div className="card" style={{marginBottom:14}}>
+            <div className="card-hdr">
+              <div className="section-bar"/>
+              <div style={{flex:1}}>
+                <div className="card-title">Screened Offenses</div>
+                <div className="card-sub">Each offense has been individually analyzed — overall case uses the highest applicable authority</div>
+              </div>
+            </div>
+            <div className="offense-stack" onDragOver={e=>e.preventDefault()} onDrop={handleDrop} style={{display:'flex',flexDirection:'column',gap:'8px'}}>
+              {screenedOffenses.map(so => {
+                const cat = OFFENSE_CATEGORIES.find(c => c.id === so.categoryId);
+                const vt = so.verdict?.type;
+                const chipClass = vt==='NOT_WAIVABLE'?'bar':vt==='WAIVABLE'?'waivable':vt==='WAITING_PERIOD'?'waiting':vt==='ETP_REQUIRED'?'etp':vt==='NO_WAIVER_REQUIRED'?'no-waiver':'';
+                const cvClass = vt==='NOT_WAIVABLE'?'chip-v-bar':vt==='WAIVABLE'?'chip-v-waivable':vt==='WAITING_PERIOD'?'chip-v-waiting':vt==='ETP_REQUIRED'?'chip-v-etp':vt==='NO_WAIVER_REQUIRED'?'chip-v-no-waiver':'chip-v-unknown';
+                const vLabel = {WAIVABLE:'Waivable',NOT_WAIVABLE:'Bar',NO_WAIVER_REQUIRED:'No Waiver Needed',ETP_REQUIRED:'ETP Required',WAITING_PERIOD:'Wait Period'}[vt]||'Unknown';
+                return (
+                  <div key={so.id} data-id={so.id} className={`offense-chip ${chipClass}`} draggable onDragStart={e=>handleDragStart(e,so.id)} title={so.verdict?.type==='WAITING_PERIOD' ? `${so.verdict.waitMonths} month${so.verdict.waitMonths>1?'s':''} waiting period` : ''}>
+                    <span className={`chip-verdict ${cvClass}`}>{vLabel}</span>
+                    <div className="chip-label">{cat?.label || so.categoryId}</div>
+                    {so.offenseDate && <span className="chip-auth">{fmtDate(so.offenseDate)}</span>}
+                    {so.verdict?.type==='WAIVABLE' && <span className="chip-auth" style={{marginLeft:4}}>{so.verdict.authority}</span>}
+                    <button className="chip-del" onClick={()=>removeOffense(so.id)} title="Remove this offense"><IcoX s={9}/></button>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Offense log quick-fill for screened offenses */}
+            {screenedOffenses.some(so => so.verdict?.type === 'WAIVABLE' || so.verdict?.type === 'WAITING_PERIOD') && (
+              <div>
+                <div className="form-section">Offense Log Details (for packet documents)</div>
+                <div className="card-sub" style={{marginBottom:10}}>Enter details for each waivable offense — used to auto-fill UF 601-210.08 and documents</div>
+                {screenedOffenses.map((so,i) => {
+                  const cat = OFFENSE_CATEGORIES.find(c => c.id === so.categoryId);
+                  if (so.verdict?.type !== 'WAIVABLE' && so.verdict?.type !== 'WAITING_PERIOD' && so.verdict?.type !== 'ETP_REQUIRED') return null;
+                  return (
+                    <div key={so.id} style={{border:'1px solid var(--bd)',padding:'12px',marginBottom:8,background:'var(--bg-s)'}}>
+                      <div style={{fontSize:11,fontWeight:700,color:'var(--fg-m)',marginBottom:8,textTransform:'uppercase',letterSpacing:'.05em'}}>
+                        {i+1}. {cat?.label}
+                        {so.waivedOffense && <span className="waived-star">★</span>}
+                      </div>
+                      <div className="form-grid" style={{marginBottom:8}}>
+                        <div className="form-field">
+                          <label className="form-label">Offense Date</label>
+                          <input className="form-input" type="date" value={so.offenseDate||''} onChange={e=>updateOffenseField(so.id,'offenseDate',e.target.value)}/>
+                        </div>
+                        <div className="form-field">
+                          <label className="form-label">City / Jurisdiction</label>
+                          <input className="form-input" value={so.city||''} onChange={e=>updateOffenseField(so.id,'city',e.target.value)} placeholder="City"/>
+                        </div>
+                        <div className="form-field">
+                          <label className="form-label">County</label>
+                          <input className="form-input" value={so.county||''} onChange={e=>updateOffenseField(so.id,'county',e.target.value)} placeholder="County"/>
+                        </div>
+                        <div className="form-field">
+                          <label className="form-label">State</label>
+                          <select className="form-input" value={so.state||''} onChange={e=>updateOffenseField(so.id,'state',e.target.value)}>
+                            <option value="">State...</option>
+                            {US_STATES.map(s=><option key={s} value={s}>{s}</option>)}
+                          </select>
+                        </div>
+                      </div>
+                      <div className="form-field" style={{marginBottom:8}}>
+                        <label className="form-label">Nature / Description of Offense</label>
+                        <input className="form-input" value={so.description||''} onChange={e=>updateOffenseField(so.id,'description',e.target.value)} placeholder="Brief description as it would appear on UF 601-210.08"/>
+                      </div>
+                      <div className="form-field" style={{marginBottom:8}}>
+                        <label className="form-label">Court Disposition (exact)</label>
+                        <input className="form-input" value={so.disposition||''} onChange={e=>updateOffenseField(so.id,'disposition',e.target.value)} placeholder="e.g. Convicted — Misdemeanor, $500 fine, 12-month probation"/>
+                      </div>
+                      <div className="row" style={{gap:16}}>
+                        <label style={{display:'flex',alignItems:'center',gap:7,cursor:'pointer',fontSize:12,color:'var(--fg2)'}}>
+                          <input type="checkbox" checked={so.courtDocs||false} onChange={e=>updateOffenseField(so.id,'courtDocs',e.target.checked)}/> Court dockets obtained
+                        </label>
+                        <label style={{display:'flex',alignItems:'center',gap:7,cursor:'pointer',fontSize:12,color:'var(--fg2)'}}>
+                          <input type="checkbox" checked={so.incidentRpt||false} onChange={e=>updateOffenseField(so.id,'incidentRpt',e.target.checked)}/> Police incident report obtained
+                        </label>
+                        <label style={{display:'flex',alignItems:'center',gap:7,cursor:'pointer',fontSize:12,color:'var(--fg2)'}}>
+                          <input type="checkbox" checked={so.waivedOffense!==false} onChange={e=>updateOffenseField(so.id,'waivedOffense',e.target.checked)}/> ★ Mark as waived offense
+                        </label>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Add Offense Flow */}
+        {!addingOffense ? (
+          <div className="card">
+            <div className="card-hdr">
+              <div className="section-bar"/>
+              <div style={{flex:1}}>
+                <div className="card-title">Add Offense to Screen</div>
+                <div className="card-sub">Add each offense separately — system determines overall authority level automatically</div>
+              </div>
+              <div className="row" style={{gap:8}}>
+                <button className="btn btn-gold btn-sm" onClick={startAdd}><IcoPlus/> Add Offense</button>
+              </div>
+            </div>
+            {screenedOffenses.length === 0 && (
+              <div className="empty-state">
+                <div style={{fontSize:24,marginBottom:8}}>⚖️</div>
+                <div>No offenses screened yet. Click <strong>Add Offense</strong> to begin.</div>
+                <div style={{fontSize:10,marginTop:6}}>You can add multiple offenses — the system will compute the governing authority level.</div>
+              </div>
+            )}
+          </div>
+        ) : (
+          /* Adding Offense Flow */
+          <div className="card">
+            <div className="card-hdr">
+              <div className="section-bar"/>
+              <div style={{flex:1}}>
+                <div className="card-title">{selectedCategory ? 'Screening Questions' : 'Select Offense Category'}</div>
+              </div>
+              <button className="btn btn-outline btn-sm" onClick={cancelAdd}>Cancel</button>
+            </div>
+
+            {/* Category Selection */}
+            {!selectedCategory && (
+              <div>
+                <div className="form-field" style={{marginBottom:14}}>
+                  <label className="form-label">Offense Date (optional — for approvability estimate)</label>
+                  <input className="form-input" type="date" style={{maxWidth:200}} value={offenseDate} onChange={e=>setOffenseDate(e.target.value)}/>
+                </div>
+                {groups.map(grp => {
+                  const cats = OFFENSE_CATEGORIES.filter(c => c.group === grp.key);
+                  if (!cats.length) return null;
+                  return (
+                    <div key={grp.key}>
+                      <div className="offense-group-label" style={{color:grp.color}}>{grp.label}</div>
+                      <div className="offense-grid">
+                        {cats.map(cat => (
+                          <button key={cat.id}
+                            className={`offense-card${cat.bar?' bar':''}${cat.noWaiverRequired?' no-waiver':''}`}
+                            onClick={()=>selectCategory(cat.id)}>
+                            <div className="offense-label">{cat.label}</div>
+                            <div className="offense-sub">{cat.sub}</div>
+                            <span className={`offense-level-badge lvl-${cat.bar?'BAR':cat.noWaiverRequired?'NO-WAIVER':cat.level}`}>
+                              {cat.bar?'ABSOLUTE BAR':cat.noWaiverRequired?'NO WAIVER REQD':cat.level}
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Guided Q&A */}
+            {selectedCategory && (
+              <div className="q-wrap">
+                <div className="row" style={{marginBottom:14}}>
+                  <button className="btn btn-outline btn-sm" onClick={goBackQ}>← Back</button>
+                  <span className="muted" style={{fontSize:11}}>{OFFENSE_CATEGORIES.find(c=>c.id===selectedCategory)?.label}</span>
+                </div>
+                <div className="q-progress">
+                  {QUALIFYING_QUESTIONS.map((q,i) => (
+                    <div key={q.id} className={`q-prog-dot${i<qStep?' done':i===qStep?' active':''}`}/>
+                  ))}
+                </div>
+                <div className="q-card">
+                  <div className="q-num">Question {qStep+1} of {QUALIFYING_QUESTIONS.length}</div>
+                  <div className="q-text">{QUALIFYING_QUESTIONS[qStep].q}</div>
+                  {QUALIFYING_QUESTIONS[qStep].hint && <div className="q-hint">{QUALIFYING_QUESTIONS[qStep].hint}</div>}
+                  <div className="q-options">
+                    {QUALIFYING_QUESTIONS[qStep].options.map(opt => (
+                      <div key={opt.v} className={`q-opt${tempAnswer===opt.v?' selected':''}`} onClick={()=>setTempAnswer(opt.v)}>
+                        <div className="q-opt-dot">{tempAnswer===opt.v&&<div className="q-opt-dot-inner"/>}</div>
+                        <span className="q-opt-label">{opt.l}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="q-actions">
+                    <button className="btn btn-gold" disabled={!tempAnswer} onClick={submitAnswer}>Next →</button>
+                    <button className="btn btn-outline btn-sm" onClick={goBackQ}>Back</button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+/* ── Overall Verdict Banner ─────────────────────────────── */
+const OverallVerdictBanner = ({ screenedOffenses, auth, authorityLabels, approv, applicant }) => {
+  const ov = computeOverallVerdict(screenedOffenses);
+  const [showFactors, setShowFactors] = useState(false);
+
+  const configs = {
+    WAIVABLE:          { cls:'verdict-WAIVABLE',          tag:'Waivable', title:`Waivable — ${authorityLabels[auth]||auth}`, icon:'✅' },
+    NOT_WAIVABLE:      { cls:'verdict-NOT_WAIVABLE',      tag:'Not Waivable', title:'Not Waivable — Absolute Bar or Multiple Major Misconduct', icon:'⛔' },
+    ETP_REQUIRED:      { cls:'verdict-ETP_REQUIRED',      tag:'ETP Required', title:'Exception to Policy Required', icon:'⚠️' },
+    WAITING_PERIOD:    { cls:'verdict-WAITING_PERIOD',    tag:'Waiting Period', title:'Mandatory Waiting Period', icon:'⏳' },
+    NO_WAIVER_REQUIRED:{ cls:'verdict-NO_WAIVER_REQUIRED',tag:'No Waiver Needed', title:'No Waiver Required', icon:'✔️' },
+  };
+  const cfg = configs[ov] || { cls:'', tag:'', title:'Pending', icon:'•' };
+
+  return (
+    <div className={`card verdict-card ${cfg.cls}`} style={{padding:'18px 20px'}}>
+      <div className="verdict-tag">{cfg.icon} {cfg.tag}</div>
+      <div className="verdict-title" style={{fontSize:18}}>{cfg.title}</div>
+      {ov === 'WAIVABLE' && (
+        <div style={{display:'flex',flexWrap:'wrap',gap:10,marginTop:10,alignItems:'center'}}>
+          <div className="authority-badge"><IcoShield/> {authorityLabels[auth]||auth}</div>
+          <div style={{fontSize:11,color:'var(--fg-m)'}}>Waiver valid <strong style={{color:'var(--fg2)'}}>6 months</strong> from approval · AR 601-210, para 4-27</div>
+        </div>
+      )}
+      {/* Approvability Meter */}
+      {approv && ov === 'WAIVABLE' && (
+        <div className="approval-meter">
+          <div className="approval-hdr">
+            <div className="approval-label"><IcoGauge/> Approval Likelihood Estimate</div>
+            <div className="approval-score" style={{color: approv.score>=70?'#5bc989':approv.score>=45?'var(--gold)':'#ff7070'}}>
+              {approv.score>=70?'🟢':approv.score>=45?'🟡':'🔴'} {approv.score}%
+            </div>
+          </div>
+          <div className="approval-bar-bg">
+            <div className="approval-bar-fill" style={{width:`${approv.score}%`,background:approv.score>=70?'#5bc989':approv.score>=45?'var(--gold)':'#ff7070'}}/>
+          </div>
+          <button style={{fontSize:10,color:'var(--fg-m)',background:'none',border:'none',cursor:'pointer',marginTop:6,padding:0}} onClick={()=>setShowFactors(v=>!v)}>
+            {showFactors?'▲ Hide factors':'▼ Show factors'}
+          </button>
+          {showFactors && (
+            <div className="approval-factors">
+              {approv.factors.map((f,i)=>(
+                <div key={i} className="approval-factor">
+                  <span className={f.mod>0?'factor-up':'factor-down'}>{f.mod>0?'+':''}{f.mod}</span>
+                  <span>{f.label}</span>
+                </div>
+              ))}
+            </div>
+          )}
+          <div className="approval-disclaimer">Estimate only — actual approval depends on CO interview quality, applicant statement, and command climate. This tool does not predict command decisions.</div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+/* ── Phase 2: Applicant Info ────────────────────────────── */
+const Phase2 = ({ applicant, setApplicant }) => {
+  const setAppl = (k,v) => setApplicant(prev => ({...prev, [k]:v}));
+
+  return (
+    <div className="main-scroll">
+      <div className="fade-up">
         {/* Applicant Info */}
         <div className="card">
-          <div className="card-hdr"><div className="section-bar"/><div className="card-title">Applicant Information</div></div>
-          <div className="form-grid" style={{marginBottom:12}}>
+          <div className="card-hdr"><div className="section-bar"/><div><div className="card-title">Applicant Information</div></div></div>
+          <div className="form-grid-3" style={{marginBottom:10}}>
             {[['lastName','Last Name'],['firstName','First Name'],['mi','MI']].map(([k,l])=>(
-              <div key={k} className={`form-field${k==='mi'?'':''}`}>
+              <div key={k} className="form-field">
                 <label className="form-label">{l}</label>
                 <input className="form-input" value={applicant[k]||''} onChange={e=>setAppl(k,e.target.value)} placeholder={l}/>
               </div>
             ))}
           </div>
-          <div className="form-grid" style={{marginBottom:12}}>
+          <div className="form-grid-3" style={{marginBottom:10}}>
             <div className="form-field">
               <label className="form-label">SSN</label>
               <input className="form-input" value={applicant.ssn||''} onChange={e=>setAppl('ssn',e.target.value)} placeholder="XXX-XX-XXXX" maxLength={11}/>
@@ -627,7 +1094,7 @@ const Phase2 = ({ applicant, setApplicant, offenses, setOffenses, verdict, answe
               <input className="form-input" value={applicant.rsid||''} onChange={e=>setAppl('rsid',e.target.value)} placeholder="RSID"/>
             </div>
           </div>
-          <div className="form-grid" style={{marginBottom:12}}>
+          <div className="form-grid-4" style={{marginBottom:10}}>
             <div className="form-field">
               <label className="form-label">Education Level</label>
               <select className="form-input" value={applicant.educationLevel||''} onChange={e=>setAppl('educationLevel',e.target.value)}>
@@ -636,15 +1103,13 @@ const Phase2 = ({ applicant, setApplicant, offenses, setOffenses, verdict, answe
               </select>
             </div>
             <div className="form-field">
-              <label className="form-label">Education Code</label>
-              <input className="form-input" value={applicant.educationCode||''} onChange={e=>setAppl('educationCode',e.target.value)} placeholder="e.g. 2A, 4E"/>
+              <label className="form-label">Ed Code</label>
+              <input className="form-input" value={applicant.educationCode||''} onChange={e=>setAppl('educationCode',e.target.value)} placeholder="e.g. 2A"/>
             </div>
             <div className="form-field">
               <label className="form-label">AFQT Score</label>
               <input className="form-input" value={applicant.afqt||''} onChange={e=>setAppl('afqt',e.target.value)} placeholder="0–99"/>
             </div>
-          </div>
-          <div className="form-grid" style={{marginBottom:12}}>
             <div className="form-field">
               <label className="form-label">PS / NPS</label>
               <select className="form-input" value={applicant.psNps||''} onChange={e=>setAppl('psNps',e.target.value)}>
@@ -653,50 +1118,51 @@ const Phase2 = ({ applicant, setApplicant, offenses, setOffenses, verdict, answe
                 <option value="PS">PS — Prior Service</option>
               </select>
             </div>
+          </div>
+          <div className="form-grid-4">
             <div className="form-field">
               <label className="form-label">Marital Status</label>
               <select className="form-input" value={applicant.maritalStatus||''} onChange={e=>setAppl('maritalStatus',e.target.value)}>
                 <option value="">Select...</option>
-                <option value="Single">Single</option>
-                <option value="Married">Married</option>
-                <option value="Divorced">Divorced</option>
-                <option value="Widowed">Widowed</option>
-                <option value="Separated">Separated</option>
+                {['Single','Married','Divorced','Widowed','Separated'].map(s=><option key={s} value={s}>{s}</option>)}
               </select>
             </div>
             <div className="form-field">
               <label className="form-label"># of Dependents</label>
               <input className="form-input" type="number" min="0" max="20" value={applicant.numDependents||''} onChange={e=>setAppl('numDependents',e.target.value)} placeholder="0"/>
             </div>
-          </div>
-          <div className="form-grid">
-            <div className="form-field">
+            <div className="form-field" style={{gridColumn:'span 2'}}>
               <label className="form-label">Dependent Ages</label>
               <input className="form-input" value={applicant.dependentAges||''} onChange={e=>setAppl('dependentAges',e.target.value)} placeholder="e.g. 3, 7, 12"/>
             </div>
           </div>
-          <div className="divider" style={{margin:'16px 0 12px'}}/>
-          <div style={{fontSize:11,fontWeight:700,color:'var(--fg-m)',textTransform:'uppercase',letterSpacing:'.06em',marginBottom:10}}>Recruiter / Unit Info (for MFR letterhead)</div>
-          <div className="form-grid" style={{marginBottom:12}}>
-            <div className="form-field" style={{gridColumn:'1/-1'}}>
-              <label className="form-label">Unit Designation</label>
-              <input className="form-input" value={applicant.recruiterUnit||''} onChange={e=>setAppl('recruiterUnit',e.target.value)} placeholder="e.g. U.S. ARMY GRAND ISLAND DETACHMENT, DENVER RECRUITING BATTALION"/>
-            </div>
+        </div>
+
+        {/* MOS Check */}
+        <div className="card" style={{marginTop:14}}>
+          <div className="card-hdr"><div className="section-bar"/><div><div className="card-title"><IcoMOS/> MOS Compatibility Check <span className="new-badge">NEW</span></div><div className="card-sub">Verify the desired MOS has no additional restrictions that conflict with this waiver</div></div></div>
+          <MOSChecker applicant={applicant} setAppl={setAppl}/>
+        </div>
+
+        {/* Recruiter Info */}
+        <div className="card" style={{marginTop:14}}>
+          <div className="card-hdr"><div className="section-bar"/><div className="card-title">Recruiter / Unit Info</div></div>
+          <div className="form-field" style={{marginBottom:10}}>
+            <label className="form-label">Unit Designation</label>
+            <input className="form-input" value={applicant.recruiterUnit||''} onChange={e=>setAppl('recruiterUnit',e.target.value)} placeholder="e.g. U.S. ARMY GRAND ISLAND DETACHMENT, DENVER RECRUITING BATTALION"/>
           </div>
-          <div className="form-grid" style={{marginBottom:12}}>
-            <div className="form-field" style={{gridColumn:'1/-1'}}>
-              <label className="form-label">Unit Address</label>
-              <input className="form-input" value={applicant.recruiterAddress||''} onChange={e=>setAppl('recruiterAddress',e.target.value)} placeholder="e.g. 3341 W STATE ST. SUITE B1, GRAND ISLAND, NEBRASKA 68803"/>
-            </div>
+          <div className="form-field" style={{marginBottom:10}}>
+            <label className="form-label">Unit Address</label>
+            <input className="form-input" value={applicant.recruiterAddress||''} onChange={e=>setAppl('recruiterAddress',e.target.value)} placeholder="Full street address, city, state, ZIP"/>
           </div>
-          <div className="form-grid">
+          <div className="form-grid-3">
             <div className="form-field">
               <label className="form-label">Office Symbol (RSID)</label>
               <input className="form-input" value={applicant.recruiterOfficeSym||''} onChange={e=>setAppl('recruiterOfficeSym',e.target.value)} placeholder="e.g. RCSW-DEN-GI"/>
             </div>
             <div className="form-field">
               <label className="form-label">Recruiter Name</label>
-              <input className="form-input" value={applicant.recruiterName||''} onChange={e=>setAppl('recruiterName',e.target.value)} placeholder="Last, First"/>
+              <input className="form-input" value={applicant.recruiterName||''} onChange={e=>setAppl('recruiterName',e.target.value)} placeholder="Last, First MI"/>
             </div>
             <div className="form-field">
               <label className="form-label">Rank / Branch</label>
@@ -704,105 +1170,431 @@ const Phase2 = ({ applicant, setApplicant, offenses, setOffenses, verdict, answe
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  );
+};
 
-        {/* Offense Log */}
-        <div className="card" style={{marginTop:16}}>
+/* ── MOS Checker ────────────────────────────────────────── */
+const MOSChecker = ({ applicant, setAppl }) => {
+  const [search, setSearch] = useState(applicant.mosCode||'');
+  const [result, setResult] = useState(null);
+
+  const checkMOS = () => {
+    const code = search.trim().toUpperCase();
+    setAppl('mosCode', code);
+    const match = MOS_RESTRICTIONS.find(g => g.mos.includes(code));
+    if (!match) { setResult({ notFound:true, code }); }
+    else { setResult({ group:match, code }); }
+  };
+
+  return (
+    <div>
+      <div className="row" style={{gap:8,marginBottom:12}}>
+        <input className="form-input" style={{maxWidth:140}} value={search} onChange={e=>setSearch(e.target.value.toUpperCase())}
+          onKeyDown={e=>e.key==='Enter'&&checkMOS()} placeholder="MOS code (e.g. 11B)"/>
+        <button className="btn btn-outline btn-sm" onClick={checkMOS}>Check MOS</button>
+        {result && <button className="btn btn-outline btn-sm" onClick={()=>{setResult(null);setSearch('');setAppl('mosCode','');}}>Clear</button>}
+      </div>
+      {result && (
+        result.notFound ? (
+          <div className="mos-result low">
+            <div className="mos-result-label">✅ No specific restrictions found for {result.code}</div>
+            <div style={{fontSize:11,color:'var(--fg-m)'}}>
+              This MOS is not in the high-restriction list. Standard waiver rules apply.
+              Always verify with the MOS-specific career manager and AR 601-210.
+            </div>
+          </div>
+        ) : (
+          <div className={`mos-result ${result.group.severity}`}>
+            <div className="mos-result-label">
+              {result.group.severity==='high'?'⚠️ HIGH RESTRICTION':result.group.severity==='medium'?'⚠️ MODERATE RESTRICTION':'ℹ️ LOW RESTRICTION'} — {result.group.label}
+            </div>
+            <div style={{fontSize:11,color:'var(--fg2)',marginBottom:8,lineHeight:1.5}}>{result.group.notes}</div>
+            {result.group.restrictions.map((r,i) => (
+              <div key={i} className="mos-restriction">
+                <span style={{color:result.group.severity==='high'?'#ff6b6b':'var(--gold)',fontSize:12}}>⚠</span>
+                <span style={{fontSize:11}}>{r}</span>
+              </div>
+            ))}
+          </div>
+        )
+      )}
+    </div>
+  );
+};
+
+/* ── Phase 3: Build Packet ──────────────────────────────── */
+const Phase3 = ({ applicant, setApplicant }) => {
+  const [clStatus, setClStatus] = useState(applicant.checklistStatus||{});
+  const [expDates, setExpDates] = useState(applicant.expDates||{});
+  const [expandedItems, setExpandedItems] = useState({});
+  const [activeDoc, setActiveDoc] = useState(null);
+
+  const screenedOffenses = applicant.offenses || [];
+  const overallV = computeOverallVerdict(screenedOffenses);
+  const authority = computeGoverningAuthority(screenedOffenses);
+  const isTrafficOnly = screenedOffenses.every(so => {
+    const cat = OFFENSE_CATEGORIES.find(c => c.id === so.categoryId);
+    return cat && cat.group === 'traffic';
+  });
+  const requiredItems = getRequiredChecklist(authority, isTrafficOnly);
+  const expiringItems = requiredItems.filter(i => i.validity);
+  const statusCycle = s => s==='pending'?'progress':s==='progress'?'complete':'pending';
+
+  // Sync clStatus/expDates back to applicant
+  useEffect(() => { setApplicant(prev => ({...prev, checklistStatus:clStatus})); }, [clStatus]);
+  useEffect(() => { setApplicant(prev => ({...prev, expDates})); }, [expDates]);
+  useEffect(() => { setClStatus(applicant.checklistStatus||{}); setExpDates(applicant.expDates||{}); }, [applicant.id]);
+
+  const toggleExpand = (id) => setExpandedItems(prev => ({...prev, [id]:!prev[id]}));
+  const copyToClipboard = (text) => { navigator.clipboard.writeText(text).catch(() => {}); };
+  const toggleCheck = (id) => setClStatus(prev => ({...prev, [id]: prev[id]==='complete'?'pending':'complete'}));
+  const cycleStatus = (id) => setClStatus(prev => ({...prev, [id]: statusCycle(prev[id]||'pending')}));
+
+  const fullName = [applicant.firstName, applicant.mi?applicant.mi+'.':'', applicant.lastName].filter(Boolean).join(' ');
+  const ssnLast4 = (applicant.ssn||'').slice(-4)||'XXXX';
+  const authorityFull = { BN:'Battalion Commander', USAREC:'Commanding General, USAREC', DMPM:'Deputy Chief of Staff, G-1 (DMPM)' };
+  const authorityMemo = { BN:'Battalion Commander', USAREC:'CG, USAREC', DMPM:'Deputy Chief of Staff, G-1 (DMPM)' };
+  const authorityShort = authorityFull[authority]||authority;
+  const offenseList = [...screenedOffenses].filter(so=>so.offenseDate||so.description).sort((a,b)=>new Date(b.offenseDate)-new Date(a.offenseDate));
+  const completedCount = requiredItems.filter(i => clStatus[i.id]==='complete').length;
+  const { score: readiness } = computeReadiness(applicant, screenedOffenses, clStatus);
+
+  // Common rejection warnings
+  const warnings = [];
+  if (!applicant.afqt) warnings.push('AFQT score not entered — required for UF 601-210.08');
+  if (expiringItems.some(i => { const d = daysUntilExpiry(expDates[i.id], i.validity); return d !== null && d < 0; })) warnings.push('One or more documents have EXPIRED — renew before submission');
+  if (!applicant.rsid) warnings.push('RSID not entered — required for routing memo');
+  if (screenedOffenses.some(so=>so.verdict?.type==='WAIVABLE') && !offenseList.some(so=>so.description)) warnings.push('Offense descriptions not filled in — needed for document generation');
+
+  /* Document generators */
+  const genCoverSheet = () => {
+    const lines = [];
+    lines.push(`MORAL WAIVER PACKET — COVER SHEET`);
+    lines.push(`${'─'.repeat(60)}`);
+    lines.push(`Applicant:         ${fullName || '[Name]'}`);
+    lines.push(`SSN (Last 4):      XXXX-XX-${ssnLast4}`);
+    lines.push(`Date of Birth:     ${fmtDate(applicant.dob)}`);
+    lines.push(`RSID:              ${applicant.rsid||'[RSID]'}`);
+    lines.push(`PS/NPS:            ${applicant.psNps||'[PS/NPS]'}`);
+    lines.push(`Marital Status:    ${applicant.maritalStatus||'[Marital Status]'}`);
+    lines.push(`# Dependents:      ${applicant.numDependents||'0'}`);
+    if (applicant.dependentAges) lines.push(`Dependent Ages:    ${applicant.dependentAges}`);
+    lines.push(`Education:         ${applicant.educationLevel||'[Ed Level]'}${applicant.educationCode?' (Code: '+applicant.educationCode+')':''}`);
+    lines.push(`AFQT Score:        ${applicant.afqt||'[Score]'}`);
+    lines.push(`Approving Auth:    ${authorityShort}`);
+    if (applicant.mosCode) lines.push(`Target MOS:        ${applicant.mosCode}`);
+    lines.push(`Date Prepared:     ${new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}`);
+    lines.push(`Reg Basis:         AR 601-210, Chapter 4`);
+    lines.push(``);
+    lines.push(`OFFENSES (NEWEST TO OLDEST)`);
+    lines.push(`${'─'.repeat(60)}`);
+    offenseList.forEach((o,i)=>{
+      const cat = OFFENSE_CATEGORIES.find(c=>c.id===o.categoryId);
+      lines.push(`${i+1}. ${o.waivedOffense?'★ ':''}${fmtDate(o.offenseDate)} — ${o.description||cat?.label||'[Description]'}`);
+      if (o.city||o.county||o.state) lines.push(`   Location: ${[o.city,o.county,o.state].filter(Boolean).join(', ')}`);
+      if (o.disposition) lines.push(`   Disposition: ${o.disposition}`);
+    });
+    lines.push(``);
+    lines.push(`DOCUMENT STATUS`);
+    lines.push(`${'─'.repeat(60)}`);
+    requiredItems.forEach(item=>{
+      const status = clStatus[item.id]||'pending';
+      const mark = status==='complete'?'[X]':status==='progress'?'[~]':'[ ]';
+      lines.push(`${mark} ${item.label}${item.note?'  NOTE: '+item.note:''}`);
+    });
+    lines.push(``);
+    lines.push(`★ = Offense being waived`);
+    lines.push(`Waiver valid 6 months from approval date · AR 601-210, para 4-27`);
+    return lines.join('\n');
+  };
+
+  const genStatement = () => {
+    const primaryOffense = offenseList.find(so=>so.waivedOffense!==false);
+    const cat = primaryOffense ? OFFENSE_CATEGORIES.find(c=>c.id === primaryOffense.categoryId) : null;
+    const isDUI = cat?.id?.includes('dui');
+    const isDrug = cat?.id?.includes('marijuana')||cat?.id?.includes('drug');
+    const isViolent = cat?.id?.includes('violent')||cat?.id?.includes('assault');
+    let guidanceSection = `[APPLICANT FILLS IN — Explain the situation, context, and all contributing factors. Be honest and specific.]`;
+    if (isDUI) guidanceSection = `[APPLICANT: Explain what led to the DUI — where were you, what were you drinking, what decision you made, and why. Be specific about circumstances. Do not minimize.]`;
+    if (isDrug) guidanceSection = `[APPLICANT: Explain the circumstances of the drug offense — peer pressure, personal struggle, specific event. Be honest.]`;
+    if (isViolent) guidanceSection = `[APPLICANT: Explain the full context — what happened before the incident, what your role was, whether there was provocation. Be honest about your actions.]`;
+    const lines = [];
+    lines.push(`MEMORANDUM FOR ${authorityMemo[authority]||authorityShort}`);
+    lines.push(`SUBJECT: Applicant Statement in Support of Moral Waiver`);
+    lines.push(``);
+    lines.push(`1. I, ${fullName||'[APPLICANT NAME]'}, am requesting a moral waiver for the following offense(s):`);
+    lines.push(``);
+    offenseList.filter(so=>so.waivedOffense!==false).forEach((o,i)=>{
+      const letter = String.fromCharCode(97+i);
+      const cat2 = OFFENSE_CATEGORIES.find(c=>c.id===o.categoryId);
+      lines.push(`   ${letter}. ${fmtDate(o.offenseDate)} — ${o.description||cat2?.label||'[Offense Description]'}`);
+      if (o.disposition) lines.push(`      Disposition: ${o.disposition}`);
+    });
+    lines.push(``);
+    lines.push(`2. The circumstances surrounding the offense(s) are as follows:`);
+    lines.push(`   ${guidanceSection}`);
+    lines.push(``);
+    lines.push(`3. Since the offense(s), I have taken the following steps to demonstrate growth and rehabilitation:`);
+    lines.push(`   [APPLICANT: List SPECIFIC actions — continued education, steady employment, counseling/treatment, community service, volunteer work, mentorship, sobriety, etc. Vague answers weaken the packet.]`);
+    lines.push(``);
+    lines.push(`4. I am requesting this waiver because:`);
+    lines.push(`   [APPLICANT: Explain your genuine motivation to serve — values, family, career, sense of duty. Connect your personal growth to Army Values.]`);
+    lines.push(``);
+    lines.push(`5. I acknowledge that the offense(s) above reflect poor judgment. I have learned from this experience and am committed to upholding the standards of the United States Army.`);
+    lines.push(``);
+    lines.push(`6. I certify that all information in this statement is true and accurate to the best of my knowledge.`);
+    lines.push(``);
+    lines.push(`__________________________________        ____________________`);
+    lines.push(`${fullName||'[APPLICANT NAME]'}                   Date`);
+    return lines.join('\n');
+  };
+
+  const genMFR = () => {
+    const unit   = applicant.recruiterUnit    || '[UNIT DESIGNATION]';
+    const addr   = applicant.recruiterAddress || '[UNIT ADDRESS]';
+    const sym    = applicant.recruiterOfficeSym || applicant.rsid || '[OFFICE SYM]';
+    const dateStr = new Date().toLocaleDateString('en-US',{day:'numeric',month:'long',year:'numeric'});
+    const recName = applicant.recruiterName || '[RECRUITER NAME]';
+    const recRank = applicant.recruiterRank || '[RANK, BRANCH]';
+    const authTo  = authorityMemo[authority]||authorityShort;
+    const offList = offenseList.map((o,i) => {
+      const cat = OFFENSE_CATEGORIES.find(c=>c.id===o.categoryId);
+      const letter = String.fromCharCode(97+i);
+      return `  <div class="para" style="margin-left:36pt;">${letter}.&nbsp;&nbsp;${fmtDate(o.offenseDate)} &#8211; ${o.description||cat?.label||'[Offense]'}. Disposition: ${o.disposition||'[Disposition]'}.</div>`;
+    }).join('\n');
+    return `<!DOCTYPE html><html><head><title>CO Interview MFR — ${fullName||'Applicant'}</title>
+<style>
+  body{font-family:"Times New Roman",serif;font-size:12pt;color:#000;margin:0;padding:0}
+  @page{size:letter;margin:1in}
+  @media screen{body{max-width:7.5in;margin:.5in auto;padding:.5in}}
+  .lhd-unit{font-family:Arial,sans-serif;font-weight:bold;font-size:10pt;text-align:center;text-transform:uppercase;line-height:1.4}
+  .lhd-dept{font-family:Arial,sans-serif;font-weight:bold;font-size:9pt;text-align:center;letter-spacing:.05em;margin-bottom:2pt}
+  .lhd-addr{font-family:Arial,sans-serif;font-size:9pt;text-align:center;font-weight:normal}
+  .lhd-rule{border:none;border-top:1.5pt solid #000;margin:6pt 0 4pt}
+  .sym-date{display:flex;justify-content:space-between;font-family:Arial,sans-serif;font-size:10pt;margin-bottom:18pt}
+  .sym-label{font-size:8pt;font-style:italic;color:#333}
+  .body-block{font-family:"Times New Roman",serif;font-size:12pt;line-height:1.5}
+  .para{margin-bottom:10pt}
+  .sig-block{margin-top:36pt}
+  .sig-line{border-bottom:1pt solid #000;width:3.5in}
+  .fill-blank{border-bottom:1pt solid #555;display:inline-block;min-width:1.8in}
+</style></head><body>
+<div class="lhd-dept">DEPARTMENT OF THE ARMY</div>
+<div class="lhd-unit">${unit}</div>
+<div class="lhd-addr">${addr}</div>
+<hr class="lhd-rule"/>
+<div class="sym-date">
+  <div><div class="sym-label">REPLY TO<br>ATTENTION OF</div><div style="font-family:Arial;font-size:10pt;font-weight:bold">${sym}</div></div>
+  <div style="text-align:right;font-family:Arial;font-size:10pt">${dateStr}</div>
+</div>
+<div class="body-block">
+  <div class="para">MEMORANDUM FOR ${authTo}</div>
+  <div class="para">SUBJECT: Company Commander&#39;s Interview &#8211; ${fullName||'[APPLICANT NAME]'}, Moral Waiver</div>
+  <div class="para">1.&nbsp;&nbsp;On <span class="fill-blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>, I personally interviewed <strong>${fullName||'[APPLICANT NAME]'}</strong> regarding the following offense(s) requiring a moral waiver:</div>
+${offList}
+  <div class="para">2.&nbsp;&nbsp;During the interview, ${applicant.firstName||'the applicant'} demonstrated <span class="fill-blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>. The applicant&#39;s explanation of the circumstances surrounding the offense(s) was <span class="fill-blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>.</div>
+  <div class="para">3.&nbsp;&nbsp;Based on my interview, I assess ${applicant.firstName||'the applicant'} to be <span class="fill-blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> and believe the offense(s) to be <span class="fill-blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> of the applicant&#39;s overall character.</div>
+  <div class="para">4.&nbsp;&nbsp;Recommendation:</div>
+  <div class="para" style="margin-left:36pt;">&#9633;&nbsp;&nbsp;<strong>APPROVE</strong> the moral waiver request.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#9633;&nbsp;&nbsp;<strong>DISAPPROVE</strong> the moral waiver request.</div>
+  <div class="para" style="margin-left:36pt;">Justification: <span class="fill-blank" style="min-width:3.5in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div>
+  <div class="para">5.&nbsp;&nbsp;The point of contact for this memorandum is the undersigned at <span class="fill-blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>.</div>
+  <div class="sig-block">
+    <div style="margin-bottom:42pt">&nbsp;</div>
+    <div class="sig-line">&nbsp;</div>
+    <div style="font-family:Arial;font-size:10pt;font-weight:bold">[CO RANK, NAME]</div>
+    <div style="font-family:Arial;font-size:10pt">[BRANCH], USA</div>
+    <div style="font-family:Arial;font-size:10pt">Commanding</div>
+  </div>
+</div></body></html>`;
+  };
+
+  const genRouting = () => {
+    const lines = [];
+    lines.push(`MEMORANDUM FOR Battalion S1`);
+    lines.push(`SUBJECT: Moral Waiver Packet Submission — ${fullName||'[APPLICANT NAME]'}`);
+    lines.push(``);
+    lines.push(`1. Submitting moral waiver packet for ${fullName||'[NAME]'}, SSN (last 4): XXXX-XX-${ssnLast4}.`);
+    if (applicant.rsid) lines.push(`   RSID: ${applicant.rsid}`);
+    if (applicant.mosCode) lines.push(`   Target MOS: ${applicant.mosCode}`);
+    lines.push(``);
+    lines.push(`2. Offense(s) being waived:`);
+    offenseList.filter(so=>so.waivedOffense!==false).forEach((o,i)=>{
+      const cat = OFFENSE_CATEGORIES.find(c=>c.id===o.categoryId);
+      lines.push(`   ${i+1}. ${fmtDate(o.offenseDate)} — ${o.description||cat?.label||'[Offense]'}`);
+    });
+    lines.push(``);
+    lines.push(`3. Approving Authority: ${authorityShort}`);
+    lines.push(``);
+    lines.push(`4. Required documents attached:`);
+    requiredItems.forEach(item=>{
+      const status = clStatus[item.id]||'pending';
+      const mark = status==='complete'?'[X]':'[ ]';
+      lines.push(`   ${mark} ${item.label}`);
+    });
+    lines.push(``);
+    lines.push(`5. Document status: ${completedCount} of ${requiredItems.length} items complete.`);
+    lines.push(``);
+    lines.push(`6. Point of contact: ${applicant.recruiterName||'[RECRUITER]'}, RSID: ${applicant.rsid||'[RSID]'}`);
+    lines.push(``);
+    lines.push(`7. Regulation basis: AR 601-210, Chapter 4`);
+    lines.push(``);
+    lines.push(``);
+    lines.push(`__________________________________        ____________________`);
+    lines.push(`[RECRUITER RANK, NAME]                    Date`);
+    return lines.join('\n');
+  };
+
+  const docTypes = [
+    { id:'cover',     name:'Cover Sheet',                desc:'Formatted summary page for the top of the physical packet — applicant info, all offenses, doc status.', icon:<IcoDoc/>, gen:genCoverSheet, fmt:'text' },
+    { id:'statement', name:"Applicant's Statement",      desc:'Pre-filled structure with offense-specific guidance prompts. Applicant personalizes, handwrites, and signs.', icon:<IcoDoc/>, gen:genStatement, fmt:'text' },
+    { id:'mfr',       name:"CO Interview MFR",           desc:'Official Army memo (AR 25-50 format) with letterhead, fill-in lines, and APPROVE/DISAPPROVE checkboxes.', icon:<IcoDoc/>, gen:genMFR, fmt:'html' },
+    { id:'routing',   name:'Routing / Transmittal Memo', desc:'Memo from recruiter routing the complete packet to battalion S1 with full document checklist.', icon:<IcoDoc/>, gen:genRouting, fmt:'text' },
+  ];
+
+  const printDoc = (content, fmt='text') => {
+    const w = window.open('','_blank');
+    if (fmt === 'html') {
+      const html = content.replace('</body>', '<script>window.onload=()=>window.print()<\/script></body>');
+      w.document.write(html);
+    } else {
+      w.document.write(`<!DOCTYPE html><html><head><title>Moral Waiver Document</title><style>body{font-family:"Courier New",monospace;font-size:12px;line-height:1.7;padding:48px;color:#000;max-width:700px;margin:auto}@media print{body{padding:24px}}</style></head><body><pre>${content}</pre><script>window.onload=()=>window.print()<\/script></body></html>`);
+    }
+    w.document.close();
+  };
+
+  return (
+    <div className="main-scroll">
+      <div className="fade-up">
+        {/* QC Warnings */}
+        {warnings.length > 0 && (
+          <div className="alert alert-warn" style={{marginBottom:14}}>
+            <span className="alert-icon">⚠️</span>
+            <div>
+              <strong>Common Rejection Issues Found:</strong>
+              <ul style={{margin:'4px 0 0 16px',fontSize:11}}>
+                {warnings.map((w,i) => <li key={i}>{w}</li>)}
+              </ul>
+            </div>
+          </div>
+        )}
+
+        {/* Checklist */}
+        <div className="card">
           <div className="card-hdr">
             <div className="section-bar"/>
-            <div style={{flex:1}}><div className="card-title">Offense Log</div><div className="card-sub">List all offenses — newest to oldest, per UF 601-210.08 requirement</div></div>
-            <button className="btn btn-gold btn-sm" onClick={openAdd}><IcoPlus/> Add Offense</button>
+            <div style={{flex:1}}>
+              <div className="card-title">Document Checklist</div>
+              <div className="card-sub">{authorityShort} level · {completedCount}/{requiredItems.length} complete · Click any item for how-to guidance</div>
+            </div>
+            <div style={{fontSize:12,fontWeight:700,color:'var(--gold)'}}>{Math.round((completedCount/Math.max(1,requiredItems.length))*100)}%</div>
           </div>
-
-          {offenses.length === 0 ? (
-            <div className="empty-state">No offenses logged yet. Click "Add Offense" to begin.</div>
-          ) : (
-            <table className="off-table">
-              <thead><tr>
-                <th>Date</th><th>Description</th><th>Location</th><th>Disposition</th><th>Docs</th><th></th>
-              </tr></thead>
-              <tbody>
-                {[...offenses].sort((a,b)=>new Date(b.date)-new Date(a.date)).map((o,i)=>(
-                  <tr key={o.id||i}>
-                    <td style={{whiteSpace:'nowrap',width:90}}>{fmtDate(o.date)}</td>
-                    <td>{o.description}</td>
-                    <td style={{whiteSpace:'nowrap'}}>{[o.city,o.county,o.state].filter(Boolean).join(', ')}</td>
-                    <td>{o.disposition}</td>
-                    <td style={{whiteSpace:'nowrap'}}>
-                      <span className={`off-docs-badge ${o.courtDocs?'docs-yes':'docs-no'}`}>{o.courtDocs?'Court ✓':'Court ✗'}</span>
-                      <span className={`off-docs-badge ${o.incidentRpt?'docs-yes':'docs-no'}`}>{o.incidentRpt?'Rpt ✓':'Rpt ✗'}</span>
-                    </td>
-                    <td>
-                      <button className="btn btn-outline btn-sm" style={{marginRight:4}} onClick={()=>openEdit(offenses.indexOf(o))}>Edit</button>
-                      <button className="btn btn-danger btn-sm" onClick={()=>deleteOffense(offenses.indexOf(o))}><IcoTrash/></button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
+          {requiredItems.map(item => {
+            const status = clStatus[item.id]||'pending';
+            const expanded = expandedItems[item.id];
+            return (
+              <div key={item.id} className="cl-item">
+                <div className="cl-row" onClick={()=>toggleExpand(item.id)}>
+                  <div className={`cl-check${status==='complete'?' checked':''}`} onClick={e=>{e.stopPropagation();toggleCheck(item.id);}}>
+                    {status==='complete'&&<IcoCheck/>}
+                  </div>
+                  <div className="cl-body">
+                    <div className="cl-label" style={status==='complete'?{textDecoration:'line-through',opacity:.4}:{}}>{item.label}</div>
+                    <div className="cl-meta">{item.ref}{item.validity && ` · Valid ${item.validity} ${item.unit}`}</div>
+                    {item.note && <div className="cl-note">{item.note}<button className="copy-btn" onClick={() => copyToClipboard(item.note)} title="Copy note to clipboard">Copy</button></div>}
+                  </div>
+                  <div className="cl-status">
+                    <span className={`status-badge status-${status}`} onClick={e=>{e.stopPropagation();cycleStatus(item.id);}}>
+                      {status==='pending'?'Pending':status==='progress'?'In Progress':'Complete'}
+                    </span>
+                    {item.validity && <span className="muted" style={{fontSize:10}}><IcoClock/> {item.validity}d</span>}
+                  </div>
+                  <span className="cl-expand-arrow"><IcoChev open={expanded}/></span>
+                </div>
+                {expanded && item.howto && (
+                  <div className="cl-howto">
+                    <div className="howto-label">How to Obtain</div>
+                    <div className="howto-text">{item.howto}</div>
+                    {item.tip && <div className="howto-tip">💡 <strong>Recruiter Tip:</strong> {item.tip}</div>}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
 
-        {/* Reference Panel */}
-        <div className="ref-panel">
-          <div className="ref-hdr" onClick={()=>setRefOpen(v=>!v)}>
-            <span className="ref-title">AR 601-210 Reference — Key Paragraphs</span>
-            <IcoChev open={refOpen}/>
-          </div>
-          {refOpen && (
-            <div className="ref-body">
-              {refParas.map(p=>PARA_TEXT[p]&&(
-                <div key={p} className="ref-entry">
-                  <span className="ref-para">Para {p}:</span>{PARA_TEXT[p]}
+        {/* Expiration Tracker */}
+        {expiringItems.length > 0 && (
+          <div className="card" style={{marginTop:14}}>
+            <div className="card-hdr"><div className="section-bar"/><div><div className="card-title"><IcoClock/> Expiration Tracker</div><div className="card-sub">Documents with validity windows — plan your timeline carefully</div></div></div>
+            {expiringItems.map(item => {
+              const d = expDates[item.id];
+              const days = daysUntilExpiry(d, item.validity);
+              const expStatus = getExpiryStatus(days);
+              return (
+                <div key={item.id} className="exp-item">
+                  <div>
+                    <div className="exp-label">{item.label}</div>
+                    <div className="exp-valid">Valid {item.validity} {item.unit}</div>
+                  </div>
+                  <input type="date" className="form-input" style={{fontSize:11,padding:'5px 8px'}}
+                    value={d||''} onChange={e=>setExpDates(p=>({...p,[item.id]:e.target.value}))} placeholder="Date obtained"/>
+                  <div className={`exp-status exp-${expStatus}`}>
+                    {!d ? '—' : days<0 ? `EXPIRED ${Math.abs(days)}d ago` : `${days}d left`}
+                  </div>
                 </div>
-              ))}
+              );
+            })}
+            <div style={{padding:'8px 14px',fontSize:10,color:'var(--fg-d)'}}>
+              <strong>MIRS reminder:</strong> Print MIRS 1.1 on the day of submission — stale MIRS is a common return reason.
             </div>
-          )}
+          </div>
+        )}
+
+        {/* Generated Documents */}
+        <div className="card" style={{marginTop:14}}>
+          <div className="card-hdr"><div className="section-bar"/><div><div className="card-title">Generated Documents</div><div className="card-sub">Pre-filled drafts — preview or print directly</div></div></div>
+          <div className="output-grid">
+            {docTypes.map(dt => (
+              <div key={dt.id} className="output-card">
+                <div className="output-icon">{dt.icon}</div>
+                <div className="output-name">{dt.name}</div>
+                <div className="output-desc">{dt.desc}</div>
+                <div className="output-actions">
+                  <button className="btn btn-outline btn-sm" onClick={()=>setActiveDoc({...dt, content:dt.gen()})}>Preview</button>
+                  <button className="btn btn-gold btn-sm" onClick={()=>printDoc(dt.gen(),dt.fmt)}><IcoPrint/> Print</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* PDF Generator */}
+        <UF608Card applicant={applicant} offenses={screenedOffenses}/>
+
+        <div style={{fontSize:10,color:'var(--fg-d)',textAlign:'center',marginTop:20,paddingBottom:16}}>
+          Logic based on AR 601-210. Verify currency before submission. Last updated to reflect 2026 marijuana possession change (para 4-6).
         </div>
       </div>
 
-      {/* Add/Edit Modal */}
-      {showModal && (
-        <div className="modal-overlay" onClick={e=>{if(e.target===e.currentTarget)setShowModal(false)}}>
-          <div className="modal">
+      {/* Preview Modal */}
+      {activeDoc && (
+        <div className="modal-overlay" onClick={e=>{if(e.target===e.currentTarget)setActiveDoc(null)}}>
+          <div className="modal" style={{maxWidth:activeDoc.fmt==='html'?860:720}}>
             <div className="modal-hdr">
-              <span className="modal-title">{editIdx!==null?'Edit Offense':'Add Offense'}</span>
-              <button className="btn btn-outline btn-sm" onClick={()=>setShowModal(false)}><IcoX/></button>
+              <span className="modal-title">{activeDoc.name}</span>
+              <button className="btn btn-outline btn-sm" onClick={()=>setActiveDoc(null)}><IcoX/></button>
             </div>
-            <div className="modal-body">
-              <div className="form-field" style={{marginBottom:12}}>
-                <label className="form-label">Offense Date</label>
-                <input className="form-input" type="date" value={offenseForm.date} onChange={e=>setOff('date',e.target.value)}/>
-              </div>
-              <div className="form-field" style={{marginBottom:12}}>
-                <label className="form-label">Offense Description</label>
-                <textarea className="form-input" rows={3} value={offenseForm.description} onChange={e=>setOff('description',e.target.value)} placeholder="Describe the offense, circumstances, any aggravating/mitigating factors..."/>
-              </div>
-              <div className="form-grid-3" style={{marginBottom:12}}>
-                <div className="form-field"><label className="form-label">City</label><input className="form-input" value={offenseForm.city} onChange={e=>setOff('city',e.target.value)} placeholder="City"/></div>
-                <div className="form-field"><label className="form-label">County</label><input className="form-input" value={offenseForm.county} onChange={e=>setOff('county',e.target.value)} placeholder="County"/></div>
-                <div className="form-field"><label className="form-label">State</label>
-                  <select className="form-input" value={offenseForm.state} onChange={e=>setOff('state',e.target.value)}>
-                    <option value="">—</option>{US_STATES.map(s=><option key={s} value={s}>{s}</option>)}
-                  </select>
-                </div>
-              </div>
-              <div className="form-field" style={{marginBottom:12}}>
-                <label className="form-label">Court Disposition</label>
-                <input className="form-input" value={offenseForm.disposition} onChange={e=>setOff('disposition',e.target.value)} placeholder="e.g. Convicted — Misdemeanor, $200 fine, 12-month probation"/>
-              </div>
-              <div style={{display:'flex',gap:16,marginBottom:8}}>
-                {[['courtDocs','Court Documents Obtained'],['incidentRpt','Incident Report Obtained']].map(([k,l])=>(
-                  <label key={k} style={{display:'flex',alignItems:'center',gap:8,cursor:'pointer',fontSize:12}}>
-                    <div className={`cl-check${offenseForm[k]?' checked':''}`} onClick={()=>setOff(k,!offenseForm[k])}>
-                      {offenseForm[k]&&<IcoCheck/>}
-                    </div>{l}
-                  </label>
-                ))}
-              </div>
+            <div className="modal-body" style={{padding:activeDoc.fmt==='html'?0:18}}>
+              {activeDoc.fmt==='html'
+                ? <iframe srcDoc={activeDoc.content} style={{width:'100%',height:'62vh',border:'none',background:'#fff'}} title="Preview"/>
+                : <pre className="doc-preview">{activeDoc.content}</pre>
+              }
             </div>
             <div className="modal-ftr">
-              <button className="btn btn-outline" onClick={()=>setShowModal(false)}>Cancel</button>
-              <button className="btn btn-gold" onClick={saveOffense} disabled={!offenseForm.date||!offenseForm.description}>Save Offense</button>
+              <button className="btn btn-outline" onClick={()=>setActiveDoc(null)}>Close</button>
+              <button className="btn btn-gold" onClick={()=>printDoc(activeDoc.content,activeDoc.fmt)}><IcoPrint/> Print / Download</button>
             </div>
           </div>
         </div>
@@ -811,8 +1603,8 @@ const Phase2 = ({ applicant, setApplicant, offenses, setOffenses, verdict, answe
   );
 };
 
-/* ── XFA Injection ───────────────────────────────────────── */
-function buildDatasetsXML(applicant, offenses) {
+/* ── UF 601-210.08 PDF Generator ─────────────────────── */
+function buildDatasetsXML(applicant, screenedOffenses) {
   const esc = s => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   const fmtD = iso => {
     if (!iso) return '';
@@ -830,46 +1622,31 @@ function buildDatasetsXML(applicant, offenses) {
   };
   const name = [applicant.lastName, [applicant.firstName, applicant.mi].filter(Boolean).join(' ')].filter(Boolean).join(', ');
   const currentAge = calcAge(applicant.dob, new Date().toISOString().split('T')[0]);
-  const sorted = [...offenses].sort((a,b) => new Date(b.date)-new Date(a.date));
+  const sorted = [...screenedOffenses].filter(so=>so.offenseDate||so.description).sort((a,b)=>new Date(b.offenseDate)-new Date(a.offenseDate));
   const get = i => sorted[i] || {};
   const tf = v => v ? `<TextField2>${esc(v)}</TextField2>` : '<TextField2/>';
   const df = v => v ? `<DateField2>${esc(v)}</DateField2>` : '<DateField2/>';
   const nf = v => v ? `<NumericField2>${esc(v)}</NumericField2>` : '<NumericField2/>';
-
-  // VERIFIED field mapping from XFA template analysis:
-  // [0]    TextField2     = MARITAL STATUS (page 1 header, x=58mm)
-  // [1]    RadioButtonList= PS/NPS (page 1 header, x=20mm)
-  // [2-5]  Row 1          = DateField(date), NumericField(age@time), TF(nature), TF(disposition)
-  // [6-12] 7 TFs          = COMMENTS / TYPE-OF-WAIVER section (leave blank)
-  // [13-76] Rows 2-17     = 16 offense rows × 4 fields each
-  // [77]   TF             = DEPENDENT AGES (page 2 header, x=119mm)
-  // [78]   TF             = # OF DEPENDENTS (page 2 header, x=91mm)
-  // [79]   TF             = NAME Last, First MI (page 2 header, x=12.87mm wide)
-  // [80]   TF             = AGE (page 2 header, x=113mm)
-  // [81]   TF             = EDUCATION CODE (page 2 header, x=134mm)
-  // [82]   TF             = AFQT (page 2 header, x=170mm)
-  // [83-182] Rows 18-42   = 25 offense rows × 4 fields each
-
   const rowXML = i => {
     const o = get(i);
-    const age = calcAge(applicant.dob, o.date);
-    const star = o.waivedOffense ? '*' : '';
-    return `${df(fmtD(o.date))}\n${nf(age)}\n${tf(star + (o.description||''))}\n${tf(o.disposition||'')}\n`;
+    const age = calcAge(applicant.dob, o.offenseDate||o.date);
+    const star = o.waivedOffense!==false ? '*' : '';
+    const desc = o.description || (OFFENSE_CATEGORIES.find(c=>c.id===o.categoryId)?.label) || '';
+    return `${df(fmtD(o.offenseDate||o.date))}\n${nf(age)}\n${tf(star + desc)}\n${tf(o.disposition||'')}\n`;
   };
-
   let xml = `<xfa:datasets xmlns:xfa="http://www.xfa.org/schema/xfa-data/1.0/">\n<xfa:data>\n<topmostSubform>\n`;
-  xml += tf(applicant.maritalStatus) + '\n';                    // [0] Marital Status
-  xml += `<RadioButtonList>${esc(applicant.psNps||'')}</RadioButtonList>\n`; // [1] PS/NPS
-  xml += rowXML(0);                                              // [2-5] Row 1
-  for (let i=0;i<7;i++) xml += '<TextField2/>\n';               // [6-12] Comments (blank)
-  for (let i=1;i<=16;i++) xml += rowXML(i);                     // [13-76] Rows 2-17
-  xml += tf(applicant.dependentAges) + '\n';                    // [77] Dependent Ages
-  xml += tf(applicant.numDependents) + '\n';                    // [78] # of Dependents
-  xml += tf(name) + '\n';                                        // [79] NAME
-  xml += tf(currentAge) + '\n';                                  // [80] Age
-  xml += tf(applicant.educationCode||applicant.educationLevel||'') + '\n'; // [81] Ed Code
-  xml += tf(applicant.afqt) + '\n';                             // [82] AFQT
-  for (let i=17;i<=41;i++) xml += rowXML(i);                    // [83-182] Rows 18-42
+  xml += tf(applicant.maritalStatus) + '\n';
+  xml += `<RadioButtonList>${esc(applicant.psNps||'')}</RadioButtonList>\n`;
+  xml += rowXML(0);
+  for (let i=0;i<7;i++) xml += '<TextField2/>\n';
+  for (let i=1;i<=16;i++) xml += rowXML(i);
+  xml += tf(applicant.dependentAges) + '\n';
+  xml += tf(applicant.numDependents) + '\n';
+  xml += tf(name) + '\n';
+  xml += tf(currentAge) + '\n';
+  xml += tf(applicant.educationCode||applicant.educationLevel||'') + '\n';
+  xml += tf(applicant.afqt) + '\n';
+  for (let i=17;i<=41;i++) xml += rowXML(i);
   xml += '</topmostSubform>\n</xfa:data>\n</xfa:datasets>';
   return xml;
 }
@@ -879,34 +1656,23 @@ async function generateFilledUF608(applicant, offenses, onProgress) {
   const resp = await fetch('./uf-601-210-08.pdf');
   if (!resp.ok) throw new Error('uf-601-210-08.pdf not found in the same folder as this tool.');
   const origBytes = new Uint8Array(await resp.arrayBuffer());
-
   onProgress('Building XFA datasets...');
   const xml = buildDatasetsXML(applicant, offenses);
   const xmlBytes = new TextEncoder().encode(xml);
-
   onProgress('Compressing...');
   const compressed = pako.deflate(xmlBytes);
-
-  // Find existing startxref (for /Prev in incremental trailer)
   const tail = new TextDecoder('utf-8',{fatal:false}).decode(origBytes.slice(-512));
   const prevMatch = tail.match(/startxref\s+(\d+)/g);
   const prevXref = prevMatch ? parseInt(prevMatch[prevMatch.length-1].match(/\d+/)[0]) : 0;
-
   const enc = new TextEncoder();
   const sep = enc.encode('\n');
-
-  // New object 72 content
   const objHeader = enc.encode(`72 0 obj\n<<\n/Filter [/FlateDecode]\n/Length ${compressed.length}\n/Type /EmbeddedFile\n>>\nstream\n`);
   const objFooter = enc.encode('\nendstream\nendobj\n');
-
-  // Byte offsets
   const newObj72At = origBytes.length + sep.length;
-  const xrefAt     = newObj72At + objHeader.length + compressed.length + objFooter.length;
-
-  const xrefEntry  = `${String(newObj72At).padStart(10,'0')} 00000 n \r\n`;
-  const xrefBlock  = enc.encode(`xref\n72 1\n${xrefEntry}`);
+  const xrefAt = newObj72At + objHeader.length + compressed.length + objFooter.length;
+  const xrefEntry = `${String(newObj72At).padStart(10,'0')} 00000 n \r\n`;
+  const xrefBlock = enc.encode(`xref\n72 1\n${xrefEntry}`);
   const trailerBlock = enc.encode(`trailer\n<<\n/Size 100\n/Prev ${prevXref}\n>>\nstartxref\n${xrefAt}\n%%EOF\n`);
-
   onProgress('Assembling PDF...');
   const parts = [origBytes, sep, objHeader, compressed, objFooter, xrefBlock, trailerBlock];
   const total = parts.reduce((s,p)=>s+p.length,0);
@@ -915,403 +1681,174 @@ async function generateFilledUF608(applicant, offenses, onProgress) {
   return result;
 }
 
-/* ── UF608 Card ──────────────────────────────────────────── */
 const UF608Card = ({ applicant, offenses }) => {
-  const [status, setStatus] = useState('idle'); // idle | loading | done | error
+  const [status, setStatus] = useState('idle');
   const [msg, setMsg] = useState('');
-
+  const canGenerate = offenses.some(so=>so.offenseDate||so.description);
   const generate = async () => {
     setStatus('loading'); setMsg('Starting...');
     try {
-      const bytes = await generateFilledUF608(applicant, offenses, m => setMsg(m));
+      const bytes = await generateFilledUF608(applicant, offenses, m=>setMsg(m));
       const blob = new Blob([bytes], {type:'application/pdf'});
-      const url  = URL.createObjectURL(blob);
-      const a    = document.createElement('a');
-      const lastName = applicant.lastName || 'applicant';
-      a.href = url;
-      a.download = `UF-601-210.08-${lastName.toUpperCase()}.pdf`;
-      document.body.appendChild(a); a.click();
-      document.body.removeChild(a);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href=url; a.download=`UF-601-210.08-${(applicant.lastName||'applicant').toUpperCase()}.pdf`;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
       URL.revokeObjectURL(url);
       setStatus('done'); setMsg('Downloaded — open with Adobe Acrobat Reader.');
-    } catch(e) {
-      setStatus('error'); setMsg(e.message);
-    }
+    } catch(e) { setStatus('error'); setMsg(e.message); }
   };
-
-  const canGenerate = offenses.length > 0;
-
   return (
-    <div className="card" style={{marginTop:16,borderColor:status==='error'?'rgba(207,0,0,.3)':status==='done'?'rgba(45,122,79,.3)':'rgba(255,204,1,.2)'}}>
+    <div className="card" style={{marginTop:14,borderColor:status==='error'?'rgba(207,0,0,.3)':status==='done'?'rgba(45,122,79,.3)':'rgba(255,204,1,.2)'}}>
       <div className="card-hdr">
         <div className="section-bar"/>
         <div style={{flex:1}}>
-          <div className="card-title">UF 601-210.08 — Pre-Fill &amp; Download</div>
-          <div className="card-sub">XFA dataset injection — opens pre-populated in Adobe Acrobat Reader</div>
+          <div className="card-title">UF 601-210.08 — Pre-Fill & Download</div>
+          <div className="card-sub">XFA injection — opens pre-populated in Adobe Acrobat Reader (all offenses, newest to oldest)</div>
         </div>
       </div>
-      <div style={{padding:'0 4px'}}>
-        <div style={{fontSize:12,color:'var(--fg-m)',marginBottom:12,lineHeight:1.6}}>
-          Injects applicant name and all logged offenses (newest to oldest) directly into the official UF 601-210.08 form fields. Waived offense(s) are automatically asterisked.
-        </div>
-        {!canGenerate && (
-          <div style={{fontSize:11,color:'var(--fg-m)',marginBottom:12,padding:'6px 10px',background:'rgba(255,204,1,.04)',border:'1px solid var(--bd)'}}>
-            Add at least one offense in Phase 2 before generating.
-          </div>
-        )}
-        {msg && (
-          <div style={{
-            fontSize:11,marginBottom:12,padding:'7px 10px',
-            background: status==='error'?'rgba(207,0,0,.1)':status==='done'?'rgba(45,122,79,.1)':'rgba(255,204,1,.06)',
-            border:`1px solid ${status==='error'?'rgba(207,0,0,.3)':status==='done'?'rgba(45,122,79,.3)':'rgba(255,204,1,.15)'}`,
-            color: status==='error'?'#ff7070':status==='done'?'#5bc989':'var(--gold)',
-          }}>{msg}</div>
-        )}
-        <div style={{display:'flex',gap:8,alignItems:'center'}}>
-          <button className="btn btn-gold" disabled={!canGenerate||status==='loading'} onClick={generate}>
-            {status==='loading'?'Generating...':'Generate & Download PDF'}
-          </button>
-          {status==='loading' && <span style={{fontSize:11,color:'var(--fg-m)',animation:'pulse 1s ease infinite'}}>{msg}</span>}
-          {status!=='idle' && status!=='loading' && (
-            <button className="btn btn-outline btn-sm" onClick={()=>{setStatus('idle');setMsg('');}}>Reset</button>
-          )}
-        </div>
-        <div style={{marginTop:10,fontSize:10,color:'var(--fg-d)'}}>
-          Open result with Adobe Acrobat Reader — other PDF viewers may not render XFA forms correctly.
-        </div>
+      <div style={{fontSize:12,color:'var(--fg-m)',marginBottom:12,lineHeight:1.6}}>
+        Injects applicant data and all logged offenses directly into form fields. Waived offenses are automatically asterisked (★).
       </div>
+      {!canGenerate && <div style={{fontSize:11,color:'var(--fg-m)',marginBottom:12,padding:'6px 10px',background:'rgba(255,204,1,.04)',border:'1px solid var(--bd)'}}>Add offense details in the Screener tab before generating.</div>}
+      {msg && <div style={{fontSize:11,marginBottom:12,padding:'7px 10px',background:status==='error'?'rgba(207,0,0,.1)':status==='done'?'rgba(45,122,79,.1)':'rgba(255,204,1,.06)',border:`1px solid ${status==='error'?'rgba(207,0,0,.3)':status==='done'?'rgba(45,122,79,.3)':'rgba(255,204,1,.15)'}`,color:status==='error'?'#ff7070':status==='done'?'#5bc989':'var(--gold)'}}>{msg}</div>}
+      <div className="row" style={{gap:8}}>
+        <button className="btn btn-gold" disabled={!canGenerate||status==='loading'} onClick={generate}>
+          {status==='loading'?'Generating...':'Generate & Download PDF'}
+        </button>
+        {status!=='idle'&&status!=='loading'&&<button className="btn btn-outline btn-sm" onClick={()=>{setStatus('idle');setMsg('');}}>Reset</button>}
+      </div>
+      <div style={{marginTop:8,fontSize:10,color:'var(--fg-d)'}}>Open result with Adobe Acrobat Reader — other PDF viewers do not render XFA forms correctly.</div>
     </div>
   );
 };
 
-/* ── Phase 3 ─────────────────────────────────────────────── */
-const Phase3 = ({ applicant, offenses, verdict, answers }) => {
-  const [clStatus, setClStatus] = useState({});
-  const [clNotes, setClNotes] = useState({});
-  const [expDates, setExpDates] = useState({});
-  const [activeDoc, setActiveDoc] = useState(null);
+/* ── Phase 4: Tracker ────────────────────────────────── */
+const Phase4 = ({ applicant, setApplicant }) => {
+  const statuses = ['building','submitted','review','complete'];
+  const statusLabels = { building:'Building Packet', submitted:'Submitted to BN', review:'At BN/USAREC', complete:'Approved/Closed' };
+  const statusColors = { building:'var(--gold)', submitted:'#7eb8ff', review:'#cc99ff', complete:'#5bc989' };
 
-  const authority = verdict?.type==='WAIVABLE' ? verdict.authority : 'BN';
-  const isTrafficOnly = answers.offenseId === 'traffic_above_minor';
-  const requiredItems = getRequiredChecklist(answers.offenseId, authority, isTrafficOnly);
-  const expiringItems = requiredItems.filter(i=>i.validity);
-  const statusCycle = s => s==='pending'?'progress':s==='progress'?'complete':'pending';
+  const setField = (k,v) => setApplicant(prev => ({...prev, [k]:v}));
+  const current = applicant.trackerStatus||'building';
+  const fullName = [applicant.firstName, applicant.lastName].filter(Boolean).join(' ') || 'Unnamed Applicant';
 
-  const fullName = [applicant.firstName, applicant.mi ? applicant.mi+'.' : '', applicant.lastName].filter(Boolean).join(' ');
-  const ssnLast4 = (applicant.ssn||'').slice(-4) || 'XXXX';
-  const authorityFull = { BN:'Battalion Commander', USAREC:'Commanding General, USAREC', DMPM:'Deputy Chief of Staff, G-1 (DMPM)' };
-  const authorityMemo = { BN:'Battalion Commander', USAREC:'CG, USAREC', DMPM:'Deputy Chief of Staff, G-1 (DMPM)' };
-  const authorityShort = authorityFull[authority]||authority;
-
-  const offenseList = [...offenses].sort((a,b)=>new Date(b.date)-new Date(a.date));
-
-  /* ── Document generators ─────────────────────────────── */
-  const genCoverSheet = () => {
-    const lines = [];
-    lines.push(`MORAL WAIVER PACKET — COVER SHEET`);
-    lines.push(`${'─'.repeat(55)}`);
-    lines.push(`Applicant:         ${fullName || '[Name]'}`);
-    lines.push(`SSN (Last 4):      XXXX-XX-${ssnLast4}`);
-    lines.push(`Date of Birth:     ${fmtDate(applicant.dob)}`);
-    lines.push(`RSID:              ${applicant.rsid||'[RSID]'}`);
-    lines.push(`PS/NPS:            ${applicant.psNps||'[PS/NPS]'}`);
-    lines.push(`Marital Status:    ${applicant.maritalStatus||'[Marital Status]'}`);
-    lines.push(`# Dependents:      ${applicant.numDependents||'0'}`);
-    if (applicant.dependentAges) lines.push(`Dependent Ages:    ${applicant.dependentAges}`);
-    lines.push(`Education:         ${applicant.educationLevel||'[Ed Level]'}${applicant.educationCode?' (Code: '+applicant.educationCode+')':''}`);
-    lines.push(`AFQT Score:        ${applicant.afqt||'[Score]'}`);
-    lines.push(`Approving Auth:    ${authorityShort}`);
-    lines.push(`Date Prepared:     ${new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}`);
-    lines.push(`Reg Basis:         AR 601-210, Chapter 4 (8 Nov 2023)`);
-    lines.push(``);
-    lines.push(`OFFENSES`);
-    lines.push(`${'─'.repeat(55)}`);
-    offenseList.forEach((o,i)=>{
-      lines.push(`${i+1}. ${fmtDate(o.date)} — ${o.description}`);
-      lines.push(`   Location: ${[o.city,o.county,o.state].filter(Boolean).join(', ')}`);
-      lines.push(`   Disposition: ${o.disposition}`);
-    });
-    lines.push(``);
-    lines.push(`REQUIRED DOCUMENTS`);
-    lines.push(`${'─'.repeat(55)}`);
-    requiredItems.forEach(item=>{
-      const status = clStatus[item.id]||'pending';
-      const mark = status==='complete'?'[X]':status==='progress'?'[~]':'[ ]';
-      lines.push(`${mark} ${item.label}`);
-      if(item.note) lines.push(`    NOTE: ${item.note}`);
-    });
-    lines.push(``);
-    lines.push(`Waiver valid 6 months from approval date. · AR 601-210, para 4-27`);
-    return lines.join('\n');
+  const approvalExpiry = () => {
+    if (!applicant.approvedDate) return null;
+    const d = new Date(applicant.approvedDate);
+    d.setMonth(d.getMonth()+6);
+    const days = Math.ceil((d-new Date())/86400000);
+    return { date:d.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}), days };
   };
-
-  const genStatement = () => {
-    const lines = [];
-    lines.push(`MEMORANDUM FOR ${authorityMemo[authority]||authorityShort}`);
-    lines.push(`SUBJECT: Applicant Statement in Support of Moral Waiver`);
-    lines.push(``);
-    lines.push(`1. I, ${fullName||'[APPLICANT NAME]'}, am requesting a moral waiver for the following offense(s):`);
-    lines.push(``);
-    offenseList.forEach((o,i)=>{
-      const letter = String.fromCharCode(97+i);
-      lines.push(`   ${letter}. ${fmtDate(o.date)} — ${o.description} — ${o.disposition}`);
-    });
-    lines.push(``);
-    lines.push(`2. The circumstances surrounding the offense(s) are as follows:`);
-    lines.push(`   [APPLICANT FILLS IN — explain the situation, context, and contributing factors]`);
-    lines.push(``);
-    lines.push(`3. Since the offense(s), I have taken the following steps to improve my conduct:`);
-    lines.push(`   [APPLICANT FILLS IN — education, employment, community service, counseling, etc.]`);
-    lines.push(``);
-    lines.push(`4. I am requesting this waiver because:`);
-    lines.push(`   [APPLICANT FILLS IN — commitment to Army values and service]`);
-    lines.push(``);
-    lines.push(`5. I certify that the above information is true and accurate to the best of my knowledge.`);
-    lines.push(``);
-    lines.push(`__________________________________        ____________________`);
-    lines.push(`${fullName||'[APPLICANT NAME]'}                   Date`);
-    return lines.join('\n');
-  };
-
-  const genMFR = () => {
-    const unit   = applicant.recruiterUnit    || '[UNIT DESIGNATION]';
-    const addr   = applicant.recruiterAddress || '[UNIT ADDRESS]';
-    const sym    = applicant.recruiterOfficeSym || applicant.rsid || '[OFFICE SYM]';
-    const dateStr = new Date().toLocaleDateString('en-US',{day:'numeric',month:'long',year:'numeric'});
-    const recName = applicant.recruiterName || '[RECRUITER NAME]';
-    const recRank = applicant.recruiterRank || '[RANK, BRANCH]';
-    const authTo  = authorityMemo[authority]||authorityShort;
-
-    const offList = offenseList.map((o,i) => {
-      const letter = String.fromCharCode(97+i);
-      return `            ${letter}. ${fmtDate(o.date)} - ${o.description}. Disposition: ${o.disposition}.`;
-    }).join('\n');
-
-    return `<!DOCTYPE html><html><head><title>CO Interview MFR</title>
-<style>
-  body { font-family:"Times New Roman",serif; font-size:12pt; color:#000; margin:0; padding:0; }
-  @page { size:letter; margin:1in; }
-  @media screen { body { max-width:7.5in; margin:0.5in auto; padding:0.5in; } }
-  .lhd-unit { font-family:Arial,sans-serif; font-weight:bold; font-size:10pt; text-align:center; text-transform:uppercase; line-height:1.4; }
-  .lhd-dept { font-family:Arial,sans-serif; font-weight:bold; font-size:9pt; text-align:center; letter-spacing:.05em; margin-bottom:2pt; }
-  .lhd-addr { font-family:Arial,sans-serif; font-size:9pt; text-align:center; font-weight:normal; }
-  .lhd-rule { border:none; border-top:1.5pt solid #000; margin:6pt 0 4pt; }
-  .sym-date { display:flex; justify-content:space-between; font-family:Arial,sans-serif; font-size:10pt; margin-bottom:18pt; }
-  .sym-label { font-size:8pt; font-style:italic; color:#333; }
-  .body-block { font-family:"Times New Roman",serif; font-size:12pt; line-height:1.5; }
-  .memo-to { margin-bottom:4pt; }
-  .memo-subj { margin-bottom:14pt; }
-  .para { margin-bottom:10pt; }
-  .sig-block { margin-top:36pt; }
-  .sig-line { border-bottom:1pt solid #000; width:3.5in; }
-  .fill-blank { border-bottom:1pt solid #555; display:inline-block; min-width:1.8in; }
-</style>
-</head><body>
-<div class="lhd-dept">DEPARTMENT OF THE ARMY</div>
-<div class="lhd-unit">${unit}</div>
-<div class="lhd-addr">${addr}</div>
-<hr class="lhd-rule"/>
-<div class="sym-date">
-  <div>
-    <div class="sym-label">REPLY TO<br>ATTENTION OF</div>
-    <div style="font-family:Arial;font-size:10pt;font-weight:bold;">${sym}</div>
-  </div>
-  <div style="text-align:right;font-family:Arial;font-size:10pt;">${dateStr}</div>
-</div>
-<div class="body-block">
-  <div class="memo-to">MEMORANDUM FOR ${authTo}</div>
-  <div class="memo-subj">SUBJECT: Company Commander&#39;s Interview &#8211; ${fullName||'[APPLICANT NAME]'}, Moral Waiver</div>
-
-  <div class="para">1.&nbsp;&nbsp;On <span class="fill-blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>, I personally interviewed <strong>${fullName||'[APPLICANT NAME]'}</strong> regarding the following offense(s) requiring a moral waiver:</div>
-
-${offenseList.map((o,i)=>`  <div class="para" style="margin-left:36pt;">${String.fromCharCode(97+i)}.&nbsp;&nbsp;${fmtDate(o.date)} &#8211; ${o.description}. Disposition: ${o.disposition}.</div>`).join('\n')}
-
-  <div class="para">2.&nbsp;&nbsp;During the interview, ${applicant.firstName||'the applicant'} demonstrated <span class="fill-blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>. The applicant&#39;s explanation of the circumstances surrounding the offense(s) was <span class="fill-blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>.</div>
-
-  <div class="para">3.&nbsp;&nbsp;Based on my interview, I assess ${applicant.firstName||'the applicant'} to be <span class="fill-blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> and believe the offense(s) to be <span class="fill-blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> of the applicant&#39;s overall character.</div>
-
-  <div class="para">4.&nbsp;&nbsp;Recommendation:</div>
-  <div class="para" style="margin-left:36pt;">&#9633;&nbsp;&nbsp;<strong>APPROVE</strong> the moral waiver request.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#9633;&nbsp;&nbsp;<strong>DISAPPROVE</strong> the moral waiver request.</div>
-  <div class="para" style="margin-left:36pt;">Justification: <span class="fill-blank" style="min-width:3in;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div>
-
-  <div class="para">5.&nbsp;&nbsp;The point of contact for this memorandum is the undersigned at <span class="fill-blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>.</div>
-
-  <div class="sig-block">
-    <div style="margin-bottom:42pt;">&nbsp;</div>
-    <div class="sig-line">&nbsp;</div>
-    <div style="font-family:Arial,sans-serif;font-size:10pt;font-weight:bold;">[CO RANK NAME]</div>
-    <div style="font-family:Arial,sans-serif;font-size:10pt;">[BRANCH], USA</div>
-    <div style="font-family:Arial,sans-serif;font-size:10pt;">Commanding</div>
-  </div>
-</div>
-</body></html>`;
-  };
-
-  const genRouting = () => {
-    const lines = [];
-    lines.push(`MEMORANDUM FOR Battalion S1`);
-    lines.push(`SUBJECT: Moral Waiver Packet Submission — ${fullName||'[APPLICANT NAME]'}`);
-    lines.push(``);
-    lines.push(`1. Submitting moral waiver packet for ${fullName||'[NAME]'}, SSN (last 4): XXXX-XX-${ssnLast4}.`);
-    lines.push(``);
-    lines.push(`2. Offense(s):`);
-    offenseList.forEach((o,i)=>{
-      lines.push(`   ${i+1}. ${fmtDate(o.date)} — ${o.description}`);
-    });
-    lines.push(``);
-    lines.push(`3. Approving Authority: ${authorityShort}`);
-    lines.push(``);
-    lines.push(`4. Required documents attached:`);
-    requiredItems.forEach(item=>{
-      const status = clStatus[item.id]||'pending';
-      const mark = status==='complete'?'[X]':'[ ]';
-      lines.push(`   ${mark} ${item.label}`);
-    });
-    lines.push(``);
-    lines.push(`5. Point of contact: [RECRUITER NAME], RSID: ${applicant.rsid||'[RSID]'}`);
-    lines.push(``);
-    lines.push(`6. Regulation basis: AR 601-210, Chapter 4, 8 November 2023`);
-    lines.push(``);
-    lines.push(``);
-    lines.push(`__________________________________        ____________________`);
-    lines.push(`[RECRUITER RANK, NAME]                    Date`);
-    return lines.join('\n');
-  };
-
-  const docTypes = [
-    { id:'cover',     name:'Printable Cover Sheet',       desc:'Formatted summary page for the top of the physical packet — applicant info, offense table, required docs.',  icon:<IcoDoc/>, gen:genCoverSheet, fmt:'text' },
-    { id:'statement', name:"Applicant's Statement Draft", desc:'Pre-filled boilerplate structure per AR 601-210 requirements. Applicant personalizes and signs.',              icon:<IcoDoc/>, gen:genStatement, fmt:'text' },
-    { id:'mfr',       name:"CO Interview MFR Draft",      desc:'Official Army memo with letterhead, AR 25-50 format. CO completes fill-in lines and signs.',                  icon:<IcoDoc/>, gen:genMFR,       fmt:'html' },
-    { id:'routing',   name:'Routing / Transmittal Memo',  desc:'Memo from recruiter routing the complete packet up the chain to battalion S1.',                               icon:<IcoDoc/>, gen:genRouting,   fmt:'text' },
-  ];
-
-  const printDoc = (content, fmt='text') => {
-    const w = window.open('','_blank');
-    if (fmt === 'html') {
-      // Insert auto-print script before </body>
-      const html = content.replace('</body>', '<script>window.onload=()=>window.print()<\/script></body>');
-      w.document.write(html);
-    } else {
-      w.document.write(`<!DOCTYPE html><html><head><title>Moral Waiver Document</title><style>body{font-family:"Courier New",monospace;font-size:12px;line-height:1.7;padding:48px;color:#000;max-width:700px;margin:auto}@media print{body{padding:24px}}</style></head><body><pre>${content}</pre><script>window.onload=()=>window.print()<\/script></body></html>`);
-    }
-    w.document.close();
-  };
+  const expiry = approvalExpiry();
 
   return (
-    <div className="main">
+    <div className="main-scroll">
       <div className="fade-up">
-        {/* Document Checklist */}
         <div className="card">
-          <div className="card-hdr"><div className="section-bar"/><div><div className="card-title">Document Checklist</div><div className="card-sub">Required documents for {authorityShort} level waiver · Click status badge to cycle</div></div></div>
-          {requiredItems.map(item=>{
-            const status = clStatus[item.id]||'pending';
-            return (
-              <div key={item.id} className="cl-item">
-                <div className={`cl-check${status==='complete'?' checked':''}`} onClick={()=>setClStatus(p=>({...p,[item.id]:p[item.id]==='complete'?'pending':'complete'}))}>
-                  {status==='complete'&&<IcoCheck/>}
-                </div>
-                <div className="cl-body">
-                  <div className="cl-label" style={status==='complete'?{textDecoration:'line-through',opacity:.45}:{}}>{item.label}</div>
-                  <div className="cl-meta">{item.ref}</div>
-                  {item.note&&<div className="cl-note">{item.note}</div>}
-                </div>
-                <div className="cl-status">
-                  <span className={`status-badge status-${status}`} onClick={()=>setClStatus(p=>({...p,[item.id]:statusCycle(p[item.id]||'pending')}))}>
-                    {status==='pending'?'Pending':status==='progress'?'In Progress':'Complete'}
-                  </span>
-                  {item.validity&&<span className="muted" style={{fontSize:10}}><IcoClock/> {item.validity} {item.unit}</span>}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Expiration Tracker */}
-        {expiringItems.length > 0 && (
-          <div className="card" style={{marginTop:16}}>
-            <div className="card-hdr"><div className="section-bar"/><div><div className="card-title">Expiration Tracker</div><div className="card-sub">Enter date obtained — app calculates expiry and flags issues before submission</div></div></div>
-            {expiringItems.map(item=>{
-              const d = expDates[item.id];
-              const days = daysUntilExpiry(d, item.validity);
-              const expStatus = getExpiryStatus(days);
-              return (
-                <div key={item.id} className="exp-item">
-                  <div>
-                    <div className="exp-label">{item.label}</div>
-                    <div className="exp-valid">Valid {item.validity} {item.unit}</div>
-                  </div>
-                  <input type="date" className="form-input" style={{fontSize:11,padding:'5px 8px'}}
-                    value={d||''} onChange={e=>setExpDates(p=>({...p,[item.id]:e.target.value}))}
-                    placeholder="Date obtained"/>
-                  <div className={`exp-status exp-${expStatus}`}>
-                    {!d ? '—' : days<0 ? `Expired ${Math.abs(days)}d ago` : `${days}d left`}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-
-        {/* Generated Documents */}
-        <div className="card" style={{marginTop:16}}>
-          <div className="card-hdr"><div className="section-bar"/><div><div className="card-title">Generated Documents</div><div className="card-sub">Pre-filled drafts based on applicant data and offense log</div></div></div>
-          <div className="output-grid">
-            {docTypes.map(dt=>(
-              <div key={dt.id} className="output-card">
-                <div className="output-icon">{dt.icon}</div>
-                <div className="output-name">{dt.name}</div>
-                <div className="output-desc">{dt.desc}</div>
-                <div style={{display:'flex',gap:6}}>
-                  <button className="btn btn-outline btn-sm" onClick={()=>setActiveDoc({...dt, content:dt.gen()})}>Preview</button>
-                  <button className="btn btn-gold btn-sm" onClick={()=>printDoc(dt.gen(),dt.fmt)}><IcoPrint/> Print</button>
+          <div className="card-hdr"><div className="section-bar"/><div><div className="card-title">Waiver Tracker — {fullName}</div><div className="card-sub">Track submission status through the approval chain</div></div></div>
+          <div style={{display:'flex',gap:0,marginBottom:20,overflowX:'auto'}}>
+            {statuses.map((s,i) => (
+              <div key={s} style={{flex:1,minWidth:120,textAlign:'center',cursor:'pointer'}} onClick={()=>setField('trackerStatus',s)}>
+                <div style={{height:4,background:statuses.indexOf(current)>=i?statusColors[s]:' var(--bd-m)',transition:'background .3s'}}/>
+                <div style={{padding:'10px 8px',fontSize:11,fontWeight:700,color:current===s?statusColors[s]:'var(--fg-m)',textTransform:'uppercase',letterSpacing:'.05em',transition:'color .3s'}}>
+                  {statusLabels[s]}
                 </div>
               </div>
             ))}
           </div>
-        </div>
-
-        {/* UF 601-210.08 PDF Injection */}
-        <UF608Card applicant={applicant} offenses={offenses} />
-
-        <div style={{fontSize:10,color:'var(--fg-d)',textAlign:'center',marginTop:24,paddingBottom:16}}>
-          Eligibility logic based on AR 601-210, 8 November 2023. Verify currency before submission.
-        </div>
-      </div>
-
-      {/* Document Preview Modal */}
-      {activeDoc && (
-        <div className="modal-overlay" onClick={e=>{if(e.target===e.currentTarget)setActiveDoc(null)}}>
-          <div className="modal" style={{maxWidth:activeDoc.fmt==='html'?860:700}}>
-            <div className="modal-hdr">
-              <span className="modal-title">{activeDoc.name}</span>
-              <button className="btn btn-outline btn-sm" onClick={()=>setActiveDoc(null)}><IcoX/></button>
+          <div className="form-grid" style={{marginBottom:12}}>
+            <div className="form-field">
+              <label className="form-label">Submitted to BN Date</label>
+              <input className="form-input" type="date" value={applicant.submittedDate||''} onChange={e=>setField('submittedDate',e.target.value)}/>
             </div>
-            <div className="modal-body" style={{padding:activeDoc.fmt==='html'?0:20}}>
-              {activeDoc.fmt==='html'
-                ? <iframe srcDoc={activeDoc.content} style={{width:'100%',height:'60vh',border:'none',background:'#fff'}} title="MFR Preview"/>
-                : <pre className="doc-preview">{activeDoc.content}</pre>
-              }
-            </div>
-            <div className="modal-ftr">
-              <button className="btn btn-outline" onClick={()=>setActiveDoc(null)}>Close</button>
-              <button className="btn btn-gold" onClick={()=>printDoc(activeDoc.content,activeDoc.fmt)}><IcoPrint/> Print / Download</button>
+            <div className="form-field">
+              <label className="form-label">Approval / Decision Date</label>
+              <input className="form-input" type="date" value={applicant.approvedDate||''} onChange={e=>setField('approvedDate',e.target.value)}/>
             </div>
           </div>
+          {expiry && (
+            <div className={`alert ${expiry.days<0?'alert-danger':expiry.days<30?'alert-warn':'alert-success'}`} style={{marginBottom:12}}>
+              <span className="alert-icon">{expiry.days<0?'🚨':expiry.days<30?'⚠️':'✅'}</span>
+              <div>
+                <strong>Waiver Approval Expires:</strong> {expiry.date}
+                {expiry.days<0 ? ` (EXPIRED ${Math.abs(expiry.days)} days ago — must resubmit)` :
+                 expiry.days<30 ? ` (${expiry.days} days remaining — ship soon!)` :
+                 ` (${expiry.days} days remaining)`}
+              </div>
+            </div>
+          )}
+          <div className="form-field">
+            <label className="form-label">Notes / Comments</label>
+            <textarea className="form-input" rows="4" value={applicant.trackerNotes||''} onChange={e=>setField('trackerNotes',e.target.value)} placeholder="Return reasons, follow-up actions, POC info, etc." style={{resize:'vertical'}}/>
+          </div>
         </div>
-      )}
+
+        {/* Regulation Quick Reference */}
+        <div className="card" style={{marginTop:14}}>
+          <div className="card-hdr"><div className="section-bar"/><div className="card-title">Key Regulation Reminders</div></div>
+          <div style={{display:'flex',flexDirection:'column',gap:0}}>
+            {Object.entries(PARA_TEXT).map(([para, text]) => (
+              <div key={para} className="ref-entry">
+                <div className="ref-para-id">Para {para}</div>
+                <div className="ref-para-text">{text}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
 
-/* ── Resume Modal ────────────────────────────────────────── */
+/* ── Right Regulation Panel ──────────────────────────── */
+const RefPanel = ({ collapsed, tab, authority }) => {
+  const relevantParas = {
+    1: ['4-22g','4-22h','4-22i','4-22j','4-22k','4-31','4-30','4-35','4-18'],
+    2: ['4-28','4-28e4','4-28e5','4-27'],
+    3: ['4-28','4-28e4','4-28e5','4-27','4-31'],
+    4: ['4-27','4-22g','4-22h'],
+  };
+  const paras = relevantParas[tab] || Object.keys(PARA_TEXT);
+  const tips = {
+    1: ['💡 If ANY offense is an absolute bar → overall case = NOT WAIVABLE', '💡 Multiple offenses → authority = highest level required', '💡 Expert Mode lets you fill all answers at once'],
+    2: ['💡 AFQT on UF 601-210.08 MUST match current MIRS score', '💡 MOS check saves you from discovering late in the process'],
+    3: ['💡 Click any checklist item to expand step-by-step how-to', '💡 DD 369s must cover ALL locations where offenses occurred', '💡 Aliases must be run on SEPARATE DD 369 forms'],
+    4: ['💡 Waiver is valid 6 months from approval — track the expiry date', '💡 Print MIRS 1.1 on the day of submission'],
+  };
+  if (collapsed) return null;
+  return (
+    <div className="ref-panel">
+      <div className="ref-panel-hdr">
+        <div className="ref-panel-title">📖 Reg Reference</div>
+      </div>
+      <div className="ref-panel-body">
+        {(tips[tab]||[]).map((tip,i) => (
+          <div key={i} className="ref-tip" style={{marginBottom:8}}>{tip}</div>
+        ))}
+        {paras.filter(p=>PARA_TEXT[p]).map(para => (
+          <div key={para} className="ref-entry">
+            <div className="ref-para-id">Para {para}</div>
+            <div className="ref-para-text">{PARA_TEXT[para]}</div>
+          </div>
+        ))}
+        {authority && (authority==='USAREC'||authority==='DMPM') && (
+          <div className="ref-tip" style={{marginTop:8,borderLeft:'2px solid var(--gold)',color:'var(--gold)'}}>
+            ⚠️ {authority} level — DD Form 370 (3 references) required. DD Form 2808 required.
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+/* ── Resume Modal ───────────────────────────────────── */
 const ResumeModal = ({ draft, onResume, onDiscard }) => (
   <div className="resume-modal">
     <div className="resume-box">
-      <div className="resume-title">Resume Previous Applicant?</div>
-      <div className="resume-applicant">
-        {[draft.applicant?.firstName, draft.applicant?.mi, draft.applicant?.lastName].filter(Boolean).join(' ') || 'Unnamed Applicant'}
-      </div>
-      <div className="resume-ts">Last saved: {draft.savedAt ? new Date(draft.savedAt).toLocaleString() : 'Unknown'}</div>
+      <div className="resume-title">Resume Previous Session?</div>
+      <div className="resume-applicant">{draft.roster?.[0]?.firstName||''} {draft.roster?.[0]?.lastName||'Unnamed'}</div>
+      <div className="resume-ts">{draft.roster?.length||0} applicant(s) · Last saved: {draft.savedAt ? new Date(draft.savedAt).toLocaleString() : 'Unknown'}</div>
       <div style={{display:'flex',gap:8}}>
         <button className="btn btn-gold" style={{flex:1}} onClick={onResume}>Resume</button>
         <button className="btn btn-outline" onClick={onDiscard}>Start Fresh</button>
@@ -1320,104 +1857,226 @@ const ResumeModal = ({ draft, onResume, onDiscard }) => (
   </div>
 );
 
-/* ── App ─────────────────────────────────────────────────── */
+/* ──.approval-banner {
+  padding: 10px 15px;
+  margin: 10px 0;
+  border-radius: 6px;
+  font-weight: 600;
+  text-align: center;
+}
+.approval-banner.waivable {background: rgba(45,122,79,.1); color: #2d7a4f; border: 1px solid #2d7a4f;}
+.approval-banner.not_waivable {background: rgba(207,0,0,.1); color: #cf0000; border: 1px solid #cf0000;}
+.approval-banner.etp_required {background: rgba(176,120,0,.1); color: #b07800; border: 1px solid #b07800;}
+.approval-banner.waiting_period {background: rgba(176,120,0,.05); color: #b07800; border: 1px solid #b07800;}
+.approval-banner.no_waiver_required {background: rgba(26,95,168,.1); color: #1a5fa8; border: 1px solid #1a5fa8;}cenarios Dropdown ──────────────────────── */
+const SampleMenu = ({ onLoad, onClose }) => (
+  <div style={{position:'absolute',top:'100%',right:0,background:'var(--bg-s)',border:'1px solid var(--bd-m)',zIndex:50,minWidth:240,marginTop:4}} className="fade-in">
+    {SAMPLE_SCENARIOS.map(s => (
+      <button key={s.id} onClick={()=>{onLoad(s);onClose();}}
+        style={{display:'block',width:'100%',background:'none',border:'none',borderBottom:'1px solid var(--bd)',padding:'10px 14px',textAlign:'left',cursor:'pointer',color:'var(--fg2)',fontFamily:'inherit',fontSize:12}}
+        onMouseEnter={e=>e.currentTarget.style.background='var(--bg-h)'}
+        onMouseLeave={e=>e.currentTarget.style.background='none'}>
+        <div style={{fontWeight:700,fontSize:11}}>{s.title}</div>
+        <div style={{fontSize:10,color:'var(--fg-m)',marginTop:2}}>{s.tag}</div>
+      </button>
+    ))}
+  </div>
+);
+
+/* ── App ────────────────────────────────────────────── */
 const App = () => {
   const [theme, setTheme] = useState('dark');
-  const [phase, setPhase] = useState(1);
+  const [tab, setTab] = useState(1);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [refOpen, setRefOpen] = useState(true);
+  const [sampleMenuOpen, setSampleMenuOpen] = useState(false);
+  const [pendingRestore, setPendingRestore] = useState(null);
 
-  // Phase 1 state
-  const [selectedOffense, setSelectedOffense] = useState(null);
-  const [answers, setAnswers] = useState({});
-  const [verdict, setVerdict] = useState(null);
+  // Roster state
+  const [roster, setRoster] = useState([blankApplicant()]);
+  const [activeId, setActiveId] = useState(null);
 
-  // Phase 2 state
-  const blankApplicant = { lastName:'', firstName:'', mi:'', ssn:'', dob:'', rsid:'', educationLevel:'', educationCode:'', afqt:'', psNps:'', maritalStatus:'', numDependents:'', dependentAges:'', recruiterUnit:'', recruiterAddress:'', recruiterOfficeSym:'', recruiterName:'', recruiterRank:'' };
-  const [applicant, setApplicant] = useState(blankApplicant);
-  const [offenses, setOffenses] = useState([]);
-
-  // Resume modal
-  const [pendingDraft, setPendingDraft] = useState(null);
-
-  // Check for saved draft on mount
+  // Init
   useEffect(() => {
-    const draft = loadDraft();
-    if (draft && (draft.applicant?.lastName || draft.offenses?.length)) {
-      setPendingDraft(draft);
+    const saved = loadRoster();
+    if (saved?.roster?.length) {
+      setPendingRestore(saved);
+    } else {
+      const first = blankApplicant();
+      setRoster([first]); setActiveId(first.id);
     }
   }, []);
 
-  // Apply theme
+  // Theme
   useEffect(() => { document.documentElement.setAttribute('data-theme', theme); }, [theme]);
 
   // Autosave
   useEffect(() => {
-    saveDraft({ phase, selectedOffense, answers, verdict, applicant, offenses });
-  }, [phase, selectedOffense, answers, verdict, applicant, offenses]);
+    if (!activeId) return;
+    saveRoster({ roster, activeId, savedAt:new Date().toISOString() });
+  }, [roster, activeId]);
 
-  const resumeDraft = () => {
-    if (!pendingDraft) return;
-    setPhase(pendingDraft.phase||1);
-    setSelectedOffense(pendingDraft.selectedOffense||null);
-    setAnswers(pendingDraft.answers||{});
-    setVerdict(pendingDraft.verdict||null);
-    setApplicant({...blankApplicant,...(pendingDraft.applicant||{})});
-    setOffenses(pendingDraft.offenses||[]);
-    setPendingDraft(null);
+  const activeApplicant = roster.find(a => a.id === activeId) || roster[0];
+
+  const setActiveApplicant = (updater) => {
+    setRoster(prev => prev.map(a => a.id === activeId ? (typeof updater === 'function' ? updater(a) : {...a,...updater}) : a));
   };
 
-  const discardDraft = () => { clearDraft(); setPendingDraft(null); };
+  const addApplicant = () => {
+    const a = blankApplicant();
+    setRoster([a]); setActiveId(a.id);
+    setTab(1);
+  };
 
-  const newApplicant = () => {
-    clearDraft();
-    setPhase(1); setSelectedOffense(null); setAnswers({}); setVerdict(null);
-    setApplicant(blankApplicant);
-    setOffenses([]);
+  const removeApplicant = (id) => {
+    const a = blankApplicant();
+    setRoster([a]); setActiveId(a.id);
   };
 
   const loadSample = (scenario) => {
-    clearDraft();
     const s = scenario;
-    setSelectedOffense(s.screening.offenseId);
-    setAnswers(s.screening);
-    const v = computeVerdictFromAnswers(s.screening.offenseId, s.screening);
-    setVerdict(v);
-    setApplicant(s.applicant);
-    setOffenses(s.offenses);
-    setPhase(2);
+    const a = blankApplicant();
+    Object.assign(a, s.applicant);
+    // Convert sample scenarios to new screened offense format
+    a.offenses = s.offenses.map(o => {
+      const v = computeVerdictFromAnswers(s.screening.offenseId, s.screening);
+      return { id:o.id, categoryId:s.screening.offenseId, answers:s.screening, verdict:v,
+        offenseDate:o.date, description:o.description, city:o.city, county:o.county, state:o.state,
+        disposition:o.disposition, courtDocs:o.courtDocs, incidentRpt:o.incidentRpt, waivedOffense:true };
+    });
+    setRoster([a]); setActiveId(a.id);
+    setTab(2);
   };
 
-  const p1Done = verdict?.type === 'WAIVABLE';
-  const p2Done = p1Done && !!applicant.lastName && offenses.length > 0;
+  const restoreSession = () => {
+    if (!pendingRestore) return;
+    setRoster(pendingRestore.roster);
+    setActiveId(pendingRestore.activeId || pendingRestore.roster[0]?.id);
+    setPendingRestore(null);
+  };
 
-  const phase2Answers = { ...answers, offenseId: selectedOffense };
+  const discardSession = () => {
+    const a = blankApplicant();
+    setRoster([a]); setActiveId(a.id);
+    setPendingRestore(null);
+  };
+
+  const authority = computeGoverningAuthority(activeApplicant?.offenses||[]);
+  const overallV = computeOverallVerdict(activeApplicant?.offenses||[]);
+  const { score:readiness, breakdown } = computeReadiness(activeApplicant||{}, activeApplicant?.offenses||[], activeApplicant?.checklistStatus||{});
+
+  const authClass = `auth-${authority||'NONE'}`;
+  const authorityLabels = { BN:'BN CO', USAREC:'USAREC CG', DMPM:'DMPM', NONE:'N/A' };
+
+  const tabs = [
+    { n:1, label:'Screener' },
+    { n:2, label:'Applicant Info' },
+    { n:3, label:'Build Packet' },
+    { n:4, label:'Tracker' },
+  ];
+
+  const p1Done = overallV === 'WAIVABLE';
+  const p2Done = p1Done && !!(activeApplicant?.lastName);
+  const p3Done = p2Done && readiness >= 80;
+
+  const isDone = (n) => n===1?p1Done:n===2?p2Done:n===3?p3Done:false;
 
   return (
     <>
-      <Header theme={theme} setTheme={setTheme} onLoadSample={loadSample} onNewApplicant={newApplicant}/>
-      <PhaseNav phase={phase} setPhase={setPhase} p1Done={p1Done} p2Done={p2Done}/>
+      {/* Top Bar */}
+      <div className="topbar">
+        <button className="topbar-btn" style={{padding:'5px 8px',fontSize:14,lineHeight:1}} onClick={()=>setSidebarOpen(v=>!v)} title="Toggle roster">☰</button>
+        <span className="topbar-badge">4D5E</span>
+        <div>
+          <div className="topbar-title">Moral Waiver Builder</div>
+          <div className="topbar-sub">AR 601-210 · Chapter 4</div>
+        </div>
+        <div className="topbar-center">
+          {activeApplicant && (
+            <div className="readiness-wrap">
+              <ReadinessRing score={readiness}/>
+              <div>
+                <div className="readiness-pct-big">{readiness}% Ready</div>
+                <div className="readiness-label">{breakdown.find(b=>!b.done)?.label||'Packet Complete!'}</div>
+              </div>
+            </div>
+          )}
+          {authority && authority !== 'NONE' && (
+            <div className={`auth-badge ${authClass}`}><IcoShield/> {authorityLabels[authority]} Level</div>
+          )}
+          {overallV === 'NOT_WAIVABLE' && (
+            <div className="auth-badge auth-NONE" style={{background:'rgba(207,0,0,.15)',borderColor:'rgba(207,0,0,.3)',color:'#ff5555'}}>⛔ NOT WAIVABLE</div>
+          )}
+        </div>
+        <div className="topbar-actions">
+          <div style={{position:'relative'}}>
+            <button className="topbar-btn" onClick={()=>setSampleMenuOpen(v=>!v)}>Sample Scenarios</button>
+            {sampleMenuOpen && <SampleMenu onLoad={loadSample} onClose={()=>setSampleMenuOpen(false)}/>}
+          </div>
+          <button className="topbar-btn" onClick={()=>setTheme(t=>t==='dark'?'light':'dark')}>{theme==='dark'?'Light':'Dark'}</button>
+          <button className="topbar-btn" onClick={()=>setRefOpen(v=>!v)} title="Toggle reference panel">📖</button>
+        </div>
+        {/* Approval Likelihood Banner */}
+        {overallV && (
+          <div className={`approval-banner ${overallV.toLowerCase()}`}>
+            {overallV === 'WAIVABLE' && <span>👍 Waivable – Likely approval.</span>}
+            {overallV === 'NOT_WAIVABLE' && <span>⛔ Not Waivable – Likely denial.</span>}
+            {overallV === 'ETP_REQUIRED' && <span>⚠️ ETP Required – Additional steps needed.</span>}
+            {overallV === 'WAITING_PERIOD' && <span>⏳ Waiting Period – Check dates.</span>}
+            {overallV === 'NO_WAIVER_REQUIRED' && <span>✅ No waiver needed.</span>}
+          </div>
+        )}
+      </div>
 
-      {phase === 1 && (
-        <Phase1
-          selectedOffense={selectedOffense} setSelectedOffense={setSelectedOffense}
-          answers={answers} setAnswers={setAnswers}
-          verdict={verdict} setVerdict={setVerdict}
-        />
-      )}
-      {phase === 2 && (
-        <Phase2
-          applicant={applicant} setApplicant={setApplicant}
-          offenses={offenses} setOffenses={setOffenses}
-          verdict={verdict} answers={answers}
-        />
-      )}
-      {phase === 3 && (
-        <Phase3
-          applicant={applicant} offenses={offenses}
-          verdict={verdict} answers={phase2Answers}
-        />
-      )}
+      <div className="app-shell">
+        {/* Sidebar — Roster */}
+        <div className={`sidebar${sidebarOpen?'':' collapsed'}`}>
+          <div className="sidebar-hdr">
+            <div className="sidebar-title">Applicants ({roster.length})</div>
+          </div>
+          <div className="sidebar-body">
+            {roster.map(a => (
+              <ApplicantCard key={a.id} appl={a} active={a.id===activeId}
+                onClick={()=>{setActiveId(a.id);}}
+                onDelete={()=>removeApplicant(a.id)}/>
+            ))}
+          </div>
+          <div className="sidebar-footer">
+            <button className="btn btn-gold" style={{width:'100%'}} onClick={addApplicant}><IcoPlus/> New Applicant</button>
+          </div>
+        </div>
 
-      {pendingDraft && <ResumeModal draft={pendingDraft} onResume={resumeDraft} onDiscard={discardDraft}/>}
+        {/* Main Panel */}
+        <div className="main-panel">
+          <div className="tab-nav">
+            {tabs.map(t => (
+              <button key={t.n} className={`tab-btn${tab===t.n?' active':''}${isDone(t.n)?' done':''}`}
+                onClick={()=>setTab(t.n)}>
+                <span className="tab-num">{isDone(t.n)?<IcoCheck/>:t.n}</span>
+                {t.label}
+              </button>
+            ))}
+          </div>
+
+          {tab===1 && activeApplicant && (
+            <Phase1 applicant={activeApplicant} setApplicant={setActiveApplicant}/>
+          )}
+          {tab===2 && activeApplicant && (
+            <Phase2 applicant={activeApplicant} setApplicant={setActiveApplicant}/>
+          )}
+          {tab===3 && activeApplicant && (
+            <Phase3 applicant={activeApplicant} setApplicant={setActiveApplicant}/>
+          )}
+          {tab===4 && activeApplicant && (
+            <Phase4 applicant={activeApplicant} setApplicant={setActiveApplicant}/>
+          )}
+        </div>
+
+        {/* Right Panel */}
+        {refOpen && <RefPanel collapsed={false} tab={tab} authority={authority}/>}
+      </div>
+
+      {pendingRestore && <ResumeModal draft={pendingRestore} onResume={restoreSession} onDiscard={discardSession}/>}
     </>
   );
 };
