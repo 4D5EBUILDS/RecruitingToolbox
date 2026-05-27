@@ -1128,6 +1128,7 @@ SUBJECT: Applicant Moral Statement & Waiver Justification - ${inputs.applicant.t
       </div>
     </div>
   );
+};
 
 /* =========================================================================
    3. DOCUMENT VAULT (Filename Check & Validation Vault)
