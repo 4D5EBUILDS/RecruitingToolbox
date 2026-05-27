@@ -95,6 +95,7 @@ const initStatuses = () => {
 };
 const loadNotes = () => { try { return JSON.parse(localStorage.getItem("pqc-notes") || "{}"); } catch { return {}; } };
 const loadTs    = () => { try { return JSON.parse(localStorage.getItem("pqc-ts")    || "{}"); } catch { return {}; } };
+const loadItemDates = () => { try { return JSON.parse(localStorage.getItem("pqc-item-dates") || "{}"); } catch { return {}; } };
 const fmtTime   = () => new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
 
 /* ── Alias Check ─────────────────────────────────────────
@@ -259,7 +260,7 @@ const HelpModal = ({ item, onClose }) => {
 };
 
 /* ── Check Item ──────────────────────────────────────── */
-const CheckItem = ({ item, onToggle, onHelp, compact, isNew, newDelay = 0, animating, timestamp }) => {
+const CheckItem = ({ item, onToggle, onHelp, compact, isNew, newDelay = 0, animating, timestamp, profile, itemDates, onDateChange, setActiveTab }) => {
   const [hov, setHov] = useState(false);
   const [ripple, setRipple] = useState(false);
   const done = item.status === "complete", flagged = item.status === "flagged";
@@ -269,6 +270,178 @@ const CheckItem = ({ item, onToggle, onHelp, compact, isNew, newDelay = 0, anima
     if (!done && !flagged) { setRipple(true); setTimeout(() => setRipple(false), 700); }
     onToggle(item.id);
   };
+
+  const renderInlineCalculator = (id) => {
+    const inputStyle = {
+      background: "var(--input-bg)",
+      border: "1px solid var(--input-border)",
+      color: "var(--fg-alt)",
+      fontSize: "11px",
+      padding: "2px 4px",
+      fontFamily: '"GI",Arial,sans-serif',
+      outline: "none"
+    };
+
+    if (id === "livescan") {
+      const scanVal = itemDates?.livescan || "";
+      let verText = null;
+      if (scanVal) {
+        const scanDate = new Date(scanVal + "T00:00:00");
+        const expDate = new Date(scanDate.getTime() + 120 * 24 * 60 * 60 * 1000);
+        const mepsDate = new Date((profile?.mepsDate || "2026-06-05") + "T00:00:00");
+        const isExpired = expDate < mepsDate;
+        const expStr = expDate.toLocaleDateString("en-US", { day:"numeric", month:"short", year:"numeric" }).toUpperCase();
+        verText = isExpired 
+          ? <span style={{ color:"var(--danger)", fontWeight:700 }}>⚠ EXPIRED before MEPS (Expires: {expStr})</span>
+          : <span style={{ color:"#4ade80" }}>✓ Valid until {expStr}</span>;
+      }
+      return (
+        <div style={{ display:"flex", gap:8, alignItems:"center", marginTop:3, flexWrap:"wrap" }}>
+          <span style={{ fontSize:10, color:"var(--fg-muted)" }}>Scan Date:</span>
+          <input type="date" value={scanVal} onChange={e => onDateChange("livescan", e.target.value)} style={inputStyle}/>
+          {verText}
+        </div>
+      );
+    }
+
+    if (id === "uf15") {
+      const ufVal = itemDates?.uf15 || "";
+      let verText = null;
+      if (ufVal) {
+        const ufDate = new Date(ufVal + "T00:00:00");
+        const mepsDate = new Date((profile?.mepsDate || "2026-06-05") + "T00:00:00");
+        const diffDays = Math.ceil((mepsDate.getTime() - ufDate.getTime()) / (24 * 60 * 60 * 1000));
+        const isValid = diffDays >= 3 && diffDays <= 7;
+        verText = isValid
+          ? <span style={{ color:"#4ade80" }}>✓ Compliant: {diffDays} days before MEPS</span>
+          : <span style={{ color:"var(--danger)", fontWeight:700 }}>⚠ Return: Must be 3-7 days before MEPS (currently {diffDays} days)</span>;
+      }
+      return (
+        <div style={{ display:"flex", gap:8, alignItems:"center", marginTop:3, flexWrap:"wrap" }}>
+          <span style={{ fontSize:10, color:"var(--fg-muted)" }}>Form Date:</span>
+          <input type="date" value={ufVal} onChange={e => onDateChange("uf15", e.target.value)} style={inputStyle}/>
+          {verText}
+        </div>
+      );
+    }
+
+    if (id === "pha-b0m0") {
+      const phaVal = itemDates?.["pha-b0m0"] || "";
+      let verText = null;
+      if (phaVal) {
+        const phaDate = new Date(phaVal + "T00:00:00");
+        const mepsDate = new Date((profile?.mepsDate || "2026-06-05") + "T00:00:00");
+        const diffMonths = (mepsDate.getFullYear() - phaDate.getFullYear()) * 12 + (mepsDate.getMonth() - phaDate.getMonth());
+        if (diffMonths <= 12) {
+          verText = <span style={{ color:"#4ade80" }}>✓ Active &amp; Deployable ({diffMonths} months)</span>;
+        } else if (diffMonths <= 15) {
+          verText = <span style={{ color:"var(--gold)" }}>⚠ Grace Period: Commander MFR required</span>;
+        } else {
+          verText = <span style={{ color:"var(--danger)", fontWeight:700 }}>❌ OVERDUE: PHA is {diffMonths} months old (max 15)</span>;
+        }
+      }
+      return (
+        <div style={{ display:"flex", gap:8, alignItems:"center", marginTop:3, flexWrap:"wrap" }}>
+          <span style={{ fontSize:10, color:"var(--fg-muted)" }}>PHA Date:</span>
+          <input type="date" value={phaVal} onChange={e => onDateChange("pha-b0m0", e.target.value)} style={inputStyle}/>
+          {verText}
+        </div>
+      );
+    }
+
+    if (id === "imr-b0m0") {
+      const hivVal = itemDates?.["imr-b0m0"] || "";
+      let verText = null;
+      if (hivVal) {
+        const hivDate = new Date(hivVal + "T00:00:00");
+        const mepsDate = new Date((profile?.mepsDate || "2026-06-05") + "T00:00:00");
+        const diffYears = (mepsDate.getTime() - hivDate.getTime()) / (365 * 24 * 60 * 60 * 1000);
+        verText = diffYears <= 2.0
+          ? <span style={{ color:"#4ade80" }}>✓ Valid: HIV within {diffYears.toFixed(1)} years</span>
+          : <span style={{ color:"var(--danger)", fontWeight:700 }}>❌ EXPIRED: HIV test older than 2 years ({diffYears.toFixed(1)} yrs)</span>;
+      }
+      return (
+        <div style={{ display:"flex", gap:8, alignItems:"center", marginTop:3, flexWrap:"wrap" }}>
+          <span style={{ fontSize:10, color:"var(--fg-muted)" }}>HIV Date:</span>
+          <input type="date" value={hivVal} onChange={e => onDateChange("imr-b0m0", e.target.value)} style={inputStyle}/>
+          {verText}
+        </div>
+      );
+    }
+
+    if (id === "asvab") {
+      const asvabVal = itemDates?.asvab || "";
+      let verText = null;
+      if (asvabVal) {
+        const asvabDate = new Date(asvabVal + "T00:00:00");
+        const mepsDate = new Date((profile?.mepsDate || "2026-06-05") + "T00:00:00");
+        const diffYears = (mepsDate.getTime() - asvabDate.getTime()) / (365 * 24 * 60 * 60 * 1000);
+        verText = diffYears <= 2.0
+          ? <span style={{ color:"#4ade80" }}>✓ Valid: ASVAB within {diffYears.toFixed(1)} years</span>
+          : <span style={{ color:"var(--danger)", fontWeight:700 }}>❌ EXPIRED: Test older than 2 years ({diffYears.toFixed(1)} yrs)</span>;
+      }
+      return (
+        <div style={{ display:"flex", gap:8, alignItems:"center", marginTop:3, flexWrap:"wrap" }}>
+          <span style={{ fontSize:10, color:"var(--fg-muted)" }}>Test Date:</span>
+          <input type="date" value={asvabVal} onChange={e => onDateChange("asvab", e.target.value)} style={inputStyle}/>
+          {verText}
+        </div>
+      );
+    }
+
+    if (id === "dd368" || id === "dd368-irr") {
+      const releaseExp = itemDates?.["dd368_exp"] || "";
+      let verText = null;
+      if (releaseExp) {
+        const expDate = new Date(releaseExp + "T00:00:00");
+        const mepsDate = new Date((profile?.mepsDate || "2026-06-05") + "T00:00:00");
+        const isExp = expDate < mepsDate;
+        const expStr = expDate.toLocaleDateString("en-US", { day:"numeric", month:"short", year:"numeric" }).toUpperCase();
+        verText = isExp
+          ? <span style={{ color:"var(--danger)", fontWeight:700 }}>❌ EXPIRED: Release expired on {expStr}</span>
+          : <span style={{ color:"#4ade80" }}>✓ Valid release until {expStr}</span>;
+      }
+      return (
+        <div style={{ display:"flex", gap:8, alignItems:"center", marginTop:3, flexWrap:"wrap" }}>
+          <span style={{ fontSize:10, color:"var(--fg-muted)" }}>Expiration:</span>
+          <input type="date" value={releaseExp} onChange={e => onDateChange("dd368_exp", e.target.value)} style={inputStyle}/>
+          {verText}
+        </div>
+      );
+    }
+
+    // Now check for tool tab cross-links!
+    const links = {
+      "gen-res": { tab: "gaps", label: "Launch Gap Finder ➔" },
+      "gen-emp": { tab: "gaps", label: "Launch Gap Finder ➔" },
+      "tat-co": { tab: "mfrs", label: "Launch MFR Generator (Tattoo Template) ➔" },
+      "tat-stmt": { tab: "mfrs", label: "Launch MFR Generator ➔" },
+      "mfr-b0m0": { tab: "mfrs", label: "Launch MFR Generator (B0M0 Template) ➔" },
+      "stmt-b0m0": { tab: "mfrs", label: "Launch MFR Generator ➔" },
+      "mor-stmt": { tab: "mfrs", label: "Launch MFR Generator (Moral Template) ➔" },
+      "grade-ra-details": { tab: "mfrs", label: "Launch MFR Generator (RA Statement) ➔" },
+      "grade-ar-tpu": { tab: "mfrs", label: "Launch MFR Generator (AR TPU Letter) ➔" },
+      "dd370": { tab: "references", label: "Launch Reference Auditor ➔" },
+      "gen-refs": { tab: "references", label: "Launch Reference Auditor ➔" },
+      "gen-docs": { tab: "vault", label: "Launch Document Vault ➔" }
+    };
+
+    if (id in links) {
+      const link = links[id];
+      return (
+        <button onClick={() => setActiveTab(link.tab)} style={{
+          background: "transparent", border: "none", color: "var(--gold)", cursor: "pointer",
+          fontSize: "10px", textTransform: "uppercase", fontWeight: 700, letterSpacing: ".04em",
+          textAlign: "left", padding: "2px 0", marginTop: 2, display: "inline-block"
+        }}>
+          {link.label}
+        </button>
+      );
+    }
+
+    return null;
+  };
+
   return (
     <div onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)} style={{
       display:"grid", gridTemplateColumns:"34px 1fr auto 34px", gap:10, alignItems:"center",
@@ -296,10 +469,15 @@ const CheckItem = ({ item, onToggle, onHelp, compact, isNew, newDelay = 0, anima
           lineHeight:1.25, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
           {item.label}
         </div>
-        {!compact && <div style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:400, fontSize:11.5,
-          color:"var(--fg-dim)", marginTop:2, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
-          {item.sub}
-        </div>}
+        {!compact && (
+          <div style={{ display:"flex", flexDirection:"column", gap:3, marginTop:2 }}>
+            <div style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:400, fontSize:11.5,
+              color:"var(--fg-dim)", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
+              {item.sub}
+            </div>
+            {renderInlineCalculator(item.id)}
+          </div>
+        )}
       </div>
       {/* Status + timestamp */}
       <div style={{ display:"flex", flexDirection:"column", alignItems:"flex-end", gap:2, minWidth:0 }}>
@@ -460,7 +638,7 @@ const AliasCheckPanel = ({ profile, onChange, aliasCheck }) => {
 /* ── Check Section ───────────────────────────────────── */
 const CheckSection = React.forwardRef(({ section, items, onToggle, onHelp, onQuickComplete, compact,
   notes, onNoteChange, animatingIds, newItemIds, justCompleted, timestamps,
-  profile, onProfileChange, aliasCheck }, ref) => {
+  profile, onProfileChange, aliasCheck, itemDates, onDateChange, setActiveTab }, ref) => {
   const [open, setOpen] = useState(true);
   const done    = items.filter(i => i.status === "complete").length;
   const flagged = items.filter(i => i.status === "flagged").length;
@@ -548,7 +726,8 @@ const CheckSection = React.forwardRef(({ section, items, onToggle, onHelp, onQui
         {items.map((item, idx) => (
           <CheckItem key={item.id} item={item} onToggle={onToggle} onHelp={onHelp}
             compact={compact} isNew={newItemIds.has(item.id)} newDelay={idx * 35}
-            animating={animatingIds.has(item.id)} timestamp={timestamps[item.id]}/>
+            animating={animatingIds.has(item.id)} timestamp={timestamps[item.id]}
+            profile={profile} itemDates={itemDates} onDateChange={onDateChange} setActiveTab={setActiveTab}/>
         ))}
         {section.id === "identity" && profile && aliasCheck && (
           <AliasCheckPanel profile={profile} onChange={onProfileChange} aliasCheck={aliasCheck}/>
@@ -769,6 +948,9 @@ const lbl = { fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:9, te
   letterSpacing:".1em", color:"var(--fg)", opacity:.5, display:"block", marginBottom:4 };
 
 const ProfileForm = ({ profile, onChange, onClose, onReset }) => {
+  const [importOpen, setImportOpen] = useState(false);
+  const [importText, setImportText] = useState("");
+
   const upd = (f, v) => onChange(f, v);
   const toggleArr = (f, v) => onChange(f, profile[f].includes(v)
     ? profile[f].filter(x => x !== v) : [...profile[f], v]);
@@ -789,6 +971,141 @@ const ProfileForm = ({ profile, onChange, onClose, onReset }) => {
     </div>
   );
 
+  const handleImportText = () => {
+    const lines = importText.split("\n");
+    let parsedCount = 0;
+    lines.forEach(line => {
+      const lower = line.toLowerCase();
+      if (line.match(/(name|applicant)\s*:\s*(.+)/i)) {
+        onChange("name", line.match(/(name|applicant)\s*:\s*(.+)/i)[2].trim());
+        parsedCount++;
+      }
+      if (line.match(/(ssn|ssn last 4|ssn4)\s*:\s*(\d{4})/i)) {
+        onChange("ssnLast4", line.match(/(ssn|ssn last 4|ssn4)\s*:\s*(\d{4})/i)[2].trim());
+        parsedCount++;
+      }
+      if (line.match(/(dob|date of birth|birthdate)\s*:\s*(.+)/i)) {
+        onChange("dob", line.match(/(dob|date of birth|birthdate)\s*:\s*(.+)/i)[2].trim());
+        parsedCount++;
+      }
+      if (line.match(/(gc|guidance counselor|counselor)\s*:\s*(.+)/i)) {
+        onChange("gc", line.match(/(gc|guidance counselor|counselor)\s*:\s*(.+)/i)[2].trim());
+        parsedCount++;
+      }
+      if (line.match(/(sc|station commander)\s*:\s*(.+)/i)) {
+        onChange("sc", line.match(/(sc|station commander)\s*:\s*(.+)/i)[2].trim());
+        parsedCount++;
+      }
+      if (line.match(/(meps date|meps|projected date)\s*:\s*(\d{4}-\d{2}-\d{2})/i)) {
+        onChange("mepsDate", line.match(/(meps date|meps|projected date)\s*:\s*(\d{4}-\d{2}-\d{2})/i)[2].trim());
+        parsedCount++;
+      }
+      if (lower.includes("citizenship") || lower.includes("citizen")) {
+        if (lower.includes("lpr") || lower.includes("permanent resident")) {
+          onChange("citizenship", "lpr");
+          parsedCount++;
+        } else if (lower.includes("naturalized")) {
+          onChange("citizenship", "naturalized");
+          parsedCount++;
+        } else if (lower.includes("us citizen") || lower.includes("natural born")) {
+          onChange("citizenship", "citizen");
+          parsedCount++;
+        }
+      }
+      if (lower.includes("prior service") || lower.includes("ps:")) {
+        if (lower.includes("none")) {
+          onChange("priorService", "none");
+          parsedCount++;
+        } else if (lower.includes("army")) {
+          onChange("priorService", "army");
+          parsedCount++;
+        } else if (lower.includes("reserve") || lower.includes("usar") || lower.includes("ng") || lower.includes("national guard")) {
+          onChange("priorService", "usar-ng");
+          parsedCount++;
+        } else if (lower.includes("navy") || lower.includes("usn")) {
+          onChange("priorService", "usn");
+          parsedCount++;
+        } else if (lower.includes("air force") || lower.includes("usaf")) {
+          onChange("priorService", "usaf");
+          parsedCount++;
+        } else if (lower.includes("marine") || lower.includes("usmc")) {
+          onChange("priorService", "usmc");
+          parsedCount++;
+        }
+      }
+      if (lower.includes("dependents") || lower.includes("dep:")) {
+        if (lower.includes("none")) {
+          onChange("dependents", "none");
+          parsedCount++;
+        } else if (lower.includes("single parent") || lower.includes("sole parent")) {
+          onChange("dependents", "single-parent");
+          parsedCount++;
+        } else if (lower.includes("married") && (lower.includes("kids") || lower.includes("children") || lower.includes("child"))) {
+          onChange("dependents", "married-kids");
+          parsedCount++;
+        } else if (lower.includes("married")) {
+          onChange("dependents", "married");
+          parsedCount++;
+        }
+      }
+    });
+    if (parsedCount > 0) {
+      alert(`Import Successful! Parsed and populated ${parsedCount} fields.`);
+      setImportOpen(false);
+      setImportText("");
+    } else {
+      alert("Could not parse any fields. Check format!");
+    }
+  };
+
+  const importModal = importOpen && (
+    <div onClick={() => setImportOpen(false)} style={{
+      position: "fixed", inset: 0, zIndex: 600, background: "rgba(10,8,12,.85)",
+      display: "flex", alignItems: "center", justifyContent: "center", padding: 24,
+      animation: "overlayIn .15s ease"
+    }}>
+      <div onClick={e => e.stopPropagation()} style={{
+        background: "var(--bg-card)", border: "1px solid var(--border-str)",
+        width: "100%", maxWidth: 440, padding: 20, position: "relative"
+      }}>
+        <div style={{ fontFamily: '"GI",Arial,sans-serif', fontWeight: 700, fontSize: 13, textTransform: "uppercase", color: "var(--gold)", marginBottom: 12 }}>
+          📥 RZ Profile Importer
+        </div>
+        <textarea 
+          value={importText} 
+          onChange={e => setImportText(e.target.value)}
+          placeholder="Paste raw RZ profile details here...
+Format example:
+Applicant: Martinez, Carlos A.
+SSN Last 4: 7742
+DOB: 15 MAR 2002
+MEPS Date: 2026-06-05
+Citizenship: US Citizen
+Prior Service: Army (Active)
+Dependents: Not Married w/ Kids" 
+          style={{
+            width: "100%", height: 160, background: "var(--input-bg)", border: "1px solid var(--input-border)",
+            color: "var(--fg-alt)", padding: 8, outline: "none", fontSize: "11.5px", fontFamily: "monospace", resize: "none"
+          }}
+        />
+        <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
+          <button onClick={handleImportText} style={{
+            flex: 1, background: "var(--gold)", color: "var(--black)", border: "none",
+            padding: "8px 12px", fontSize: "11px", fontWeight: 700, textTransform: "uppercase", cursor: "pointer"
+          }}>
+            Import Data
+          </button>
+          <button onClick={() => setImportOpen(false)} style={{
+            flex: 1, background: "transparent", border: "1px solid var(--border-str)", color: "var(--fg-muted)",
+            padding: "8px 12px", fontSize: "11px", fontWeight: 700, textTransform: "uppercase", cursor: "pointer"
+          }}>
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div style={{ position:"absolute", inset:0, zIndex:50, background:"var(--sidebar)",
       overflow:"auto", display:"flex", flexDirection:"column",
@@ -802,8 +1119,15 @@ const ProfileForm = ({ profile, onChange, onClose, onReset }) => {
           justifyContent:"center", cursor:"pointer" }}><IcoX c="currentColor" s={9}/></button>
       </div>
       <div style={{ flex:1, padding:"14px 16px", overflow:"auto" }}>
+        <button onClick={() => setImportOpen(true)} style={{
+          width: "100%", background: "rgba(255,204,1,.1)", border: "1px solid var(--gold)", color: "var(--gold)",
+          padding: "8px 10px", fontSize: "11px", fontWeight: 700, textTransform: "uppercase", cursor: "pointer",
+          marginBottom: 16, display: "block"
+        }}>
+          📥 Quick Import from RZ / SF 86
+        </button>
         {[["name","Applicant Name (Last, First MI)"],["ssnLast4","SSN Last 4"],
-          ["dob","Date of Birth"],["gc","Guidance Counselor"],["sc","Station Commander"]
+          ["dob","Date of Birth"],["mepsDate","Projected MEPS Date (YYYY-MM-DD)"],["gc","Guidance Counselor"],["sc","Station Commander"]
         ].map(([f, l]) => (
           <div key={f} style={{ marginBottom:12 }}>
             <span style={lbl}>{l}</span>
@@ -891,6 +1215,7 @@ const ProfileForm = ({ profile, onChange, onClose, onReset }) => {
           Done — Update Checklist →
         </button>
       </div>
+      {importModal}
     </div>
   );
 };
@@ -1082,6 +1407,9 @@ const App = () => {
   const [refOpen,        setRefOpen]        = useState(false);
   const [tweaks,         setTweaks]         = useState(false);
   const [activeTab,      setActiveTab]      = useState("recruiter");
+  const [itemDates,      setItemDates]      = useState(loadItemDates);
+  const [returnText,     setReturnText]     = useState("");
+  const [returnParserOpen, setReturnParserOpen] = useState(false);
   const sectionRefs  = useRef({});
   const containerRef = useRef(null);
   const prevItemIds  = useRef(new Set());
@@ -1176,6 +1504,53 @@ const App = () => {
     setAnimatingIds(p => new Set([...p, id]));
     setTimeout(() => setAnimatingIds(p => { const n = new Set(p); n.delete(id); return n; }), 700);
   }, [sections]);
+
+  const handleDateChange = useCallback((id, val) => {
+    setItemDates(prev => {
+      const n = { ...prev, [id]: val };
+      localStorage.setItem("pqc-item-dates", JSON.stringify(n));
+      return n;
+    });
+  }, []);
+
+  const parseGCReturn = useCallback(() => {
+    if (!returnText.trim()) return;
+    const lower = returnText.toLowerCase();
+    const flagsToSet = [];
+    const mappings = [
+      { id: "livescan", terms: ["livescan", "live scan", "fingerprint"] },
+      { id: "uf15", terms: ["uf15", "uf 601-210.15", "uf.15", "601-210.15", "uf 15"] },
+      { id: "dd369", terms: ["dd369", "dd 369", "police record", "ebc"] },
+      { id: "ssc", terms: ["ssc", "social security", "ssn card"] },
+      { id: "bc", terms: ["birth cert", "birth certificate", " bc "] },
+      { id: "fcp-cmd", terms: ["fcp-cmd", "da 5305", "5305", "fcp cmd"] },
+      { id: "fcp-acceptance", terms: ["fcp-acceptance", "tpu acceptance", "acceptance letter", "unit acceptance"] },
+      { id: "dd2807", terms: ["dd2807", "dd 2807", "medical prescreen", "prescreen"] },
+      { id: "asvab", terms: ["asvab", "picat", "afqt"] },
+      { id: "mirs", terms: ["mirs", "usmirs"] },
+      { id: "dd368", terms: ["dd368", "dd 368", "conditional release", "irr release"] },
+      { id: "weight-b0m0", terms: ["weight", "height", "body fat", "da 5500", "da 5501"] }
+    ];
+
+    mappings.forEach(m => {
+      if (m.terms.some(t => lower.includes(t))) {
+        flagsToSet.push(m.id);
+      }
+    });
+
+    if (flagsToSet.length > 0) {
+      setStatuses(prev => {
+        const next = { ...prev };
+        flagsToSet.forEach(id => {
+          next[id] = "flagged";
+        });
+        return next;
+      });
+      alert(`Scan complete: flagged ${flagsToSet.length} item(s) matching your GC notes.`);
+    } else {
+      alert("Scan complete: No matching checklist item keywords found in the text.");
+    }
+  }, [returnText]);
 
   const quickCompleteSection = useCallback((sectionId) => {
     const sec = sections.find(s => s.id === sectionId);
@@ -1305,6 +1680,90 @@ const App = () => {
             </div>
           )}
 
+          {/* GC Return Parser Card */}
+          <div style={{
+            background: "rgba(255, 204, 1, 0.02)",
+            borderBottom: "1px solid var(--border-mid)",
+            padding: "10px 20px",
+            flexShrink: 0
+          }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ fontSize: 13 }}>📋</span>
+                <span style={{
+                  fontFamily: '"GI",Arial,sans-serif', fontWeight: 700, fontSize: 11,
+                  textTransform: "uppercase", letterSpacing: ".06em", color: "var(--gold)"
+                }}>
+                  GC Return / Kickback Notes Parser
+                </span>
+              </div>
+              <button
+                onClick={() => setReturnParserOpen(!returnParserOpen)}
+                style={{
+                  background: "transparent", border: "1px solid var(--border-str)",
+                  color: "var(--fg-muted)", fontSize: "9.5px", fontWeight: 700,
+                  textTransform: "uppercase", letterSpacing: ".04em", padding: "4px 8px",
+                  cursor: "pointer", transition: "all .15s"
+                }}
+                onMouseEnter={e => { e.currentTarget.style.color = "var(--fg)"; e.currentTarget.style.borderColor = "var(--fg)"; }}
+                onMouseLeave={e => { e.currentTarget.style.color = "var(--fg-muted)"; e.currentTarget.style.borderColor = "var(--border-str)"; }}
+              >
+                {returnParserOpen ? "Collapse ▴" : "Expand Parser ▾"}
+              </button>
+            </div>
+            
+            {returnParserOpen && (
+              <div style={{ marginTop: 10, animation: "slideDown 0.2s ease" }}>
+                <p style={{
+                  fontFamily: '"GI",Arial,sans-serif', fontWeight: 400, fontSize: 11.5,
+                  color: "var(--fg-dim)", marginBottom: 8, lineHeight: 1.45
+                }}>
+                  Paste the kickback/return notes from the Guidance Counselor below. The tool will parse the text for common issues and automatically flag the corresponding checklist items.
+                </p>
+                <div style={{ display: "flex", gap: 10 }}>
+                  <textarea
+                    value={returnText}
+                    onChange={e => setReturnText(e.target.value)}
+                    placeholder="Example: Livescan is expired, need a fresh DD 369 for the alias, and the medical prescreen DD 2807 dates do not align."
+                    style={{
+                      flex: 1, height: 70, background: "var(--input-bg)", border: "1px solid var(--input-border)",
+                      color: "var(--fg-alt)", padding: "8px 10px", outline: "none", fontSize: "12px",
+                      fontFamily: '"GI",Arial,sans-serif', resize: "none"
+                    }}
+                  />
+                  <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                    <button
+                      onClick={parseGCReturn}
+                      style={{
+                        background: "var(--gold)", color: "var(--black)", border: "none",
+                        fontFamily: '"GI",Arial,sans-serif', fontWeight: 700, fontSize: "10.5px",
+                        textTransform: "uppercase", letterSpacing: ".04em", padding: "10px 14px",
+                        cursor: "pointer", flex: 1, whiteSpace: "nowrap"
+                      }}
+                      onMouseEnter={e => e.currentTarget.style.filter = "brightness(1.1)"}
+                      onMouseLeave={e => e.currentTarget.style.filter = "none"}
+                    >
+                      Scan &amp; Flag
+                    </button>
+                    <button
+                      onClick={() => setReturnText("")}
+                      style={{
+                        background: "transparent", border: "1px solid var(--border-str)",
+                        color: "var(--fg-muted)", fontFamily: '"GI",Arial,sans-serif',
+                        fontWeight: 700, fontSize: "9px", textTransform: "uppercase",
+                        letterSpacing: ".04em", padding: "6px 10px", cursor: "pointer"
+                      }}
+                      onMouseEnter={e => { e.currentTarget.style.color = "var(--danger)"; e.currentTarget.style.borderColor = "var(--danger)"; }}
+                      onMouseLeave={e => { e.currentTarget.style.color = "var(--fg-muted)"; e.currentTarget.style.borderColor = "var(--border-str)"; }}
+                    >
+                      Clear
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
           <FilterBar filter={filter} onFilter={setFilter} total={total} done={done} flagged={flagged}
             search={search} onSearch={setSearch}/>
 
@@ -1323,7 +1782,8 @@ const App = () => {
                   compact={compact} notes={notes} onNoteChange={saveNote}
                   animatingIds={animatingIds} newItemIds={newItemIds}
                   justCompleted={justCompleted.has(s.id)} timestamps={timestamps}
-                  profile={profile} onProfileChange={handleProfileChange} aliasCheck={aliasCheck}/>
+                  profile={profile} onProfileChange={handleProfileChange} aliasCheck={aliasCheck}
+                  itemDates={itemDates} onDateChange={handleDateChange} setActiveTab={setActiveTab}/>
               ))
             }
             <div style={{ height:40 }}/>

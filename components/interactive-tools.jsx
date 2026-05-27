@@ -352,12 +352,6 @@ const GapFinder = ({ profile }) => {
 
       </div>
     </div>
-  );
-};
-
-/* =========================================================================
-   2. MFR MEMORANDUM GENERATOR (Auto-Populated MFR Templates)
-   ========================================================================= */
 const MfrGenerator = ({ profile }) => {
   const [template, setTemplate] = useState("tattoo");
   const [inputs, setInputs] = useState({
@@ -375,7 +369,20 @@ const MfrGenerator = ({ profile }) => {
     tattooDescription: "'BLESSED' in cursive script",
     tattooMeaning: "represents personal faith and family blessings",
     afqtScore: "91",
-    recruiterPhone: "555-0199"
+    recruiterPhone: "555-0199",
+    mos: "11B",
+    rank: "SGT / E-5",
+    paraLinePos: "Para 101, Line 03, Position 04221980",
+    skillsCert: true,
+    fcpAck: true,
+    dutyPref1: "Fort Carson, CO",
+    dutyPref2: "Fort Riley, KS",
+    dutyPref3: "Fort Cavazos, TX",
+    spouseServing: false,
+    spouseComponent: "US Army",
+    spouseLocation: "Fort Carson, CO",
+    spouseSSN: "XXX-XX-1234",
+    efmpStatus: "No"
   });
 
   const getMfrText = () => {
@@ -441,6 +448,87 @@ SUBJECT: Command Endorsement for B0M0 "No Medical Required" Enlistment - ${input
                                   ${inputs.commander.toUpperCase()}
                                   LTC, IN
                                   Commanding`;
+    }
+
+    if (template === "tpu_acceptance") {
+      const unit = inputs.gainingUnit || "174th Infantry Regiment (TPU)";
+      const applicant = inputs.applicant || "Martinez, Carlos A.";
+      const rank = inputs.rank || "SGT / E-5";
+      const mos = inputs.mos || "11B";
+      const paraLinePos = inputs.paraLinePos || "Para 101, Line 03, Position 04221980";
+      const recruiter = inputs.recruiter || "SSG Thompson, R.";
+      const phone = inputs.recruiterPhone || "555-0199";
+
+      return `DEPARTMENT OF THE ARMY
+${unit.toUpperCase()}
+LINCOLN RESERVE CENTER, LINCOLN, NE 68508
+
+SUBJECT: Gaining Unit Acceptance and Family Care Plan Endorsement - ${applicant.toUpperCase()}
+
+1. References:
+   a. AR 140-111 (U.S. Army Reserve Reenlistment Program).
+   b. AR 600-20 (Army Command Policy) - Chapter 5 (Family Care Plans).
+   c. AR 601-210 (Active and Reserve Component Enlistment Program).
+
+2. Gaining Unit Acceptance: The gaining unit accepts the enlistment/assignment of applicant ${applicant} in the grade of ${rank} and MOS ${mos}. The applicant will be assigned to ${paraLinePos} of this unit.
+
+3. Skills Certification: Gaining command certifies that the applicant possesses the necessary technical and administrative skills required for the assigned position, and maintenance of prior grade is approved.
+
+4. Family Care Plan Certification: In accordance with reference 1b, the command has reviewed the sole-parent Family Care Plan (FCP) bundle (DA Forms 5304, 5840, and 5841) for applicant ${applicant}. The command certifies that the FCP is feasible and accepts the applicant for enlistment.
+
+5. Gaining unit point of contact for this action is the enlisting recruiter, ${recruiter}, at ${phone}.
+
+
+
+                                  ${inputs.commander.toUpperCase()}
+                                  LTC, IN
+                                  Commanding`;
+    }
+
+    if (template === "ra_grade") {
+      const applicant = inputs.applicant || "Martinez, Carlos A.";
+      const ssn = inputs.ssn || "XXX-XX-7742";
+      const rank = inputs.rank || "SGT / E-5";
+      const mos = inputs.mos || "11B";
+      const recruiter = inputs.recruiter || "SSG Thompson, R.";
+      const phone = inputs.recruiterPhone || "555-0199";
+      const pref1 = inputs.dutyPref1 || "Fort Carson, CO";
+      const pref2 = inputs.dutyPref2 || "Fort Riley, KS";
+      const pref3 = inputs.dutyPref3 || "Fort Cavazos, TX";
+
+      const spouseStr = inputs.spouseServing
+        ? `My spouse is a serving member of the Armed Forces. Component: ${inputs.spouseComponent || "N/A"}, Location: ${inputs.spouseLocation || "N/A"}, SSN: ${inputs.spouseSSN || "N/A"}. Joint domicile is requested.`
+        : "My spouse is not a serving member of the Armed Forces. Joint domicile is not requested.";
+
+      const efmpStr = `I am ${inputs.efmpStatus === "Yes" ? "currently" : "not"} enrolled in the Exceptional Family Member Program.`;
+
+      return `DEPARTMENT OF THE ARMY
+${inputs.station.toUpperCase()}
+123 RECRUITER BLVD, LINCOLN, NE 68508
+
+SUBJECT: Prior Service Grade Determination Statement - Applicant ${applicant.toUpperCase()}
+
+1. References:
+   a. AR 601-210 (Active and Reserve Component Enlistment Program) - Chapter 3.
+   b. USAREC Regular Army Grade Determination Worksheet.
+
+2. In connection with my application for Regular Army prior service enlistment in the rank of ${rank} and MOS ${mos}, I, ${applicant} (SSN: ${ssn}), submit the following statement as required for grade determination:
+
+3. Duty Preferences: I request assignment to one of the following three duty locations in my enlisting MOS:
+   a. Preference 1: ${pref1}
+   b. Preference 2: ${pref2}
+   c. Preference 3: ${pref3}
+
+4. Joint Domicile / Serving Spouse Information: ${spouseStr}
+
+5. Exceptional Family Member Program (EFMP): ${efmpStr}
+
+6. Point of contact is the enlisting recruiter, ${recruiter}, at ${phone}.
+
+
+
+                                  ${applicant.toUpperCase()}
+                                  Applicant`;
     }
 
     return `DEPARTMENT OF THE ARMY
@@ -537,6 +625,75 @@ SUBJECT: Applicant Moral Statement & Waiver Justification - ${inputs.applicant.t
         "LTC, IN",
         "Commanding"
       ];
+    } else if (template === "tpu_acceptance") {
+      subjectLine = `Gaining Unit Acceptance and Family Care Plan Endorsement - ${inputs.applicant.toUpperCase()}`;
+      const unit = inputs.gainingUnit || "174th Infantry Regiment (TPU)";
+      const applicant = inputs.applicant || "Martinez, Carlos A.";
+      const rank = inputs.rank || "SGT / E-5";
+      const mos = inputs.mos || "11B";
+      const paraLinePos = inputs.paraLinePos || "Para 101, Line 03, Position 04221980";
+      const recruiter = inputs.recruiter || "SSG Thompson, R.";
+      const phone = inputs.recruiterPhone || "555-0199";
+
+      bodyParagraphs = [
+        "1. References:",
+        "   a. AR 140-111 (U.S. Army Reserve Reenlistment Program).",
+        "   b. AR 600-20 (Army Command Policy) - Chapter 5 (Family Care Plans).",
+        "   c. AR 601-210 (Active and Reserve Component Enlistment Program).",
+        "",
+        `2. Gaining Unit Acceptance: The gaining unit accepts the enlistment/assignment of applicant ${applicant} in the grade of ${rank} and MOS ${mos}. The applicant will be assigned to ${paraLinePos} of this unit.`,
+        "",
+        "3. Skills Certification: Gaining command certifies that the applicant possesses the necessary technical and administrative skills required for the assigned position, and maintenance of prior grade is approved.",
+        "",
+        `4. Family Care Plan Certification: In accordance with reference 1b, the command has reviewed the sole-parent Family Care Plan (FCP) bundle (DA Forms 5304, 5840, and 5841) for applicant ${applicant}. The command certifies that the FCP is feasible and accepts the applicant for enlistment.`,
+        "",
+        `5. Gaining unit point of contact for this action is ${recruiter} at ${phone}.`
+      ];
+      sigLines = [
+        inputs.commander.toUpperCase(),
+        "LTC, IN",
+        "Commanding"
+      ];
+    } else if (template === "ra_grade") {
+      subjectLine = `Prior Service Grade Determination Statement - Applicant ${inputs.applicant.toUpperCase()}`;
+      const applicant = inputs.applicant || "Martinez, Carlos A.";
+      const ssn = inputs.ssn || "XXX-XX-7742";
+      const rank = inputs.rank || "SGT / E-5";
+      const mos = inputs.mos || "11B";
+      const recruiter = inputs.recruiter || "SSG Thompson, R.";
+      const phone = inputs.recruiterPhone || "555-0199";
+      const pref1 = inputs.dutyPref1 || "Fort Carson, CO";
+      const pref2 = inputs.dutyPref2 || "Fort Riley, KS";
+      const pref3 = inputs.dutyPref3 || "Fort Cavazos, TX";
+
+      const spouseStr = inputs.spouseServing
+        ? `My spouse is a serving member of the Armed Forces. Component: ${inputs.spouseComponent || "N/A"}, Location: ${inputs.spouseLocation || "N/A"}, SSN: ${inputs.spouseSSN || "N/A"}. Joint domicile is requested.`
+        : "My spouse is not a serving member of the Armed Forces. Joint domicile is not requested.";
+
+      const efmpStr = `I am ${inputs.efmpStatus === "Yes" ? "currently" : "not"} enrolled in the Exceptional Family Member Program.`;
+
+      bodyParagraphs = [
+        "1. References:",
+        "   a. AR 601-210 (Active and Reserve Component Enlistment Program) - Chapter 3.",
+        "   b. USAREC Regular Army Grade Determination Worksheet.",
+        "",
+        `2. In connection with my application for Regular Army prior service enlistment in the rank of ${rank} and MOS ${mos}, I, ${applicant} (SSN: ${ssn}), submit the following statement as required for grade determination:`,
+        "",
+        "3. Duty Preferences: I request assignment to one of the following three duty locations in my enlisting MOS:",
+        `   a. Preference 1: ${pref1}`,
+        `   b. Preference 2: ${pref2}`,
+        `   c. Preference 3: ${pref3}`,
+        "",
+        `4. Joint Domicile / Serving Spouse Information: ${spouseStr}`,
+        "",
+        `5. Exceptional Family Member Program (EFMP): ${efmpStr}`,
+        "",
+        `6. Point of contact is the enlisting recruiter, ${recruiter}, at ${phone}.`
+      ];
+      sigLines = [
+        inputs.applicant.toUpperCase(),
+        "Applicant"
+      ];
     } else {
       subjectLine = `Applicant Moral Statement & Waiver Justification - ${inputs.applicant.toUpperCase()}`;
       bodyParagraphs = [
@@ -602,17 +759,19 @@ SUBJECT: Applicant Moral Statement & Waiver Justification - ${inputs.applicant.t
         </div>
 
         {/* Template Select */}
-        <div style={{ display: "flex", gap: 10, marginBottom: 20 }}>
+        <div style={{ display: "flex", gap: 10, marginBottom: 20, flexWrap: "wrap" }}>
           {[
             { id: "tattoo", label: "Tattoo Waiver MFR" },
             { id: "b0m0", label: "B0M0 Gaining Unit MFR" },
-            { id: "moral", label: "Moral Statement MFR" }
+            { id: "moral", label: "Moral Statement MFR" },
+            { id: "tpu_acceptance", label: "TPU Acceptance Letter" },
+            { id: "ra_grade", label: "RA Grade Statement" }
           ].map(t => (
             <button key={t.id} onClick={() => setTemplate(t.id)} style={{
               background: template === t.id ? "var(--gold)" : "rgba(255,204,1,.05)",
               border: `1px solid ${template === t.id ? "var(--gold)" : "var(--border)"}`,
               color: template === t.id ? "var(--black)" : "var(--fg-muted)",
-              padding: "8px 16px", fontWeight: 700, fontSize: 11, textTransform: "uppercase", cursor: "pointer"
+              padding: "8px 16px", fontWeight: 700, fontSize: 11, textTransform: "uppercase", cursor: "pointer", marginBottom: 5
             }}>{t.label}</button>
           ))}
         </div>
@@ -641,7 +800,8 @@ SUBJECT: Applicant Moral Statement & Waiver Justification - ${inputs.applicant.t
               <input type="text" value={inputs.ssn} onChange={e => setInputs(p => ({ ...p, ssn: e.target.value }))} style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", padding: 6, fontSize: 12 }} />
             </label>
 
-            {template === "tattoo" ? (
+            {/* Template specific fields */}
+            {template === "tattoo" && (
               <>
                 <label style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 11, color: "var(--fg-muted)" }}>
                   Tattoo Body Location
@@ -670,26 +830,116 @@ SUBJECT: Applicant Moral Statement & Waiver Justification - ${inputs.applicant.t
                   <input type="text" value={inputs.recruiterPhone} onChange={e => setInputs(p => ({ ...p, recruiterPhone: e.target.value }))} placeholder="e.g. 555-0199" style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", padding: 6, fontSize: 12 }} />
                 </label>
               </>
-            ) : (
+            )}
+
+            {(template === "b0m0" || template === "moral") && (
               <label style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 11, color: "var(--fg-muted)" }}>
                 {template === "b0m0" ? "PHA Date" : "Offense Details"}
                 <textarea value={inputs.details} onChange={e => setInputs(p => ({ ...p, details: e.target.value }))} style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", padding: 6, fontSize: 12, minHeight: 46 }} />
               </label>
             )}
 
+            {template === "tpu_acceptance" && (
+              <>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                  <label style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 11, color: "var(--fg-muted)" }}>
+                    Grade / Rank
+                    <input type="text" value={inputs.rank} onChange={e => setInputs(p => ({ ...p, rank: e.target.value }))} placeholder="e.g. SGT / E-5" style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", padding: 6, fontSize: 12 }} />
+                  </label>
+                  <label style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 11, color: "var(--fg-muted)" }}>
+                    MOS
+                    <input type="text" value={inputs.mos} onChange={e => setInputs(p => ({ ...p, mos: e.target.value }))} placeholder="e.g. 11B" style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", padding: 6, fontSize: 12 }} />
+                  </label>
+                </div>
+                <label style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 11, color: "var(--fg-muted)" }}>
+                  Para, Line, Position Number
+                  <input type="text" value={inputs.paraLinePos} onChange={e => setInputs(p => ({ ...p, paraLinePos: e.target.value }))} placeholder="e.g. Para 101, Line 03, Position 04221980" style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", padding: 6, fontSize: 12 }} />
+                </label>
+                <label style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 11, color: "var(--fg-muted)" }}>
+                  Recruiter Phone Number
+                  <input type="text" value={inputs.recruiterPhone} onChange={e => setInputs(p => ({ ...p, recruiterPhone: e.target.value }))} placeholder="e.g. 555-0199" style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", padding: 6, fontSize: 12 }} />
+                </label>
+              </>
+            )}
+
+            {template === "ra_grade" && (
+              <>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                  <label style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 11, color: "var(--fg-muted)" }}>
+                    Grade / Rank
+                    <input type="text" value={inputs.rank} onChange={e => setInputs(p => ({ ...p, rank: e.target.value }))} placeholder="e.g. SGT / E-5" style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", padding: 6, fontSize: 12 }} />
+                  </label>
+                  <label style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 11, color: "var(--fg-muted)" }}>
+                    MOS
+                    <input type="text" value={inputs.mos} onChange={e => setInputs(p => ({ ...p, mos: e.target.value }))} placeholder="e.g. 11B" style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", padding: 6, fontSize: 12 }} />
+                  </label>
+                </div>
+                <label style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 11, color: "var(--fg-muted)" }}>
+                  Duty Preference 1
+                  <input type="text" value={inputs.dutyPref1} onChange={e => setInputs(p => ({ ...p, dutyPref1: e.target.value }))} style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", padding: 6, fontSize: 12 }} />
+                </label>
+                <label style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 11, color: "var(--fg-muted)" }}>
+                  Duty Preference 2
+                  <input type="text" value={inputs.dutyPref2} onChange={e => setInputs(p => ({ ...p, dutyPref2: e.target.value }))} style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", padding: 6, fontSize: 12 }} />
+                </label>
+                <label style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 11, color: "var(--fg-muted)" }}>
+                  Duty Preference 3
+                  <input type="text" value={inputs.dutyPref3} onChange={e => setInputs(p => ({ ...p, dutyPref3: e.target.value }))} style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", padding: 6, fontSize: 12 }} />
+                </label>
+
+                <div style={{ display: "flex", flexDirection: "column", gap: 8, padding: 8, background: "rgba(255,255,255,0.02)", border: "1px dashed var(--border)", margin: "4px 0" }}>
+                  <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 11, cursor: "pointer", color: "var(--fg-alt)" }}>
+                    <input type="checkbox" checked={inputs.spouseServing} onChange={e => setInputs(p => ({ ...p, spouseServing: e.target.checked }))} />
+                    Spouse is Serving in Armed Forces
+                  </label>
+                  {inputs.spouseServing && (
+                    <>
+                      <label style={{ display: "flex", flexDirection: "column", gap: 2, fontSize: 10, color: "var(--fg-muted)" }}>
+                        Spouse Component
+                        <input type="text" value={inputs.spouseComponent} onChange={e => setInputs(p => ({ ...p, spouseComponent: e.target.value }))} placeholder="e.g. US Army" style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", padding: 4, fontSize: 11 }} />
+                      </label>
+                      <label style={{ display: "flex", flexDirection: "column", gap: 2, fontSize: 10, color: "var(--fg-muted)" }}>
+                        Spouse Location
+                        <input type="text" value={inputs.spouseLocation} onChange={e => setInputs(p => ({ ...p, spouseLocation: e.target.value }))} placeholder="e.g. Fort Carson, CO" style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", padding: 4, fontSize: 11 }} />
+                      </label>
+                      <label style={{ display: "flex", flexDirection: "column", gap: 2, fontSize: 10, color: "var(--fg-muted)" }}>
+                        Spouse SSN
+                        <input type="text" value={inputs.spouseSSN} onChange={e => setInputs(p => ({ ...p, spouseSSN: e.target.value }))} placeholder="e.g. XXX-XX-1234" style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", padding: 4, fontSize: 11 }} />
+                      </label>
+                    </>
+                  )}
+                </div>
+
+                <label style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 11, color: "var(--fg-muted)" }}>
+                  EFMP Status
+                  <select value={inputs.efmpStatus} onChange={e => setInputs(p => ({ ...p, efmpStatus: e.target.value }))} style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", padding: 5, fontSize: 12 }}>
+                    <option value="No">No — Not Enrolled</option>
+                    <option value="Yes">Yes — Enrolled</option>
+                  </select>
+                </label>
+                <label style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 11, color: "var(--fg-muted)" }}>
+                  Recruiter Phone Number
+                  <input type="text" value={inputs.recruiterPhone} onChange={e => setInputs(p => ({ ...p, recruiterPhone: e.target.value }))} placeholder="e.g. 555-0199" style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", padding: 6, fontSize: 12 }} />
+                </label>
+              </>
+            )}
+
             <label style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 11, color: "var(--fg-muted)" }}>
-              {template === "tattoo" ? "Commander Endorsing" : template === "b0m0" ? "TPU Commander" : "Recruiter Name"}
-              <input type="text" value={template === "moral" ? inputs.recruiter : inputs.commander} onChange={e => setInputs(p => (template === "moral" ? { ...p, recruiter: e.target.value } : { ...p, commander: e.target.value }))} style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", padding: 6, fontSize: 12 }} />
+              {template === "moral" || template === "ra_grade" ? "Applicant Name" : template === "tpu_acceptance" ? "Unit Commander" : template === "tattoo" ? "Commander Endorsing" : "TPU Commander"}
+              <input type="text" 
+                value={template === "moral" || template === "ra_grade" ? inputs.applicant : inputs.commander} 
+                onChange={e => setInputs(p => (template === "moral" || template === "ra_grade" ? { ...p, applicant: e.target.value } : { ...p, commander: e.target.value }))} 
+                style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", padding: 6, fontSize: 12 }} />
             </label>
 
-            {template === "b0m0" && (
+            {(template === "b0m0" || template === "tpu_acceptance") && (
               <label style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 11, color: "var(--fg-muted)" }}>
                 Gaining TPU Unit
                 <input type="text" value={inputs.gainingUnit} onChange={e => setInputs(p => ({ ...p, gainingUnit: e.target.value }))} style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", padding: 6, fontSize: 12 }} />
               </label>
             )}
 
-            {template !== "tattoo" && (
+            {(template === "moral" || template === "b0m0") && (
               <label style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 11, color: "var(--fg-muted)" }}>
                 {template === "b0m0" ? "Medical Justification Remarks" : "Moral Statement / Rehabilitation Info"}
                 <textarea value={inputs.reason} onChange={e => setInputs(p => ({ ...p, reason: e.target.value }))} style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", padding: 6, fontSize: 12, minHeight: 60 }} />
@@ -715,7 +965,7 @@ SUBJECT: Applicant Moral Statement & Waiver Justification - ${inputs.applicant.t
               </div>
 
               {/* Date */}
-              <div style={{ textAlign: "right", marginBottom: 15, fontWeight: "bold", color: "#111111" }}>
+              <div style={{ text_align: "right", marginBottom: 15, fontWeight: "bold", color: "#111111" }}>
                 {inputs.date}
               </div>
 
@@ -730,7 +980,11 @@ SUBJECT: Applicant Moral Statement & Waiver Justification - ${inputs.applicant.t
                   ? `Self-Identification and Recommendation for Tattoo Waiver - Applicant ${inputs.applicant.toUpperCase()}`
                   : template === "b0m0"
                   ? `Command Endorsement for B0M0 "No Medical Required" Enlistment - ${inputs.applicant.toUpperCase()}`
-                  : `Applicant Moral Statement & Waiver Justification - ${inputs.applicant.toUpperCase()}`
+                  : template === "moral"
+                  ? `Applicant Moral Statement & Waiver Justification - ${inputs.applicant.toUpperCase()}`
+                  : template === "tpu_acceptance"
+                  ? `Gaining Unit Acceptance and Family Care Plan Endorsement - ${inputs.applicant.toUpperCase()}`
+                  : `Prior Service Grade Determination Statement - Applicant ${inputs.applicant.toUpperCase()}`
                 }
               </div>
 
@@ -774,39 +1028,83 @@ SUBJECT: Applicant Moral Statement & Waiver Justification - ${inputs.applicant.t
                     <p style={{ marginBottom: 15 }}>4. The gaining unit accepts full administrative and medical readiness custody of the applicant upon enlistment.</p>
                   </div>
                 )}
-
+                
                 {template === "moral" && (
                   <div>
                     <p style={{ marginBottom: 15 }}>1. Under the guidance of enlisting recruiter {inputs.recruiter}, Applicant {inputs.applicant} (SSN: {inputs.ssn}) submits the following personal statement regarding moral offenses being waived:</p>
                     <p style={{ marginBottom: 5 }}>2. Incident Details:</p>
                     <p style={{ paddingLeft: 20, marginBottom: 15 }}>- {inputs.details}</p>
-                    <p style={{ marginBottom: 5 }}>3. Applicant Statement of Hardship and Rehabilitation:</p>
+                    <p style={{ marginBottom: 15 }}>3. Applicant Statement of Hardship and Rehabilitation:</p>
                     <p style={{ paddingLeft: 20, marginBottom: 15 }}>- "{inputs.reason}"</p>
                     <p style={{ marginBottom: 15 }}>4. The applicant has completed all court mandates, paid all fines, and has shown complete rehabilitation. Recommending waiver approval.</p>
                   </div>
                 )}
+
+                {template === "tpu_acceptance" && (() => {
+                  const unit = inputs.gainingUnit || "174th Infantry Regiment (TPU)";
+                  const applicant = inputs.applicant || "Martinez, Carlos A.";
+                  const rank = inputs.rank || "SGT / E-5";
+                  const mos = inputs.mos || "11B";
+                  const paraLinePos = inputs.paraLinePos || "Para 101, Line 03, Position 04221980";
+                  const recruiter = inputs.recruiter || "SSG Thompson, R.";
+                  const phone = inputs.recruiterPhone || "555-0199";
+                  return (
+                    <div>
+                      <p style={{ marginBottom: 10 }}>1. References:</p>
+                      <p style={{ paddingLeft: 20, marginBottom: 5 }}>a. AR 140-111 (U.S. Army Reserve Reenlistment Program).</p>
+                      <p style={{ paddingLeft: 20, marginBottom: 5 }}>b. AR 600-20 (Army Command Policy) - Chapter 5 (Family Care Plans).</p>
+                      <p style={{ paddingLeft: 20, marginBottom: 15 }}>c. AR 601-210 (Active and Reserve Component Enlistment Program).</p>
+                      <p style={{ marginBottom: 15 }}>2. Gaining Unit Acceptance: The gaining unit accepts the enlistment/assignment of applicant {applicant} in the grade of {rank} and MOS {mos}. The applicant will be assigned to {paraLinePos} of this unit.</p>
+                      <p style={{ marginBottom: 15 }}>3. Skills Certification: Gaining command certifies that the applicant possesses the necessary technical and administrative skills required for the assigned position, and maintenance of prior grade is approved.</p>
+                      <p style={{ marginBottom: 15 }}>4. Family Care Plan Certification: In accordance with reference 1b, the command has reviewed the sole-parent Family Care Plan (FCP) bundle (DA Forms 5304, 5840, and 5841) for applicant {applicant}. The command certifies that the FCP is feasible and accepts the applicant for enlistment.</p>
+                      <p style={{ marginBottom: 15 }}>5. Gaining unit point of contact for this action is {recruiter} at {phone}.</p>
+                    </div>
+                  );
+                })()}
+
+                {template === "ra_grade" && (() => {
+                  const applicant = inputs.applicant || "Martinez, Carlos A.";
+                  const ssn = inputs.ssn || "XXX-XX-7742";
+                  const rank = inputs.rank || "SGT / E-5";
+                  const mos = inputs.mos || "11B";
+                  const recruiter = inputs.recruiter || "SSG Thompson, R.";
+                  const phone = inputs.recruiterPhone || "555-0199";
+                  const pref1 = inputs.dutyPref1 || "Fort Carson, CO";
+                  const pref2 = inputs.dutyPref2 || "Fort Riley, KS";
+                  const pref3 = inputs.dutyPref3 || "Fort Cavazos, TX";
+                  
+                  return (
+                    <div>
+                      <p style={{ marginBottom: 10 }}>1. References:</p>
+                      <p style={{ paddingLeft: 20, marginBottom: 5 }}>a. AR 601-210 (Active and Reserve Component Enlistment Program) - Chapter 3.</p>
+                      <p style={{ paddingLeft: 20, marginBottom: 15 }}>b. USAREC Regular Army Grade Determination Worksheet.</p>
+                      <p style={{ marginBottom: 15 }}>2. In connection with my application for Regular Army prior service enlistment in the rank of {rank} and MOS {mos}, I, {applicant} (SSN: {ssn}), submit the following statement as required for grade determination:</p>
+                      <p style={{ marginBottom: 5 }}>3. Duty Preferences: I request assignment to one of the following three duty locations in my enlisting MOS:</p>
+                      <p style={{ paddingLeft: 20, marginBottom: 5 }}>a. Preference 1: {pref1}</p>
+                      <p style={{ paddingLeft: 20, marginBottom: 5 }}>b. Preference 2: {pref2}</p>
+                      <p style={{ paddingLeft: 20, marginBottom: 15 }}>c. Preference 3: {pref3}</p>
+                      <p style={{ marginBottom: 15 }}>4. Joint Domicile / Serving Spouse Information: {inputs.spouseServing 
+                        ? `My spouse is a serving member of the Armed Forces. Component: ${inputs.spouseComponent || "N/A"}, Location: ${inputs.spouseLocation || "N/A"}, SSN: ${inputs.spouseSSN || "N/A"}. Joint domicile is requested.` 
+                        : "My spouse is not a serving member of the Armed Forces. Joint domicile is not requested."}</p>
+                      <p style={{ marginBottom: 15 }}>5. Exceptional Family Member Program (EFMP): I am {inputs.efmpStatus === "Yes" ? "currently" : "not"} enrolled in the Exceptional Family Member Program.</p>
+                      <p style={{ marginBottom: 15 }}>6. Point of contact is the enlisting recruiter, {recruiter}, at {phone}.</p>
+                    </div>
+                  );
+                })()}
               </div>
 
-              {/* Signature Block */}
-              <div style={{ alignSelf: "flex-end", width: "45%", marginTop: 24, fontSize: 12.5, color: "#111111", lineHeight: 1.2 }}>
-                {template === "tattoo" && (
+              {/* Signature block */}
+              <div style={{ marginTop: "40px", paddingLeft: "240px", fontStyle: "normal", color: "#111111" }}>
+                {(template === "tattoo" || template === "tpu_acceptance" || template === "b0m0") ? (
                   <div>
                     <span style={{ fontWeight: "bold" }}>{inputs.commander.toUpperCase()}</span><br/>
-                    CPT, IN<br/>
+                    {template === "tattoo" ? "CPT, IN" : "LTC, IN"}<br/>
                     Commanding
                   </div>
-                )}
-                {template === "b0m0" && (
-                  <div>
-                    <span style={{ fontWeight: "bold" }}>{inputs.commander.toUpperCase()}</span><br/>
-                    LTC, IN<br/>
-                    Commanding
-                  </div>
-                )}
-                {template === "moral" && (
+                ) : (
                   <div>
                     <span style={{ fontWeight: "bold" }}>{inputs.applicant.toUpperCase()}</span><br/>
-                    Applicant
+                    {template === "moral" ? "Applicant" : "Applicant"}
                   </div>
                 )}
               </div>
@@ -830,7 +1128,6 @@ SUBJECT: Applicant Moral Statement & Waiver Justification - ${inputs.applicant.t
       </div>
     </div>
   );
-};
 
 /* =========================================================================
    3. DOCUMENT VAULT (Filename Check & Validation Vault)
