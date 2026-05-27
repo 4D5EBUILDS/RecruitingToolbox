@@ -4,6 +4,7 @@
 window.PROFILE_DEFAULTS = {
   name: "Martinez, Carlos A.", ssnLast4: "7742", dob: "15 MAR 2002",
   gc: "SSG Thompson, R.", sc: "SFC Williams, D.",
+  mepsDate: "2026-06-05",      // Projected MEPS processing date
   citizenship: "citizen",      // citizen | naturalized | lpr
   ageGender: "18m",            // 18m | 18f | 17m-sp | 17f-sp | 17m-bp | 17f-bp
   education: "hs-grad",
@@ -330,6 +331,9 @@ window.SECTION_DEFS = [
     { id:"fcp-cmd", cond:p => p.dependents === "single-parent", init:"pending", label:"DA Form 5305 — TPU Commander Approved (Reserve only)",
       sub:"Family Care Plan signed by gaining Unit Commander — cannot be delegated",
       help:h("DA Form 5305 Commander Approval","AR 600-20 para 5-5","For Reservists enlisting as sole parents, the DA Form 5305 must be signed and approved by the Commander of the gaining TPU unit. IAW AR 600-20, this authority cannot be delegated to the readiness NCO or recruiter.",null,["DA 5305 signed by anyone other than Gaining TPU Commander — RETURN"]) },
+    { id:"fcp-acceptance", cond:p => p.dependents === "single-parent", init:"pending", label:"TPU Commander Acceptance Letter (Reserve only)",
+      sub:"Unit acceptance letter from TPU Commander acknowledging/accepting Family Care Plan",
+      help:h("TPU Acceptance Letter for FCP","AR 601-210 Ch.5","For Reserve sole-parent applicants, the gaining TPU Commander must sign a formal unit acceptance letter explicitly acknowledging and accepting the applicant's Family Care Plan details.",null,["Missing TPU Acceptance Letter referencing FCP — RETURN"]) },
   ]},
 
   // ── 8. PRIOR SERVICE (conditional) ──────────────────────────────────────────
@@ -352,11 +356,20 @@ window.SECTION_DEFS = [
       sub:"If IRR/Reserves obligation remaining — N/A if no remaining obligation",
       help:h("DD 368 — IRR Release","AR 601-210","Required if the applicant has a remaining obligation in the Individual Ready Reserve. Must be approved before MEPS processing. N/A if no remaining obligation.",null,["Unapproved or expired — cannot process at MEPS"]) },
     { id:"grade-ra", cond:p => p.priorService !== "none" && p.priorService !== "usar-ng", init:"pending", label:"RA Grade Determination (E-5+ only)",
-      sub:"Required for RA enlistment in grade E-5 or above — print statement preferences",
+      sub:"Required for RA enlistment in grade E-5 or above — GCR request to CG USAREC",
       help:h("RA Grade Determination","USAREC RA Grade Worksheet","All Regular Army prior service applicants E-5+ require a GCR request to CG USAREC, including a signed statement listing 3 duty preferences, and an MOS change justification if applicable.",null,["Missing CG USAREC approval for E-5+ RA — CANNOT PROJECT"]) },
+    { id:"grade-ra-details", cond:p => p.priorService !== "none" && p.priorService !== "usar-ng", init:"pending", label:"RA E-5+ Statement details",
+      sub:"Statement must declare 3 duty preferences, serving spouse info, and EFMP status",
+      help:h("RA E-5+ Statement Details","USAREC RA Grade Worksheet","The applicant statement must explicitly address: 1) three duty preferences if retaining MOS, 2) spouse service component, duty location, and SSN (if applicable for joint domicile), and 3) EFMP enrollment status.",null,["Missing duty preferences, serving spouse, or EFMP remarks — RETURN"]) },
     { id:"grade-ar", cond:p => p.priorService === "usar-ng", init:"pending", label:"AR Grade Determination (E-5+ only)",
-      sub:"For Reserves E-5+ with 48+ mo break — TPU acceptance letter (para/line/pos)",
+      sub:"For Reserves E-5+ with 48+ mo break — GCR approval / TPU letter",
       help:h("AR Grade Determination","USAREC AR Grade Worksheet","For Reservists E-5+ with 48+ months break of service. Requires TPU Unit Acceptance Letter specifying accepted grade, MOS, paragraph/line, position number, and skills verification; and applicant statement requesting grade maintenance.",null,["Missing TPU Acceptance Letter — RETURN","GCR approval missing for break of service over 48 months — RETURN"]) },
+    { id:"grade-ar-tpu", cond:p => p.priorService === "usar-ng", init:"pending", label:"AR E-5+ TPU Letter details",
+      sub:"TPU Acceptance letter must specify MOS, accepted rank, para/line/pos, and skills cert",
+      help:h("AR E-5+ TPU Acceptance Letter Details","USAREC AR Grade Worksheet","Verify the gaining commander's unit acceptance letter specifies: 1) accepted grade, 2) MOS, 3) paragraph, line, and position number, and 4) gaining commander certification of applicant's technical/admin skills.",null,["Missing rank, MOS, paragraph/line/position, or skills certification — RETURN"]) },
+    { id:"grade-ncoes", cond:p => p.priorService !== "none", init:"pending", label:"Proof of NCOES completion (E-5+ prior service)",
+      sub:"BLC, ALC, or SLC certificate (or DA 1059) — must match separating rank",
+      help:h("Proof of NCOES Level","AR 601-210 Ch.3","All prior-service applicants E-5 and above must provide proof of highest NCOES completed (BLC, ALC, SLC). Must be posted on DD 214/NGB 22, or verified via DA 1059 or official certificate.",null,["Missing NCOES verification for E-5+ prior service — RETURN"]) },
   ]},
 
   // ── 9. MSO RELEASE (conditional) ────────────────────────────────────────────
@@ -484,6 +497,15 @@ window.SECTION_DEFS = [
       help:h("Applicant Statement (RE Code)","AR 601-210","Statement explaining the circumstances of the prior separation and RE code.",null,null) },
     { id:"re-dd370", cond:A, init:"pending", label:"DD 370 — Fingerprint Cards × 3",
       help:h("DD 370 Fingerprint Cards","AR 601-210","Three fingerprint cards required for RE code waiver packets. Must be current and properly completed.",null,null) },
+    { id:"re-board", cond:A, init:"pending", label:"Discharge Board Proceedings (if involuntary)",
+      sub:"Official separation board records and proceedings for involuntary separation",
+      help:h("Separation Board Proceedings","AR 601-210 Ch.3","If the prior service member was separated involuntarily, the complete official board proceedings, hearing records, and separation documents must be included in the RE waiver packet.",null,["Involuntary separation missing board records — RETURN"]) },
+    { id:"re-hardship", cond:A, init:"pending", label:"Hardship separation evidence (if applicable)",
+      sub:"Documentation proving the prior hardship condition no longer exists",
+      help:h("Hardship Separation Proof","AR 601-210 Ch.3","If separated for dependency or hardship, the applicant must provide official evidence (financials, court custody, etc.) proving the hardship condition is completely resolved.",null,["Hardship separation missing resolution proof — RETURN"]) },
+    { id:"re-medrecs", cond:A, init:"pending", label:"Medical Separation records (if applicable)",
+      sub:"Prior service medical board (MEB/PEB) records and VA disability ratings",
+      help:h("Medical Separation Records","AR 601-210 Ch.3","If separated medically, the prior medical board proceedings and VA disability rating paperwork must be submitted for review.",null,["Medical separation missing prior MEB/PEB or VA records — RETURN"]) },
     { id:"re-co",    cond:A, init:"pending", label:"CO Commander Memo",
       help:h("CO Memo (RE Code)","AR 601-210","Company Commander review and recommendation memo for RE code waiver.",null,null) },
     { id:"re-bn",    cond:A, init:"pending", label:"Battalion Commander Memo",
