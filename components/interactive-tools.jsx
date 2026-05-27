@@ -352,6 +352,9 @@ const GapFinder = ({ profile }) => {
 
       </div>
     </div>
+  );
+};
+
 const MfrGenerator = ({ profile }) => {
   const [template, setTemplate] = useState("tattoo");
   const [inputs, setInputs] = useState({
