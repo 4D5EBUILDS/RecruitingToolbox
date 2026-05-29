@@ -3,13 +3,13 @@
 /* ── OFFENSE CATEGORIES ──────────────────────────────────────────────────── */
 window.OFFENSE_CATEGORIES = [
   // ─── ABSOLUTE BARS ───────────────────────────────────────────────────────
-  { id:'bar_lautenberg',      label:'Domestic Violence — Lautenberg',        group:'bars',    sub:'18 USC § 922(g)(9) — misdemeanor DV conviction, any date', level:'BAR', authority:'NONE', bar:true, barPara:'Table 4-4, Code 414', barText:'A conviction for domestic violence under the Lautenberg Amendment (18 USC § 922(g)(9)) is an absolute disqualification. Cannot be waived under any circumstance — no waiver authority exists at any level.' },
+  { id:'bar_lautenberg',      label:'Domestic Violence — Lautenberg',        group:'bars',    sub:'18 USC § 922(g)(9) — misdemeanor DV conviction, any date', level:'BAR', authority:'NONE', bar:true, barPara:'Table 4-4, Code 414 / 4-7b', barText:'ABSOLUTE BAR: Qualifying misdemeanor conviction for domestic violence (use or attempted use of physical force, or threatened deadly weapon, by spouse/partner/parent/etc.). Per AR 601-210 4-7b and 18 USC 922(g)(9), NO waiver authority exists at any level — this applicant is permanently disqualified from enlistment in any component.' },
   { id:'bar_sex_offense',     label:'Sex Offense / Sex Offender Registration',group:'bars',   sub:'Rape, carnal knowledge, sodomy, child pornography, registration requirement', level:'BAR', authority:'NONE', bar:true, barPara:'Para 4-22j', barText:'Persons convicted of rape, carnal knowledge, sodomy, prostitution involving a minor, indecent assault, pornography involving a minor, or any offense requiring sex offender registration are permanently disqualified. No waiver authority exists.' },
   { id:'bar_murder',          label:'Murder / Intentional Homicide',          group:'bars',   sub:'NOT WAIVABLE — absolute bar at all levels', level:'BAR', authority:'NONE', bar:true, barPara:'Para 4-22k', barText:'Persons convicted of murder (intentional homicide) are permanently disqualified. No waiver authority exists at any level.' },
   { id:'bar_2plus_major',     label:'Two or More Major Misconduct Convictions',group:'bars',  sub:'2+ felony-level convictions — permanent DQ regardless of offense type', level:'BAR', authority:'NONE', bar:true, barPara:'Para 4-22i', barText:'Applicants with two or more total major misconduct (felony-level) convictions are permanently disqualified. This applies regardless of how much time has passed or the nature of the offenses.' },
 
   // ─── MAJOR MISCONDUCT — DMPM LEVEL ────────────────────────────────────
-  { id:'major_drug_dist',     label:'Drug Distribution / Trafficking',        group:'major',  sub:'Incl. cannabis — Table 4-4, Code 436 — DMPM authority required', level:'MAJOR', authority:'DMPM', bar:false },
+  { id:'major_drug_dist',     label:'Drug Distribution / Trafficking',        group:'major',  sub:'Incl. cannabis — Table 4-4, Code 436 — DMPM authority required', level:'MAJOR', authority:'DMPM', bar:false, triggersSuitabilityReview:true },
   { id:'major_trafficking',   label:'Human Trafficking',                       group:'major',  sub:'Table 4-4, Code 438 — DMPM', level:'MAJOR', authority:'DMPM', bar:false },
 
   // ─── MAJOR MISCONDUCT — USAREC LEVEL ──────────────────────────────────
@@ -22,7 +22,8 @@ window.OFFENSE_CATEGORIES = [
   { id:'major_other',         label:'Major Misconduct — Other Felony',         group:'major',  sub:'Any felony-level offense not listed above — Table 4-4, Code 441', level:'MAJOR', authority:'USAREC', bar:false },
 
   // ─── MISCONDUCT — BN CO LEVEL ────────────────────────────────────────
-  { id:'misc_marijuana',      label:'Marijuana Possession / Paraphernalia',    group:'misc',   sub:'Table 4-3, Code 316 — conviction required for waiver; ETP if self-admit only', level:'MISC', authority:'BN', bar:false },
+  { id:'misc_marijuana_single', label:'Marijuana Possession (Single Incident)', group:'misc', sub:'2026 AR 601-210 update — single conviction of possession or paraphernalia NO LONGER requires a waiver (para 4-6)', level:'MISC', authority:'NONE', bar:false, noWaiverRequired:true, noWaiverText:'Per March 2026 AR 601-210 Summary of Change (para 4-6): A single conviction for possession of marijuana or drug paraphernalia does NOT require a waiver. Document the offense on UF 601-210.08 and in the RZ. Multiple incidents or distribution still require processing.' },
+  { id:'misc_marijuana',      label:'Marijuana Possession / Paraphernalia (Multiple or Distribution)', group:'misc', sub:'Two or more incidents, or any distribution/trafficking — requires waiver. Single incident now exempt per 2026 policy.', level:'MISC', authority:'BN', bar:false },
   { id:'misc_dui',            label:'DUI / Driving While Impaired',            group:'misc',   sub:'Table 4-3, Code 309 — most common waiver type', level:'MISC', authority:'BN', bar:false },
   { id:'misc_theft_minor',    label:'Petty Theft / Minor Fraud (Under $500)',  group:'misc',   sub:'Table 4-3, Code 310–311 — shoplifting, misdemeanor fraud', level:'MISC', authority:'BN', bar:false },
   { id:'misc_weapons',        label:'Weapons — Unlawful Carry / Concealed',    group:'misc',   sub:'Misdemeanor weapons offense — Table 4-3, Code 325', level:'MISC', authority:'BN', bar:false },
@@ -53,6 +54,12 @@ window.OFFENSE_CATEGORIES = [
   { id:'major_cyber_hacking', label:'Cybercrime / Unauthorized Computer Access', group:'major', sub:'Computer fraud, hacking, unauthorized access — Code 432', level:'MAJOR', authority:'USAREC', bar:false },
   // ─── MAJOR MISCONDUCT — OTHER ───────────────────────────────────────────────────────
   { id:'major_identity_theft', label:'Identity Theft / Major Fraud', group:'major', sub:'Identity theft, major fraud, forgery — felony level — Code 417/419', level:'MAJOR', authority:'USAREC', bar:false },
+
+  // ─── NEW: TERRORISTIC / EXTREMISM-RELATED THREATS (per AR 601-210 Table 4-4 + 4-2e) ─────
+  { id:'major_terroristic_threats', label:'Terroristic Threats / Terrorist Threats (incl. Bomb Threats)', group:'major', sub:'AR 601-210 Table 4-4 — Threats of violence/terrorism, bomb threats, school threats. Treated as major misconduct. Triggers mandatory extremism/insider threat review (para 4-2e).', level:'MAJOR', authority:'DMPM', bar:false, triggersSuitabilityReview:true, extremismRelated:true },
+  { id:'major_extremism_threat', label:'Extremism-Related Threat or Activity', group:'major', sub:'Active participation or threats tied to extremist/hate ideology (AR 600-20 + 601-210 4-2e). Often non-waivable if active support shown.', level:'MAJOR', authority:'DMPM', bar:false, triggersSuitabilityReview:true, extremismRelated:true },
+  { id:'major_aggravated_stalking', label:'Aggravated Stalking / Felony Stalking', group:'major', sub:'Felony-level stalking, especially with threats or prior orders. Often overlaps with terroristic threats or DV.', level:'MAJOR', authority:'USAREC', bar:false, triggersSuitabilityReview:true },
+  { id:'major_school_threat', label:'Threats Against School / Educational Institution', group:'major', sub:'School-specific terroristic or bomb threats (very common recent cases). Treated with extreme scrutiny under extremism and suitability policies.', level:'MAJOR', authority:'DMPM', bar:false, triggersSuitabilityReview:true, extremismRelated:true },
 ];
 
 /* ── QUALIFYING QUESTIONS ─────────────────────────────────────────────────── */
@@ -475,6 +482,228 @@ window.US_STATES = [
   'MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ',
   'NM','NY','NC','ND','OH','OK','OR','PA','RI','SC',
   'SD','TN','TX','UT','VT','VA','WA','WV','WI','WY','DC'
+];
+
+/* ── SCREENER → PARA HIGHLIGHT MAPS ──────────────────────────────────────── */
+window.CAT_PARA_MAP = {
+  bar_lautenberg:        ['4-22j'],
+  bar_sex_offense:       ['4-22j'],
+  bar_murder:            ['4-22k'],
+  bar_2plus_major:       ['4-22i'],
+  misc_dui:              ['4-8','4-28'],
+  misc_marijuana_single: ['4-18'],
+  misc_marijuana:        ['4-18','4-28'],
+  dat_positive:          ['4-18'],
+  traffic_minor:         ['4-35'],
+  traffic_above_minor:   ['4-8'],
+  juvenile:              ['4-30'],
+  major_drug_dist:       ['4-28e5','4-28'],
+  ps_court_martial:      ['4-28e5','4-28'],
+};
+
+window.Q_PARA_MAP = {
+  is_adult:        ['4-30'],
+  disposition:     ['4-30'],
+  pending_charges: ['4-22g'],
+  civil_restraint: ['4-22h','4-35'],
+  major_count:     ['4-22i'],
+  lautenberg:      ['4-22j'],
+  sex_offender:    ['4-22j'],
+  confinement_days:['4-31'],
+  probation_minor: ['4-35'],
+};
+
+/* ── WAIVER KNOWLEDGE BASE (chatbot source) ───────────────────────────────── */
+window.WAIVER_KB = [
+  {
+    id:'pending_charges',
+    q:'Can I process an applicant with pending charges?',
+    keywords:['pending','charges','open case','unresolved','awaiting trial','not resolved'],
+    answer:'No. Para 4-22g: An applicant with ANY pending criminal or juvenile charge is ineligible for processing. This includes charges in other states and juvenile referrals. You cannot begin until ALL charges are fully resolved — dismissed, convicted, or otherwise adjudicated. There are no exceptions.',
+    cites:['4-22g'], cat:'eligibility'
+  },
+  {
+    id:'civil_restraint',
+    q:'Can an applicant on probation be enlisted?',
+    keywords:['probation','parole','supervised','civil restraint','supervision','confinement release'],
+    answer:'It depends. Supervised probation or parole = civil restraint = not eligible (para 4-22h). EXCEPTION: unsupervised probation for para 4-35 minor offenses CAN be processed without waiting for probation to end. When in doubt: if the probation officer can show up at the applicant\'s door unannounced, it is supervised.',
+    cites:['4-22h','4-35'], cat:'eligibility'
+  },
+  {
+    id:'lautenberg',
+    q:'What is the Lautenberg Amendment?',
+    keywords:['lautenberg','domestic violence','DV conviction','922(g)','misdemeanor DV','firearms bar'],
+    answer:'18 USC §922(g)(9) permanently disqualifies anyone convicted of a qualifying misdemeanor domestic violence offense from possessing firearms. Army service requires firearms access, so this is an absolute bar — NO waiver authority at any level. It applies regardless of age of conviction, and in some states applies even to expunged convictions. When in doubt, consult JAG before discarding the applicant.',
+    cites:['4-22j'], cat:'bars'
+  },
+  {
+    id:'two_felonies',
+    q:'Can two felony convictions be waived?',
+    keywords:['two felonies','two major','multiple felony','2 felonies','second felony','2 major'],
+    answer:'No. Two or more major misconduct (felony-level) convictions = permanent disqualification. No waiver authority exists at any level (para 4-22i). This is absolute and includes any time period. Juvenile adjudications treated as felony-equivalents count toward this total.',
+    cites:['4-22i'], cat:'bars'
+  },
+  {
+    id:'waiver_validity',
+    q:'How long is a waiver valid after approval?',
+    keywords:['waiver valid','expiration','expire','how long','6 months','resubmit'],
+    answer:'A waiver approval is valid for 6 months from the date of approval (para 4-27). If the applicant does not ship within 6 months, it expires and must be resubmitted from scratch. If the applicant acquires ANY new moral disqualification after approval, it must also be resubmitted — the original does not cover new offenses.',
+    cites:['4-27'], cat:'process'
+  },
+  {
+    id:'confinement_wait',
+    q:'What is the waiting period after confinement?',
+    keywords:['waiting period','wait','confinement','jail','incarcerated','released from jail','30 days','15 days'],
+    answer:'Para 4-31: (a) Confinement UNDER 15 days = 3-month wait after release. BN CO can waive up to 45 days of this. (b) Confinement 15+ days = 6-month wait. BN CO can waive up to 3 months of this. All court-ordered requirements (fines, community service, treatment) must be completed before submission — not just started.',
+    cites:['4-31'], cat:'process'
+  },
+  {
+    id:'24month',
+    q:'What is the 24-month rule for major misconduct?',
+    keywords:['24 month','24-month','two year wait','major misconduct wait','felony wait'],
+    answer:'For major misconduct (felony-level) waivers, applicants should generally wait 24 months from the date of final conviction or adverse disposition. The clock runs from conviction date — not the offense date. Submitting before 24 months is not prohibited by a specific para, but early submissions are routinely returned without action by USAREC. The date-aware risk engine in this tool tracks this clock automatically.',
+    cites:['4-22i'], cat:'process'
+  },
+  {
+    id:'dismissed',
+    q:'Does a dismissed charge require a waiver?',
+    keywords:['dismissed','charges dropped','no adverse','no conviction','not guilty','acquitted','case dismissed'],
+    answer:'No. Para 4-30: When there is no adverse court disposition (dismissed, dropped, not guilty), no waiver is required. Document it in GENESIS remarks and list it on UF 601-210.08 WITHOUT an asterisk. Do not skip it entirely — all law violations, even dismissed ones, must be listed on 210.08.',
+    cites:['4-30'], cat:'eligibility'
+  },
+  {
+    id:'self_admittal',
+    q:'What is a self-admittal and does it need a waiver?',
+    keywords:['self admittal','self-admittal','no court record','never charged','no charges filed','admitted but'],
+    answer:'A self-admittal = applicant discloses an offense that was never charged (zero court record). Para 4-30: no formal waiver is required. However, an Exception to Policy (ETP) may be needed before processing. Verify with your battalion S1 before building any packet — requirements vary by command and offense type.',
+    cites:['4-30'], cat:'eligibility'
+  },
+  {
+    id:'etp',
+    q:'What is an ETP?',
+    keywords:['etp','exception to policy','policy exception','ETP required'],
+    answer:'An ETP (Exception to Policy) is separate from a moral waiver. It is typically required for self-admittals or regulatory edge cases not covered by the standard waiver process. Unlike a waiver, there is no standard packet format — requirements are determined by battalion S1. Coordinate early.',
+    cites:['4-30'], cat:'process'
+  },
+  {
+    id:'marijuana',
+    q:'Does marijuana possession require a waiver in 2026?',
+    keywords:['marijuana','cannabis','weed','pot','possession marijuana','paraphernalia','420'],
+    answer:'Per the 2026 AR 601-210 update (para 4-6): A SINGLE conviction for marijuana possession or paraphernalia NO LONGER requires a waiver. Document on UF 601-210.08 and in the RZ — no packet needed. Exceptions: (1) Two or more marijuana incidents = waiver. (2) Any marijuana DISTRIBUTION = DMPM-level waiver. (3) Other drug possession (cocaine, meth, fentanyl) = USAREC-level waiver regardless.',
+    cites:['4-18'], cat:'offenses'
+  },
+  {
+    id:'dui',
+    q:'What authority approves DUI waivers?',
+    keywords:['dui','dwi','driving under influence','drunk driving','impaired driving','OWI'],
+    answer:'DUI/DWI waivers are approved at Battalion Commander (BN CO) level. This is the most common waiver type. Important caveat: if the applicant is pursuing a clearance-required MOS (Intelligence, Aviation, SF, Cyber, Finance), a DUI within 3 years may complicate or block the security clearance independently of the waiver approval.',
+    cites:['4-8','4-28'], cat:'authority'
+  },
+  {
+    id:'authority_levels',
+    q:'What are the three waiver authority levels?',
+    keywords:['authority','authority level','who approves','approval authority','BN CO','USAREC','DMPM','levels'],
+    answer:'Three levels per AR 601-210 Ch. 4: (1) BN CO — misdemeanors, DUI, most traffic, juvenile offenses, 1st DAT positive. Fastest. (2) USAREC CG — felony-level offenses (grand larceny, assault, weapons felony, non-marijuana drug possession). Full packet required including DD 370 references. (3) DMPM — drug distribution, human trafficking, terroristic threats. Highest scrutiny. The governing authority for a case is always the HIGHEST level required across all offenses.',
+    cites:['4-28','4-28e4'], cat:'authority'
+  },
+  {
+    id:'documents',
+    q:'What documents are required for a moral waiver packet?',
+    keywords:['documents','required','packet','what do I need','paperwork','documentation','checklist'],
+    answer:'All levels (para 4-28): Live Scan, DD 369s (work/live/school/offense locations, last 3 yrs, valid 180 days from submission), police incident report (non-traffic), court dockets (charging, finding, final disposition), applicant statement, CO interview MFR, DD 1966 + SF 86, UF 601-210.08. USAREC/DMPM add: 3× DD 370, DD 2808. 24+ hr confinement adds: FL 601-210.04 from facility.',
+    cites:['4-28','4-28e4','4-28e5'], cat:'documents'
+  },
+  {
+    id:'dd369',
+    q:'What is a DD 369 and where does it get sent?',
+    keywords:['DD 369','police check','police record check','369','local check'],
+    answer:'DD Form 369 (Police Record Check) is sent to every law enforcement agency where the applicant lived, worked, or attended school in the past 3 years — plus every jurisdiction where a waiver-related offense occurred (no time limit). Validity = 180 days from date SUBMITTED to the agency, not date returned. Aliases must get separate DD 369s. Track submission dates carefully.',
+    cites:['4-28'], cat:'documents'
+  },
+  {
+    id:'dd370',
+    q:'What is a DD 370 and when is it required?',
+    keywords:['DD 370','references','character reference','370','reference letters'],
+    answer:'DD Form 370 (Request for Reference) is required ONLY at USAREC and DMPM levels — NOT at BN level. Three references are needed: employers covering 1 year prior, schools covering 3 years prior. Each reference completes the form independently and returns it directly. References should know about the waiver situation and be able to speak specifically to the applicant\'s character and rehabilitation.',
+    cites:['4-28e4'], cat:'documents'
+  },
+  {
+    id:'uf608',
+    q:'What is UF 601-210.08?',
+    keywords:['UF 601-210.08','210.08','all law violations','law violations form','601-210.08','asterisk'],
+    answer:'UF 601-210.08 lists ALL law violations ever — not just the waived offense. Order: newest to oldest. Asterisk (*) marks the offense(s) being waived. Applicant signs at the bottom. Most common rejection reason: offense on RZ but missing from 210.08, or waived offense not asterisked. The builder auto-fills and auto-asterisks based on screening verdict.',
+    cites:['4-28'], cat:'documents'
+  },
+  {
+    id:'minor_traffic',
+    q:'Do minor traffic violations require a waiver?',
+    keywords:['traffic','minor traffic','speeding ticket','traffic violation','traffic offense','moving violation'],
+    answer:'Minor traffic violations generally do NOT require a waiver (para 4-35). Traffic ABOVE minor level requires BN CO waiver: speeding 20+ mph over the limit, reckless driving, vehicular homicide, hit-and-run, driving on suspended/revoked license (para 4-8). Three or more minor traffic violations in one year also triggers a waiver. Confirm with S1 when borderline.',
+    cites:['4-35','4-8'], cat:'offenses'
+  },
+  {
+    id:'juvenile',
+    q:'How are juvenile offenses handled?',
+    keywords:['juvenile','under 18','youth','juvenile offense','juvenile record','adjudicated delinquent'],
+    answer:'Juvenile offenses (under age 18) are processed under para 4-30(b)(5) and receive more sympathetic treatment. Authority level depends on the offense type. For sealed records, use UF 601-210.02 when courts cannot provide dockets. Important: juvenile adjudications equivalent to felonies still count toward the two-major-misconduct permanent bar (para 4-22i).',
+    cites:['4-30'], cat:'offenses'
+  },
+  {
+    id:'dat',
+    q:'What happens if an applicant fails a drug test at MEPS?',
+    keywords:['DAT','drug test','positive test','failed drug test','MEPS test','USMEPCOM','drug screen'],
+    answer:'Para 4-18: First positive DAT at MEPS = BN CO waiver required. Applicant must wait 90 days before retesting. Second positive DAT = permanent disqualification, no waiver authority. Document the specific substance in the RZ. Note: a DAT positive is separate from a drug offense conviction — both require separate handling.',
+    cites:['4-18'], cat:'offenses'
+  },
+  {
+    id:'sex_offender',
+    q:'Can a sex offender enlist?',
+    keywords:['sex offender','rape','sexual assault','sex offense','registry','registered sex','child pornography','indecent'],
+    answer:'No. Para 4-22j: Any person convicted of rape, carnal knowledge, sodomy, prostitution involving a minor, indecent assault, child pornography, or any offense requiring sex offender registration is PERMANENTLY DISQUALIFIED. No waiver authority exists at any level. This applies to offenses committed in foreign countries as well.',
+    cites:['4-22j'], cat:'bars'
+  },
+  {
+    id:'statement',
+    q:'What should the applicant written statement cover?',
+    keywords:['statement','applicant statement','personal statement','written statement','letter'],
+    answer:'The statement must: (1) Address each offense starting with the most recent. (2) Explain the circumstances honestly — no minimizing. (3) List SPECIFIC steps since the offense: education, employment, counseling, sobriety, community service. Vague generics like "I learned my lesson" will weaken the packet. (4) State genuine motivation to serve tied to Army Values. This is often the deciding factor in borderline cases — coach the applicant extensively.',
+    cites:['4-28'], cat:'documents'
+  },
+  {
+    id:'co_mfr',
+    q:'What does the CO interview MFR need?',
+    keywords:['CO interview','commander interview','MFR','commander MFR','company commander','interview memo'],
+    answer:'The CO must personally interview the applicant — not just review paperwork. The MFR (AR 25-50 format) requires: interview date, summary of applicant\'s explanation, character assessment, and a clear APPROVE or DISAPPROVE with written justification. The CO signs the original — do not modify after signing. Telephone interviews require prior authorization from higher HQ.',
+    cites:['4-28'], cat:'documents'
+  },
+  {
+    id:'whole_person',
+    q:'What is the whole-person concept in waivers?',
+    keywords:['whole person','suitability','character','overall evaluation','chances','likelihood','approval chances'],
+    answer:'Para 4-2: Waivers are not decided purely on offense type or authority level — the entire person is evaluated: age at offense, time elapsed, employment record, education, community ties, rehabilitation evidence, and references. A technically waivable offense with recent misconduct and no rehabilitation evidence will likely be denied. A borderline case with strong positive factors can be approved. This is why the statement and CO interview are critical.',
+    cites:['4-28'], cat:'process'
+  },
+  {
+    id:'deferred',
+    q:'Does deferred adjudication or a nolo contendere plea require a waiver?',
+    keywords:['deferred','adjudication','diversion','deferred prosecution','nolo','no contest','plea','diverted'],
+    answer:'Yes. Deferred adjudication, diversion programs, and nolo contendere/no contest pleas are "adverse dispositions" under para 4-30 — even when no formal conviction was recorded and the case was later dismissed. A waiver is required. Collect both the deferral agreement AND the final dismissal/completion order as court dockets.',
+    cites:['4-30'], cat:'eligibility'
+  },
+  {
+    id:'drug_dist',
+    q:'Can drug distribution be waived?',
+    keywords:['drug distribution','drug trafficking','distribution','selling drugs','sold drugs','deal'],
+    answer:'Drug distribution requires DMPM approval — the highest waiver authority. Approval is rare. Cannabis distribution is included (no marijuana exemption for distribution). The 24-month clock from conviction date applies. Practically: DMPM drug distribution waivers are submitted rarely and approved even more rarely. Build an exceptional packet with 24+ months of clean, documented rehabilitation.',
+    cites:['4-28e5'], cat:'offenses'
+  },
+  {
+    id:'expunge',
+    q:'Does an expunged conviction still count?',
+    keywords:['expunged','expungement','sealed','expunge','set aside','vacated'],
+    answer:'Generally yes, for Army enlistment purposes. Most state expungements do not eliminate federal reporting requirements. The applicant must still disclose expunged offenses on the RZ and UF 601-210.08 — failure to disclose is a more serious problem than the offense itself. Lautenberg convictions in particular: some states\' expungements do NOT remove the firearms bar. When in doubt, consult JAG and disclose everything.',
+    cites:['4-28'], cat:'eligibility'
+  },
 ];
 
 })();
