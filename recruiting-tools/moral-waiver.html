@@ -384,6 +384,32 @@ select.form-input{cursor:pointer}
 .empty-state{text-align:center;padding:28px 20px;color:var(--fg-m);font-size:12px}
 .new-badge{background:rgba(45,122,79,.2);color:#5bc989;font-size:9px;font-weight:700;padding:1px 5px;letter-spacing:.06em;text-transform:uppercase;vertical-align:middle;margin-left:5px}
 
+/* ── REF HIGHLIGHT ─────────────────────────────────────────── */
+.ref-entry.highlighted{border-color:var(--gold);background:rgba(255,204,1,.07)}
+@keyframes refPulse{0%{box-shadow:0 0 0 0 rgba(255,204,1,.5)}70%{box-shadow:0 0 0 6px rgba(255,204,1,0)}100%{box-shadow:0 0 0 0 rgba(255,204,1,0)}}
+.ref-entry.pulse{animation:refPulse .6s ease}
+
+/* ── WAIVER BOT ─────────────────────────────────────────────── */
+.bot-panel{position:fixed;right:0;top:0;height:100%;width:360px;background:var(--bg-s);border-left:1px solid var(--bd-m);z-index:90;display:flex;flex-direction:column;box-shadow:-4px 0 20px rgba(0,0,0,.4);transform:translateX(100%);transition:transform .25s ease}
+.bot-panel.open{transform:translateX(0)}
+.bot-hdr{padding:12px 16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:10px;flex-shrink:0}
+.bot-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--fg);flex:1}
+.bot-sub{font-size:10px;color:var(--fg-m);margin-top:1px}
+.bot-msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px}
+.bot-msg{padding:10px 12px;font-size:12px;line-height:1.55;max-width:95%}
+.bot-msg.user{background:rgba(255,204,1,.1);border:1px solid rgba(255,204,1,.2);color:var(--fg2);align-self:flex-end}
+.bot-msg.bot{background:var(--bg-c);border:1px solid var(--bd);color:var(--fg2);align-self:flex-start}
+.bot-cite{font-size:10px;color:var(--gold);margin-top:6px;padding-top:5px;border-top:1px solid var(--bd)}
+.bot-msg.system{color:var(--fg-m);font-size:11px;text-align:center;background:none;border:none;padding:4px}
+.bot-suggestions{padding:8px 12px;border-top:1px solid var(--bd);display:flex;flex-wrap:wrap;gap:5px;flex-shrink:0}
+.bot-chip{font-size:10px;padding:4px 9px;border:1px solid var(--bd-m);color:var(--fg-m);background:var(--bg-c);cursor:pointer;transition:all .15s;font-family:inherit}
+.bot-chip:hover{border-color:var(--gold);color:var(--gold)}
+.bot-input-row{padding:10px 12px;border-top:1px solid var(--bd);display:flex;gap:8px;flex-shrink:0}
+.bot-input{flex:1;background:var(--in-bg);border:1px solid var(--in-bd);color:var(--fg2);padding:7px 10px;font-family:inherit;font-size:12px;outline:none}
+.bot-input:focus{border-color:var(--gold)}
+.bot-send{background:var(--gold);border:none;color:#000;font-weight:700;font-size:12px;padding:7px 14px;cursor:pointer;font-family:inherit;letter-spacing:.04em}
+.bot-send:hover{filter:brightness(1.08)}
+
 /* ── PRINT ─────────────────────────────────────────────────── */
 @media print{
   body{background:#fff;color:#000}
@@ -395,7 +421,7 @@ select.form-input{cursor:pointer}
 </head>
 <body>
 <div id="root"></div>
-<script src="waiver-data.js"></script>
+<script src="waiver-data.js?v=2"></script>
 <script src="https://unpkg.com/pako@2.1.0/dist/pako.min.js" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
@@ -405,7 +431,8 @@ const { useState, useEffect, useCallback, useRef, useMemo } = React;
 const {
   OFFENSE_CATEGORIES, QUALIFYING_QUESTIONS, CHECKLIST_ITEMS,
   SAMPLE_SCENARIOS, PARA_TEXT, ED_LEVELS, US_STATES,
-  MOS_RESTRICTIONS, APPROVABILITY_FACTORS
+  MOS_RESTRICTIONS, APPROVABILITY_FACTORS,
+  WAIVER_KB, CAT_PARA_MAP, Q_PARA_MAP
 } = window;
 
 /* ── Icons ─────────────────────────────────────────────── */
@@ -629,6 +656,136 @@ const computeReadiness = (applicant, screenedOffenses, clStatus) => {
   return { score: Math.min(100, score), breakdown };
 };
 
+/* ── Simple relative date parser for smooth input ──────────────────────── */
+const parseRelativeDate = (input) => {
+  if (!input) return null;
+  const s = input.trim().toLowerCase();
+  const now = new Date();
+
+  // Direct ISO date
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+
+  // Common phrases
+  if (s === 'yesterday' || s === 'yest') {
+    const d = new Date(now); d.setDate(d.getDate() - 1); return d.toISOString().split('T')[0];
+  }
+  if (s === 'today') {
+    return now.toISOString().split('T')[0];
+  }
+  if (s === 'last week' || s === 'a week ago') {
+    const d = new Date(now); d.setDate(d.getDate() - 7); return d.toISOString().split('T')[0];
+  }
+
+  // Number + unit: 45d, 3 months ago, 2 years, 90 days ago, etc.
+  const match = s.match(/^(\d+)\s*(d|day|days|m|mo|month|months|y|yr|year|years)\s*(ago)?$/i);
+  if (match) {
+    const num = parseInt(match[1], 10);
+    const unit = match[2].toLowerCase();
+    const d = new Date(now);
+    if (unit.startsWith('d')) d.setDate(d.getDate() - num);
+    else if (unit.startsWith('m')) d.setMonth(d.getMonth() - num);
+    else if (unit.startsWith('y')) d.setFullYear(d.getFullYear() - num);
+    return d.toISOString().split('T')[0];
+  }
+
+  return null;
+};
+
+/* ── Date-Aware Risk Engine (smarter regulatory awareness) ──────────────── */
+const getDateAwareRisks = (screenedOffenses) => {
+  const risks = [];
+  const now = Date.now();
+
+  screenedOffenses.forEach(so => {
+    const cat = OFFENSE_CATEGORIES.find(c => c.id === so.categoryId);
+    if (!cat) return;
+
+    // We can now work with convictionDate even without offenseDate (for regulatory clocks)
+    const hasOffenseDate = !!so.offenseDate;
+    const hasConvictionDate = !!so.convictionDate;
+
+    if (!hasOffenseDate && !hasConvictionDate) return;
+
+    const offenseDate = hasOffenseDate ? new Date(so.offenseDate) : null;
+    const convictionDate = hasConvictionDate ? new Date(so.convictionDate) : null;
+
+    const daysSinceOffense = hasOffenseDate 
+      ? Math.floor((now - offenseDate.getTime()) / (1000*60*60*24)) 
+      : null;
+
+    const isMajor = cat.group === 'major' || cat.level === 'MAJOR';
+    const isSeriousMisc = ['misc_dui', 'misc_dv_non_laut', 'misc_weapons', 'dat_positive'].includes(so.categoryId);
+
+    // === SMART DATE ORDER ANALYSIS (this is the intelligence the user wants) ===
+    if (hasOffenseDate && hasConvictionDate) {
+      if (convictionDate.getTime() < offenseDate.getTime()) {
+        risks.push({
+          id: `date_order_${so.id}`,
+          severity: 'info',
+          title: 'Conviction Date Before Offense Date',
+          message: 'You entered a conviction/disposition date that is earlier than the offense date. This is unusual but can happen with certain pleas or nolo contendere dispositions. The app will correctly use the conviction date for all regulatory waiting periods (AR 601-210 4-7). The offense date is still used for "recency of conduct" evaluation under the whole-person concept.',
+          cite: 'AR 601-210 4-7 (major misconduct waiting period starts at conviction/final disposition)'
+        });
+      }
+    }
+
+    // === Major misconduct 24-month rule (AR 601-210 4-7) — strictly uses conviction date when available ===
+    if (isMajor) {
+      const clockDate = convictionDate || offenseDate; // conviction date is the correct regulatory trigger
+      if (clockDate) {
+        const yearsSinceClock = (now - clockDate.getTime()) / (365.25 * 24 * 3600 * 1000);
+        if (yearsSinceClock < 2) {
+          const monthsNeeded = Math.ceil(24 - (yearsSinceClock * 12));
+          const dateType = convictionDate ? 'conviction' : 'offense (no conviction date entered)';
+          const monthsAgo = Math.floor((now - clockDate.getTime()) / (1000*60*60*24 / 30.44));
+          
+          risks.push({
+            id: `major_24month_${so.id}`,
+            severity: 'block',
+            title: 'Major Misconduct — 24-Month Clock Not Met',
+            message: `Using ${dateType} date (~${monthsAgo} months ago). Per AR 601-210 para 4-7, applicants must generally wait 24 months from the date of conviction (or final adverse disposition) before a major misconduct waiver can be processed. Earliest realistic submission: ~${monthsNeeded} months from now.`,
+            cite: 'AR 601-210, 4-7a'
+          });
+        }
+      }
+    }
+
+    // === Recency of conduct (whole person concept) — always based on when the bad act actually occurred ===
+    if (hasOffenseDate) {
+      const days = daysSinceOffense;
+      const months = Math.floor(days / 30.44);
+
+      if (days < 30) {
+        risks.push({
+          id: `extremely_recent_${so.id}`,
+          severity: 'block',
+          title: 'Extremely Recent Conduct (< 30 days)',
+          message: `The actual offense happened only ${days} days ago. This is viewed as current behavior. Expect near-certain denial or long delays. This is separate from the formal 24-month clock.`,
+          cite: 'AR 601-210 4-2 (whole person concept) + current USAREC practice'
+        });
+      } else if (days < 90 && (isMajor || isSeriousMisc)) {
+        risks.push({
+          id: `very_recent_${so.id}`,
+          severity: 'high',
+          title: 'Very Recent Serious Offense (< 90 days)',
+          message: `Offense occurred only ~${months} months ago. Recent serious misconduct is one of the strongest predictors of waiver denial under the whole-person review.`,
+          cite: 'AR 601-210 4-2f (suitability review triggers)'
+        });
+      } else if (days < 180) {
+        risks.push({
+          id: `recent_${so.id}`,
+          severity: 'medium',
+          title: 'Recent Offense (under 6 months)',
+          message: `Very recent conduct (${months} months ago). This will be a major negative factor. The formal waiting period clock and the "recency" evaluation are two different things.`,
+          cite: 'APPROVABILITY_FACTORS + AR 601-210 4-4'
+        });
+      }
+    }
+  });
+
+  return risks;
+};
+
 /* ── Readiness Ring ─────────────────────────────────────── */
 const ReadinessRing = ({ score }) => {
   const R = 15, C = 2*Math.PI*R;
@@ -670,7 +827,7 @@ const ApplicantCard = ({ appl, active, onClick, onDelete }) => {
 };
 
 /* ── Phase 1: Multi-Offense Screener ───────────────────── */
-const Phase1 = ({ applicant, setApplicant, onReadinessChange }) => {
+const Phase1 = ({ applicant, setApplicant, onHighlight }) => {
 
   const [addingOffense, setAddingOffense] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -678,6 +835,20 @@ const Phase1 = ({ applicant, setApplicant, onReadinessChange }) => {
   const [tempAnswer, setTempAnswer] = useState(null);
   const [currentAnswers, setCurrentAnswers] = useState({});
   const [offenseDate, setOffenseDate] = useState('');
+  const [convictionDate, setConvictionDate] = useState('');
+  const [dateOrderConfirmed, setDateOrderConfirmed] = useState(false);
+
+  // Fire ref highlights whenever screener state changes
+  useEffect(() => {
+    if (!onHighlight) return;
+    if (selectedCategory) {
+      const catParas = (CAT_PARA_MAP || {})[selectedCategory] || [];
+      const qParas = QUALIFYING_QUESTIONS[qStep] ? ((Q_PARA_MAP || {})[QUALIFYING_QUESTIONS[qStep].id] || []) : [];
+      onHighlight([...new Set([...catParas, ...qParas])]);
+    } else {
+      onHighlight([]);
+    }
+  }, [selectedCategory, qStep]);
 
   const screenedOffenses = applicant.offenses || [];
   const overallV = computeOverallVerdict(screenedOffenses);
@@ -688,7 +859,7 @@ const Phase1 = ({ applicant, setApplicant, onReadinessChange }) => {
   const updateOffenses = (offenses) => setApplicant(prev => ({...prev, offenses}));
 
   const startAdd = () => {
-    setSelectedCategory(null); setQStep(0); setCurrentAnswers({}); setTempAnswer(null); setOffenseDate('');
+    setSelectedCategory(null); setQStep(0); setCurrentAnswers({}); setTempAnswer(null); setOffenseDate(''); setConvictionDate(''); setDateOrderConfirmed(false);
     setAddingOffense(true);
   };
 
@@ -729,9 +900,12 @@ const Phase1 = ({ applicant, setApplicant, onReadinessChange }) => {
 
   const finishScreening = (catId, answers, verdict) => {
     const newEntry = {
-      id:`so${Date.now()}`, categoryId:catId, answers, verdict, offenseDate,
-      // offense log fields (to be filled in Phase 2 tab)
-      description:'', city:'', county:'', state:'', disposition:'', courtDocs:false, incidentRpt:false, waivedOffense:true
+      id:`so${Date.now()}`, categoryId:catId, answers, verdict,
+      offenseDate,
+      convictionDate,
+      // offense log fields (to be filled later)
+      description:'', city:'', county:'', state:'', disposition:'', courtDocs:false, incidentRpt:false,
+      waivedOffense: verdict?.type === 'WAIVABLE' || verdict?.type === 'ETP_REQUIRED'
     };
     updateOffenses([...screenedOffenses, newEntry]);
     setAddingOffense(false); setSelectedCategory(null);
@@ -783,6 +957,29 @@ const Phase1 = ({ applicant, setApplicant, onReadinessChange }) => {
     setQStep(prev);
   };
 
+  // Date validation for add-offense flow
+  const todayStr = today();
+  const dobStr = applicant.dob || '';
+  const dateErrors = [];
+  if (offenseDate) {
+    if (offenseDate > todayStr) dateErrors.push('Offense date cannot be in the future.');
+    if (dobStr && offenseDate < dobStr) dateErrors.push(`Offense date (${fmtDate(offenseDate)}) is before the applicant's date of birth (${fmtDate(dobStr)}). Verify entry.`);
+  }
+  if (convictionDate && convictionDate > todayStr) dateErrors.push('Conviction date cannot be in the future.');
+  const convictionBeforeOffense = !!(convictionDate && offenseDate && convictionDate < offenseDate);
+  const datesBlocking = dateErrors.length > 0 || (convictionBeforeOffense && !dateOrderConfirmed);
+
+  // Inline warning helper for the offense log (saved offenses)
+  const getOffenseDateWarnings = (so) => {
+    const w = [];
+    if (so.offenseDate && so.offenseDate > todayStr) w.push('Offense date is in the future.');
+    if (so.convictionDate && so.convictionDate > todayStr) w.push('Conviction date is in the future.');
+    if (dobStr && so.offenseDate && so.offenseDate < dobStr) w.push(`Offense date precedes applicant DOB (${fmtDate(dobStr)}).`);
+    if (so.offenseDate && so.convictionDate && so.convictionDate < so.offenseDate)
+      w.push(`⛔ Likely data entry error: conviction date (${fmtDate(so.convictionDate)}) is before offense date (${fmtDate(so.offenseDate)}).`);
+    return w;
+  };
+
   // Group offense categories
   const groups = [
     { key:'bars',    label:'⛔ Absolute Bars (Not Waivable)', color:'#ff5555' },
@@ -829,14 +1026,20 @@ const Phase1 = ({ applicant, setApplicant, onReadinessChange }) => {
                 const vt = so.verdict?.type;
                 const chipClass = vt==='NOT_WAIVABLE'?'bar':vt==='WAIVABLE'?'waivable':vt==='WAITING_PERIOD'?'waiting':vt==='ETP_REQUIRED'?'etp':vt==='NO_WAIVER_REQUIRED'?'no-waiver':'';
                 const cvClass = vt==='NOT_WAIVABLE'?'chip-v-bar':vt==='WAIVABLE'?'chip-v-waivable':vt==='WAITING_PERIOD'?'chip-v-waiting':vt==='ETP_REQUIRED'?'chip-v-etp':vt==='NO_WAIVER_REQUIRED'?'chip-v-no-waiver':'chip-v-unknown';
-                const vLabel = {WAIVABLE:'Waivable',NOT_WAIVABLE:'Bar',NO_WAIVER_REQUIRED:'No Waiver Needed',ETP_REQUIRED:'ETP Required',WAITING_PERIOD:'Wait Period'}[vt]||'Unknown';
+                const vLabel = {WAIVABLE:'Waivable',NOT_WAIVABLE:'NOT WAIVABLE',NO_WAIVER_REQUIRED:'No Waiver Needed',ETP_REQUIRED:'ETP Required',WAITING_PERIOD:'Wait Period'}[vt]||'Unknown';
+                const isProblem = vt === 'NOT_WAIVABLE' || vt === 'WAITING_PERIOD' || vt === 'ETP_REQUIRED';
                 return (
-                  <div key={so.id} data-id={so.id} className={`offense-chip ${chipClass}`} draggable onDragStart={e=>handleDragStart(e,so.id)} title={so.verdict?.type==='WAITING_PERIOD' ? `${so.verdict.waitMonths} month${so.verdict.waitMonths>1?'s':''} waiting period` : ''}>
+                  <div key={so.id} data-id={so.id} className={`offense-chip ${chipClass}`} draggable onDragStart={e=>handleDragStart(e,so.id)}>
                     <span className={`chip-verdict ${cvClass}`}>{vLabel}</span>
                     <div className="chip-label">{cat?.label || so.categoryId}</div>
                     {so.offenseDate && <span className="chip-auth">{fmtDate(so.offenseDate)}</span>}
                     {so.verdict?.type==='WAIVABLE' && <span className="chip-auth" style={{marginLeft:4}}>{so.verdict.authority}</span>}
                     <button className="chip-del" onClick={()=>removeOffense(so.id)} title="Remove this offense"><IcoX s={9}/></button>
+                    {isProblem && so.verdict?.reason && (
+                      <div style={{fontSize:10, color:'#ff9e9e', marginTop:4, gridColumn:'1 / -1', lineHeight:1.3}}>
+                        {so.verdict.reason} <span style={{opacity:0.7}}>({so.verdict.cite || 'AR 601-210 Ch. 4'})</span>
+                      </div>
+                    )}
                   </div>
                 );
               })}
@@ -858,9 +1061,25 @@ const Phase1 = ({ applicant, setApplicant, onReadinessChange }) => {
                       </div>
                       <div className="form-grid" style={{marginBottom:8}}>
                         <div className="form-field">
-                          <label className="form-label">Offense Date</label>
+                          <label className="form-label">Offense Date (when the act happened)</label>
                           <input className="form-input" type="date" value={so.offenseDate||''} onChange={e=>updateOffenseField(so.id,'offenseDate',e.target.value)}/>
+                          <div style={{fontSize:9, color:'var(--fg-m)'}}>Used for recency / whole person evaluation</div>
                         </div>
+                        <div className="form-field">
+                          <label className="form-label">Conviction / Final Disposition Date</label>
+                          <input className="form-input" type="date" value={so.convictionDate||''} onChange={e=>updateOffenseField(so.id,'convictionDate',e.target.value)}
+                            style={{borderColor: (so.convictionDate && so.offenseDate && so.convictionDate < so.offenseDate) ? '#ff5555' : undefined}}/>
+                          <div style={{fontSize:9, color:'var(--fg-m)'}}>Starts the 24-month clock for major misconduct (AR 601-210 4-7)</div>
+                        </div>
+                        {getOffenseDateWarnings(so).length > 0 && (
+                          <div style={{gridColumn:'1 / -1'}}>
+                            {getOffenseDateWarnings(so).map((w, wi) => (
+                              <div key={wi} style={{padding:'6px 10px', background:'rgba(207,0,0,.13)', border:'1px solid rgba(207,0,0,.4)', color:'#ff7070', fontSize:11, marginTop:4, display:'flex', gap:6}}>
+                                <span>⛔</span><span>{w}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                         <div className="form-field">
                           <label className="form-label">City / Jurisdiction</label>
                           <input className="form-input" value={so.city||''} onChange={e=>updateOffenseField(so.id,'city',e.target.value)} placeholder="City"/>
@@ -892,9 +1111,9 @@ const Phase1 = ({ applicant, setApplicant, onReadinessChange }) => {
                         <label style={{display:'flex',alignItems:'center',gap:7,cursor:'pointer',fontSize:12,color:'var(--fg2)'}}>
                           <input type="checkbox" checked={so.incidentRpt||false} onChange={e=>updateOffenseField(so.id,'incidentRpt',e.target.checked)}/> Police incident report obtained
                         </label>
-                        <label style={{display:'flex',alignItems:'center',gap:7,cursor:'pointer',fontSize:12,color:'var(--fg2)'}}>
-                          <input type="checkbox" checked={so.waivedOffense!==false} onChange={e=>updateOffenseField(so.id,'waivedOffense',e.target.checked)}/> ★ Mark as waived offense
-                        </label>
+                        <div style={{fontSize:10,color:'var(--fg-m)',marginLeft:'auto',padding:'2px 7px',background:'rgba(255,204,1,.08)',border:'1px solid var(--bd)'}}>
+                          ★ asterisk on UF 601-210.08 = auto from screening result
+                        </div>
                       </div>
                     </div>
                   );
@@ -936,37 +1155,161 @@ const Phase1 = ({ applicant, setApplicant, onReadinessChange }) => {
               <button className="btn btn-outline btn-sm" onClick={cancelAdd}>Cancel</button>
             </div>
 
-            {/* Category Selection */}
-            {!selectedCategory && (
-              <div>
-                <div className="form-field" style={{marginBottom:14}}>
-                  <label className="form-label">Offense Date (optional — for approvability estimate)</label>
-                  <input className="form-input" type="date" style={{maxWidth:200}} value={offenseDate} onChange={e=>setOffenseDate(e.target.value)}/>
-                </div>
-                {groups.map(grp => {
-                  const cats = OFFENSE_CATEGORIES.filter(c => c.group === grp.key);
-                  if (!cats.length) return null;
-                  return (
-                    <div key={grp.key}>
-                      <div className="offense-group-label" style={{color:grp.color}}>{grp.label}</div>
-                      <div className="offense-grid">
-                        {cats.map(cat => (
-                          <button key={cat.id}
-                            className={`offense-card${cat.bar?' bar':''}${cat.noWaiverRequired?' no-waiver':''}`}
-                            onClick={()=>selectCategory(cat.id)}>
-                            <div className="offense-label">{cat.label}</div>
-                            <div className="offense-sub">{cat.sub}</div>
-                            <span className={`offense-level-badge lvl-${cat.bar?'BAR':cat.noWaiverRequired?'NO-WAIVER':cat.level}`}>
-                              {cat.bar?'ABSOLUTE BAR':cat.noWaiverRequired?'NO WAIVER REQD':cat.level}
-                            </span>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  );
-                })}
+            {/* Date Entry — validated before offense selection is allowed */}
+            <div style={{marginBottom:16, padding:'16px 18px', background:'var(--bg-c)', border:`2px solid ${
+              dateErrors.length > 0 ? '#ff5555' :
+              (convictionBeforeOffense && !dateOrderConfirmed) ? '#ff6600' :
+              offenseDate ? '#5bc989' : 'var(--gold)'
+            }`}}>
+              <div style={{marginBottom:10}}>
+                <div style={{fontSize:14, fontWeight:700, color:'var(--fg2)'}}>When did this offense happen?</div>
+                <div style={{fontSize:11, color:'var(--fg-m)', marginTop:2}}>All risk warnings and regulatory clocks depend on these dates.</div>
               </div>
-            )}
+
+              {/* Quick-pick shortcuts */}
+              <div style={{marginBottom:12}}>
+                <div style={{fontSize:10, color:'var(--fg-m)', marginBottom:5, textTransform:'uppercase', letterSpacing:'.06em'}}>Quick pick (approximate):</div>
+                <div style={{display:'flex', flexWrap:'wrap', gap:6}}>
+                  {[
+                    {label:'< 30 days ago', days:20},
+                    {label:'3 months ago', days:90},
+                    {label:'6 months ago', days:180},
+                    {label:'1 year ago', days:365},
+                    {label:'2 years ago', days:730},
+                    {label:'3+ years ago', days:1100},
+                  ].map(btn => (
+                    <button key={btn.label} type="button"
+                      onClick={() => {
+                        const d = new Date();
+                        d.setDate(d.getDate() - btn.days);
+                        const iso = d.toISOString().split('T')[0];
+                        setOffenseDate(iso);
+                        if (!convictionDate) setConvictionDate(iso);
+                        setDateOrderConfirmed(false);
+                      }}
+                      style={{padding:'5px 12px', fontSize:11, fontWeight:600, border:'1px solid var(--bd-m)', background:'var(--bg-s)', color:'var(--fg2)', cursor:'pointer'}}
+                    >
+                      {btn.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Date inputs */}
+              <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:12}}>
+                <div className="form-field">
+                  <label className="form-label">Offense Date — when the act happened <span style={{color:'#ff6b6b'}}>*</span></label>
+                  <input type="date" className="form-input"
+                    value={offenseDate}
+                    max={todayStr}
+                    onChange={e => { setOffenseDate(e.target.value); if (!convictionDate) setConvictionDate(e.target.value); setDateOrderConfirmed(false); }}
+                    style={{borderColor: dateErrors.some(e=>e.startsWith('Offense')) ? '#ff5555' : undefined, fontSize:14}}
+                  />
+                  <div style={{fontSize:9, color:'var(--fg-m)', marginTop:2}}>Used for recency / whole-person eval (AR 601-210 4-2)</div>
+                </div>
+                <div className="form-field">
+                  <label className="form-label">Conviction / Final Disposition Date</label>
+                  <input type="date" className="form-input"
+                    value={convictionDate}
+                    max={todayStr}
+                    onChange={e => { setConvictionDate(e.target.value); setDateOrderConfirmed(false); }}
+                    style={{borderColor: (dateErrors.some(e=>e.startsWith('Conviction')) || (convictionBeforeOffense && !dateOrderConfirmed)) ? '#ff5555' : undefined, fontSize:14}}
+                  />
+                  <div style={{fontSize:9, color:'var(--fg-m)', marginTop:2}}>Starts the 24-month clock for major misconduct (AR 601-210 4-7)</div>
+                </div>
+              </div>
+
+              {/* Hard date errors */}
+              {dateErrors.map((err, i) => (
+                <div key={i} style={{marginBottom:8, padding:'8px 12px', background:'rgba(207,0,0,.15)', border:'1px solid rgba(207,0,0,.5)', color:'#ff6b6b', fontSize:12, fontWeight:600, display:'flex', gap:8}}>
+                  <span>⛔</span><span>{err}</span>
+                </div>
+              ))}
+
+              {/* Conviction before offense — BLOCKING error with required override */}
+              {convictionBeforeOffense && (
+                <div style={{marginBottom:8, padding:'14px 16px', background:'rgba(207,0,0,.12)', border:'2px solid rgba(207,0,0,.55)', color:'#ffaaaa'}}>
+                  <div style={{fontWeight:700, fontSize:13, color:'#ff5555', marginBottom:6}}>
+                    ⛔ DATA ENTRY ERROR — Conviction date precedes offense date
+                  </div>
+                  <div style={{fontSize:12, marginBottom:8, lineHeight:1.55}}>
+                    Conviction ({fmtDate(convictionDate)}) cannot logically precede the offense ({fmtDate(offenseDate)}).
+                    This is almost always a typo or copy-paste error. Correct the dates before continuing.
+                  </div>
+                  <div style={{fontSize:11, color:'rgba(255,170,170,.7)', marginBottom:10, lineHeight:1.4}}>
+                    Only check the box below if you have independently verified these dates are genuinely correct (extremely rare — certain retroactive legal dispositions only).
+                  </div>
+                  <label style={{display:'flex', alignItems:'center', gap:8, cursor:'pointer', fontSize:12}}>
+                    <input type="checkbox" checked={dateOrderConfirmed} onChange={e => setDateOrderConfirmed(e.target.checked)}/>
+                    I have verified both dates are correct — override this error
+                  </label>
+                </div>
+              )}
+
+              {/* Clean status when dates are valid */}
+              {offenseDate && !datesBlocking && (
+                <div style={{padding:'8px 12px', background:'rgba(255,204,1,.05)', borderLeft:'3px solid var(--gold)', fontSize:12}}>
+                  <div style={{marginBottom:2}}>
+                    <strong>Offense:</strong> {fmtDate(offenseDate)} — <strong>{Math.floor((Date.now()-new Date(offenseDate).getTime())/86400000)} days ago</strong>
+                    <span style={{fontSize:10, color:'var(--fg-m)', marginLeft:6}}>→ recency evaluation</span>
+                  </div>
+                  {convictionDate && convictionDate !== offenseDate && (
+                    <div style={{marginBottom:4}}>
+                      <strong>Conviction:</strong> {fmtDate(convictionDate)} — <strong>{Math.floor((Date.now()-new Date(convictionDate).getTime())/86400000)} days ago</strong>
+                      <span style={{fontSize:10, color:'var(--fg-m)', marginLeft:6}}>→ 24-month clock</span>
+                    </div>
+                  )}
+                  <div style={{marginTop:4, fontSize:11}}>
+                    {(() => {
+                      const days = Math.floor((Date.now()-new Date(offenseDate).getTime())/86400000);
+                      if (days < 30) return <span style={{color:'#ff5555'}}>🔴 Extremely recent — near-certain denial</span>;
+                      if (days < 90) return <span style={{color:'#ff8800'}}>🟠 Very recent — high denial risk</span>;
+                      if (days < 180) return <span style={{color:'var(--gold)'}}>🟡 Recent — notable negative factor</span>;
+                      return <span style={{color:'#5bc989'}}>🟢 Older — better approval outlook</span>;
+                    })()}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Category grid + Q&A — blocked until dates are valid */}
+            {!offenseDate ? (
+              <div style={{textAlign:'center', padding:'18px', color:'var(--fg-m)', fontSize:12, border:'1px dashed var(--bd)', background:'rgba(255,255,255,.02)'}}>
+                Enter the offense date above to continue.
+              </div>
+            ) : datesBlocking ? (
+              <div style={{textAlign:'center', padding:'18px', color:'#ff8888', fontSize:12, border:'1px solid rgba(207,0,0,.3)', background:'rgba(207,0,0,.04)'}}>
+                ↑ Fix the date error above before selecting an offense type.
+              </div>
+            ) : (
+            <>
+            <div style={{marginBottom:8}}>
+              <div style={{fontSize:13, fontWeight:600, marginBottom:8, color:'var(--fg2)'}}>
+                What kind of offense was it?
+              </div>
+              {groups.map(grp => {
+                const cats = OFFENSE_CATEGORIES.filter(c => c.group === grp.key);
+                if (!cats.length) return null;
+                return (
+                  <div key={grp.key} style={{marginBottom:10}}>
+                    <div className="offense-group-label" style={{color:grp.color}}>{grp.label}</div>
+                    <div className="offense-grid">
+                      {cats.map(cat => (
+                        <button key={cat.id}
+                          className={`offense-card${cat.bar?' bar':''}${cat.noWaiverRequired?' no-waiver':''}`}
+                          onClick={()=>selectCategory(cat.id)}>
+                          <div className="offense-label">{cat.label}</div>
+                          <div className="offense-sub">{cat.sub}</div>
+                          <span className={`offense-level-badge lvl-${cat.bar?'BAR':cat.noWaiverRequired?'NO-WAIVER':cat.level}`}>
+                            {cat.bar?'ABSOLUTE BAR':cat.noWaiverRequired?'NO WAIVER REQD':cat.level}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
 
             {/* Guided Q&A */}
             {selectedCategory && (
@@ -999,6 +1342,8 @@ const Phase1 = ({ applicant, setApplicant, onReadinessChange }) => {
                 </div>
               </div>
             )}
+            </>
+            )}
           </div>
         )}
       </div>
@@ -1006,58 +1351,137 @@ const Phase1 = ({ applicant, setApplicant, onReadinessChange }) => {
   );
 };
 
-/* ── Overall Verdict Banner ─────────────────────────────── */
+/* ── Big Red Banner + Smart Overall Verdict (date-aware + regulatory depth) ─ */
 const OverallVerdictBanner = ({ screenedOffenses, auth, authorityLabels, approv, applicant }) => {
   const ov = computeOverallVerdict(screenedOffenses);
+  const dateRisks = getDateAwareRisks(screenedOffenses);
+  const hardBlocks = dateRisks.filter(r => r.severity === 'block');
+  const highRisks = dateRisks.filter(r => r.severity === 'high');
+
   const [showFactors, setShowFactors] = useState(false);
+
+  const isDead = ov === 'NOT_WAIVABLE' || hardBlocks.length > 0;
+  const isHighRisk = highRisks.length > 0 || (approv && approv.score < 35);
 
   const configs = {
     WAIVABLE:          { cls:'verdict-WAIVABLE',          tag:'Waivable', title:`Waivable — ${authorityLabels[auth]||auth}`, icon:'✅' },
-    NOT_WAIVABLE:      { cls:'verdict-NOT_WAIVABLE',      tag:'Not Waivable', title:'Not Waivable — Absolute Bar or Multiple Major Misconduct', icon:'⛔' },
+    NOT_WAIVABLE:      { cls:'verdict-NOT_WAIVABLE',      tag:'ABSOLUTE BAR', title:'This Case Cannot Be Waived', icon:'⛔' },
     ETP_REQUIRED:      { cls:'verdict-ETP_REQUIRED',      tag:'ETP Required', title:'Exception to Policy Required', icon:'⚠️' },
     WAITING_PERIOD:    { cls:'verdict-WAITING_PERIOD',    tag:'Waiting Period', title:'Mandatory Waiting Period', icon:'⏳' },
     NO_WAIVER_REQUIRED:{ cls:'verdict-NO_WAIVER_REQUIRED',tag:'No Waiver Needed', title:'No Waiver Required', icon:'✔️' },
   };
   const cfg = configs[ov] || { cls:'', tag:'', title:'Pending', icon:'•' };
 
+  // BIG RED BANNER for dead or extremely recent high-risk cases
+  if (isDead || isHighRisk) {
+    return (
+      <div style={{
+        background: 'linear-gradient(135deg, #3a0f0f 0%, #1f0808 100%)',
+        border: '3px solid #ff3b3b',
+        borderRadius: 8,
+        padding: '20px 24px',
+        marginBottom: 16,
+        color: '#ffdddd',
+        boxShadow: '0 0 0 1px #ff3b3b44 inset'
+      }}>
+        <div style={{display:'flex', alignItems:'center', gap:12, marginBottom:10}}>
+          <div style={{fontSize:32}}>⛔</div>
+          <div>
+            <div style={{fontSize:22, fontWeight:800, color:'#ff5555', letterSpacing:'-0.5px'}}>
+              {isDead ? 'CASE BLOCKED — DO NOT SUBMIT' : 'EXTREMELY HIGH RISK — RECENT SERIOUS CONDUCT'}
+            </div>
+            <div style={{fontSize:13, color:'#ffaaaa', marginTop:2}}>
+              {isDead ? 'One or more absolute bars or regulatory waiting periods have not been met.' : 'Recent high-severity offenses make approval highly unlikely in the current environment.'}
+            </div>
+          </div>
+        </div>
+
+        {/* Hard blocks from dates or category */}
+        {(hardBlocks.length > 0 || ov === 'NOT_WAIVABLE') && (
+          <div style={{background:'rgba(0,0,0,0.3)', padding:'12px 16px', borderRadius:6, marginBottom:12}}>
+            <div style={{fontWeight:700, color:'#ff8888', marginBottom:6, fontSize:13}}>REASONS THIS CASE IS DEAD OR DELAYED:</div>
+            {ov === 'NOT_WAIVABLE' && (
+              <div style={{marginBottom:8, fontSize:13}}>• Absolute bar detected in one or more offenses (Lautenberg, sex offense, murder, or 2+ major misconduct). No waiver authority exists at any level per AR 601-210 Chapter 4.</div>
+            )}
+            {hardBlocks.map((r, i) => (
+              <div key={i} style={{marginBottom:6, fontSize:13}}>
+                • <strong>{r.title}</strong>: {r.message} <span style={{opacity:0.6}}>({r.cite})</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {highRisks.length > 0 && (
+          <div style={{marginBottom:10}}>
+            {highRisks.map((r,i) => (
+              <div key={i} style={{fontSize:13, marginBottom:4}}>• {r.message}</div>
+            ))}
+          </div>
+        )}
+
+        <div style={{fontSize:11, color:'#ffaaaa', borderTop:'1px solid #ff3b3b33', paddingTop:10, marginTop:8}}>
+          Recruiter reality check: Even if technically "waivable" on paper, cases with offenses in the last 90–180 days are routinely denied or returned without action by USAREC. Wait and build rehabilitation evidence.
+        </div>
+      </div>
+    );
+  }
+
+  // Normal (non-dead) banner
   return (
     <div className={`card verdict-card ${cfg.cls}`} style={{padding:'18px 20px'}}>
       <div className="verdict-tag">{cfg.icon} {cfg.tag}</div>
       <div className="verdict-title" style={{fontSize:18}}>{cfg.title}</div>
+
       {ov === 'WAIVABLE' && (
         <div style={{display:'flex',flexWrap:'wrap',gap:10,marginTop:10,alignItems:'center'}}>
           <div className="authority-badge"><IcoShield/> {authorityLabels[auth]||auth}</div>
           <div style={{fontSize:11,color:'var(--fg-m)'}}>Waiver valid <strong style={{color:'var(--fg2)'}}>6 months</strong> from approval · AR 601-210, para 4-27</div>
         </div>
       )}
-      {/* Approvability Meter */}
-      {approv && ov === 'WAIVABLE' && (
-        <div className="approval-meter">
-          <div className="approval-hdr">
-            <div className="approval-label"><IcoGauge/> Approval Likelihood Estimate</div>
-            <div className="approval-score" style={{color: approv.score>=70?'#5bc989':approv.score>=45?'var(--gold)':'#ff7070'}}>
-              {approv.score>=70?'🟢':approv.score>=45?'🟡':'🔴'} {approv.score}%
+
+      {/* Approvability Meter + date risks */}
+      {approv && ov === 'WAIVABLE' && (() => {
+        const tier = approv.score >= 70
+          ? { label:'LOW DENIAL RISK', color:'#5bc989', bg:'rgba(45,122,79,.1)', border:'rgba(45,122,79,.35)', icon:'🟢' }
+          : approv.score >= 50
+          ? { label:'MODERATE DENIAL RISK', color:'var(--gold)', bg:'rgba(176,120,0,.08)', border:'rgba(176,120,0,.35)', icon:'🟡' }
+          : approv.score >= 30
+          ? { label:'HIGH DENIAL RISK', color:'#ff9e5e', bg:'rgba(176,80,0,.1)', border:'rgba(176,80,0,.4)', icon:'🟠' }
+          : { label:'VERY HIGH DENIAL RISK', color:'#ff5555', bg:'rgba(207,0,0,.1)', border:'rgba(207,0,0,.35)', icon:'🔴' };
+        return (
+          <div className="approval-meter">
+            <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:8}}>
+              <div className="approval-label"><IcoGauge/> Denial Risk Assessment</div>
+              <div style={{fontWeight:700, fontSize:13, color:tier.color, padding:'3px 10px', background:tier.bg, border:`1px solid ${tier.border}`}}>
+                {tier.icon} {tier.label}
+              </div>
             </div>
+
+            {dateRisks.length > 0 && (
+              <div style={{marginBottom:8}}>
+                {dateRisks.slice(0,2).map((r,i) => (
+                  <div key={i} style={{fontSize:11, color:'#ffcc66', marginBottom:3}}>⚠️ {r.title}: {r.message.split('.')[0]}.</div>
+                ))}
+              </div>
+            )}
+
+            <button style={{fontSize:10,color:'var(--fg-m)',background:'none',border:'none',cursor:'pointer',marginBottom:4,padding:0}} onClick={()=>setShowFactors(v=>!v)}>
+              {showFactors?'▲ Hide contributing factors':'▼ Show contributing factors'}
+            </button>
+            {showFactors && (
+              <div className="approval-factors">
+                {approv.factors.map((f,i)=>(
+                  <div key={i} className="approval-factor">
+                    <span className={f.mod>0?'factor-up':'factor-down'}>{f.mod>0?'+':''}{f.mod}</span>
+                    <span>{f.label}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+            <div className="approval-disclaimer">Assessment only — actual outcome depends on CO interview, applicant statement, and command climate. Do not share this rating with the applicant.</div>
           </div>
-          <div className="approval-bar-bg">
-            <div className="approval-bar-fill" style={{width:`${approv.score}%`,background:approv.score>=70?'#5bc989':approv.score>=45?'var(--gold)':'#ff7070'}}/>
-          </div>
-          <button style={{fontSize:10,color:'var(--fg-m)',background:'none',border:'none',cursor:'pointer',marginTop:6,padding:0}} onClick={()=>setShowFactors(v=>!v)}>
-            {showFactors?'▲ Hide factors':'▼ Show factors'}
-          </button>
-          {showFactors && (
-            <div className="approval-factors">
-              {approv.factors.map((f,i)=>(
-                <div key={i} className="approval-factor">
-                  <span className={f.mod>0?'factor-up':'factor-down'}>{f.mod>0?'+':''}{f.mod}</span>
-                  <span>{f.label}</span>
-                </div>
-              ))}
-            </div>
-          )}
-          <div className="approval-disclaimer">Estimate only — actual approval depends on CO interview quality, applicant statement, and command climate. This tool does not predict command decisions.</div>
-        </div>
-      )}
+        );
+      })()}
     </div>
   );
 };
@@ -1555,6 +1979,26 @@ ${offList}
         {/* Generated Documents */}
         <div className="card" style={{marginTop:14}}>
           <div className="card-hdr"><div className="section-bar"/><div><div className="card-title">Generated Documents</div><div className="card-sub">Pre-filled drafts — preview or print directly</div></div></div>
+          {(() => {
+            const missing = [];
+            if (!applicant.lastName || !applicant.firstName) missing.push('Applicant name (Tab 2)');
+            if (!applicant.rsid) missing.push('RSID (Tab 2)');
+            if (!applicant.afqt) missing.push('AFQT score (Tab 2)');
+            if (!applicant.recruiterUnit) missing.push('Unit designation (Tab 2)');
+            if (!screenedOffenses.some(so => so.description)) missing.push('Offense description(s) (Tab 1 — Offense Log)');
+            if (!missing.length) return null;
+            return (
+              <div className="alert alert-warn" style={{margin:'0 0 12px'}}>
+                <span className="alert-icon">⚠️</span>
+                <div>
+                  <strong>Documents will contain [PLACEHOLDER] text — complete before printing:</strong>
+                  <ul style={{margin:'4px 0 0 16px', fontSize:11}}>
+                    {missing.map((m,i) => <li key={i}>{m}</li>)}
+                  </ul>
+                </div>
+              </div>
+            );
+          })()}
           <div className="output-grid">
             {docTypes.map(dt => (
               <div key={dt.id} className="output-card">
@@ -1651,11 +2095,51 @@ function buildDatasetsXML(applicant, screenedOffenses) {
   return xml;
 }
 
-async function generateFilledUF608(applicant, offenses, onProgress) {
-  onProgress('Fetching PDF...');
-  const resp = await fetch('./uf-601-210-08.pdf');
-  if (!resp.ok) throw new Error('uf-601-210-08.pdf not found in the same folder as this tool.');
-  const origBytes = new Uint8Array(await resp.arrayBuffer());
+async function generateFilledUF608(applicant, offenses, onProgress, templateBytes = null) {
+  let origBytes = templateBytes;
+
+  if (!origBytes) {
+    onProgress('Trying to locate PDF template automatically...');
+
+    // Try several likely locations (important because people move this HTML around)
+    const candidates = [
+      './uf-601-210-08.pdf',
+      './UF 601-210.08.pdf',
+      './UF 601-210_08.pdf',
+      '../Regulations/UF 601-210.08.pdf',
+      '../Regulations/uf-601-210-08.pdf',
+      '../Regulations/UF 601-210_08_1.pdf',
+      '../Regulations/UF 601-210.08.pdf'
+    ];
+
+    let usedPath = '';
+
+    for (const path of candidates) {
+      try {
+        const resp = await fetch(path);
+        if (resp.ok) {
+          origBytes = new Uint8Array(await resp.arrayBuffer());
+          usedPath = path;
+          console.log('[UF608] Auto-loaded template from:', usedPath);
+          break;
+        }
+      } catch (e) {
+        // ignore and try next
+      }
+    }
+  } else {
+    console.log('[UF608] Using manually selected PDF template');
+  }
+
+  if (!origBytes) {
+    throw new Error(
+      'Could not load the blank UF 601-210.08 PDF template.\n\n' +
+      'The file exists in your folder but the automatic lookup failed.\n\n' +
+      'Please use the "Select Blank UF 601-210.08 PDF" button below to manually pick the file. Once selected, the generator will use it directly.\n\n' +
+      'You can also use the "Copy Text Version" button — it always works.'
+    );
+  }
+
   onProgress('Building XFA datasets...');
   const xml = buildDatasetsXML(applicant, offenses);
   const xmlBytes = new TextEncoder().encode(xml);
@@ -1684,11 +2168,31 @@ async function generateFilledUF608(applicant, offenses, onProgress) {
 const UF608Card = ({ applicant, offenses }) => {
   const [status, setStatus] = useState('idle');
   const [msg, setMsg] = useState('');
+  const [selectedTemplate, setSelectedTemplate] = useState(null); // Uint8Array from user-selected file
   const canGenerate = offenses.some(so=>so.offenseDate||so.description);
-  const generate = async () => {
+
+  const handleTemplateSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const bytes = new Uint8Array(reader.result);
+      setSelectedTemplate(bytes);
+      setMsg(`Template loaded: ${file.name}. Ready to generate.`);
+      setStatus('idle');
+    };
+    reader.onerror = () => {
+      setMsg('Failed to read the selected PDF file.');
+      setStatus('error');
+    };
+    reader.readAsArrayBuffer(file);
+  };
+
+  const generatePDF = async () => {
     setStatus('loading'); setMsg('Starting...');
     try {
-      const bytes = await generateFilledUF608(applicant, offenses, m=>setMsg(m));
+      const bytes = await generateFilledUF608(applicant, offenses, m=>setMsg(m), selectedTemplate);
       const blob = new Blob([bytes], {type:'application/pdf'});
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -1696,8 +2200,51 @@ const UF608Card = ({ applicant, offenses }) => {
       document.body.appendChild(a); a.click(); document.body.removeChild(a);
       URL.revokeObjectURL(url);
       setStatus('done'); setMsg('Downloaded — open with Adobe Acrobat Reader.');
-    } catch(e) { setStatus('error'); setMsg(e.message); }
+    } catch(e) { 
+      setStatus('error'); 
+      setMsg(e.message); 
+    }
   };
+
+  // Reliable fallback that always works
+  const copyTextVersion = () => {
+    const lines = [];
+    lines.push('UF 601-210.08 — RECORD OF ALL LAW VIOLATIONS');
+    lines.push(`Applicant: ${[applicant.firstName, applicant.mi, applicant.lastName].filter(Boolean).join(' ')}`);
+    lines.push(`RSID: ${applicant.rsid || ''}    AFQT: ${applicant.afqt || ''}`);
+    lines.push('All offenses listed newest to oldest. Waived offenses marked with ★');
+    lines.push('');
+
+    const sorted = [...offenses].sort((a,b) => (b.offenseDate || '').localeCompare(a.offenseDate || ''));
+    
+    sorted.forEach((o, i) => {
+      const cat = OFFENSE_CATEGORIES.find(c => c.id === o.categoryId);
+      const isWaived = o.waivedOffense !== false;
+      const date = o.offenseDate ? new Date(o.offenseDate).toLocaleDateString() : 'Unknown date';
+      const asterisk = isWaived ? '★ ' : '';
+      lines.push(`${i+1}. ${asterisk}${date} — ${cat?.label || o.categoryId}`);
+      if (o.description) lines.push(`   Description: ${o.description}`);
+      if (o.disposition) lines.push(`   Disposition: ${o.disposition}`);
+      if (o.city || o.state) lines.push(`   Location: ${[o.city, o.state].filter(Boolean).join(', ')}`);
+      lines.push('');
+    });
+
+    navigator.clipboard.writeText(lines.join('\n')).then(() => {
+      setMsg('Text version copied to clipboard. Paste directly into the UF 601-210.08 form.');
+      setStatus('done');
+    }).catch(() => {
+      // Fallback if clipboard fails
+      const ta = document.createElement('textarea');
+      ta.value = lines.join('\n');
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      setMsg('Text version copied (fallback). Paste into the form.');
+      setStatus('done');
+    });
+  };
+
   return (
     <div className="card" style={{marginTop:14,borderColor:status==='error'?'rgba(207,0,0,.3)':status==='done'?'rgba(45,122,79,.3)':'rgba(255,204,1,.2)'}}>
       <div className="card-hdr">
@@ -1710,15 +2257,67 @@ const UF608Card = ({ applicant, offenses }) => {
       <div style={{fontSize:12,color:'var(--fg-m)',marginBottom:12,lineHeight:1.6}}>
         Injects applicant data and all logged offenses directly into form fields. Waived offenses are automatically asterisked (★).
       </div>
-      {!canGenerate && <div style={{fontSize:11,color:'var(--fg-m)',marginBottom:12,padding:'6px 10px',background:'rgba(255,204,1,.04)',border:'1px solid var(--bd)'}}>Add offense details in the Screener tab before generating.</div>}
-      {msg && <div style={{fontSize:11,marginBottom:12,padding:'7px 10px',background:status==='error'?'rgba(207,0,0,.1)':status==='done'?'rgba(45,122,79,.1)':'rgba(255,204,1,.06)',border:`1px solid ${status==='error'?'rgba(207,0,0,.3)':status==='done'?'rgba(45,122,79,.3)':'rgba(255,204,1,.15)'}`,color:status==='error'?'#ff7070':status==='done'?'#5bc989':'var(--gold)'}}>{msg}</div>}
-      <div className="row" style={{gap:8}}>
-        <button className="btn btn-gold" disabled={!canGenerate||status==='loading'} onClick={generate}>
-          {status==='loading'?'Generating...':'Generate & Download PDF'}
+
+      {!canGenerate && <div style={{fontSize:11,color:'var(--fg-m)',marginBottom:12,padding:'6px 10px',background:'rgba(255,204,1,.04)',border:'1px solid var(--bd)'}}>Add offense details (date + description) in the Screener before generating.</div>}
+
+      {msg && (
+        <div style={{
+          fontSize:11, 
+          marginBottom:12, 
+          padding:'8px 10px',
+          whiteSpace: 'pre-wrap',
+          background:status==='error'?'rgba(207,0,0,.1)':status==='done'?'rgba(45,122,79,.1)':'rgba(255,204,1,.06)',
+          border:`1px solid ${status==='error'?'rgba(207,0,0,.3)':status==='done'?'rgba(45,122,79,.3)':'rgba(255,204,1,.15)'}`,
+          color:status==='error'?'#ff7070':status==='done'?'#5bc989':'var(--gold)'
+        }}>
+          {msg}
+        </div>
+      )}
+
+      <div className="row" style={{gap:8, flexWrap:'wrap', alignItems:'center'}}>
+        <button 
+          className="btn btn-gold" 
+          disabled={!canGenerate||status==='loading'} 
+          onClick={generatePDF}
+        >
+          {status==='loading' ? 'Generating PDF...' : 'Generate & Download Filled PDF'}
         </button>
-        {status!=='idle'&&status!=='loading'&&<button className="btn btn-outline btn-sm" onClick={()=>{setStatus('idle');setMsg('');}}>Reset</button>}
+
+        <label className="btn btn-outline" style={{cursor:'pointer', display:'inline-flex', alignItems:'center'}}>
+          Select Blank UF 601-210.08 PDF
+          <input 
+            type="file" 
+            accept=".pdf" 
+            style={{display:'none'}} 
+            onChange={handleTemplateSelect}
+          />
+        </label>
+
+        <button 
+          className="btn btn-outline" 
+          disabled={!canGenerate} 
+          onClick={copyTextVersion}
+        >
+          Copy Text Version (Always Works)
+        </button>
+
+        {status!=='idle'&&status!=='loading' && (
+          <button className="btn btn-outline btn-sm" onClick={()=>{setStatus('idle');setMsg(''); setSelectedTemplate(null);}}>
+            Reset
+          </button>
+        )}
       </div>
-      <div style={{marginTop:8,fontSize:10,color:'var(--fg-d)'}}>Open result with Adobe Acrobat Reader — other PDF viewers do not render XFA forms correctly.</div>
+
+      {selectedTemplate && (
+        <div style={{marginTop:6, fontSize:11, color:'#5bc989'}}>
+          ✓ Custom template loaded and ready. The generator will use this file.
+        </div>
+      )}
+
+      <div style={{marginTop:10, fontSize:11, color:'var(--fg-d)', lineHeight:1.4}}>
+        <strong>For reliable PDF fill:</strong> Use the "Select Blank UF 601-210.08 PDF" button to pick the file (works even if it's not in this exact folder).<br/>
+        The "Copy Text Version" button above always works and gives you clean, properly formatted data (newest to oldest, with ★ for waived offenses).
+      </div>
     </div>
   );
 };
@@ -1802,39 +2401,53 @@ const Phase4 = ({ applicant, setApplicant }) => {
 };
 
 /* ── Right Regulation Panel ──────────────────────────── */
-const RefPanel = ({ collapsed, tab, authority }) => {
+const RefPanel = ({ collapsed, tab, authority, highlighted }) => {
   const relevantParas = {
-    1: ['4-22g','4-22h','4-22i','4-22j','4-22k','4-31','4-30','4-35','4-18'],
+    1: ['4-22g','4-22h','4-22i','4-22j','4-22k','4-31','4-30','4-35','4-18','4-8'],
     2: ['4-28','4-28e4','4-28e5','4-27'],
     3: ['4-28','4-28e4','4-28e5','4-27','4-31'],
     4: ['4-27','4-22g','4-22h'],
   };
-  const paras = relevantParas[tab] || Object.keys(PARA_TEXT);
+  const allParas = [...(relevantParas[tab] || Object.keys(PARA_TEXT))];
+  // Highlighted paras bubble to top, rest follow
+  const hi = (highlighted || []).filter(p => PARA_TEXT[p]);
+  const rest = allParas.filter(p => !hi.includes(p) && PARA_TEXT[p]);
+  const ordered = [...hi, ...rest];
+
   const tips = {
-    1: ['💡 If ANY offense is an absolute bar → overall case = NOT WAIVABLE', '💡 Multiple offenses → authority = highest level required', '💡 Expert Mode lets you fill all answers at once'],
-    2: ['💡 AFQT on UF 601-210.08 MUST match current MIRS score', '💡 MOS check saves you from discovering late in the process'],
-    3: ['💡 Click any checklist item to expand step-by-step how-to', '💡 DD 369s must cover ALL locations where offenses occurred', '💡 Aliases must be run on SEPARATE DD 369 forms'],
-    4: ['💡 Waiver is valid 6 months from approval — track the expiry date', '💡 Print MIRS 1.1 on the day of submission'],
+    1: ['If ANY offense is an absolute bar, the overall case is NOT WAIVABLE.', 'Multiple offenses: governing authority = the highest level required across all offenses.'],
+    2: ['AFQT on UF 601-210.08 must match current MIRS score.', 'MOS compatibility check surfaces clearance conflicts before they become late-stage problems.'],
+    3: ['Click any checklist item to expand step-by-step guidance.', 'DD 369s must cover every location where an offense occurred, regardless of date.', 'Aliases require separate DD 369 forms.'],
+    4: ['Waiver valid 6 months from approval date — track this. Print MIRS 1.1 on submission day.'],
   };
   if (collapsed) return null;
   return (
     <div className="ref-panel">
       <div className="ref-panel-hdr">
-        <div className="ref-panel-title">📖 Reg Reference</div>
+        <div className="ref-panel-title">Reg Reference</div>
+        {hi.length > 0 && <span style={{fontSize:9,color:'var(--gold)',fontWeight:700,textTransform:'uppercase',letterSpacing:'.06em'}}>{hi.length} active</span>}
       </div>
       <div className="ref-panel-body">
         {(tips[tab]||[]).map((tip,i) => (
           <div key={i} className="ref-tip" style={{marginBottom:8}}>{tip}</div>
         ))}
-        {paras.filter(p=>PARA_TEXT[p]).map(para => (
-          <div key={para} className="ref-entry">
-            <div className="ref-para-id">Para {para}</div>
-            <div className="ref-para-text">{PARA_TEXT[para]}</div>
-          </div>
-        ))}
+        {ordered.map(para => {
+          const isHighlighted = hi.includes(para);
+          return (
+            <div key={para} className={`ref-entry${isHighlighted?' highlighted':''}`} style={isHighlighted?{marginBottom:10}:{}}>
+              {isHighlighted && (
+                <div style={{fontSize:9,fontWeight:700,color:'var(--gold)',textTransform:'uppercase',letterSpacing:'.07em',marginBottom:3}}>
+                  ▶ RELEVANT TO CURRENT SELECTION
+                </div>
+              )}
+              <div className="ref-para-id">Para {para}</div>
+              <div className="ref-para-text">{PARA_TEXT[para]}</div>
+            </div>
+          );
+        })}
         {authority && (authority==='USAREC'||authority==='DMPM') && (
           <div className="ref-tip" style={{marginTop:8,borderLeft:'2px solid var(--gold)',color:'var(--gold)'}}>
-            ⚠️ {authority} level — DD Form 370 (3 references) required. DD Form 2808 required.
+            {authority} level — DD Form 370 (3 references) and DD Form 2808 required.
           </div>
         )}
       </div>
@@ -1883,6 +2496,90 @@ const SampleMenu = ({ onLoad, onClose }) => (
   </div>
 );
 
+/* ── WaiverBot ──────────────────────────────────────── */
+const matchKB = (query) => {
+  const q = query.toLowerCase().trim();
+  if (!q) return null;
+  let best = null, bestScore = 0;
+  for (const entry of WAIVER_KB) {
+    let score = 0;
+    for (const kw of entry.keywords) {
+      if (q.includes(kw.toLowerCase())) score += 3;
+    }
+    const allWords = (entry.keywords.join(' ') + ' ' + entry.q).toLowerCase().split(/\s+/).filter(w=>w.length>3);
+    const qWords = q.split(/\s+/).filter(w=>w.length>3);
+    for (const qw of qWords) {
+      if (allWords.some(aw => aw.includes(qw) || qw.includes(aw))) score += 1;
+    }
+    if (score > bestScore) { bestScore = score; best = entry; }
+  }
+  return bestScore >= 2 ? best : null;
+};
+
+const SUGGESTED_QS = [
+  'Pending charges', 'Two felony convictions', 'Lautenberg Amendment',
+  'Waiting period after jail', 'Waiver expiration', 'Required documents',
+  'Probation — can they enlist?', 'Marijuana waiver 2026', 'Self-admittal',
+  'Authority levels explained', 'Dismissed charge — need waiver?',
+];
+
+const WaiverBot = ({ open, onClose }) => {
+  const [msgs, setMsgs] = useState([
+    { type:'system', text:'Regulation-backed answers drawn from AR 601-210, Chapter 4. Select a topic or type your question.' }
+  ]);
+  const [input, setInput] = useState('');
+  const msgsEndRef = useRef(null);
+
+  useEffect(() => { msgsEndRef.current?.scrollIntoView({ behavior:'smooth' }); }, [msgs]);
+
+  const ask = (q) => {
+    if (!q.trim()) return;
+    const userMsg = { type:'user', text: q };
+    const match = matchKB(q);
+    const botMsg = match
+      ? { type:'bot', text: match.answer, cites: match.cites }
+      : { type:'bot', text: 'No direct match found in the regulation references. Try rephrasing, or select one of the suggested topics below. For complex edge cases, coordinate with your battalion S1 or JAG.', cites: [] };
+    setMsgs(prev => [...prev, userMsg, botMsg]);
+    setInput('');
+  };
+
+  return (
+    <div className={`bot-panel${open?' open':''}`}>
+      <div className="bot-hdr">
+        <div>
+          <div className="bot-title">Waiver Reference Assistant</div>
+          <div className="bot-sub">AR 601-210, Chapter 4 — not legal advice</div>
+        </div>
+        <button className="btn btn-outline btn-sm" onClick={onClose}>Close</button>
+      </div>
+      <div className="bot-msgs">
+        {msgs.map((m, i) => (
+          <div key={i} className={`bot-msg ${m.type}`}>
+            {m.text}
+            {m.cites && m.cites.length > 0 && (
+              <div className="bot-cite">
+                AR 601-210 — {m.cites.map(c => `Para ${c}`).join(', ')}
+              </div>
+            )}
+          </div>
+        ))}
+        <div ref={msgsEndRef}/>
+      </div>
+      <div className="bot-suggestions">
+        {SUGGESTED_QS.map(sq => (
+          <button key={sq} className="bot-chip" onClick={() => ask(sq)}>{sq}</button>
+        ))}
+      </div>
+      <div className="bot-input-row">
+        <input className="bot-input" value={input} placeholder="Ask a moral waiver question..."
+          onChange={e => setInput(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && ask(input)}/>
+        <button className="bot-send" onClick={() => ask(input)}>Ask</button>
+      </div>
+    </div>
+  );
+};
+
 /* ── App ────────────────────────────────────────────── */
 const App = () => {
   const [theme, setTheme] = useState('dark');
@@ -1891,6 +2588,8 @@ const App = () => {
   const [refOpen, setRefOpen] = useState(true);
   const [sampleMenuOpen, setSampleMenuOpen] = useState(false);
   const [pendingRestore, setPendingRestore] = useState(null);
+  const [highlightedParas, setHighlightedParas] = useState([]);
+  const [botOpen, setBotOpen] = useState(false);
 
   // Roster state
   const [roster, setRoster] = useState([blankApplicant()]);
@@ -1969,11 +2668,20 @@ const App = () => {
   const authorityLabels = { BN:'BN CO', USAREC:'USAREC CG', DMPM:'DMPM', NONE:'N/A' };
 
   const tabs = [
-    { n:1, label:'Screener' },
+    { n:1, label:'Screen Charges' },
     { n:2, label:'Applicant Info' },
     { n:3, label:'Build Packet' },
     { n:4, label:'Tracker' },
   ];
+
+  // Strong overall explanation for the user
+  const getOverallExplanation = (v, a) => {
+    if (v === 'NOT_WAIVABLE') return 'This case has one or more absolute bars (Lautenberg, sex offense, murder, 2+ major misconduct, etc.). Per AR 601-210 Chapter 4, no waiver authority exists at any level. Document the bar and do not submit.';
+    if (v === 'WAITING_PERIOD') return 'All charges are potentially waivable, but at least one requires a waiting period after confinement or conviction. The packet can be built but cannot ship until the period is met (BN CO can sometimes shorten).';
+    if (v === 'ETP_REQUIRED') return 'Self-admittal or other situation that requires an Exception to Policy before normal waiver processing. Coordinate with your battalion S1 early.';
+    if (v === 'WAIVABLE') return `Highest authority required: ${a}. ${a === 'BN' ? 'Battalion Commander can approve most of these.' : a === 'USAREC' ? 'Will need CG, USAREC approval — prepare full packet with DD 370s and strong rehabilitation evidence.' : 'DMPM level — very high scrutiny, strong packet required.'}`;
+    return 'No waiverable offenses detected or all charges resolved with no adverse disposition.';
+  };
 
   const p1Done = overallV === 'WAIVABLE';
   const p2Done = p1Done && !!(activeApplicant?.lastName);
@@ -2015,17 +2723,8 @@ const App = () => {
           </div>
           <button className="topbar-btn" onClick={()=>setTheme(t=>t==='dark'?'light':'dark')}>{theme==='dark'?'Light':'Dark'}</button>
           <button className="topbar-btn" onClick={()=>setRefOpen(v=>!v)} title="Toggle reference panel">📖</button>
+          <button className="topbar-btn" style={{borderColor: botOpen ? 'var(--gold)' : undefined, color: botOpen ? 'var(--gold)' : undefined}} onClick={()=>setBotOpen(v=>!v)} title="Waiver Reference Assistant">⚖ Ask</button>
         </div>
-        {/* Approval Likelihood Banner */}
-        {overallV && (
-          <div className={`approval-banner ${overallV.toLowerCase()}`}>
-            {overallV === 'WAIVABLE' && <span>👍 Waivable – Likely approval.</span>}
-            {overallV === 'NOT_WAIVABLE' && <span>⛔ Not Waivable – Likely denial.</span>}
-            {overallV === 'ETP_REQUIRED' && <span>⚠️ ETP Required – Additional steps needed.</span>}
-            {overallV === 'WAITING_PERIOD' && <span>⏳ Waiting Period – Check dates.</span>}
-            {overallV === 'NO_WAIVER_REQUIRED' && <span>✅ No waiver needed.</span>}
-          </div>
-        )}
       </div>
 
       <div className="app-shell">
@@ -2059,7 +2758,7 @@ const App = () => {
           </div>
 
           {tab===1 && activeApplicant && (
-            <Phase1 applicant={activeApplicant} setApplicant={setActiveApplicant}/>
+            <Phase1 applicant={activeApplicant} setApplicant={setActiveApplicant} onHighlight={setHighlightedParas}/>
           )}
           {tab===2 && activeApplicant && (
             <Phase2 applicant={activeApplicant} setApplicant={setActiveApplicant}/>
@@ -2073,10 +2772,11 @@ const App = () => {
         </div>
 
         {/* Right Panel */}
-        {refOpen && <RefPanel collapsed={false} tab={tab} authority={authority}/>}
+        {refOpen && <RefPanel collapsed={false} tab={tab} authority={authority} highlighted={highlightedParas}/>}
       </div>
 
       {pendingRestore && <ResumeModal draft={pendingRestore} onResume={restoreSession} onDiscard={discardSession}/>}
+      <WaiverBot open={botOpen} onClose={()=>setBotOpen(false)}/>
     </>
   );
 };
