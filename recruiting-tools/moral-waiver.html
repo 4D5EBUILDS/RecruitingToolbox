@@ -2438,84 +2438,6 @@ const UF608Card = ({ applicant, offenses }) => {
   );
 };
 
-/* ── Phase 4: Tracker ────────────────────────────────── */
-const Phase4 = ({ applicant, setApplicant }) => {
-  const statuses = ['building','submitted','review','complete'];
-  const statusLabels = { building:'Building Packet', submitted:'Submitted to BN', review:'At BN/USAREC', complete:'Approved/Closed' };
-  const statusColors = { building:'var(--gold)', submitted:'#7eb8ff', review:'#cc99ff', complete:'#5bc989' };
-
-  const setField = (k,v) => setApplicant(prev => ({...prev, [k]:v}));
-  const current = applicant.trackerStatus||'building';
-  const fullName = [applicant.firstName, applicant.lastName].filter(Boolean).join(' ') || 'Unnamed Applicant';
-
-  const approvalExpiry = () => {
-    if (!applicant.approvedDate) return null;
-    const d = new Date(applicant.approvedDate);
-    d.setMonth(d.getMonth()+6);
-    const days = Math.ceil((d-new Date())/86400000);
-    return { date:d.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}), days };
-  };
-  const expiry = approvalExpiry();
-
-  return (
-    <div className="main-scroll">
-      <div className="fade-up">
-        <div className="card">
-          <div className="card-hdr"><div className="section-bar"/><div><div className="card-title">Waiver Tracker — {fullName}</div><div className="card-sub">Track submission status through the approval chain</div></div></div>
-          <div style={{display:'flex',gap:0,marginBottom:20,overflowX:'auto'}}>
-            {statuses.map((s,i) => (
-              <div key={s} style={{flex:1,minWidth:120,textAlign:'center',cursor:'pointer'}} onClick={()=>setField('trackerStatus',s)}>
-                <div style={{height:4,background:statuses.indexOf(current)>=i?statusColors[s]:' var(--bd-m)',transition:'background .3s'}}/>
-                <div style={{padding:'10px 8px',fontSize:11,fontWeight:700,color:current===s?statusColors[s]:'var(--fg-m)',textTransform:'uppercase',letterSpacing:'.05em',transition:'color .3s'}}>
-                  {statusLabels[s]}
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="form-grid" style={{marginBottom:12}}>
-            <div className="form-field">
-              <label className="form-label">Submitted to BN Date</label>
-              <input className="form-input" type="date" value={applicant.submittedDate||''} onChange={e=>setField('submittedDate',e.target.value)}/>
-            </div>
-            <div className="form-field">
-              <label className="form-label">Approval / Decision Date</label>
-              <input className="form-input" type="date" value={applicant.approvedDate||''} onChange={e=>setField('approvedDate',e.target.value)}/>
-            </div>
-          </div>
-          {expiry && (
-            <div className={`alert ${expiry.days<0?'alert-danger':expiry.days<30?'alert-warn':'alert-success'}`} style={{marginBottom:12}}>
-              <span className="alert-icon">{expiry.days<0?'🚨':expiry.days<30?'⚠️':'✅'}</span>
-              <div>
-                <strong>Waiver Approval Expires:</strong> {expiry.date}
-                {expiry.days<0 ? ` (EXPIRED ${Math.abs(expiry.days)} days ago — must resubmit)` :
-                 expiry.days<30 ? ` (${expiry.days} days remaining — ship soon!)` :
-                 ` (${expiry.days} days remaining)`}
-              </div>
-            </div>
-          )}
-          <div className="form-field">
-            <label className="form-label">Notes / Comments</label>
-            <textarea className="form-input" rows="4" value={applicant.trackerNotes||''} onChange={e=>setField('trackerNotes',e.target.value)} placeholder="Return reasons, follow-up actions, POC info, etc." style={{resize:'vertical'}}/>
-          </div>
-        </div>
-
-        {/* Regulation Quick Reference */}
-        <div className="card" style={{marginTop:14}}>
-          <div className="card-hdr"><div className="section-bar"/><div className="card-title">Key Regulation Reminders</div></div>
-          <div style={{display:'flex',flexDirection:'column',gap:0}}>
-            {Object.entries(PARA_TEXT).map(([para, text]) => (
-              <div key={para} className="ref-entry">
-                <div className="ref-para-id">Para {para}</div>
-                <div className="ref-para-text">{text}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
 /* ── Right Regulation Panel ──────────────────────────── */
 const RefPanel = ({ collapsed, tab, authority, highlighted }) => {
   const [refExpanded, setRefExpanded] = useState({});
@@ -2710,7 +2632,6 @@ const App = () => {
     { n:1, label:'Screen Charges' },
     { n:2, label:'Applicant Info' },
     { n:3, label:'Build Packet' },
-    { n:4, label:'Tracker' },
   ];
 
   // Strong overall explanation for the user
@@ -2803,9 +2724,6 @@ const App = () => {
           )}
           {tab===3 && activeApplicant && (
             <Phase3 applicant={activeApplicant} setApplicant={setActiveApplicant}/>
-          )}
-          {tab===4 && activeApplicant && (
-            <Phase4 applicant={activeApplicant} setApplicant={setActiveApplicant}/>
           )}
         </div>
 
