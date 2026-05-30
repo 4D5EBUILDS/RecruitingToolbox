@@ -176,6 +176,20 @@
     .tool-card-title { font-size:22px; font-weight:700; text-transform:uppercase; color:var(--white); line-height:1.1; margin-bottom:12px; }
     .tool-card-desc { font-size:13px; font-weight:400; color:var(--gray-02); line-height:1.6; flex:1; margin-bottom:28px; }
     .tool-card-arrow { font-size:11px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:var(--army-gold); }
+    /* QuickScreen distinguishing icon + badge */
+    .tool-card--qs { position:relative; overflow:hidden; }
+    .tool-card--qs .qs-ico {
+      position:absolute; top:24px; right:26px; font-size:34px; line-height:1;
+      filter:drop-shadow(0 3px 8px rgba(0,0,0,.4));
+      transition:transform .22s cubic-bezier(.34,1.7,.5,1);
+    }
+    .tool-card--qs:hover .qs-ico { transform:scale(1.28) rotate(-6deg); }
+    .qs-badge {
+      display:inline-flex; align-items:center; gap:5px; margin-left:10px;
+      font-size:8px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase;
+      color:var(--army-black); background:var(--army-gold);
+      border-radius:20px; padding:2px 8px; vertical-align:middle;
+    }
 
     /* FOOTER */
     footer {
@@ -256,6 +270,19 @@
       <div class="tool-card-tag">Recruiting // Waivers</div>
       <div class="tool-card-title">Moral Waiver Builder</div>
       <p class="tool-card-desc">AR 601-210 Chapter 4 waiver packet builder. Screen eligibility, log offenses, auto-fill UF 601-210.08, and generate the full document set.</p>
+      <span class="tool-card-arrow">Open Tool →</span>
+    </a>
+    <a href="recruiting-tools/applemdt.html" class="tool-card">
+      <div class="tool-card-tag">Recruiting // Pre-Qualification</div>
+      <div class="tool-card-title">APPLE MDT Pre-Qual</div>
+      <p class="tool-card-desc">Interactive pre-qualification sheet to run through during a lead call. Dynamically checks Age, Prior Service, Physical, Legal, Education, Medical, Dependents, and Tattoos with live reg guidance.</p>
+      <span class="tool-card-arrow">Open Tool →</span>
+    </a>
+    <a href="recruiting-tools/apple-mdt-quickscreen.html" class="tool-card tool-card--qs">
+      <span class="qs-ico">🍎⚡</span>
+      <div class="tool-card-tag">Recruiting // Pre-Qualification <span class="qs-badge">⚡ Fast Call</span></div>
+      <div class="tool-card-title">APPLE MDT QuickScreen</div>
+      <p class="tool-card-desc">Keyboard-first, single-screen prescreen built for live lead calls. Tap one answer per step (Age, Citizenship, Prior Service, Physical, Legal, Education, Medical, Dependents, Tattoos) and it auto-advances with a running GO / WAIVER / NO-GO verdict, talk tracks, and one-click handoff to the Moral Waiver and Medical apps.</p>
       <span class="tool-card-arrow">Open Tool →</span>
     </a>
     <a href="army-calculators/AFT_Score_Calculator_v2.html" class="tool-card">
