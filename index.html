@@ -218,6 +218,26 @@
       filter:drop-shadow(0 0 0 rgba(255,204,1,0));
     }
     .tool-card-sticker svg { width:100%; height:100%; display:block; }
+    /* Shimmer sweep — light reflection across the coin face on hover */
+    .tool-card::after {
+      content:''; position:absolute;
+      top:-60%; left:-65%;
+      width:28%; height:220%;
+      background:linear-gradient(90deg, transparent, rgba(255,255,255,.09) 50%, transparent);
+      transform:skewX(-18deg);
+      pointer-events:none;
+    }
+    .tool-card:hover::after { animation:card-shimmer .65s ease forwards; }
+    @keyframes card-shimmer {
+      from { left:-65%; }
+      to   { left:120%; }
+    }
+    /* Arrow glyph nudge */
+    .arrow-symbol {
+      display:inline-block;
+      transition:transform .38s cubic-bezier(.34,1.56,.64,1);
+    }
+    .tool-card:hover .arrow-symbol { transform:translateX(7px); }
     /* QuickScreen distinguishing icon + badge */
     .tool-card--qs { position:relative; overflow:hidden; }
     .tool-card--qs .qs-ico {
@@ -913,7 +933,7 @@ document.fonts.ready.then(() => runFact(0));
     'OPAT Calculator'      : S.medal,
     'ASVAB MOS Tool'       : S.edu,
     'ETS Countdown'        : S.cal,
-    'Medical Screening'    : S.doc,
+    'Medical Screening'    : S.health,
     'Recruiting Map'       : S.pin,
     'Packet QC'            : S.check,
   };
@@ -1004,6 +1024,44 @@ document.fonts.ready.then(() => runFact(0));
       }
     });
   });
+
+  /* ── Stagger entrance — cards slide up as grid scrolls into view ── */
+  (function(){
+    var grid = document.querySelector('.tools-grid');
+    if (!grid) return;
+    var cards = Array.from(grid.querySelectorAll('.tool-card'));
+    /* Set initial hidden state via inline style */
+    cards.forEach(function(c){
+      c.style.opacity   = '0';
+      c.style.transform = 'translateY(22px)';
+    });
+    var io = new IntersectionObserver(function(ents){
+      if (!ents[0].isIntersecting) return;
+      cards.forEach(function(c, i){
+        setTimeout(function(){
+          c.style.transition = 'opacity .5s ease, transform .52s cubic-bezier(.23,1,.32,1)';
+          c.getBoundingClientRect(); /* force reflow so transition picks up */
+          c.style.opacity   = '1';
+          c.style.transform = 'translateY(0)';
+          /* Clear inline styles after entrance so hover JS takes over cleanly */
+          setTimeout(function(){
+            c.style.opacity    = '';
+            c.style.transform  = '';
+            c.style.transition = '';
+          }, 580);
+        }, i * 58);
+      });
+      io.unobserve(grid);
+    }, { threshold: 0.06 });
+    io.observe(grid);
+  })();
+
+  /* ── Arrow glyph wrap — lets CSS translate the → independently ── */
+  document.querySelectorAll('.tool-card-arrow').forEach(function(el){
+    el.innerHTML = el.innerHTML.replace('→',
+      '<span class="arrow-symbol" aria-hidden="true">→</span>');
+  });
+
 })();
 </script>
 </body>
