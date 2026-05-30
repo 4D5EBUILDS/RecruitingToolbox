@@ -5,277 +5,279 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>APPLE MDT · QuickScreen</title>
 <style>
-  @font-face { font-family:"GI"; src:url("../fonts/G.I.-400.ttf") format("truetype"); font-weight:400; font-display:swap; }
-  @font-face { font-family:"GI"; src:url("../fonts/G.I.-530.ttf") format("truetype"); font-weight:500; font-display:swap; }
-  @font-face { font-family:"GI"; src:url("../fonts/G.I.-750.ttf") format("truetype"); font-weight:700; font-display:swap; }
-
+  @font-face{font-family:"GI";src:url("../fonts/G.I.-750.ttf") format("truetype");font-weight:700;font-display:swap}
+  @font-face{font-family:"GI";src:url("../fonts/G.I.-530.ttf") format("truetype");font-weight:500;font-display:swap}
   :root{
-    --black:#221F20; --gold:#FFCC01; --green:#2F372F; --white:#fff;
-    --g1:#565557; --g2:#8a8a8c; --g3:#D5D5D7;
-    --panel:#2a282a; --panel2:#332f31; --line:rgba(255,255,255,.10);
-    --go:#3fae6b; --waiver:#FFCC01; --nogo:#e2574c; --info:#4a9fe0;
-    --radius:10px;
+    --bg:#FBFAF7; --surface:#FFFFFF; --ink:#1E1C19; --muted:#6F6A62;
+    --line:#E7E2D9; --line2:#D8D2C6;
+    --accent:#2D6A4F; --accent-soft:#E8F1EC; --accent-ink:#21503C;
+    --go:#2E7D52; --go-soft:#E7F2EC;
+    --action:#2F6FB3; --action-soft:#E9F1FA; --action-ink:#23588F;
+    --waiver:#B07A12; --waiver-soft:#FBF1DD;
+    --nogo:#C0392B; --nogo-soft:#FBE9E7;
+    --army-gold:#FFCC01; --army-black:#221F20;
+    --shadow:0 1px 2px rgba(30,28,25,.04), 0 8px 30px rgba(30,28,25,.06);
   }
   *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
   html,body{height:100%}
-  body{
-    background:var(--black); color:var(--white);
-    font-family:"GI",Arial,Helvetica,sans-serif;
-    display:flex; flex-direction:column; overflow:hidden;
-  }
-  button{font-family:inherit;cursor:pointer}
-  ::selection{background:var(--gold);color:var(--black)}
+  body{background:var(--bg);color:var(--ink);min-height:100%;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;display:flex;flex-direction:column}
+  button{font-family:inherit;cursor:pointer;color:inherit}
+  ::selection{background:var(--accent);color:#fff}
 
-  /* ── TOP BAR ───────────────────────────── */
-  .topbar{
-    display:flex;align-items:center;gap:18px;
-    padding:10px 20px;border-bottom:1px solid var(--line);
-    background:#1c1a1b;flex:0 0 auto;
-  }
-  .brand{display:flex;align-items:baseline;gap:10px}
-  .brand b{font-size:16px;font-weight:700;letter-spacing:.18em}
-  .brand span{font-size:10px;letter-spacing:.28em;color:var(--g2);text-transform:uppercase}
-  .lead-field{display:flex;align-items:center;gap:8px;margin-left:6px}
-  .lead-field input{
-    background:var(--panel);border:1px solid var(--line);color:var(--white);
-    border-radius:7px;padding:7px 11px;font-size:13px;font-family:inherit;min-width:190px;
-  }
-  .lead-field input:focus{outline:none;border-color:var(--gold)}
+  /* HEADER */
+  .top{display:flex;align-items:center;gap:13px;padding:13px 24px;border-bottom:1px solid var(--line);
+    background:rgba(251,250,247,.88);backdrop-filter:saturate(1.2) blur(8px);position:sticky;top:0;z-index:30}
+  .wordmark{font-size:14px;font-weight:800;letter-spacing:.14em}
+  .wordmark span{color:var(--accent)}
+  .station{font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.02em;padding-left:13px;border-left:1px solid var(--line2)}
   .spacer{flex:1}
-  .verdict{
-    display:flex;align-items:center;gap:12px;padding:7px 16px;border-radius:8px;
-    font-weight:700;letter-spacing:.04em;border:1px solid var(--line);background:var(--panel);
+  .ghost{border:1px solid transparent;background:transparent;color:var(--muted);font-size:12.5px;padding:7px 10px;border-radius:8px;transition:.12s}
+  .ghost:hover{background:#F1EDE5;color:var(--ink)}
+  .ghost.active{color:var(--accent);background:var(--accent-soft)}
+  .pill{display:flex;align-items:center;gap:9px;border:1px solid var(--line2);background:var(--surface);
+    border-radius:30px;padding:7px 15px 7px 12px;font-weight:700;font-size:13px;transition:.15s}
+  .pill .pdot{width:9px;height:9px;border-radius:50%;background:var(--muted)}
+  .pill .psub{font-size:10px;font-weight:600;color:var(--muted)}
+  .pill.go{border-color:var(--go);color:var(--go)} .pill.go .pdot{background:var(--go)}
+  .pill.action{border-color:var(--action);color:var(--action)} .pill.action .pdot{background:var(--action)}
+  .pill.waiver{border-color:var(--waiver);color:var(--waiver)} .pill.waiver .pdot{background:var(--waiver)}
+  .pill.nogo{border-color:var(--nogo);color:var(--nogo)} .pill.nogo .pdot{background:var(--nogo)}
+
+  .progress{height:3px;background:var(--line);position:sticky;top:55px;z-index:29}
+  .progress .bar{height:100%;background:var(--accent);width:0;transition:width .4s cubic-bezier(.4,0,.2,1)}
+
+  .wrap{flex:1;display:flex;justify-content:center;padding:40px 24px 80px}
+  .card{width:100%;max-width:660px}
+
+  .steprow{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}
+  .dots{display:flex;gap:7px}
+  .dot{width:26px;height:26px;border-radius:8px;border:1px solid var(--line2);background:var(--surface);
+    font-size:11px;font-weight:700;color:var(--muted);transition:.14s;display:flex;align-items:center;justify-content:center}
+  .dot:hover{transform:translateY(-2px)}
+  .dot.cur{border-color:var(--ink);color:var(--ink);box-shadow:0 0 0 3px rgba(30,28,25,.06)}
+  .dot.go{background:var(--go-soft);border-color:var(--go);color:var(--go)}
+  .dot.action{background:var(--action-soft);border-color:var(--action);color:var(--action)}
+  .dot.waiver{background:var(--waiver-soft);border-color:var(--waiver);color:var(--waiver)}
+  .dot.nogo{background:var(--nogo-soft);border-color:var(--nogo);color:var(--nogo)}
+  .stepn{font-size:12px;color:var(--muted);font-weight:600}
+
+  .qkicker{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:700;letter-spacing:.04em;
+    text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+  .qkicker .qicon{font-size:20px}
+  .gatetag{font-size:9.5px;font-weight:700;letter-spacing:.08em;color:var(--accent-ink);background:var(--accent-soft);
+    border-radius:20px;padding:3px 9px;text-transform:uppercase}
+  .q{font-size:clamp(26px,3.6vw,38px);font-weight:600;line-height:1.13;letter-spacing:-.01em;margin-bottom:24px}
+
+  .answers{margin-bottom:6px}
+  .subq{font-size:13px;font-weight:600;color:var(--muted);margin:18px 2px 10px}
+  .subq .lite{font-weight:400}
+  .optrow{display:flex;gap:10px;flex-wrap:wrap}.optrow .opt{flex:1;min-width:150px}
+  .optgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .opt{display:flex;align-items:center;gap:13px;width:100%;text-align:left;background:var(--surface);
+    border:1.5px solid var(--line2);border-radius:14px;padding:15px 17px;font-size:15.5px;color:var(--ink);
+    box-shadow:var(--shadow);transition:transform .12s,border-color .12s,background .12s}
+  .answers>.opt{margin-bottom:10px}
+  .opt:hover{border-color:var(--accent);transform:translateY(-2px)}
+  .opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+  .opt .optlabel{flex:1}.opt .optmark{color:var(--accent);font-weight:800}
+  .opt.multi .box{width:20px;height:20px;flex:0 0 auto;border-radius:6px;border:1.6px solid var(--line2);
+    display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff;font-weight:800}
+  .opt.multi.sel .box{background:var(--accent);border-color:var(--accent)}.opt.multi.sel{background:var(--accent-soft)}
+
+  .bigin,.notesin{width:100%;font-size:18px;padding:14px 16px;border:1.5px solid var(--line2);border-radius:13px;
+    background:var(--surface);color:var(--ink);box-shadow:var(--shadow);font-family:inherit}
+  .bigin:focus,.notesin:focus{outline:none;border-color:var(--accent)}
+  .inrow{display:flex;gap:12px}.inrow>div{flex:1}
+  .inlbl{display:block;font-size:12px;color:var(--muted);font-weight:600;margin:0 2px 7px}
+
+  .seg{display:inline-flex;background:#F0ECE3;border-radius:11px;padding:4px;margin-bottom:14px}
+  .segb{border:none;background:transparent;padding:9px 16px;border-radius:8px;font-size:13.5px;font-weight:600;color:var(--muted);transition:.12s}
+  .segb.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.09)}
+
+  /* INTAKE block on step 1 */
+  .intake{background:var(--surface);border:1.5px solid var(--line2);border-radius:14px;padding:16px;margin-bottom:22px;box-shadow:var(--shadow)}
+  .intake .ititle{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:11px}
+
+  /* RESULT */
+  .result{margin-top:18px}
+  .flag{border:1px solid var(--line);border-left:4px solid var(--muted);border-radius:13px;padding:16px 18px;margin-top:11px;
+    background:var(--surface);box-shadow:var(--shadow);animation:slideup .26s cubic-bezier(.2,.7,.3,1)}
+  @keyframes slideup{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .flag.go{border-left-color:var(--go)} .flag.action{border-left-color:var(--action)}
+  .flag.waiver{border-left-color:var(--waiver)} .flag.nogo{border-left-color:var(--nogo)}
+  .frow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:9px}
+  .fbadge{font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:3px 9px;border-radius:20px}
+  .fbadge.go{background:var(--go-soft);color:var(--go)} .fbadge.action{background:var(--action-soft);color:var(--action)}
+  .fbadge.waiver{background:var(--waiver-soft);color:var(--waiver)} .fbadge.nogo{background:var(--nogo-soft);color:var(--nogo)}
+  .fcite{font-size:10.5px;color:var(--muted);font-style:italic}
+  .ftitle{font-size:16px;font-weight:700;line-height:1.3;margin-bottom:6px}
+  .fguide{font-size:13.5px;line-height:1.55;color:#46423B}
+  .facts{margin-top:11px;font-size:12.5px;color:#46423B}
+  .facts b{display:block;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+  .facts ul{margin-left:17px}.facts li{margin-bottom:2px;line-height:1.45}
+  .ftalk{margin-top:12px;background:var(--accent-soft);border-radius:9px;padding:11px 13px;font-size:13.5px;line-height:1.55;color:var(--accent-ink)}
+  .ftalk span{display:block;font-size:9.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:5px}
+  .fapp{display:inline-flex;align-items:center;gap:7px;margin-top:13px;font-size:12.5px;font-weight:600;color:var(--muted);
+    text-decoration:none;border:1px dashed var(--line2);border-radius:9px;padding:9px 13px;transition:.12s}
+  .fapp:hover{border-color:var(--accent);border-style:solid;color:var(--accent);background:var(--accent-soft)}
+  .fhint{font-size:13px;color:var(--muted);margin-top:14px;padding-left:2px}
+
+  /* NOTES */
+  .notes{margin-top:22px}
+  .noteslbl{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+  .notesin{min-height:64px;font-size:14px;resize:vertical}
+
+  .nav{display:flex;gap:12px;margin-top:30px}
+  .navbtn{border:1.5px solid var(--line2);background:var(--surface);border-radius:12px;padding:14px 20px;
+    font-size:14.5px;font-weight:600;color:var(--ink);transition:.12s;box-shadow:var(--shadow)}
+  .navbtn:hover{border-color:var(--ink)}.navbtn.back{flex:0 0 auto}
+  .navbtn.cont{flex:1;background:var(--accent);border-color:var(--accent);color:#fff}
+  .navbtn.cont:hover{background:var(--accent-ink);border-color:var(--accent-ink)}
+  .navbtn:disabled{opacity:.4;cursor:not-allowed}
+
+  /* SUMMARY */
+  .sum-banner{border-radius:16px;padding:24px;margin-bottom:8px;border:1px solid var(--line)}
+  .sum-banner.go{background:var(--go-soft);border-color:var(--go)} .sum-banner.action{background:var(--action-soft);border-color:var(--action)}
+  .sum-banner.waiver{background:var(--waiver-soft);border-color:var(--waiver)} .sum-banner.nogo{background:var(--nogo-soft);border-color:var(--nogo)}
+  .sum-banner.none{background:var(--surface)}
+  .sum-v{font-size:36px;font-weight:800;line-height:1}
+  .sum-banner.go .sum-v{color:var(--go)} .sum-banner.action .sum-v{color:var(--action)}
+  .sum-banner.waiver .sum-v{color:var(--waiver)} .sum-banner.nogo .sum-v{color:var(--nogo)}
+  .sum-sub{font-size:14px;color:var(--muted);margin-top:7px;font-weight:600}
+  .sum-name{font-size:14px;color:var(--muted);margin:20px 2px 6px}.sum-name b{color:var(--ink)}
+  .muted{color:var(--muted);font-size:14px;padding:10px 2px}
+
+  .foot{font-size:10.5px;color:#A39C90;text-align:center;padding:14px 24px;border-top:1px solid var(--line);line-height:1.5}
+  .toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--ink);color:#fff;
+    padding:11px 20px;border-radius:30px;font-size:13.5px;font-weight:600;opacity:0;pointer-events:none;transition:.25s;z-index:60}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  /* OVERVIEW DRAWER */
+  .ov{position:fixed;top:0;right:0;bottom:0;width:330px;background:var(--surface);border-left:1px solid var(--line);
+    box-shadow:-12px 0 40px rgba(30,28,25,.10);transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);
+    z-index:50;display:flex;flex-direction:column}
+  body.ov-open .ov{transform:none}
+  .ov-head{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--line);
+    font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  .ov-x{border:none;background:#F1EDE5;width:26px;height:26px;border-radius:8px;font-size:13px;color:var(--ink)}
+  .ov-verdict{padding:16px 18px;border-bottom:1px solid var(--line)}
+  .ov-vlabel{font-size:24px;font-weight:800}.ov-vsub{font-size:12px;color:var(--muted);margin-top:3px;font-weight:600}
+  .ov-vlabel.go{color:var(--go)}.ov-vlabel.action{color:var(--action)}.ov-vlabel.waiver{color:var(--waiver)}.ov-vlabel.nogo{color:var(--nogo)}.ov-vlabel.none{color:var(--muted)}
+  .ov-body{flex:1;overflow-y:auto;padding:10px 12px}
+  .ovrow{display:flex;gap:11px;align-items:flex-start;padding:11px 10px;border-radius:11px;transition:.12s;width:100%;text-align:left;border:none;background:transparent}
+  .ovrow:hover{background:#F7F3EC}.ovrow.cur{background:var(--accent-soft)}
+  .ovchip{width:24px;height:24px;flex:0 0 auto;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;border:1px solid var(--line2);color:var(--muted);background:var(--surface)}
+  .ovchip.go{background:var(--go-soft);border-color:var(--go);color:var(--go)}
+  .ovchip.action{background:var(--action-soft);border-color:var(--action);color:var(--action)}
+  .ovchip.waiver{background:var(--waiver-soft);border-color:var(--waiver);color:var(--waiver)}
+  .ovchip.nogo{background:var(--nogo-soft);border-color:var(--nogo);color:var(--nogo)}
+  .ovmeta{flex:1;min-width:0}.ovmeta b{display:block;font-size:13px;font-weight:600}
+  .ovmeta small{font-size:11.5px;color:var(--muted);line-height:1.35;display:block;margin-top:1px}
+  .ov-scrim{position:fixed;inset:0;background:rgba(30,28,25,.18);opacity:0;pointer-events:none;transition:.25s;z-index:49}
+  body.ov-open .ov-scrim{opacity:1;pointer-events:auto}
+
+  @media (max-width:540px){.optgrid{grid-template-columns:1fr}.inrow{flex-direction:column}.station{display:none}.ov{width:88vw}}
+
+  /* ───────── PRINT SHEET ───────── */
+  #printsheet{display:none}
+  @media print{
+    body{background:#fff}
+    body *{visibility:hidden}
+    #printsheet,#printsheet *{visibility:visible}
+    #printsheet{display:block;position:absolute;left:0;top:0;width:100%;padding:0}
+    @page{margin:14mm}
   }
-  .verdict .dot{width:13px;height:13px;border-radius:50%;background:var(--g1)}
-  .verdict .v-label{font-size:15px}
-  .verdict .v-sub{font-size:10px;color:var(--g2);letter-spacing:.16em;text-transform:uppercase;font-weight:500}
-  .verdict.go{border-color:var(--go)} .verdict.go .dot{background:var(--go);box-shadow:0 0 10px var(--go)}
-  .verdict.go .v-label{color:var(--go)}
-  .verdict.waiver{border-color:var(--waiver)} .verdict.waiver .dot{background:var(--waiver);box-shadow:0 0 10px var(--waiver)}
-  .verdict.waiver .v-label{color:var(--waiver)}
-  .verdict.nogo{border-color:var(--nogo)} .verdict.nogo .dot{background:var(--nogo);box-shadow:0 0 10px var(--nogo)}
-  .verdict.nogo .v-label{color:var(--nogo)}
-  .topbtn{background:var(--panel);border:1px solid var(--line);color:var(--white);border-radius:7px;padding:8px 13px;font-size:12px;font-weight:500}
-  .topbtn:hover{border-color:var(--gold);color:var(--gold)}
-  .topbtn.on{border-color:var(--gold);color:var(--gold);background:rgba(255,204,1,.10)}
-  .topbtn.off{opacity:.6}
-
-  /* ── MAIN GRID ─────────────────────────── */
-  .main{display:grid;grid-template-columns:230px 1fr 360px;flex:1;min-height:0}
-
-  /* ── LEFT RAIL (LETTERS) ───────────────── */
-  .rail{border-right:1px solid var(--line);padding:14px 12px;overflow-y:auto;background:#1f1d1e}
-  .rail-hint{font-size:10px;color:var(--g2);letter-spacing:.16em;text-transform:uppercase;margin:0 4px 10px}
-  .letter{
-    display:flex;align-items:center;gap:12px;padding:10px 11px;border-radius:9px;
-    border:1px solid transparent;margin-bottom:6px;transition:.12s;position:relative;
-  }
-  .letter:hover{background:var(--panel)}
-  .letter.active{background:var(--panel);border-color:var(--gold)}
-  .letter .glyph{
-    width:36px;height:36px;flex:0 0 auto;border-radius:9px;background:var(--green);
-    display:flex;align-items:center;justify-content:center;position:relative;overflow:visible;
-  }
-  .letter.active .glyph{background:var(--gold)}
-  .glyph .gico{font-size:18px;line-height:1;transition:transform .18s cubic-bezier(.34,1.7,.5,1)}
-  .letter:hover .glyph .gico{transform:scale(1.4)}
-  .glyph .gltr{position:absolute;bottom:-4px;right:-4px;font-size:9px;font-weight:700;background:var(--black);
-    color:var(--gold);border-radius:4px;padding:0 3px;line-height:1.45;border:1px solid var(--line)}
-  .letter.active .glyph .gltr{background:var(--white);color:var(--black);border-color:var(--white)}
-  .letter{transition:background .12s,transform .12s,border-color .12s}
-  .letter:hover{transform:translateX(3px)}
-  .letter .meta{flex:1;min-width:0}
-  .letter .meta b{display:block;font-size:13px;font-weight:530}
-  .letter .meta small{font-size:10px;color:var(--g2)}
-  .letter .stat{width:22px;height:22px;flex:0 0 auto;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;background:#3a3638;color:var(--g2)}
-  .letter .stat.go{background:rgba(63,174,107,.18);color:var(--go)}
-  .letter .stat.waiver{background:rgba(255,204,1,.16);color:var(--waiver)}
-  .letter .stat.nogo{background:rgba(226,87,76,.18);color:var(--nogo)}
-  .kbd{font-size:9px;color:var(--g2);border:1px solid var(--line);border-radius:4px;padding:1px 4px;position:absolute;top:6px;right:8px}
-
-  /* ── CENTER (INPUTS) ───────────────────── */
-  .stage{padding:20px 28px;overflow-y:auto}
-  /* guided stepper */
-  .stepper{max-width:560px;margin-bottom:16px}
-  .step-meta{font-size:11px;color:var(--g2);letter-spacing:.04em;margin-bottom:7px}
-  .step-meta b{color:var(--gold);font-weight:700}
-  .gate-tag{background:rgba(255,204,1,.14);color:var(--gold);border-radius:20px;padding:2px 9px;font-size:9.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase}
-  .step-track{height:5px;background:#3a3638;border-radius:3px;overflow:hidden}
-  .step-fill{height:100%;background:var(--gold);border-radius:3px;transition:width .35s cubic-bezier(.4,0,.2,1)}
-  .stage h2{font-size:23px;font-weight:700;display:flex;align-items:center;gap:13px;margin-bottom:11px}
-  .stage h2 .lg{width:44px;height:44px;border-radius:11px;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:23px;
-    transition:transform .2s cubic-bezier(.34,1.7,.5,1);cursor:default;box-shadow:0 4px 14px rgba(255,204,1,.22)}
-  .stage h2:hover .lg{transform:scale(1.12) rotate(-5deg)}
-  .stage h2 .h2t{flex:1}
-  .stage h2 .h2ltr{font-size:13px;font-weight:700;color:var(--g2);border:1px solid var(--line);border-radius:6px;padding:2px 9px;letter-spacing:.1em}
-  /* what-to-ask speech prompt */
-  .ask{max-width:560px;background:rgba(255,204,1,.06);border-left:3px solid var(--gold);border-radius:0 8px 8px 0;
-    padding:11px 14px;font-size:15px;font-weight:530;color:#ffe9a8;margin-bottom:14px;font-style:italic}
-  .ask::before{content:'💬 ';font-style:normal}
-  .stage .q{color:var(--g3);font-size:12.5px;margin-bottom:22px;max-width:560px;line-height:1.5}
-  .field{margin-bottom:20px;max-width:560px}
-  .field>label{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--g2);margin-bottom:8px;font-weight:530}
-  .field input[type=text],.field input[type=date],.field input[type=number]{
-    background:var(--panel);border:1px solid var(--line);color:var(--white);border-radius:8px;
-    padding:11px 13px;font-size:15px;font-family:inherit;width:100%;
-  }
-  .field input:focus{outline:none;border-color:var(--gold)}
-  .row{display:flex;gap:12px}
-  .row>div{flex:1}
-  .choices{display:flex;flex-wrap:wrap;gap:8px}
-  .choice{
-    background:var(--panel);border:1px solid var(--line);color:var(--white);border-radius:8px;
-    padding:10px 14px;font-size:13px;display:flex;align-items:center;gap:9px;
-    transition:transform .12s cubic-bezier(.34,1.6,.5,1),border-color .12s,background .12s;
-  }
-  .choice:hover{border-color:var(--gold);transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.25)}
-  .choice.sel{border-color:var(--gold);background:rgba(255,204,1,.10)}
-  .choice .key{font-size:10px;color:var(--black);background:var(--gold);border-radius:4px;padding:1px 5px;font-weight:700}
-  .choice.sel .key{background:var(--gold)}
-  .checks{display:grid;grid-template-columns:1fr 1fr;gap:7px}
-  .chk{display:flex;align-items:center;gap:9px;background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:8px 11px;font-size:12.5px}
-  .chk:hover{border-color:var(--g2)}
-  .chk.sel{border-color:var(--nogo);background:rgba(226,87,76,.08)}
-  .chk .box{width:17px;height:17px;border-radius:5px;border:1.5px solid var(--g1);flex:0 0 auto;display:flex;align-items:center;justify-content:center;font-size:11px}
-  .chk.sel .box{background:var(--nogo);border-color:var(--nogo)}
-  .note{font-size:11px;color:var(--g2);margin-top:7px;line-height:1.5}
-  .navbtns{display:flex;gap:10px;margin-top:26px;max-width:560px}
-  .navbtns button{flex:1;background:var(--green);border:1px solid var(--line);color:var(--white);border-radius:8px;padding:12px;font-size:13px;font-weight:530}
-  .navbtns button.primary{background:var(--gold);color:var(--black);border-color:var(--gold);font-weight:700}
-  .navbtns button:hover{filter:brightness(1.12)}
-  .navbtns button:disabled{opacity:.35;cursor:not-allowed;filter:none}
-
-  /* handoff to specialist apps */
-  .handoff{
-    display:flex;align-items:center;gap:13px;max-width:560px;margin-top:6px;
-    background:linear-gradient(90deg,rgba(255,204,1,.10),rgba(255,204,1,.02));
-    border:1px solid var(--gold);border-radius:10px;padding:13px 15px;text-decoration:none;color:var(--white);transition:.12s;
-  }
-  .handoff:hover{background:rgba(255,204,1,.16)}
-  .handoff .hi{font-size:22px;flex:0 0 auto}
-  .handoff .hmeta{flex:1}
-  .handoff .hmeta b{display:block;font-size:13.5px;font-weight:600}
-  .handoff .hmeta small{font-size:11px;color:var(--g3)}
-  .handoff .harrow{font-size:18px;color:var(--gold);font-weight:700}
-  .handoff.muted{border-color:var(--line);background:var(--panel)}
-  .handoff.muted .harrow{color:var(--g2)}
-  /* inline app link inside a flag */
-  .flag .applink{display:inline-flex;align-items:center;gap:6px;margin-top:9px;font-size:11px;font-weight:600;
-    color:var(--gold);text-decoration:none;border:1px solid var(--gold);border-radius:6px;padding:5px 10px}
-  .flag .applink:hover{background:rgba(255,204,1,.12)}
-
-  /* ── RIGHT (READOUT) ───────────────────── */
-  .readout{border-left:1px solid var(--line);background:#1f1d1e;display:flex;flex-direction:column;min-height:0}
-  .readout-head{padding:14px 18px 12px;border-bottom:1px solid var(--line)}
-  .readout-head .t{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--g2)}
-  .meter{display:flex;gap:4px;margin-top:10px}
-  .meter .seg{flex:1;height:6px;border-radius:3px;background:#3a3638}
-  .meter .seg.go{background:var(--go)} .meter .seg.waiver{background:var(--waiver)} .meter .seg.nogo{background:var(--nogo)}
-  .flags{flex:1;overflow-y:auto;padding:14px 16px}
-  .flag{border:1px solid var(--line);border-radius:9px;padding:12px 13px;margin-bottom:11px;background:var(--panel)}
-  .flag.go{border-left:3px solid var(--go)}
-  .flag.waiver{border-left:3px solid var(--waiver)}
-  .flag.nogo{border-left:3px solid var(--nogo)}
-  .flag.info{border-left:3px solid var(--info)}
-  .flag .fh{display:flex;align-items:center;gap:8px;margin-bottom:6px}
-  .flag .badge{font-size:9px;font-weight:700;letter-spacing:.08em;padding:2px 7px;border-radius:20px;text-transform:uppercase}
-  .badge.go{background:rgba(63,174,107,.18);color:var(--go)}
-  .badge.waiver{background:rgba(255,204,1,.16);color:var(--waiver)}
-  .badge.nogo{background:rgba(226,87,76,.18);color:var(--nogo)}
-  .badge.info{background:rgba(74,159,224,.16);color:var(--info)}
-  .flag .ltr{font-size:10px;color:var(--g2);font-weight:700;letter-spacing:.1em}
-  .flag .ft{font-size:13.5px;font-weight:600;line-height:1.35;margin-bottom:5px}
-  .flag .fg{font-size:11.5px;color:var(--g3);line-height:1.5}
-  .flag .cite{font-size:10px;color:var(--g2);margin-top:7px;font-style:italic}
-  .flag .talk{font-size:11.5px;color:var(--white);background:rgba(255,204,1,.07);border-radius:6px;padding:8px 10px;margin-top:9px;line-height:1.5}
-  .flag .talk b{color:var(--gold);font-size:9px;letter-spacing:.12em;text-transform:uppercase;display:block;margin-bottom:3px}
-  .flag .act{margin-top:8px}
-  .flag .act li{font-size:11px;color:var(--g3);margin-left:16px;margin-bottom:2px;line-height:1.4}
-  .empty{color:var(--g2);font-size:12px;text-align:center;padding:40px 20px;line-height:1.6}
-  .disclaimer{font-size:9.5px;color:var(--g1);padding:9px 16px;border-top:1px solid var(--line);line-height:1.4}
-
-  /* scrollbars */
-  ::-webkit-scrollbar{width:9px}
-  ::-webkit-scrollbar-thumb{background:#3a3638;border-radius:5px}
-  ::-webkit-scrollbar-track{background:transparent}
-
-  /* toast */
-  .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--black);
-    padding:11px 20px;border-radius:8px;font-size:13px;font-weight:600;opacity:0;pointer-events:none;transition:.25s;z-index:50}
-  .toast.show{opacity:1}
+  .ps{font-family:Georgia,"Times New Roman",serif;color:#111;max-width:760px;margin:0 auto}
+  .ps-lh{display:flex;align-items:center;gap:18px;border-bottom:3px solid var(--army-black);padding-bottom:14px}
+  .ps-star{width:58px;height:58px;flex:0 0 auto;color:var(--army-black)}
+  .ps-lh-txt{flex:1}
+  .ps-dept{font-family:"GI",Arial,sans-serif;font-size:11px;letter-spacing:.22em;color:#555;text-transform:uppercase}
+  .ps-station{font-family:"GI",Arial,sans-serif;font-size:22px;font-weight:700;letter-spacing:.02em;color:var(--army-black);margin-top:2px}
+  .ps-sub{font-size:12px;color:#555;margin-top:3px;font-style:italic}
+  .ps-goldrule{height:4px;background:var(--army-gold);margin-top:2px}
+  .ps-title{font-family:"GI",Arial,sans-serif;font-size:15px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;text-align:center;margin:20px 0 4px}
+  .ps-meta{display:grid;grid-template-columns:1fr 1fr;gap:6px 26px;font-size:13px;margin:16px 0;border:1px solid #ccc;padding:14px 16px;border-radius:6px}
+  .ps-meta div{display:flex;gap:8px}.ps-meta .k{color:#666;min-width:88px}.ps-meta .v{font-weight:700;border-bottom:1px solid #ddd;flex:1}
+  .ps-verdict{display:flex;align-items:center;gap:12px;margin:14px 0;padding:12px 16px;border:2px solid #111;border-radius:6px}
+  .ps-verdict .vk{font-family:"GI",Arial,sans-serif;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#555}
+  .ps-verdict .vv{font-family:"GI",Arial,sans-serif;font-size:24px;font-weight:700}
+  .ps-verdict .vv.go{color:#1f6b3b}.ps-verdict .vv.action{color:#1f548f}.ps-verdict .vv.waiver{color:#8a5e0a}.ps-verdict .vv.nogo{color:#a32a1f}
+  table.ps-tbl{width:100%;border-collapse:collapse;margin-top:8px;font-size:12.5px}
+  table.ps-tbl th{font-family:"GI",Arial,sans-serif;text-align:left;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#fff;background:var(--army-black);padding:7px 9px}
+  table.ps-tbl td{padding:7px 9px;border-bottom:1px solid #e3e3e3;vertical-align:top}
+  table.ps-tbl tr:nth-child(even) td{background:#faf9f6}
+  .ps-st{font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.04em}
+  .ps-st.go{color:#1f6b3b}.ps-st.action{color:#1f548f}.ps-st.waiver{color:#8a5e0a}.ps-st.nogo{color:#a32a1f}.ps-st.none{color:#999}
+  .ps-notes{margin-top:16px}.ps-notes h4{font-family:"GI",Arial,sans-serif;font-size:11px;letter-spacing:.1em;text-transform:uppercase;border-bottom:1px solid #ccc;padding-bottom:4px;margin-bottom:8px}
+  .ps-note{font-size:12.5px;margin-bottom:6px}.ps-note b{font-family:"GI",Arial,sans-serif}
+  .ps-sign{display:flex;gap:40px;margin-top:30px;font-size:12px}
+  .ps-sign div{flex:1;border-top:1px solid #111;padding-top:5px;color:#555}
+  .ps-disc{font-size:9.5px;color:#777;margin-top:24px;border-top:1px solid #ddd;padding-top:8px;line-height:1.5}
 </style>
 </head>
 <body>
 
-<div class="topbar">
-  <div class="brand"><b>APPLE&nbsp;MDT</b><span>QuickScreen</span></div>
-  <div class="lead-field">
-    <input id="leadName" type="text" placeholder="Lead name…" autocomplete="off">
-  </div>
+<header class="top">
+  <div class="wordmark">APPLE<span>MDT</span></div>
+  <div class="station">Lincoln North Recruiting Station</div>
   <div class="spacer"></div>
-  <div class="verdict" id="verdict">
-    <span class="dot"></span>
-    <div>
-      <div class="v-label" id="vLabel">START</div>
-      <div class="v-sub" id="vSub">no data entered</div>
-    </div>
-  </div>
-  <button class="topbtn on" id="autoBtn" title="Auto-jump to the next step after a single answer">⏵ Auto-advance</button>
-  <button class="topbtn" id="copyBtn">⧉ Copy Sheet</button>
-  <button class="topbtn" id="resetBtn">↺ Reset</button>
-</div>
+  <button class="ghost active" id="autoBtn">Auto-advance: On</button>
+  <button class="ghost" id="copyBtn">Copy</button>
+  <button class="ghost" id="printBtn">Print</button>
+  <button class="ghost" id="resetBtn">Reset</button>
+  <button class="ghost" id="ovBtn">Overview ▸</button>
+  <button class="pill" id="verdict" title="Jump to summary"><span class="pdot"></span><span id="vlabel">—</span><span class="psub" id="vsub">no data</span></button>
+</header>
+<div class="progress"><div class="bar" id="bar"></div></div>
 
-<div class="main">
-  <!-- LEFT RAIL -->
-  <div class="rail" id="rail">
-    <div class="rail-hint">Press a letter key to jump</div>
-  </div>
+<main class="wrap"><div class="card" id="card"></div></main>
 
-  <!-- CENTER STAGE -->
-  <div class="stage" id="stage"></div>
+<footer class="foot">Decision-support only. Verify every result against current AR 601-210 / AR 670-1 / DoDI 6130.03 and your guidance counselor before acting. Reg thresholds reflect 2026 updates — confirm before promising anything to an applicant.</footer>
 
-  <!-- RIGHT READOUT -->
-  <div class="readout">
-    <div class="readout-head">
-      <div class="t">Live Readout</div>
-      <div class="meter" id="meter"></div>
-    </div>
-    <div class="flags" id="flags">
-      <div class="empty">Start entering data on the left.<br>Flags, citations & talk tracks appear here as you go.</div>
-    </div>
-    <div class="disclaimer">Decision-support only. Verify every result against current AR 601-210 / AR 670-1 and your guidance counselor before acting. Reg thresholds reflect 2026 update — confirm before promising anything to an applicant.</div>
-  </div>
-</div>
+<aside class="ov" id="ov">
+  <div class="ov-head">APPLE MDT — Process Overview <button class="ov-x" onclick="toggleOv()">✕</button></div>
+  <div class="ov-verdict"><div class="ov-vlabel" id="ovV">—</div><div class="ov-vsub" id="ovVs">no data entered</div></div>
+  <div class="ov-body" id="ovBody"></div>
+</aside>
+<div class="ov-scrim" id="ovScrim" onclick="toggleOv()"></div>
 
 <div class="toast" id="toast"></div>
+<div id="printsheet"></div>
 
 <script>
-/* ════════════════════════════════════════════════════════════
-   APPLE MDT QuickScreen — standalone prescreen engine
-   A·Age  P·Prior Service  P·Physical  L·Legal
-   E·Education  M·Medical  D·Dependents  T·Tattoos
-   ════════════════════════════════════════════════════════════ */
-
+/* ════════ STATE ════════ */
 const lead = {
-  age:{dob:'',married:false},
+  meta:{name:'',phone:''},
+  age:{mode:'dob',dob:'',years:'',married:false},
   cit:{status:''},
   ps:{isPS:null,reCode:'',hasMSO:false},
   phys:{gender:'male',height:'',weight:''},
-  legal:{offenses:[],drugUse:''},
+  legal:{offenses:[],drugUse:'',touched:false},
   edu:{tier:'',afqt:''},
-  med:{conditions:[],activeTx:false},
+  med:{conditions:[],activeTx:false,touched:false},
   dep:{status:'',kids:'',custody:''},
-  tat:{locations:[],content:false},
+  tat:{locations:[],content:false,touched:false},
+  notes:{},
 };
 
-/* ── helpers ── */
+/* ════════ HELPERS ════════ */
 const calcAge = d => { if(!d) return null; const x=new Date(d),n=new Date(); let a=n.getFullYear()-x.getFullYear(); const m=n.getMonth()-x.getMonth(); if(m<0||(m===0&&n.getDate()<x.getDate()))a--; return a; };
+function getAge(){ if(lead.age.mode==='age'){ const n=parseInt(lead.age.years); return isNaN(n)?null:n; } return calcAge(lead.age.dob); }
 const ageCol = a => a<=20?0 : a<=27?1 : a<=39?2 : 3;
-const SCREEN = { male:[[58,109,113,116,118],[59,114,117,121,123],[60,118,122,125,127],[61,123,127,130,132],[62,128,131,135,137],[63,133,136,140,142],[64,137,141,145,147],[65,142,146,150,152],[66,147,151,155,158],[67,152,156,161,163],[68,157,161,166,169],[69,162,166,171,174],[70,167,172,177,179],[71,173,177,182,185],[72,178,183,188,191],[73,183,188,194,197],[74,189,194,200,203],[75,194,200,206,209],[76,200,206,212,216],[77,206,212,219,222],[78,212,218,225,229],[79,218,225,232,236],[80,224,231,239,243]],
+/* Columns: [height, age 17-20, 21-27, 28-39, 40+] */
+/* NON-PRIOR-SERVICE accession MAXIMUM weight — source: goarmy.com/how-to-join/requirements.
+   Men 58–59 extrapolated (goarmy lists men from 60"). */
+const SCREEN_NPS = { male:[[58,124,128,131,133],[59,128,132,135,137],[60,132,136,139,141],[61,136,140,144,146],[62,141,144,148,150],[63,145,149,153,155],[64,150,154,158,160],[65,155,159,163,165],[66,160,163,168,170],[67,165,169,174,176],[68,170,174,179,180],[69,175,179,184,186],[70,180,185,189,192],[71,185,189,194,197],[72,190,195,200,203],[73,195,200,205,208],[74,201,206,211,214],[75,206,212,217,220],[76,212,217,223,226],[77,218,223,229,232],[78,223,229,235,238],[79,229,235,241,244],[80,234,240,247,250]],
+  female:[[58,119,121,122,124],[59,124,125,126,128],[60,128,129,131,133],[61,132,134,135,137],[62,136,138,140,142],[63,141,143,144,146],[64,145,147,149,151],[65,150,152,154,156],[66,155,156,158,161],[67,159,161,163,166],[68,164,166,168,171],[69,169,171,173,176],[70,174,176,178,181],[71,179,181,183,186],[72,184,186,188,191],[73,189,191,194,197],[74,194,197,199,202],[75,200,202,204,208],[76,205,207,210,213],[77,210,213,215,219],[78,216,218,221,225],[79,221,224,227,230],[80,227,230,233,236]] };
+/* PRIOR-SERVICE re-entry — AR 600-9 body-composition (retention) screening table — stricter than NPS accession. */
+const SCREEN_PS = { male:[[58,109,113,116,118],[59,114,117,121,123],[60,118,122,125,127],[61,123,127,130,132],[62,128,131,135,137],[63,133,136,140,142],[64,137,141,145,147],[65,142,146,150,152],[66,147,151,155,158],[67,152,156,161,163],[68,157,161,166,169],[69,162,166,171,174],[70,167,172,177,179],[71,173,177,182,185],[72,178,183,188,191],[73,183,188,194,197],[74,189,194,200,203],[75,194,200,206,209],[76,200,206,212,216],[77,206,212,219,222],[78,212,218,225,229],[79,218,225,232,236],[80,224,231,239,243]],
   female:[[58,109,112,115,119],[59,113,116,119,123],[60,117,120,123,128],[61,121,124,128,132],[62,126,129,133,137],[63,130,134,138,142],[64,135,138,143,147],[65,139,143,148,152],[66,144,148,153,158],[67,149,153,159,163],[68,154,158,164,169],[69,159,163,170,174],[70,164,169,175,180],[71,170,174,181,186],[72,175,180,187,192],[73,181,186,194,199],[74,187,192,200,205],[75,193,198,207,212],[76,199,205,214,219],[77,206,211,221,227],[78,212,218,229,234],[79,219,225,236,242],[80,226,232,244,250]] };
-const maxWeight = (g,h,a)=>{ h=parseInt(h); if(!h||h<58||h>80||a==null) return null; const row=SCREEN[g].find(r=>r[0]===h); return row?row[1+ageCol(a)]:null; };
+const maxWeight = (g,h,a,ps)=>{ h=parseInt(h); if(!h||h<58||h>80||a==null) return null; const tbl=(ps?SCREEN_PS:SCREEN_NPS)[g]; const row=tbl.find(r=>r[0]===h); return row?row[1+ageCol(a)]:null; };
+function escapeHtml(s){return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 
-/* ── legal offense catalog ── */
+/* ════════ CATALOGS ════════ */
 const OFFENSES = [
   {id:'minor_traffic',name:'Minor traffic',tier:'go'},
   {id:'mj_single',name:'Single MJ possession',tier:'go'},
@@ -283,38 +285,54 @@ const OFFENSES = [
   {id:'dui',name:'DUI / DWI',tier:'waiver',auth:'Bn Cdr / USAREC'},
   {id:'felony_assault',name:'Felony assault',tier:'waiver',auth:'USAREC / DMPM'},
   {id:'drug_other',name:'Drug poss. (non-MJ)',tier:'waiver',auth:'USAREC / DMPM'},
-  {id:'domestic',name:'Domestic violence (Lautenberg)',tier:'nogo'},
+  {id:'domestic',name:'Domestic violence',tier:'nogo'},
   {id:'sex_offense',name:'Sex offense / registry',tier:'nogo'},
   {id:'murder',name:'Murder / manslaughter',tier:'nogo'},
 ];
-/* ── medical condition catalog ── */
 const CONDITIONS = ['Asthma (after age 13)','ADHD / on meds','Depression / anxiety (Tx)','Seizure disorder','Diabetes','Vision <20/40','Hearing loss','Major surgery','Sleep apnea','Eczema / psoriasis','Daily prescription','Autism spectrum','Heart condition','Scoliosis','Severe allergy (EpiPen)','Broken bones (hardware)','Chronic migraines','GI / Crohn’s / IBS'];
-/* ── tattoo locations ── */
 const TATLOCS = [
   {id:'face_head',name:'Face / head / scalp',tier:'nogo'},
   {id:'neck_front',name:'Front of neck',tier:'nogo'},
+  {id:'neck_side_l',name:'Left side of neck',tier:'waiver'},
+  {id:'neck_side_r',name:'Right side of neck',tier:'waiver'},
   {id:'neck_back',name:'Back of neck (≤2")',tier:'go'},
-  {id:'hands',name:'Hand / fingers',tier:'waiver'},
+  {id:'hands',name:'Hand / fingers',tier:'action'},
   {id:'ring',name:'Ring-finger band',tier:'go'},
   {id:'arms_legs',name:'Arms / legs (sleeves)',tier:'go'},
   {id:'chest_back',name:'Chest / back',tier:'go'},
 ];
 
-/* ════════ RULE ENGINE — returns flags per letter ════════ */
+/* ════════ OPTIONAL HANDOFFS ════════ */
+const APP_MORAL  = {href:'moral-waiver.html', icon:'⚖️', name:'Moral Waiver Builder'};
+const APP_MED    = {href:'../medical-tools/medical_v8.html', icon:'🏥', name:'Medical Screening'};
+const APP_TATTOO = {href:'moral-waiver.html', icon:'📝', name:'Waiver / MFR Builder'};
+
+function f(letter,tier,title,guidance,cite,talk,acts,link){ return {letter,tier,title,guidance,cite,talk,acts,link}; }
+
+/* ════════ RULE ENGINE
+   tiers: go | action(docs/verify, NOT a waiver) | waiver | nogo
+   ════════ */
 function evalAge(){
-  const o=[]; const a=calcAge(lead.age.dob);
+  const o=[]; const a=getAge();
   if(a==null) return o;
   if(a<17) o.push(f('A','nogo','Under minimum age (17)','Cannot start processing until the applicant turns 17.','AR 601-210, 2-3',
     "I love the interest! You need to be 17 to start. Let's lock in your info and I'll reach out the day you're eligible."));
-  else if(a===17 && !lead.age.married) o.push(f('A','waiver','Minor — parental consent required','Both parents/legal guardians must sign DD Form 1966 (within 30 days of the 17th birthday). If either objects, enlistment is NOT authorized.','AR 601-210, 2-4',
-    "Good news, you can start! Since you're 17 we'll need a parent or guardian to sign. Do both your parents support this?", ['Obtain DD 1966 w/ both signatures','If divorced: verify custody / court decree']));
+  else if(a===17 && !lead.age.married) o.push(f('A','action','Minor — parental consent (no waiver)','Not a waiver — just signatures. Both parents/legal guardians sign DD Form 1966 (within 30 days of the 17th birthday). If either objects, enlistment is NOT authorized.','AR 601-210, 2-4',
+    "Good news, you can start! Since you're 17 we just need a parent or guardian to sign — no waiver involved. Do both your parents support this?", ['DD 1966 with both signatures','If divorced: custody / court decree']));
   else if(a===17 && lead.age.married) o.push(f('A','go','Married minor — no consent needed','Married/legally separated/divorced 17-yr-old may enlist without parental consent w/ documentation.','AR 601-210, 2-4'));
-  else if(a>=18 && a<=42) o.push(f('A','go','Age qualified (18–42)','Meets standard age window.','AR 601-210, 2-3'));
+  else if(a>=18 && a<=42) o.push(f('A','go','Age qualified (18–42)','Meets the standard age window.','AR 601-210, 2-3'));
   else if(a>42){
-    if(lead.ps.isPS){ o.push(f('A','waiver','Over 42 — prior-service age adjustment','Subtract active-duty years from current age. If adjusted age <43 → qualified; otherwise an age waiver to USAREC CG is required.','AR 601-210, 2-3',"Because of your prior service we can subtract your years served from your age — that may put you back in range.")); }
+    if(lead.ps.isPS) o.push(f('A','waiver','Over 42 — age waiver may be required','Subtract active-duty years from current age. Adjusted age <43 → qualified; otherwise an age waiver to USAREC CG is required.','AR 601-210, 2-3',"Because of your prior service we can subtract your years served from your age — that may put you back in range."));
     else o.push(f('A','nogo','Over maximum age (42)','No prior service — age waivers for NPS are extremely rare.','AR 601-210, 2-3',
       "The max enlistment age is 42 and we can't waive it for non-prior-service. I truly appreciate your willingness to serve."));
   }
+  return o;
+}
+function evalCit(){
+  const o=[]; const s=lead.cit.status; if(!s) return o;
+  if(s==='born'||s==='nat') o.push(f('C','go','U.S. citizen — qualified','Meets citizenship requirement. Will need SSN + proof of citizenship (birth cert / passport / naturalization cert).','AR 601-210, 2-7'));
+  else if(s==='lpr') o.push(f('C','action','Permanent resident — eligible, no waiver','A green card is NOT a waiver situation. Eligible to enlist with a valid I-551. English proficiency required; some MOS needing a security clearance are closed until naturalized (service expedites naturalization).','AR 601-210, 2-7',"A green card works — you can absolutely serve, no waiver needed. Some clearance jobs open up once you naturalize, and the Army speeds that up for you.",['Unexpired I-551 green card','Confirm English proficiency','Note MOS/clearance limits until naturalized']));
+  else if(s==='none') o.push(f('C','nogo','Not a citizen or permanent resident','Must be a U.S. citizen or lawful permanent resident to enlist. Visa holders, DACA, and undocumented applicants are not currently eligible (special programs suspended).','AR 601-210, 2-7',"Right now the Army requires U.S. citizenship or a green card. If your status changes to permanent resident, come straight back to me."));
   return o;
 }
 function evalPS(){
@@ -322,45 +340,52 @@ function evalPS(){
   if(!lead.ps.isPS){ o.push(f('P','go','Non-prior service (NPS)','Standard enlistment criteria apply.','AR 601-210, Ch 2')); return o; }
   const re=lead.ps.reCode;
   if(re==='RE-1') o.push(f('P','go','RE-1 — fully qualified','Best possible code. Verify DD-214 & medical.','AR 601-210, Tbl 3-1'));
-  else if(re==='RE-2') o.push(f('P','waiver','RE-2 — verify eligibility','Waivable/qualified depending on SPD & narrative reason on the DD-214.','AR 601-210, Tbl 3-1',"An RE-2 is workable — I just need to read the exact reason on your DD-214 Member-4.",['Pull DD-214 Member-4','Verify SPD + narrative reason']));
-  else if(re==='RE-3') o.push(f('P','waiver','RE-3 — reenlistment waiver required','USAREC CG authority. ~90-day wait from separation. Must show condition no longer exists.','AR 601-210, Ch 3 & 6',"RE-3 waivers are routine for us. There's normally a 90-day wait from your separation date. What was the discharge reason?",['Pull DD-214 Member-4 + separation records','Wait 90 days from separation before submitting']));
-  else if(re==='RE-4') o.push(f('P','nogo','RE-4 — bar to enlistment','Generally non-waivable. Only path is BCMR / Discharge Review Board upgrade.','AR 601-210, Tbl 3-1',"An RE-4 means you're currently ineligible and we can't waive it. If the board upgrades your RE code, come straight back to me."));
-  if(lead.ps.hasMSO) o.push(f('P','waiver','MSO remaining — DD 368 required','Conditional Release must be approved by the current component before active enlistment.','AR 601-210, 3-5',null,['Prepare & submit DD Form 368']));
+  else if(re==='RE-2') o.push(f('P','action','RE-2 — verify eligibility (no waiver yet)','Waivable/qualified depending on SPD & narrative reason on the DD-214. Read the code first.','AR 601-210, Tbl 3-1',"An RE-2 is workable — I just need to read the exact reason on your DD-214 Member-4.",['Pull DD-214 Member-4','Verify SPD + narrative reason']));
+  else if(re==='RE-3') o.push(f('P','waiver','RE-3 — reenlistment waiver required','USAREC CG authority. ~90-day wait from separation. Must show the condition no longer exists.','AR 601-210, Ch 3 & 6',"RE-3 waivers are routine for us. There's normally a 90-day wait from separation. What was the discharge reason?",['DD-214 Member-4 + separation records','Wait 90 days from separation before submitting'],APP_MORAL));
+  else if(re==='RE-4') o.push(f('P','nogo','RE-4 — bar to enlistment','Generally non-waivable. Only path is a BCMR / Discharge Review Board upgrade.','AR 601-210, Tbl 3-1',"An RE-4 means you're currently ineligible and we can't waive it. If the board upgrades your RE code, come straight back to me."));
+  if(lead.ps.hasMSO) o.push(f('P','action','MSO remaining — DD 368 (conditional release)','Not a waiver — a Conditional Release. Must be approved by the current component before active enlistment.','AR 601-210, 3-5',null,['Prepare & submit DD Form 368']));
   return o;
 }
 function evalPhys(){
-  const o=[]; const a=calcAge(lead.age.dob); const h=parseInt(lead.phys.height), w=parseInt(lead.phys.weight);
+  const o=[]; const a=getAge(); const h=parseInt(lead.phys.height), w=parseInt(lead.phys.weight);
   if(!h&&!w) return o;
-  if(h&&(h<58||h>80)) o.push(f('P','waiver','Height outside standard (58–80")','Outside the standard range — medical screening/waiver path required.','AR 601-210'));
+  if(h&&(h<58||h>80)) o.push(f('P','waiver','Height outside standard (58–80")','Outside the standard range — medical waiver path required.','AR 601-210'));
   if(h&&w&&a!=null){
-    const mx=maxWeight(lead.phys.gender,h,a);
+    const ps=lead.ps.isPS===true;
+    const mx=maxWeight(lead.phys.gender,h,a,ps);
+    const stdShort = ps?'prior-service retention':'NPS accession';
+    const stdLong  = ps?'prior-service (AR 600-9 retention)':'NPS accession (goarmy.com)';
+    const cite = ps?'AR 600-9 retention standard (prior service)':'Army accession standards — goarmy.com / AR 600-9';
     if(mx!=null){
-      if(w>mx) o.push(f('P','waiver',`Over screening weight (max ${mx} lb)`,`At ${h}" / age ${a}, screening max is ${mx} lb. Body-fat tape test required — pass = qualified.`,'AR 600-9 / 601-210',"You're a little over the screening weight, which just means we do a tape test. Plenty of people qualify on the tape — let's measure."));
-      else o.push(f('P','go',`Weight qualified (${w}/${mx} lb)`,`Under the ${mx} lb screening max for ${h}" / age ${a}.`,'AR 600-9'));
+      if(w>mx) o.push(f('P','action',`Over ${stdShort} max weight — body-fat check (no waiver)`,`At ${h}" / age ${a}, the ${stdLong} max is ${mx} lb (applicant ${w} lb). Over that, a body-fat measurement determines qualification — pass it and they still qualify.`,cite,"You're a little over the max weight for your height, which just means a body-fat measurement. Plenty of people qualify that way — let's check it."));
+      else o.push(f('P','go',`Weight qualified (${w} lb / ${mx} lb max)`,`Under the ${mx} lb ${stdShort} max for ${h}" / age ${a}.`,cite));
     }
   }
   return o;
 }
 function evalLegal(){
-  const o=[]; const sel=lead.legal.offenses;
-  const bars=sel.filter(id=>OFFENSES.find(x=>x.id===id)?.tier==='nogo');
-  const waivers=sel.filter(id=>OFFENSES.find(x=>x.id===id)?.tier==='waiver');
-  const felonyCount = sel.filter(id=>['felony_assault'].includes(id)).length;
-  if(bars.length){ bars.forEach(id=>{const ob=OFFENSES.find(x=>x.id===id); o.push(f('L','nogo',`${ob.name} — absolute bar`,'Statutory/regulatory bar to enlistment. Non-waivable.','AR 601-210, Ch 4 / 18 USC 922'));}); }
-  waivers.forEach(id=>{const ob=OFFENSES.find(x=>x.id===id); o.push(f('L','waiver',`${ob.name} — moral waiver`,`Waiver required. Authority: ${ob.auth}. Need court disposition + character references.`,'AR 601-210, Ch 4',ob.id==='dui'?"A single DUI is one of the most common waivers we process. I'll need the court paperwork showing it's fully resolved.":null,['Obtain certified court disposition','Gather 2–3 letters of recommendation'],APP_MORAL));});
+  const o=[]; const sel=lead.legal.offenses; const find=id=>OFFENSES.find(x=>x.id===id);
+  const nogo=sel.filter(id=>find(id)?.tier==='nogo');
+  const wv=sel.filter(id=>find(id)?.tier==='waiver');
+  const goOff=sel.filter(id=>find(id)?.tier==='go');
+  nogo.forEach(id=>{const ob=find(id); o.push(f('L','nogo',`${ob.name} — absolute bar`,'Statutory/regulatory bar to enlistment. Non-waivable.','AR 601-210, Ch 4 / 18 USC 922'));});
+  wv.forEach(id=>{const ob=find(id); o.push(f('L','waiver',`${ob.name} — moral waiver`,`Waiverable. Approval authority: ${ob.auth}. Need the certified court disposition plus character references; a clean record since helps.`,'AR 601-210, Ch 4',ob.id==='dui'?"A single DUI is one of the most common waivers we process. I'll need the court paperwork showing it's fully resolved.":null,['Certified court disposition','2–3 letters of recommendation'],APP_MORAL));});
   if(lead.legal.drugUse==='regular') o.push(f('L','nogo','Regular / habitual drug use','Self-admitted habitual use — disqualifying.','AR 601-210, Ch 4'));
-  else if(lead.legal.drugUse==='occasional') o.push(f('L','waiver','Occasional drug use — screening','Requires drug screening / counselor review.','AR 601-210, Ch 4'));
+  else if(lead.legal.drugUse==='occasional') o.push(f('L','action','Occasional drug use — screening','Requires drug screening / counselor review — not automatically a waiver.','AR 601-210, Ch 4'));
   else if(lead.legal.drugUse==='experimental') o.push(f('L','go','Experimental drug use only','One-time/experimental use is not disqualifying if honestly disclosed.','AR 601-210, Ch 4'));
+  if(goOff.length && !nogo.length && !wv.length){
+    const names=goOff.map(id=>find(id).name).join(', ');
+    o.push(f('L','go','Minor offense(s) — qualifying, no waiver',`${names}: does not require a waiver under current policy (incl. the 2026 single-marijuana update). Still disclose and document on the record.`,'AR 601-210, 4-6 / Ch 4'));
+  }
   if(!sel.length && !lead.legal.drugUse && lead.legal.touched) o.push(f('L','go','No law violations','Clean legal screen.','AR 601-210, Ch 4'));
-  if(sel.includes('minor_traffic')&&sel.length===1) {} // already green via clean path otherwise
   return o;
 }
 function evalEdu(){
   const o=[]; const t=lead.edu.tier; const afqt=parseInt(lead.edu.afqt);
   if(!t) return o;
   if(t==='tier1') o.push(f('E','go','Tier 1 — HS diploma / 15+ college credits','Highest education tier. AFQT min 31.','AR 601-210, Ch 2'));
-  else if(t==='tier2') o.push(f('E','waiver','Tier 2 — GED','Limited Tier-2 accessions. AFQT min 50 (often higher). Counselor confirms slot availability.','AR 601-210, Ch 2',"A GED works but Tier-2 seats are limited and the score bar is higher — let's aim for a strong ASVAB."));
-  else if(t==='homeschool') o.push(f('E','waiver','Home school — Tier 1 verify','Treated as Tier 1 if curriculum/state requirements met; verification required.','AR 601-210, Ch 2'));
+  else if(t==='tier2') o.push(f('E','action','Tier 2 — GED (limited slots, no waiver)','Limited Tier-2 accessions and a higher AFQT bar (min 50, often higher). Counselor confirms slot availability — not a waiver.','AR 601-210, Ch 2',"A GED works but Tier-2 seats are limited and the score bar is higher — let's aim for a strong ASVAB."));
+  else if(t==='homeschool') o.push(f('E','action','Home school — Tier 1 verify','Treated as Tier 1 if curriculum/state requirements met; verification required.','AR 601-210, Ch 2'));
   else if(t==='tier3') o.push(f('E','nogo','Tier 3 — no credential','No HS diploma or GED — not currently eligible.','AR 601-210, Ch 2',"Right now the Army needs at least a GED. Get that done and you're back in the game — I'll help you map it out."));
   if(!isNaN(afqt)){
     if(t==='tier1'&&afqt<31) o.push(f('E','nogo',`AFQT ${afqt} below Tier-1 min (31)`,'Retest required to qualify.','AR 601-210, Ch 2'));
@@ -372,7 +397,7 @@ function evalEdu(){
 function evalMed(){
   const o=[]; const c=lead.med.conditions;
   if(lead.med.activeTx) o.push(f('M','nogo','Active mental-health treatment','On active MH meds / in therapy — processing deferred until cleared & off meds per timeline.','DoDI 6130.03',null,null,APP_MED));
-  if(c.length) o.push(f('M','waiver',`${c.length} condition(s) flagged for review`,'Each needs records to MEPS for a medical read/waiver: '+c.join(', '),'DoDI 6130.03',"None of these are automatic disqualifiers anymore — but MEPS needs your records to make the call. Let's gather them now.",['Request relevant medical records','Prepare for MEPS prescreen (DD 2807-2)'],APP_MED));
+  if(c.length) o.push(f('M','waiver',`${c.length} condition(s) — MEPS review / possible waiver`,'None are automatic disqualifiers, but each needs records to MEPS for a medical read; some require a medical waiver: '+c.join(', '),'DoDI 6130.03',"None of these are automatic disqualifiers anymore — but MEPS needs your records to make the call. Let's gather them now.",['Relevant medical records','MEPS prescreen (DD 2807-2)'],APP_MED));
   else if(lead.med.touched && !lead.med.activeTx) o.push(f('M','go','No medical issues reported','Clean self-reported history. MEPS will still verify.','DoDI 6130.03'));
   return o;
 }
@@ -381,364 +406,352 @@ function evalDep(){
   if(!s) return o;
   if(lead.dep.custody==='pregnant') o.push(f('D','nogo','Pregnancy — processing deferred','Cannot ship while pregnant; processing deferred.','AR 601-210'));
   if(s==='single' && k>0 && lead.dep.custody==='has') o.push(f('D','nogo','Single parent with custody','NPS single applicant with physical/legal custody of minor(s) is ineligible.','AR 601-210, Ch 4'));
-  else if(s==='single' && k>0 && lead.dep.custody==='transferred') o.push(f('D','waiver','Custody transferred — verify','Must prove genuine, court-ordered custody transfer (not temporary). Waiver + verification.','AR 601-210, Ch 4',null,['Obtain court custody decree','Verify transfer is permanent']));
-  else if(k>2) o.push(f('D','waiver',`${k} dependents — dependency waiver`,'More than 2 dependents (NPS) triggers a dependency waiver for financial qualification.','AR 601-210, Ch 4'));
+  else if(s==='single' && k>0 && lead.dep.custody==='transferred') o.push(f('D','action','Custody transferred — verify','Must prove a genuine, court-ordered custody transfer (not temporary). Verification, not a moral waiver.','AR 601-210, Ch 4',null,['Court custody decree','Verify transfer is permanent']));
+  else if(k>2) o.push(f('D','waiver',`${k} dependents — dependency waiver`,'More than 2 dependents (NPS) triggers a dependency waiver for financial qualification.','AR 601-210, Ch 4',null,null,APP_MORAL));
   else if(s) o.push(f('D','go','Dependents within standard','No dependency bar.','AR 601-210, Ch 4'));
   return o;
 }
 function evalTat(){
   const o=[]; const l=lead.tat.locations;
   if(lead.tat.content) o.push(f('T','nogo','Extremist / gang / hate content','Content-based bar regardless of location. Must be removed.','AR 670-1'));
-  const bad=l.filter(id=>TATLOCS.find(x=>x.id===id)?.tier==='nogo');
-  bad.forEach(id=>{const t=TATLOCS.find(x=>x.id===id); o.push(f('T','nogo',`${t.name} — prohibited location`,'Prohibited; must be fully removed/covered to process.','AR 670-1'));});
-  if(l.includes('hands')) o.push(f('T','waiver','Hand tattoo — verify size','One hand tattoo ≤1" allowed; measure & document.','AR 670-1 (2022)'));
-  if(!bad.length && !lead.tat.content && l.length) o.push(f('T','go','Tattoos within standard','Arms/legs/sleeves, chest/back, ring band, ≤2" back-of-neck all permitted.','AR 670-1 (2022)'));
+  l.filter(id=>TATLOCS.find(x=>x.id===id)?.tier==='nogo').forEach(id=>{const t=TATLOCS.find(x=>x.id===id); o.push(f('T','nogo',`${t.name} — prohibited location`,'Prohibited; must be fully removed/covered to process.','AR 670-1'));});
+  const wv=l.filter(id=>TATLOCS.find(x=>x.id===id)?.tier==='waiver');
+  if(wv.length){
+    const names=wv.map(id=>TATLOCS.find(x=>x.id===id).name).join(', ');
+    o.push(f('T','waiver',`Tattoo waiver required — ${names}`,
+      'Side-of-neck tattoos are outside the authorized locations (only one back-of-neck ≤2" and one behind-each-ear ≤1" are permitted). Proceed via a tattoo exception: counsel the applicant, then measure & photograph every tattoo and draft a tattoo memorandum (MFR) describing each one — size, location, and a content statement (not extremist/gang/indecent) — for the commander\'s review and approval before processing.',
+      'AR 670-1 (2022) / USAREC tattoo policy',
+      "Side-of-neck ink needs a quick exception packet — we measure, photograph, and write a short memo for the commander. It\'s routine; let\'s document them so it doesn\'t slow you down.",
+      ['Measure & photograph each tattoo','Draft tattoo memorandum (MFR) for the commander','Include a content statement (not extremist/gang/indecent)','Submit for commander approval before processing'],
+      APP_TATTOO));
+  }
+  if(l.includes('hands')) o.push(f('T','action','Hand tattoo — verify size (≤1")','One hand tattoo ≤1" is authorized; measure & document. Larger/additional hand tattoos need the tattoo exception above.','AR 670-1 (2022)'));
+  const blocking = l.some(id=>['nogo','waiver'].includes(TATLOCS.find(x=>x.id===id)?.tier)) || lead.tat.content;
+  if(!blocking && l.length) o.push(f('T','go','Tattoos within standard','Arms/legs/sleeves, chest/back, ring band, ≤2" back-of-neck all permitted.','AR 670-1 (2022)'));
   if(lead.tat.touched && !l.length && !lead.tat.content) o.push(f('T','go','No tattoos reported','No tattoo concerns.','AR 670-1'));
   return o;
 }
-
-function evalCit(){
-  const o=[]; const s=lead.cit.status; if(!s) return o;
-  if(s==='born'||s==='nat') o.push(f('C','go','U.S. citizen — qualified','Meets citizenship requirement. Will need SSN + proof of citizenship (birth cert / passport / naturalization cert).','AR 601-210, 2-7'));
-  else if(s==='lpr') o.push(f('C','waiver','Lawful permanent resident (green card)','Eligible to enlist with a valid I-551 green card. English proficiency required; many MOS needing a security clearance are closed until naturalized. Naturalization is expedited through service.','AR 601-210, 2-7',"A green card works — you can absolutely serve. Some specialty jobs that need a clearance open up once you naturalize, and the Army actually speeds that process up for you.",['Verify unexpired I-551 green card','Confirm English proficiency','Note MOS/clearance limits until naturalized']));
-  else if(s==='none') o.push(f('C','nogo','Not a citizen or permanent resident','Must be a U.S. citizen or lawful permanent resident to enlist. Visa holders, DACA, and undocumented applicants are not currently eligible (special programs are suspended).','AR 601-210, 2-7',"Right now the Army requires either U.S. citizenship or a green card to enlist. If your status changes to permanent resident, come straight back to me — I'd be glad to help."));
-  return o;
-}
-
-function f(letter,tier,title,guidance,cite,talk,acts,link){ return {letter,tier,title,guidance,cite,talk,acts,link}; }
-
-/* ── specialist apps in the toolbox (relative to this file) ── */
-const APP_MORAL = {href:'moral-waiver.html', label:'Build in Moral Waiver app', icon:'⚖️', name:'Moral Waiver Builder', desc:'Log offenses, screen eligibility & auto-fill UF 601-210.08'};
-const APP_MED   = {href:'../medical-tools/medical_v8.html', label:'Check in Medical Screening', icon:'🏥', name:'Medical Screening', desc:'Pre-MEPS disqualifier & waiver lookup'};
-
 const EVALS = {A:evalAge,C:evalCit,P1:evalPS,P2:evalPhys,L:evalLegal,E:evalEdu,M:evalMed,D:evalDep,T:evalTat};
 
-/* ════════ SECTIONS / UI DEFINITION ════════ */
+/* ════════ SECTIONS ════════ */
 const SECTIONS = [
-  {key:'A', hot:'a', letter:'A', icon:'📅', title:'Age', sub:'DOB & consent', gate:true,
-    ask:'"What\'s your date of birth?"', q:'Confirms the 17–42 window and auto-flags minor parental-consent rules.'},
-  {key:'C', hot:'c', letter:'C', icon:'🌐', title:'Citizenship', sub:'Status / docs', gate:true,
-    ask:'"Are you a U.S. citizen, or do you have a green card?"', q:'U.S. citizen or lawful permanent resident is required to enlist.'},
-  {key:'P1',hot:'p', letter:'P', icon:'🎖️', title:'Prior Service', sub:'RE code / MSO',
-    ask:'"Have you ever served in any branch — active, Guard, or Reserve?"', q:'If prior service, the RE code on the DD-214 drives everything.'},
-  {key:'P2',hot:'h', letter:'P', icon:'⚖️', title:'Physical', sub:'Height / weight',
-    ask:'"How tall are you, and what do you weigh right now?"', q:'Checks against the AR 600-9 screening-weight table for age & height.'},
-  {key:'L', hot:'l', letter:'L', icon:'👮', title:'Legal', sub:'Law / drugs',
-    ask:'"Any tickets, arrests, charges, or anything on your record?"', q:'Sorts clean / waiverable / hard-bar and hands off to the Moral Waiver app.'},
-  {key:'E', hot:'e', letter:'E', icon:'🎓', title:'Education', sub:'Tier / AFQT',
-    ask:'"Did you graduate high school, get a GED, or neither?"', q:'Sets the education tier and the AFQT minimum that goes with it.'},
-  {key:'M', hot:'m', letter:'M', icon:'🏥', title:'Medical', sub:'History',
-    ask:'"Any medical conditions, surgeries, or meds I should know about?"', q:'Flags anything MEPS will catch and hands off to the Medical Screening app.'},
-  {key:'D', hot:'d', letter:'D', icon:'👨‍👩‍👧', title:'Dependents', sub:'Family / custody',
-    ask:'"Are you married, and do you have any kids?"', q:'Marital status, dependent count, and custody situation.'},
-  {key:'T', hot:'t', letter:'T', icon:'🖋️', title:'Tattoos', sub:'Location / content',
-    ask:'"Do you have any tattoos? Where are they?"', q:'Location and content screen against AR 670-1.'},
+  {key:'A', letter:'A', icon:'📅', title:'Age', gate:true, ask:'What’s the applicant’s age or date of birth?'},
+  {key:'C', letter:'C', icon:'🌐', title:'Citizenship', gate:true, ask:'Are they a U.S. citizen, or do they have a green card?'},
+  {key:'P1',letter:'P', icon:'🎖️', title:'Prior Service', ask:'Have they ever served — active, Guard, or Reserve?'},
+  {key:'P2',letter:'P', icon:'⚖️', title:'Physical', ask:'How tall are they, and what do they weigh right now?'},
+  {key:'L', letter:'L', icon:'👮', title:'Legal', ask:'Anything on the record — tickets, arrests, charges, drugs?'},
+  {key:'E', letter:'E', icon:'🎓', title:'Education', ask:'High-school diploma, GED, or neither?'},
+  {key:'M', letter:'M', icon:'🏥', title:'Medical', ask:'Any medical conditions, surgeries, or meds?'},
+  {key:'D', letter:'D', icon:'👨‍👩‍👧', title:'Dependents', ask:'Married? Any kids or dependents under 18?'},
+  {key:'T', letter:'T', icon:'🖋️', title:'Tattoos', ask:'Any tattoos? Where are they?'},
 ];
 
-let active = 'A';
+let step = 0;
+const card = document.getElementById('card');
 
-/* ════════ RENDERERS ════════ */
-const stage = document.getElementById('stage');
-
-function renderStage(){
-  const i = SECTIONS.findIndex(x=>x.key===active);
-  const s = SECTIONS[i], prev=SECTIONS[i-1], next=SECTIONS[i+1];
-  const pct = Math.round(((i+1)/SECTIONS.length)*100);
-  let html = `
-    <div class="stepper">
-      <div class="step-meta"><b>Step ${i+1}</b> of ${SECTIONS.length}${s.gate?' &nbsp;·&nbsp; <span class="gate-tag">front-door gate</span>':''}</div>
-      <div class="step-track"><div class="step-fill" style="width:${pct}%"></div></div>
-    </div>
-    <h2><span class="lg">${s.icon}</span><span class="h2t">${s.title}</span><span class="h2ltr">${s.letter}</span></h2>
-    <div class="ask">${s.ask}</div>
-    <div class="q">${s.q}</div>`;
-  html += BODY[active]();
-  html += `<div class="navbtns">
-      <button onclick="go(-1)" ${i===0?'disabled':''}>‹ ${prev?prev.title:'Prev'}</button>
-      <button class="primary" onclick="go(1)" ${i===SECTIONS.length-1?'disabled':''}>${next?next.title+' ›':'Finish ›'}</button>
-    </div>`;
-  stage.innerHTML = html;
-}
+/* ════════ ANSWER BUILDERS ════════ */
+function opt(label,sel,mut,adv){ const h=mut+';refreshAnswers()'+(adv?';scheduleAdvance()':'');
+  return `<button class="opt ${sel?'sel':''}" onclick="${h}"><span class="optlabel">${label}</span><span class="optmark">${sel?'✓':''}</span></button>`; }
+function chk(label,sel,mut){ return `<button class="opt multi ${sel?'sel':''}" onclick="${mut};refreshAnswers()"><span class="box">${sel?'✓':''}</span><span class="optlabel">${label}</span></button>`; }
+function seg(label,on,mut){ return `<button class="segb ${on?'on':''}" onclick="${mut};refreshAnswers()">${label}</button>`; }
+function toggleArr(arr,v){ const i=arr.indexOf(v); if(i>=0)arr.splice(i,1); else arr.push(v); }
 
 const BODY = {
-  A(){ return `
-    <div class="field"><label>Date of birth</label>
-      <input type="date" id="dob" value="${lead.age.dob}" oninput="lead.age.dob=this.value;sync()"></div>
-    <div class="field"><label>Marital status (for consent)</label>
-      <div class="choices">
-        ${choice('single17','Single', !lead.age.married, "lead.age.married=false;sync()", true)}
-        ${choice('married17','Married / legally sep.', lead.age.married, "lead.age.married=true;sync()", true)}
-      </div></div>
-    ${lead.age.dob?`<div class="note">Calculated age: <b>${calcAge(lead.age.dob)??'—'}</b></div>`:''}`; },
-
-  C(){ return `
-    <div class="field"><label>Citizenship / immigration status</label>
-      <div class="choices">
-        ${choice('cb','U.S. citizen (born)', lead.cit.status==='born', "lead.cit.status='born';sync()", true)}
-        ${choice('cn','Naturalized citizen', lead.cit.status==='nat', "lead.cit.status='nat';sync()", true)}
-        ${choice('cl','Permanent resident (green card)', lead.cit.status==='lpr', "lead.cit.status='lpr';sync()", true)}
-        ${choice('cx','None of these (visa / other)', lead.cit.status==='none', "lead.cit.status='none';sync()", true)}
-      </div></div>
-    <div class="note">Must be a U.S. citizen or lawful permanent resident (valid I-551 green card) to enlist. Green-card holders qualify but face MOS/clearance limits until naturalized.</div>`; },
-
-  P1(){ return `
-    <div class="field"><label>Prior military service?</label>
-      <div class="choices">
-        ${choice('nps','No — NPS', lead.ps.isPS===false, "lead.ps.isPS=false;sync()", true)}
-        ${choice('ps','Yes — prior service', lead.ps.isPS===true, "lead.ps.isPS=true;sync()")}
-      </div></div>
-    ${lead.ps.isPS?`
-    <div class="field"><label>RE code (DD-214)</label>
-      <div class="choices">
-        ${['RE-1','RE-2','RE-3','RE-4'].map(r=>choice('re'+r, r, lead.ps.reCode===r, `lead.ps.reCode='${r}';sync()`)).join('')}
-      </div></div>
-    <div class="field"><label>Service obligation</label>
-      <div class="choices">
-        ${choice('mso','MSO remaining (needs DD 368)', lead.ps.hasMSO, "lead.ps.hasMSO=!lead.ps.hasMSO;sync()")}
-      </div></div>`:''}`; },
-
-  P2(){ return `
-    <div class="field"><label>Gender (screening table)</label>
-      <div class="choices">
-        ${choice('male','Male', lead.phys.gender==='male', "lead.phys.gender='male';sync()")}
-        ${choice('female','Female', lead.phys.gender==='female', "lead.phys.gender='female';sync()")}
-      </div></div>
-    <div class="row">
-      <div class="field"><label>Height (inches)</label>
-        <input type="number" id="ht" value="${lead.phys.height}" placeholder="e.g. 70" oninput="lead.phys.height=this.value;sync()"></div>
-      <div class="field"><label>Weight (lb)</label>
-        <input type="number" id="wt" value="${lead.phys.weight}" placeholder="e.g. 175" oninput="lead.phys.weight=this.value;sync()"></div>
+  A(){ const m=lead.age.mode; return `
+    <div class="intake">
+      <div class="ititle">Lead intake</div>
+      <div class="inrow">
+        <div><label class="inlbl">Applicant name</label><input class="bigin" type="text" placeholder="Full name" value="${escapeHtml(lead.meta.name)}" oninput="lead.meta.name=this.value;sync()"></div>
+        <div><label class="inlbl">Phone</label><input class="bigin" type="tel" placeholder="(000) 000-0000" value="${escapeHtml(lead.meta.phone)}" oninput="lead.meta.phone=this.value;sync()"></div>
+      </div>
     </div>
-    ${physReadout()}`; },
+    <div class="seg">
+      ${seg('Date of birth', m!=='age', "lead.age.mode='dob'")}
+      ${seg('Just the age', m==='age', "lead.age.mode='age'")}
+    </div>
+    ${m==='age'
+      ? `<input class="bigin" type="number" min="15" max="62" inputmode="numeric" placeholder="Age — e.g. 19" value="${lead.age.years}" oninput="lead.age.years=this.value;sync()">`
+      : `<input class="bigin" type="date" value="${lead.age.dob}" oninput="lead.age.dob=this.value;sync()">`}
+    <div class="subq">Married or legally separated? <span class="lite">(only matters at 17)</span></div>
+    <div class="optrow">
+      ${opt('No / single', !lead.age.married, "lead.age.married=false")}
+      ${opt('Yes', lead.age.married, "lead.age.married=true")}
+    </div>`; },
 
-  L(){ lead.legal.touched=true; return `
-    <div class="field"><label>Law violations (toggle all that apply)</label>
-      <div class="checks">
-        ${OFFENSES.map(o=>checkItem(o.id, o.name, lead.legal.offenses.includes(o.id),
-          `toggleArr(lead.legal.offenses,'${o.id}');sync()`)).join('')}
-      </div></div>
-    <div class="field"><label>Drug use history</label>
-      <div class="choices">
-        ${choice('dnone','None', lead.legal.drugUse==='', "lead.legal.drugUse='';sync()", true)}
-        ${choice('dexp','Experimental', lead.legal.drugUse==='experimental', "lead.legal.drugUse='experimental';sync()", true)}
-        ${choice('docc','Occasional', lead.legal.drugUse==='occasional', "lead.legal.drugUse='occasional';sync()", true)}
-        ${choice('dreg','Regular / habitual', lead.legal.drugUse==='regular', "lead.legal.drugUse='regular';sync()", true)}
-      </div></div>
-    ${handoff(APP_MORAL, lead.legal.offenses.some(id=>OFFENSES.find(x=>x.id===id)?.tier!=='go') )}`; },
+  C(){ return `<div class="optgrid">
+      ${opt('U.S. citizen (born)', lead.cit.status==='born', "lead.cit.status='born'", true)}
+      ${opt('Naturalized citizen', lead.cit.status==='nat', "lead.cit.status='nat'", true)}
+      ${opt('Permanent resident (green card)', lead.cit.status==='lpr', "lead.cit.status='lpr'", true)}
+      ${opt('Neither (visa / other)', lead.cit.status==='none', "lead.cit.status='none'", true)}
+    </div>`; },
 
-  E(){ return `
-    <div class="field"><label>Highest education credential</label>
-      <div class="choices">
-        ${choice('t1','Tier 1 — HS diploma', lead.edu.tier==='tier1', "lead.edu.tier='tier1';sync()")}
-        ${choice('hs','Home school', lead.edu.tier==='homeschool', "lead.edu.tier='homeschool';sync()")}
-        ${choice('t2','Tier 2 — GED', lead.edu.tier==='tier2', "lead.edu.tier='tier2';sync()")}
-        ${choice('t3','Tier 3 — none', lead.edu.tier==='tier3', "lead.edu.tier='tier3';sync()")}
-      </div></div>
-    <div class="field"><label>AFQT score (if tested)</label>
-      <input type="number" id="afqt" value="${lead.edu.afqt}" placeholder="0–99" oninput="lead.edu.afqt=this.value;sync()"></div>`; },
+  P1(){ return `<div class="optrow">
+      ${opt('No — never served', lead.ps.isPS===false, "lead.ps.isPS=false", true)}
+      ${opt('Yes — prior service', lead.ps.isPS===true, "lead.ps.isPS=true")}
+    </div>
+    ${lead.ps.isPS?`
+      <div class="subq">RE code on the DD-214</div>
+      <div class="optgrid">${['RE-1','RE-2','RE-3','RE-4'].map(r=>opt(r, lead.ps.reCode===r, "lead.ps.reCode='"+r+"'")).join('')}</div>
+      <div class="subq">Service obligation</div>
+      <div class="optrow">${opt('MSO remaining (needs DD 368)', lead.ps.hasMSO, "lead.ps.hasMSO=!lead.ps.hasMSO")}</div>`:''}`; },
 
-  M(){ lead.med.touched=true; return `
-    <div class="field"><label>Active MH treatment / meds right now?</label>
-      <div class="choices">
-        ${choice('mhno','No', !lead.med.activeTx, "lead.med.activeTx=false;sync()")}
-        ${choice('mhyes','Yes — currently', lead.med.activeTx, "lead.med.activeTx=true;sync()")}
-      </div></div>
-    <div class="field"><label>History — toggle anything reported</label>
-      <div class="checks">
-        ${CONDITIONS.map(c=>checkItem('c_'+c, c, lead.med.conditions.includes(c),
-          `toggleArr(lead.med.conditions,${JSON.stringify(c)});sync()`)).join('')}
-      </div></div>
-    ${handoff(APP_MED, lead.med.conditions.length>0 || lead.med.activeTx)}`; },
+  P2(){ return `<div class="subq">Sex (for the weight table)</div>
+    <div class="optrow">
+      ${opt('Male', lead.phys.gender==='male', "lead.phys.gender='male'")}
+      ${opt('Female', lead.phys.gender==='female', "lead.phys.gender='female'")}
+    </div>
+    <div class="inrow">
+      <div><label class="inlbl">Height (inches)</label><input class="bigin" type="number" placeholder="70" value="${lead.phys.height}" oninput="lead.phys.height=this.value;sync()"></div>
+      <div><label class="inlbl">Weight (lb)</label><input class="bigin" type="number" placeholder="175" value="${lead.phys.weight}" oninput="lead.phys.weight=this.value;sync()"></div>
+    </div>`; },
 
-  D(){ return `
-    <div class="field"><label>Marital status</label>
-      <div class="choices">
-        ${choice('dsingle','Single', lead.dep.status==='single', "lead.dep.status='single';sync()")}
-        ${choice('dmarried','Married', lead.dep.status==='married', "lead.dep.status='married';sync()")}
-      </div></div>
-    <div class="field"><label>Number of dependents (under 18)</label>
-      <input type="number" id="kids" value="${lead.dep.kids}" placeholder="0" oninput="lead.dep.kids=this.value;sync()"></div>
-    <div class="field"><label>Custody / pregnancy</label>
-      <div class="choices">
-        ${choice('cnone','N/A', lead.dep.custody==='', "lead.dep.custody='';sync()", true)}
-        ${choice('chas','Has custody', lead.dep.custody==='has', "lead.dep.custody='has';sync()", true)}
-        ${choice('ctrans','Custody transferred', lead.dep.custody==='transferred', "lead.dep.custody='transferred';sync()", true)}
-        ${choice('cpreg','Pregnant', lead.dep.custody==='pregnant', "lead.dep.custody='pregnant';sync()", true)}
-      </div></div>`; },
+  L(){ lead.legal.touched=true; return `<div class="subq">Anything on the record? (tap all that apply)</div>
+    <div class="optgrid">${OFFENSES.map(o=>chk(o.name, lead.legal.offenses.includes(o.id), "toggleArr(lead.legal.offenses,'"+o.id+"')")).join('')}</div>
+    <div class="subq">Drug-use history</div>
+    <div class="optgrid">
+      ${opt('None', lead.legal.drugUse==='', "lead.legal.drugUse=''", true)}
+      ${opt('Experimental', lead.legal.drugUse==='experimental', "lead.legal.drugUse='experimental'", true)}
+      ${opt('Occasional', lead.legal.drugUse==='occasional', "lead.legal.drugUse='occasional'", true)}
+      ${opt('Regular / habitual', lead.legal.drugUse==='regular', "lead.legal.drugUse='regular'", true)}
+    </div>`; },
 
-  T(){ lead.tat.touched=true; return `
-    <div class="field"><label>Tattoo locations (toggle all)</label>
-      <div class="checks">
-        ${TATLOCS.map(t=>checkItem(t.id, t.name, lead.tat.locations.includes(t.id),
-          `toggleArr(lead.tat.locations,'${t.id}');sync()`)).join('')}
-      </div></div>
-    <div class="field"><label>Content</label>
-      <div class="choices">
-        ${choice('tcok','No prohibited content', !lead.tat.content, "lead.tat.content=false;sync()", true)}
-        ${choice('tcbad','Extremist / gang / hate', lead.tat.content, "lead.tat.content=true;sync()", true)}
-      </div></div>`; },
+  E(){ return `<div class="subq">Highest credential</div>
+    <div class="optgrid">
+      ${opt('HS diploma (Tier 1)', lead.edu.tier==='tier1', "lead.edu.tier='tier1'")}
+      ${opt('Home school', lead.edu.tier==='homeschool', "lead.edu.tier='homeschool'")}
+      ${opt('GED (Tier 2)', lead.edu.tier==='tier2', "lead.edu.tier='tier2'")}
+      ${opt('No credential (Tier 3)', lead.edu.tier==='tier3', "lead.edu.tier='tier3'")}
+    </div>
+    <div class="subq">AFQT score (if tested)</div>
+    <input class="bigin" type="number" placeholder="0–99" value="${lead.edu.afqt}" oninput="lead.edu.afqt=this.value;sync()">`; },
+
+  M(){ lead.med.touched=true; return `<div class="subq">Currently on mental-health meds or in therapy?</div>
+    <div class="optrow">
+      ${opt('No', !lead.med.activeTx, "lead.med.activeTx=false")}
+      ${opt('Yes — currently', lead.med.activeTx, "lead.med.activeTx=true")}
+    </div>
+    <div class="subq">Any history? (tap all that apply)</div>
+    <div class="optgrid">${CONDITIONS.map((c,i)=>chk(c, lead.med.conditions.includes(c), "toggleArr(lead.med.conditions,CONDITIONS["+i+"])")).join('')}</div>`; },
+
+  D(){ return `<div class="subq">Marital status</div>
+    <div class="optrow">
+      ${opt('Single', lead.dep.status==='single', "lead.dep.status='single'")}
+      ${opt('Married', lead.dep.status==='married', "lead.dep.status='married'")}
+    </div>
+    <div class="subq">Kids / dependents under 18</div>
+    <input class="bigin" type="number" min="0" placeholder="0" value="${lead.dep.kids}" oninput="lead.dep.kids=this.value;sync()">
+    <div class="subq">Custody / pregnancy</div>
+    <div class="optgrid">
+      ${opt('N/A', lead.dep.custody==='', "lead.dep.custody=''", true)}
+      ${opt('Has custody', lead.dep.custody==='has', "lead.dep.custody='has'", true)}
+      ${opt('Custody transferred', lead.dep.custody==='transferred', "lead.dep.custody='transferred'", true)}
+      ${opt('Pregnant', lead.dep.custody==='pregnant', "lead.dep.custody='pregnant'", true)}
+    </div>`; },
+
+  T(){ lead.tat.touched=true; return `<div class="subq">Tattoo locations (tap all)</div>
+    <div class="optgrid">${TATLOCS.map(t=>chk(t.name, lead.tat.locations.includes(t.id), "toggleArr(lead.tat.locations,'"+t.id+"')")).join('')}</div>
+    <div class="subq">Content</div>
+    <div class="optrow">
+      ${opt('Nothing prohibited', !lead.tat.content, "lead.tat.content=false", true)}
+      ${opt('Extremist / gang / hate', lead.tat.content, "lead.tat.content=true", true)}
+    </div>`; },
 };
 
-function physReadout(){
-  const a=calcAge(lead.age.dob), h=parseInt(lead.phys.height), w=parseInt(lead.phys.weight);
-  if(!h||a==null) return `<div class="note">Enter DOB (in Age) + height to compute the screening-weight max.</div>`;
-  const mx=maxWeight(lead.phys.gender,h,a);
-  if(mx==null) return `<div class="note">Height must be 58–80" for the table.</div>`;
-  return `<div class="note">Screening max at ${h}" / age ${a}: <b>${mx} lb</b>${w?` — applicant ${w} lb → <b style="color:${w>mx?'var(--waiver)':'var(--go)'}">${w>mx?'tape test':'qualified'}</b>`:''}</div>`;
-}
-
-function choice(id,label,sel,onclick,adv){
-  return `<button class="choice ${sel?'sel':''}" onclick="${adv?onclick+';scheduleAdvance()':onclick}">${label}</button>`;
-}
-
-/* ── auto-advance engine ── */
-let autoAdvance = true, advTimer = null;
 const COMPLETE = {
-  A:()=>!!lead.age.dob,
-  C:()=>!!lead.cit.status,
+  A:()=> lead.age.mode==='age' ? !!lead.age.years : !!lead.age.dob,
+  C:()=> !!lead.cit.status,
   P1:()=> lead.ps.isPS===false || (lead.ps.isPS===true && !!lead.ps.reCode),
   P2:()=> !!lead.phys.height && !!lead.phys.weight,
-  L:()=>true, E:()=>!!lead.edu.tier, M:()=>true,
-  D:()=>!!lead.dep.status, T:()=>true,
+  L:()=> true, E:()=> !!lead.edu.tier, M:()=> true, D:()=> !!lead.dep.status, T:()=> true,
 };
-function scheduleAdvance(){
-  clearTimeout(advTimer);
-  if(!autoAdvance) return;
-  if(!(COMPLETE[active] && COMPLETE[active]())) return;
-  const i=SECTIONS.findIndex(x=>x.key===active);
-  if(i>=SECTIONS.length-1) return;
-  toast('Next: '+SECTIONS[i+1].title+' →');
-  advTimer=setTimeout(()=>go(1), 800);
+
+/* ════════ FLAG / VERDICT ════════ */
+const TIER_ORDER={nogo:0,waiver:1,action:2,go:3};
+const tierLabel = t => t==='go'?'Clear' : t==='action'?'Action' : t==='waiver'?'Waiver' : 'No-Go';
+function flagHTML(fl){
+  return `<div class="flag ${fl.tier}">
+    <div class="frow"><span class="fbadge ${fl.tier}">${tierLabel(fl.tier)}</span><span class="fcite">${fl.cite||''}</span></div>
+    <div class="ftitle">${fl.title}</div>
+    <div class="fguide">${fl.guidance}</div>
+    ${fl.acts?`<div class="facts"><b>Steps / bring</b><ul>${fl.acts.map(a=>`<li>${a}</li>`).join('')}</ul></div>`:''}
+    ${fl.talk?`<div class="ftalk"><span>Say it like this</span>${fl.talk}</div>`:''}
+    ${fl.link?`<a class="fapp" href="${fl.link.href}" target="_blank" rel="noopener">${fl.link.icon} Open ${fl.link.name} — optional →</a>`:''}
+  </div>`;
 }
-function checkItem(id,label,sel,onclick){
-  return `<button class="chk ${sel?'sel':''}" onclick="${onclick}"><span class="box">${sel?'✕':''}</span>${label}</button>`;
+function resultHTML(key){
+  const fls = key?EVALS[key]():[];
+  if(!fls.length) return `<div class="fhint">Pick an answer — eligibility, citation, and what to say slide in right here.</div>`;
+  return fls.map(flagHTML).join('');
 }
-function toggleArr(arr,v){ const i=arr.indexOf(v); if(i>=0)arr.splice(i,1); else arr.push(v); }
-function handoff(app, active){
-  return `<a class="handoff ${active?'':'muted'}" href="${app.href}" target="_blank" rel="noopener">
-      <span class="hi">${app.icon}</span>
-      <span class="hmeta"><b>${active?'Hand off to ':'Open '}${app.name}</b><small>${active?app.desc:'Opens in a new tab — full workup'}</small></span>
-      <span class="harrow">→</span>
-    </a>`;
+function allFlags(){ let a=[]; SECTIONS.forEach(s=>a=a.concat(EVALS[s.key]())); return a; }
+function worst(fl){ if(fl.some(x=>x.tier==='nogo'))return 'nogo'; if(fl.some(x=>x.tier==='waiver'))return 'waiver'; if(fl.some(x=>x.tier==='action'))return 'action'; if(fl.some(x=>x.tier==='go'))return 'go'; return ''; }
+function verdictOf(all){
+  if(!all.length) return {label:'—',sub:'no data',cls:''};
+  const n=all.filter(x=>x.tier==='nogo').length, w=all.filter(x=>x.tier==='waiver').length, a=all.filter(x=>x.tier==='action').length;
+  if(n) return {label:'NO-GO',sub:n+' hard stop'+(n>1?'s':''),cls:'nogo'};
+  if(w) return {label:'WAIVER',sub:w+' waiver'+(w>1?'s':'')+' needed',cls:'waiver'};
+  if(a) return {label:'ELIGIBLE',sub:a+' action item'+(a>1?'s':'')+' (no waiver)',cls:'action'};
+  return {label:'GO',sub:'fully clear',cls:'go'};
 }
 
-/* ════════ LEFT RAIL ════════ */
-function renderRail(){
-  const rail=document.getElementById('rail');
-  let html=`<div class="rail-hint">Press a letter key to jump</div>`;
-  SECTIONS.forEach(s=>{
-    const flags=EVALS[s.key]();
-    const st=worst(flags);
-    const icon = st==='nogo'?'✕' : st==='waiver'?'!' : st==='go'?'✓' : '·';
-    html+=`<div class="letter ${active===s.key?'active':''}" onclick="setActive('${s.key}')">
-      <span class="kbd">${s.hot.toUpperCase()}</span>
-      <span class="glyph"><span class="gico">${s.icon}</span><span class="gltr">${s.letter}</span></span>
-      <span class="meta"><b>${s.title}</b><small>${s.sub}</small></span>
-      <span class="stat ${st||''}">${icon}</span>
+/* ════════ RENDER ════════ */
+function dotsHTML(){
+  return `<div class="dots" id="dotrow">`+SECTIONS.map((s,i)=>{ const st=worst(EVALS[s.key]());
+    return `<button class="dot ${i===step?'cur':''} ${st}" title="${s.title}" onclick="goStep(${i})">${s.letter}</button>`; }).join('')+`</div>`;
+}
+function notesHTML(key,title){
+  return `<div class="notes"><label class="noteslbl">Notes — ${title}</label>
+    <textarea class="notesin" placeholder="Anything to remember for this section…" oninput="lead.notes['${key}']=this.value;save()">${escapeHtml(lead.notes[key]||'')}</textarea></div>`;
+}
+function renderSection(){
+  const s=SECTIONS[step];
+  card.innerHTML=`
+    <div class="steprow">${dotsHTML()}<div class="stepn">Step ${step+1} of ${SECTIONS.length}</div></div>
+    <div class="qkicker"><span class="qicon">${s.icon}</span>${s.title}${s.gate?'<span class="gatetag">eligibility gate</span>':''}</div>
+    <h1 class="q">${s.ask}</h1>
+    <div class="answers" id="answers">${BODY[s.key]()}</div>
+    <div class="result" id="result">${resultHTML(s.key)}</div>
+    ${notesHTML(s.key,s.title)}
+    <div class="nav">
+      <button class="navbtn back" onclick="backPrev()" ${step===0?'disabled':''}>← Back</button>
+      <button class="navbtn cont" onclick="contNext()">${step===SECTIONS.length-1?'See summary →':'Continue →'}</button>
     </div>`;
-  });
-  rail.innerHTML=html;
+}
+function renderSummary(){
+  const all=allFlags(); const v=verdictOf(all);
+  const sorted=[...all].sort((a,b)=>TIER_ORDER[a.tier]-TIER_ORDER[b.tier]);
+  const name=lead.meta.name.trim();
+  const noteRows=SECTIONS.filter(s=>(lead.notes[s.key]||'').trim()).map(s=>`<div class="muted" style="padding:4px 2px"><b>${s.title}:</b> ${escapeHtml(lead.notes[s.key])}</div>`).join('');
+  card.innerHTML=`
+    <div class="steprow">${dotsHTML()}<div class="stepn">Summary</div></div>
+    <div class="sum-banner ${v.cls||'none'}"><div class="sum-v">${v.label}</div><div class="sum-sub">${all.length?v.sub:'Nothing screened yet'}</div></div>
+    <div class="sum-name">Prescreen summary${name?` — <b>${escapeHtml(name)}</b>`:''}${lead.meta.phone?` · ${escapeHtml(lead.meta.phone)}`:''}</div>
+    <div>${sorted.length?sorted.map(flagHTML).join(''):'<div class="muted">Go back and answer a few questions to build the sheet.</div>'}</div>
+    ${noteRows?`<div class="sum-name">Notes</div>${noteRows}`:''}
+    <div class="nav">
+      <button class="navbtn back" onclick="backPrev()">← Back</button>
+      <button class="navbtn" onclick="copySheet()">⧉ Copy</button>
+      <button class="navbtn cont" onclick="printSheet()">🖨 Print worksheet</button>
+    </div>`;
+}
+function render(){ if(step>=SECTIONS.length) renderSummary(); else renderSection(); renderChrome(); }
+function refreshAnswers(){ const a=document.getElementById('answers'); if(a) a.innerHTML=BODY[SECTIONS[step].key](); sync(); }
+function sync(){ const r=document.getElementById('result'); if(r && step<SECTIONS.length) r.innerHTML=resultHTML(SECTIONS[step].key); renderChrome(); save(); }
+function renderChrome(){
+  const all=allFlags(); const v=verdictOf(all);
+  const vEl=document.getElementById('verdict');
+  vEl.className='pill '+(v.cls||'');
+  document.getElementById('vlabel').textContent=v.label;
+  document.getElementById('vsub').textContent=v.sub;
+  document.getElementById('bar').style.width=Math.round((step/SECTIONS.length)*100)+'%';
+  const dr=document.getElementById('dotrow'); if(dr) dr.outerHTML=dotsHTML();
+  renderOverview(v);
+}
+function renderOverview(v){
+  v=v||verdictOf(allFlags());
+  const ov=document.getElementById('ovV'), ovs=document.getElementById('ovVs');
+  ov.className='ov-vlabel '+(v.cls||'none'); ov.textContent=v.label; ovs.textContent=v.sub;
+  document.getElementById('ovBody').innerHTML=SECTIONS.map((s,i)=>{
+    const fls=EVALS[s.key](); const st=worst(fls);
+    const line = fls.length ? fls[0].title : 'Not screened yet';
+    return `<button class="ovrow ${i===step?'cur':''}" onclick="goStep(${i});if(window.innerWidth<900)toggleOv()">
+      <span class="ovchip ${st}">${s.letter}</span>
+      <span class="ovmeta"><b>${s.title}</b><small>${escapeHtml(line)}</small></span>
+    </button>`;
+  }).join('');
 }
 
-/* ════════ RIGHT READOUT ════════ */
-function allFlags(){ let all=[]; SECTIONS.forEach(s=>{ all=all.concat(EVALS[s.key]()); }); return all; }
-function worst(flags){ if(flags.some(x=>x.tier==='nogo'))return 'nogo'; if(flags.some(x=>x.tier==='waiver'))return 'waiver'; if(flags.some(x=>x.tier==='go'))return 'go'; return ''; }
+/* ════════ NAV ════════ */
+function goStep(n){ clearTimeout(advTimer); step=Math.max(0,Math.min(SECTIONS.length,n)); render(); save(); window.scrollTo({top:0,behavior:'smooth'}); }
+function contNext(){ goStep(step+1); }
+function backPrev(){ goStep(step-1); }
+function toggleOv(){ document.body.classList.toggle('ov-open'); }
 
-function renderReadout(){
-  const all=allFlags();
-  const flagsEl=document.getElementById('flags');
-  // meter
-  const meter=document.getElementById('meter');
-  meter.innerHTML=SECTIONS.map(s=>{const st=worst(EVALS[s.key]());return `<div class="seg ${st}"></div>`;}).join('');
-  if(!all.length){ flagsEl.innerHTML=`<div class="empty">Start entering data on the left.<br>Flags, citations &amp; talk tracks appear here as you go.</div>`; return; }
-  // sort: nogo, waiver, go
-  const order={nogo:0,waiver:1,info:2,go:3};
-  all.sort((a,b)=>order[a.tier]-order[b.tier]);
-  flagsEl.innerHTML=all.map(fl=>`
-    <div class="flag ${fl.tier}">
-      <div class="fh"><span class="ltr">${fl.letter}</span><span class="badge ${fl.tier}">${fl.tier==='nogo'?'No-Go':fl.tier==='waiver'?'Waiver':'Clear'}</span></div>
-      <div class="ft">${fl.title}</div>
-      <div class="fg">${fl.guidance}</div>
-      ${fl.cite?`<div class="cite">${fl.cite}</div>`:''}
-      ${fl.acts?`<ul class="act">${fl.acts.map(a=>`<li>${a}</li>`).join('')}</ul>`:''}
-      ${fl.talk?`<div class="talk"><b>Say it like this</b>${fl.talk}</div>`:''}
-      ${fl.link?`<a class="applink" href="${fl.link.href}" target="_blank" rel="noopener">${fl.link.icon} ${fl.link.label} →</a>`:''}
-    </div>`).join('');
+/* ════════ AUTO-ADVANCE ════════ */
+let autoAdvance=true, advTimer=null;
+function scheduleAdvance(){
+  clearTimeout(advTimer); if(!autoAdvance) return;
+  const key=SECTIONS[step]?.key; if(!key) return;
+  if(!(COMPLETE[key] && COMPLETE[key]())) return;
+  const nextLabel = step+1>=SECTIONS.length ? 'Summary' : SECTIONS[step+1].title;
+  toast('Next: '+nextLabel+' →');
+  advTimer=setTimeout(contNext, 780);
 }
 
-/* ════════ VERDICT ════════ */
-function renderVerdict(){
-  const all=allFlags();
-  const v=document.getElementById('verdict');
-  const lbl=document.getElementById('vLabel'), sub=document.getElementById('vSub');
-  v.classList.remove('go','waiver','nogo');
-  if(!all.length){ lbl.textContent='START'; sub.textContent='no data entered'; return; }
-  const nogo=all.filter(x=>x.tier==='nogo').length, wv=all.filter(x=>x.tier==='waiver').length;
-  if(nogo){ v.classList.add('nogo'); lbl.textContent='NO-GO'; sub.textContent=`${nogo} hard stop${nogo>1?'s':''}`; }
-  else if(wv){ v.classList.add('waiver'); lbl.textContent='WAIVER'; sub.textContent=`${wv} item${wv>1?'s':''} to work`; }
-  else { v.classList.add('go'); lbl.textContent='GO'; sub.textContent='clear so far'; }
-}
-
-/* ════════ ORCHESTRATION ════════ */
-function sync(){ renderRail(); renderReadout(); renderVerdict(); save();
-  // refresh inline phys readout / age note without losing focus
-  const s=SECTIONS.find(x=>x.key===active);
-  if(active==='P2'){ const n=stage.querySelector('.note'); if(n) n.outerHTML=physReadout(); }
-}
-function setActive(k){ clearTimeout(advTimer); active=k; renderRail(); renderStage(); }
-function go(d){ const i=SECTIONS.findIndex(x=>x.key===active); const ni=Math.max(0,Math.min(SECTIONS.length-1,i+d)); setActive(SECTIONS[ni].key); }
-
-/* keyboard hotkeys */
+/* ════════ KEYBOARD ════════ */
 document.addEventListener('keydown',e=>{
-  if(e.target.tagName==='INPUT') return;
-  const s=SECTIONS.find(x=>x.hot===e.key.toLowerCase());
-  if(s){ setActive(s.key); e.preventDefault(); }
-  if(e.key==='ArrowRight'||e.key==='Enter') go(1);
-  if(e.key==='ArrowLeft') go(-1);
+  const inField = e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA';
+  if(e.key==='Enter' && e.target.tagName!=='TEXTAREA'){ e.preventDefault(); contNext(); return; }
+  if(inField) return;
+  if(/^[1-9]$/.test(e.key)){ const opts=[...document.querySelectorAll('#answers .opt')]; const o=opts[+e.key-1]; if(o){o.click();e.preventDefault();} }
+  if(e.key==='ArrowLeft') backPrev();
+  if(e.key==='ArrowRight') contNext();
 });
 
-/* persistence */
-function save(){ try{ localStorage.setItem('appleMDT', JSON.stringify({lead, name:document.getElementById('leadName').value})); }catch(e){} }
-function load(){ try{ const d=JSON.parse(localStorage.getItem('appleMDT')); if(d){ Object.assign(lead,d.lead); document.getElementById('leadName').value=d.name||''; } }catch(e){} }
+/* ════════ PERSISTENCE / HEADER ════════ */
+function save(){ try{ localStorage.setItem('mdt2', JSON.stringify({lead, step})); }catch(e){} }
+function load(){ try{ const d=JSON.parse(localStorage.getItem('mdt2')); if(d){ deepAssign(lead,d.lead||{}); if(Number.isInteger(d.step)) step=d.step; } }catch(e){} }
+function deepAssign(t,s){ for(const k in s){ if(s[k]&&typeof s[k]==='object'&&!Array.isArray(s[k])) deepAssign(t[k]||(t[k]={}),s[k]); else t[k]=s[k]; } }
 
-document.getElementById('leadName').addEventListener('input',save);
-
-/* auto-advance toggle */
 const autoBtn=document.getElementById('autoBtn');
-function paintAuto(){ autoBtn.classList.toggle('on',autoAdvance); autoBtn.classList.toggle('off',!autoAdvance);
-  autoBtn.textContent=(autoAdvance?'⏵ Auto-advance':'❙❙ Auto-advance'); }
-autoBtn.onclick=()=>{ autoAdvance=!autoAdvance; if(!autoAdvance) clearTimeout(advTimer); paintAuto();
-  try{ localStorage.setItem('mdtAuto',autoAdvance?'1':'0'); }catch(e){} };
-try{ if(localStorage.getItem('mdtAuto')==='0') autoAdvance=false; }catch(e){}
-paintAuto();
+function paintAuto(){ autoBtn.classList.toggle('active',autoAdvance); autoBtn.textContent='Auto-advance: '+(autoAdvance?'On':'Off'); }
+autoBtn.onclick=()=>{ autoAdvance=!autoAdvance; if(!autoAdvance)clearTimeout(advTimer); paintAuto(); try{localStorage.setItem('mdt2auto',autoAdvance?'1':'0');}catch(e){} };
+try{ if(localStorage.getItem('mdt2auto')==='0') autoAdvance=false; }catch(e){}
 
-/* reset */
-document.getElementById('resetBtn').onclick=()=>{
-  if(!confirm('Clear this lead and start fresh?')) return;
-  localStorage.removeItem('appleMDT'); location.reload();
-};
+document.getElementById('verdict').onclick=()=>goStep(SECTIONS.length);
+document.getElementById('ovBtn').onclick=toggleOv;
+document.getElementById('printBtn').onclick=printSheet;
+document.getElementById('resetBtn').onclick=()=>{ if(confirm('Clear this lead and start over?')){ localStorage.removeItem('mdt2'); location.reload(); } };
+document.getElementById('copyBtn').onclick=copySheet;
 
-/* copy sheet */
-document.getElementById('copyBtn').onclick=()=>{
-  const name=document.getElementById('leadName').value||'(unnamed lead)';
-  const all=allFlags();
-  const nogo=all.filter(x=>x.tier==='nogo').length, wv=all.filter(x=>x.tier==='waiver').length;
-  const verdict = nogo?'NO-GO':wv?'WAIVER NEEDED':'GO';
-  let out=`APPLE MDT QUICKSCREEN — ${name}\nDate: ${new Date().toLocaleDateString()}\nVERDICT: ${verdict}\n`;
-  out+='─'.repeat(40)+'\n';
-  SECTIONS.forEach(s=>{
-    const fl=EVALS[s.key]();
-    if(!fl.length){ out+=`${s.letter} ${s.title}: (not screened)\n`; return; }
-    fl.forEach(x=>{ out+=`${x.letter} ${s.title} [${x.tier.toUpperCase()}] ${x.title} — ${x.cite||''}\n`; });
-  });
-  out+='─'.repeat(40)+'\nDecision-support only — verify against AR 601-210 / 670-1.';
-  navigator.clipboard.writeText(out).then(()=>toast('Sheet copied to clipboard')).catch(()=>{ prompt('Copy:',out); });
-};
+function copySheet(){
+  const m=lead.meta; const all=allFlags(); const v=verdictOf(all);
+  let out='APPLE MDT QUICKSCREEN — '+(m.name.trim()||'(unnamed lead)')+(m.phone?'  '+m.phone:'')+'\nLincoln North Recruiting Station\nDate: '+new Date().toLocaleDateString()+'\nRESULT: '+v.label+'  ('+v.sub+')\n'+'─'.repeat(44)+'\n';
+  SECTIONS.forEach(s=>{ const fls=EVALS[s.key](); if(!fls.length){ out+=s.letter+' '+s.title+': (not screened)\n'; return; }
+    fls.forEach(x=>{ out+=s.letter+' '+s.title+' ['+tierLabel(x.tier).toUpperCase()+'] '+x.title+(x.cite?' — '+x.cite:'')+'\n'; });
+    if((lead.notes[s.key]||'').trim()) out+='   note: '+lead.notes[s.key].trim()+'\n'; });
+  out+='─'.repeat(44)+'\nDecision-support only — verify against AR 601-210 / 670-1 / DoDI 6130.03.';
+  navigator.clipboard.writeText(out).then(()=>toast('Sheet copied')).catch(()=>prompt('Copy:',out));
+}
 
-function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1600); }
+/* ════════ PRINT WORKSHEET ════════ */
+const ARMY_STAR='<svg class="ps-star" viewBox="0 0 100 100"><path fill="#FFCC01" d="M50 2 L61.8 36.4 L98 36.4 L68.6 57.7 L80.4 92.1 L50 70.8 L19.6 92.1 L31.4 57.7 L2 36.4 L38.2 36.4 Z"/><path fill="currentColor" d="M50 28 L55.3 43.5 L71.6 43.5 L58.4 53.1 L63.7 68.6 L50 59.1 L36.3 68.6 L41.6 53.1 L28.4 43.5 L44.7 43.5 Z"/></svg>';
+function buildPrintSheet(){
+  const m=lead.meta; const all=allFlags(); const v=verdictOf(all);
+  const today=new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+  let rows='';
+  SECTIONS.forEach(s=>{ const fls=EVALS[s.key]();
+    if(!fls.length){ rows+=`<tr><td><b>${s.letter}</b> · ${s.title}</td><td><span class="ps-st none">—</span></td><td style="color:#999">Not screened</td><td></td></tr>`; return; }
+    fls.forEach((x,idx)=>{ rows+=`<tr><td>${idx===0?'<b>'+s.letter+'</b> · '+s.title:''}</td><td><span class="ps-st ${x.tier}">${tierLabel(x.tier)}</span></td><td>${escapeHtml(x.title)}</td><td style="color:#666">${x.cite||''}</td></tr>`; }); });
+  const noteRows=SECTIONS.filter(s=>(lead.notes[s.key]||'').trim()).map(s=>`<div class="ps-note"><b>${s.title}:</b> ${escapeHtml(lead.notes[s.key])}</div>`).join('');
+  document.getElementById('printsheet').innerHTML=`<div class="ps">
+    <div class="ps-lh">${ARMY_STAR}<div class="ps-lh-txt">
+      <div class="ps-dept">Department of the Army · U.S. Army Recruiting Command</div>
+      <div class="ps-station">Lincoln North Recruiting Station</div>
+      <div class="ps-sub">Applicant Pre-Qualification Worksheet</div>
+    </div></div>
+    <div class="ps-goldrule"></div>
+    <div class="ps-title">APPLE MDT Prescreen Worksheet</div>
+    <div class="ps-meta">
+      <div><span class="k">Applicant</span><span class="v">${escapeHtml(m.name)||'&nbsp;'}</span></div>
+      <div><span class="k">Date</span><span class="v">${today}</span></div>
+      <div><span class="k">Phone</span><span class="v">${escapeHtml(m.phone)||'&nbsp;'}</span></div>
+      <div><span class="k">Recruiter</span><span class="v">&nbsp;</span></div>
+    </div>
+    <div class="ps-verdict"><span class="vk">Prescreen result</span><span class="vv ${v.cls||''}">${v.label}</span><span style="color:#555;font-size:13px">${all.length?v.sub:''}</span></div>
+    <table class="ps-tbl"><thead><tr><th style="width:24%">Area</th><th style="width:13%">Status</th><th>Finding</th><th style="width:24%">Reference</th></tr></thead><tbody>${rows}</tbody></table>
+    ${noteRows?`<div class="ps-notes"><h4>Recruiter Notes</h4>${noteRows}</div>`:''}
+    <div class="ps-sign"><div>Recruiter signature / date</div><div>Applicant initials / date</div></div>
+    <div class="ps-disc">Status key: GO = fully clear · ELIGIBLE = qualified, action/documentation only (not a waiver) · WAIVER = a waiver packet is required · NO-GO = disqualifying. Decision-support only — all results must be verified against current AR 601-210, AR 670-1, and DoDI 6130.03 by a guidance counselor before any commitment is made to the applicant.</div>
+  </div>`;
+}
+function printSheet(){ buildPrintSheet(); window.print(); }
+window.onbeforeprint=buildPrintSheet;
+
+function toast(mm){ const t=document.getElementById('toast'); t.textContent=mm; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'),1700); }
 
 /* boot */
-load(); setActive('A'); renderReadout(); renderVerdict();
+load(); paintAuto(); render();
 </script>
 </body>
 </html>
