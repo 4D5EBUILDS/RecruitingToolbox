@@ -9,11 +9,11 @@
 @font-face{font-family:"GI";src:url("../fonts/G.I.-750.ttf");font-weight:700;font-display:swap}
 
 :root,[data-theme="dark"]{
-  --bg:#0f0c10;--bg-s:#1a1719;--bg-c:#201d22;--bg-h:rgba(255,204,1,.04);
+  --bg:#050507;--bg-s:#0a0a0f;--bg-c:#111113;--bg-h:rgba(255,204,1,.03);
   --fg:#FFCC01;--fg2:#F0EDF0;--fg-m:#8A878A;--fg-d:#444;
-  --bd:rgba(255,204,1,.09);--bd-m:rgba(255,204,1,.16);--bd-s:rgba(255,204,1,.3);
+  --bd:rgba(255,204,1,.12);--bd-m:rgba(255,204,1,.22);--bd-s:rgba(255,204,1,.45);
   --gold:#FFCC01;--danger:#CF0000;--green:#2d7a4f;--blue:#1a5fa8;--amber:#b07800;
-  --in-bg:rgba(255,255,255,.04);--in-bd:rgba(255,204,1,.2);
+  --in-bg:rgba(255,255,255,.03);--in-bd:rgba(255,204,1,.25);
   --sidebar-w:260px;--ref-w:300px;
 }
 [data-theme="light"]{
@@ -27,6 +27,7 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow:hidden}
 body{font-family:"GI",Arial,sans-serif;background:var(--bg);color:var(--fg2);font-weight:500;-webkit-font-smoothing:antialiased;transition:background .3s,color .3s}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(#111113 1px,transparent 1px),linear-gradient(90deg,#111113 1px,transparent 1px);background-size:22px 22px;opacity:.75;z-index:-1}
 button,select,textarea,input{font-family:inherit}
 ::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bd-s)}
 
@@ -49,7 +50,7 @@ button,select,textarea,input{font-family:inherit}
 /* ── TOP BAR ───────────────────────────────────────────────── */
 .topbar{flex-shrink:0;height:52px;display:flex;align-items:center;gap:12px;padding:0 16px;background:var(--bg-s);border-bottom:1px solid var(--bd);z-index:20}
 .topbar-badge{background:var(--gold);color:#000;font-weight:700;font-size:9px;padding:2px 7px;letter-spacing:.08em;text-transform:uppercase;flex-shrink:0}
-.topbar-title{font-size:13px;font-weight:700;color:var(--fg);letter-spacing:.04em;text-transform:uppercase}
+.topbar-title{font-size:13px;font-weight:700;color:var(--fg);letter-spacing:.04em;text-transform:uppercase;text-shadow:0 0 8px rgba(255,204,1,.3)}
 .topbar-sub{font-size:10px;color:var(--fg-m)}
 .topbar-center{flex:1;display:flex;align-items:center;justify-content:center;gap:16px}
 .topbar-actions{display:flex;gap:6px;align-items:center}
@@ -212,7 +213,8 @@ button,select,textarea,input{font-family:inherit}
 
 /* ── VERDICT ───────────────────────────────────────────────── */
 .verdict-card{padding:24px;animation:stampIn .35s ease both}
-.verdict-WAIVABLE{background:rgba(45,122,79,.1);border:2px solid rgba(45,122,79,.45)}
+.verdict-WAIVABLE{box-shadow:0 0 0 1px #050507, 0 0 25px rgba(255,204,1,.4) !important}
+.verdict-WAIVABLE{background:#111113;border:3px solid #FFCC01;box-shadow:0 0 0 1px #050507, 0 0 18px rgba(255,204,1,.35)}
 .verdict-NO_WAIVER_REQUIRED{background:rgba(26,95,168,.1);border:2px solid rgba(26,95,168,.45)}
 .verdict-NOT_WAIVABLE{background:rgba(207,0,0,.1);border:2px solid rgba(207,0,0,.45)}
 .verdict-ETP_REQUIRED{background:rgba(176,120,0,.1);border:2px solid rgba(176,120,0,.4)}
@@ -227,9 +229,9 @@ button,select,textarea,input{font-family:inherit}
 .verdict-NO_WAIVER_REQUIRED .verdict-title{color:#5b9fd4}
 .verdict-NOT_WAIVABLE .verdict-title{color:#ff5555}
 .verdict-ETP_REQUIRED .verdict-title,.verdict-WAITING_PERIOD .verdict-title{color:#ffb84d}
-.verdict-body{font-size:13px;color:var(--fg2);line-height:1.6;margin-bottom:12px}
-.verdict-cite{font-size:11px;color:var(--fg-m);padding:5px 9px;background:rgba(255,255,255,.03);border-left:2px solid var(--bd-m);display:inline-block;margin-bottom:12px}
-.authority-badge{display:inline-flex;align-items:center;gap:7px;padding:7px 14px;background:var(--gold);color:#000;font-weight:700;font-size:12px;letter-spacing:.04em}
+.verdict-body{font-size:13px;color:var(--fg2);line-height:1.55;margin-bottom:12px}
+.verdict-cite{font-size:11px;color:#FFCC01;padding:6px 12px;background:#111113;border-left:3px solid #FFCC01;display:inline-block;margin-bottom:12px;font-weight:600}
+.authority-badge{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;background:#FFCC01;color:#000;font-weight:700;font-size:12px;letter-spacing:.04em;box-shadow:0 0 14px rgba(255,204,1,.55)}
 
 /* ── APPROVABILITY METER ───────────────────────────────────── */
 .approval-meter{padding:14px 16px;border:1px solid var(--bd);background:var(--bg-s);margin-top:12px}
@@ -392,6 +394,84 @@ select.form-input{cursor:pointer}
 /* ── WAIVER BOT ─────────────────────────────────────────────── */
 .bot-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--fg);flex:1}
 .bot-sub{font-size:10px;color:var(--fg-m);margin-top:1px}
+
+/* ══════════════════════════════════════════════════════════════
+   TACTICAL OVERRIDE LAYER — "Bold Tactical" aggressive redesign
+   Loaded last so it overrides the base styles above.
+   ══════════════════════════════════════════════════════════════ */
+
+/* Intensified frame contrast */
+:root,[data-theme="dark"]{
+  --bd:rgba(255,204,1,.16);
+  --bd-m:rgba(255,204,1,.32);
+  --bd-s:rgba(255,204,1,.58);
+}
+
+/* Heavier, more commanding display type */
+.topbar-title{font-size:14px;letter-spacing:.14em}
+.card-title{letter-spacing:.09em}
+.tab-btn,.btn{letter-spacing:.09em}
+.offense-group-label,.form-section,.label-sm,.sidebar-title,
+.ref-panel-title,.kanban-col-hdr,.verdict-tag{letter-spacing:.13em}
+
+/* Top command accent rail on the header */
+.topbar{border-bottom:2px solid var(--bd-m);box-shadow:0 2px 0 rgba(0,0,0,.55)}
+.topbar::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--gold),rgba(255,204,1,0) 55%);z-index:1}
+
+/* Notched tactical chip badges */
+.topbar-badge{clip-path:polygon(0 0,100% 0,100% calc(100% - 5px),calc(100% - 5px) 100%,0 100%);
+  filter:drop-shadow(0 0 8px rgba(255,204,1,.45))}
+
+/* Buttons — beveled corners + drop-shadow glow (survives clip-path) */
+.btn{clip-path:polygon(7px 0,100% 0,100% calc(100% - 7px),calc(100% - 7px) 100%,0 100%,0 7px)}
+.btn-gold{filter:drop-shadow(0 3px 9px rgba(255,204,1,.22))}
+.btn-gold:hover{filter:drop-shadow(0 0 14px rgba(255,204,1,.5));transform:translateY(-1px)}
+.btn-outline:hover{border-color:var(--gold);color:var(--gold)}
+
+/* Tab nav — active tab reads as a lit command block */
+.tab-btn{border-bottom-width:3px}
+.tab-btn.active{background:linear-gradient(180deg,rgba(255,204,1,.12),rgba(255,204,1,0))}
+
+/* Cards — HUD corner brackets + faint top sheen */
+.card{position:relative;background:linear-gradient(180deg,rgba(255,204,1,.018),transparent 40%),var(--bg-c)}
+.card::before{content:"";position:absolute;top:-1px;left:-1px;width:13px;height:13px;
+  border-top:2px solid var(--gold);border-left:2px solid var(--gold);opacity:.6;pointer-events:none}
+.card::after{content:"";position:absolute;bottom:-1px;right:-1px;width:13px;height:13px;
+  border-bottom:2px solid var(--gold);border-right:2px solid var(--gold);opacity:.6;pointer-events:none}
+
+/* Section bar — taller, glowing command stripe */
+.section-bar{width:4px;box-shadow:0 0 8px rgba(255,204,1,.55)}
+
+/* Verdict card — heavy beveled tactical frame */
+.verdict-card{clip-path:polygon(13px 0,100% 0,100% calc(100% - 13px),calc(100% - 13px) 100%,0 100%,0 13px);
+  border-width:2px}
+.verdict-title{font-size:23px;letter-spacing:.02em}
+.verdict-WAIVABLE{filter:drop-shadow(0 0 16px rgba(255,204,1,.4))}
+
+/* Authority badge — command pill */
+.authority-badge{clip-path:polygon(8px 0,100% 0,100% 100%,0 100%,0 8px)}
+
+/* Hazard-stripe accent on absolute-bar / denial states */
+.offense-card.bar,.verdict-NOT_WAIVABLE,.alert-danger{
+  background-image:repeating-linear-gradient(45deg,rgba(207,0,0,.10) 0 10px,transparent 10px 20px)}
+.verdict-NOT_WAIVABLE{border-width:2px}
+
+/* Offense / applicant cards — lift + lock-on highlight */
+.offense-card,.appl-card{transition:all .15s}
+.offense-card:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(0,0,0,.45)}
+.offense-card.selected{box-shadow:0 0 0 1px var(--gold),0 0 14px rgba(255,204,1,.22)}
+.appl-card.active{box-shadow:inset 3px 0 0 var(--gold)}
+
+/* Beveled status / level micro-badges */
+.offense-level-badge,.chip-verdict,.status-badge{
+  clip-path:polygon(4px 0,100% 0,100% calc(100% - 4px),calc(100% - 4px) 100%,0 100%,0 4px)}
+
+/* Inputs — sharper tactical focus ring */
+.form-input:focus,.expert-select:focus{box-shadow:0 0 0 1px rgba(255,204,1,.32)}
+
+/* Readiness ring glow */
+.readiness-ring .ring-fill{filter:drop-shadow(0 0 3px rgba(255,204,1,.5))}
 
 /* ── PRINT ─────────────────────────────────────────────────── */
 @media print{
@@ -882,6 +962,18 @@ const Phase1 = ({ applicant, setApplicant, onHighlight }) => {
   };
 
   const finishScreening = (catId, answers, verdict) => {
+    // Smart guard: block an EXACT duplicate (same category + same offense date).
+    // Duplicates inflate the offense count and can falsely trip the
+    // "2+ major misconduct = permanent DQ" rule (AR 601-210 para 4-22i).
+    const isDup = screenedOffenses.some(so =>
+      so.categoryId === catId && (so.offenseDate || '') === (offenseDate || '')
+    );
+    if (isDup) {
+      const cat = OFFENSE_CATEGORIES.find(c => c.id === catId);
+      alert(`"${cat?.label || catId}"${offenseDate ? ` on ${offenseDate}` : ''} is already on the screened list.\n\nIf this is a separate incident, add it with its own offense date. Otherwise edit the existing entry — duplicates can distort the offense count and authority-level result.`);
+      setAddingOffense(false); setSelectedCategory(null);
+      return;
+    }
     const newEntry = {
       id:`so${Date.now()}`, categoryId:catId, answers, verdict,
       offenseDate,
@@ -980,9 +1072,7 @@ const Phase1 = ({ applicant, setApplicant, onHighlight }) => {
         <div className="alert alert-success" style={{marginBottom:14}}>
           <span className="alert-icon">📋</span>
           <div>
-            <strong>2026 Update — Marijuana Possession:</strong> Per AR 601-210 para 4-6 (effective ~Apr 2026),
-            a <strong>single conviction</strong> for marijuana possession or paraphernalia <strong>no longer requires a waiver</strong>.
-            Select "Traffic — Minor" or see para 4-6. Distribution still requires DMPM waiver.
+            <strong>2026:</strong> A single marijuana possession/paraphernalia conviction no longer needs a waiver (AR 601-210 4-6). Distribution still requires DMPM.
           </div>
         </div>
 
@@ -1421,6 +1511,49 @@ const OverallVerdictBanner = ({ screenedOffenses, auth, authorityLabels, approv,
           <div style={{fontSize:11,color:'var(--fg-m)'}}>Waiver valid <strong style={{color:'var(--fg2)'}}>6 months</strong> from approval · AR 601-210, para 4-27</div>
         </div>
       )}
+
+      {/* Confinement / disposition waiting-period countdown */}
+      {ov === 'WAITING_PERIOD' && (() => {
+        const waiters = screenedOffenses.filter(so => so.verdict?.type === 'WAITING_PERIOD' && so.verdict?.waitMonths);
+        if (!waiters.length) return null;
+        const now = new Date();
+        const fmt = d => (d && !isNaN(d)) ? d.toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'}) : '—';
+        const rows = waiters.map(so => {
+          const cat = OFFENSE_CATEGORIES.find(c => c.id === so.categoryId);
+          const startStr = so.convictionDate || so.offenseDate || '';
+          const wm = so.verdict.waitMonths;
+          let earliest = null, daysLeft = null;
+          if (startStr) {
+            earliest = new Date(startStr);
+            earliest.setMonth(earliest.getMonth() + wm);
+            daysLeft = Math.ceil((earliest - now) / 86400000);
+          }
+          return { id:so.id, label:cat?.label || so.categoryId, wm, startStr, earliest, daysLeft, cite:so.verdict.cite };
+        });
+        return (
+          <div style={{marginTop:12, border:'1px solid rgba(176,120,0,.4)', background:'rgba(176,120,0,.07)', padding:'14px 16px'}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:8}}>
+              <span style={{fontSize:16}}>⏳</span>
+              <span style={{fontSize:12,fontWeight:700,letterSpacing:'.08em',textTransform:'uppercase',color:'#ffb84d'}}>Waiting Period Countdown</span>
+            </div>
+            {rows.map(r => (
+              <div key={r.id} style={{padding:'8px 0', borderTop:'1px solid rgba(176,120,0,.2)'}}>
+                <div style={{fontSize:12,fontWeight:700,color:'var(--fg2)',marginBottom:3}}>{r.label} · {r.wm}-month wait</div>
+                {!r.startStr ? (
+                  <div style={{fontSize:11,color:'#ffcc66'}}>Enter the conviction / release-from-confinement date on this offense to calculate the earliest submission date.</div>
+                ) : r.daysLeft > 0 ? (
+                  <div style={{fontSize:11,color:'var(--fg2)'}}>
+                    <strong style={{color:'#ffb84d',fontSize:13}}>{r.daysLeft} days remaining</strong> · earliest submission <strong>{fmt(r.earliest)}</strong>
+                    <div style={{fontSize:10,color:'var(--fg-m)',marginTop:2}}>Clock from {fmt(new Date(r.startStr))}. {r.cite || 'AR 601-210 para 4-31'}. BN CO may shorten this window.</div>
+                  </div>
+                ) : (
+                  <div style={{fontSize:11,color:'#5bc989'}}>✔ Waiting period satisfied ({Math.abs(r.daysLeft)} days past) — verify against the actual release-from-confinement date before submitting.</div>
+                )}
+              </div>
+            ))}
+          </div>
+        );
+      })()}
 
       {/* Approvability Meter + date risks */}
       {approv && ov === 'WAIVABLE' && (() => {
@@ -2385,6 +2518,7 @@ const Phase4 = ({ applicant, setApplicant }) => {
 
 /* ── Right Regulation Panel ──────────────────────────── */
 const RefPanel = ({ collapsed, tab, authority, highlighted }) => {
+  const [refExpanded, setRefExpanded] = useState({});
   const relevantParas = {
     1: ['4-22g','4-22h','4-22i','4-22j','4-22k','4-31','4-30','4-35','4-18','4-8'],
     2: ['4-28','4-28e4','4-28e5','4-27'],
@@ -2416,6 +2550,7 @@ const RefPanel = ({ collapsed, tab, authority, highlighted }) => {
         ))}
         {ordered.map(para => {
           const isHighlighted = hi.includes(para);
+          const isOpen = isHighlighted || !!refExpanded[para];
           return (
             <div key={para} className={`ref-entry${isHighlighted?' highlighted':''}`} style={isHighlighted?{marginBottom:10}:{}}>
               {isHighlighted && (
@@ -2423,8 +2558,15 @@ const RefPanel = ({ collapsed, tab, authority, highlighted }) => {
                   ▶ RELEVANT TO CURRENT SELECTION
                 </div>
               )}
-              <div className="ref-para-id">Para {para}</div>
-              <div className="ref-para-text">{PARA_TEXT[para]}</div>
+              <div className="ref-para-id"
+                onClick={()=>{ if(!isHighlighted) setRefExpanded(s=>({...s,[para]:!s[para]})); }}
+                style={{display:'flex',alignItems:'center',justifyContent:'space-between',cursor:isHighlighted?'default':'pointer'}}>
+                <span>Para {para}</span>
+                {!isHighlighted && <span style={{color:'var(--fg-m)',fontSize:9}}>{isOpen?'▲':'▼'}</span>}
+              </div>
+              <div className="ref-para-text" style={isOpen?{}:{color:'var(--fg-m)',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>
+                {PARA_TEXT[para]}
+              </div>
             </div>
           );
         })}
@@ -2677,6 +2819,52 @@ const App = () => {
 };
 
 ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+
+// === Aggressive Cyberpunk + Typewriter Polish (Final Direction) ===
+(function(){
+  // Add subtle gold glow to key gold elements
+  const style = document.createElement('style');
+  style.textContent = `
+    .auth-USAREC, .topbar-badge, .authority-badge { box-shadow: 0 0 12px rgba(255,204,1,.45) !important; }
+    .verdict-WAIVABLE { box-shadow: 0 0 0 1px #050507, 0 0 22px rgba(255,204,1,.38) !important; }
+  `;
+  document.head.appendChild(style);
+
+  // Simple typewriter for verdict explanation when WAIVABLE
+  function typeText(el, text, speed = 18) {
+    if (!el || el.dataset.typed) return;
+    el.dataset.typed = '1';
+    el.textContent = '';
+    let i = 0;
+    const cursor = document.createElement('span');
+    cursor.textContent = '▌';
+    cursor.style.color = '#FFCC01';
+    const iv = setInterval(() => {
+      if (i < text.length) {
+        el.appendChild(document.createTextNode(text[i]));
+        i++;
+        if (cursor.parentNode) cursor.parentNode.removeChild(cursor);
+        el.appendChild(cursor);
+      } else {
+        clearInterval(iv);
+        setTimeout(() => cursor.remove(), 900);
+      }
+    }, speed);
+  }
+
+  // Watch for verdict changes and apply typewriter on WAIVABLE
+  const observer = new MutationObserver(() => {
+    const verdictCard = document.querySelector('.verdict-WAIVABLE');
+    if (verdictCard) {
+      const body = verdictCard.querySelector('.verdict-body');
+      if (body && !body.dataset.typed && body.textContent.length > 20) {
+        const original = body.textContent.trim();
+        typeText(body, original, 16);
+      }
+    }
+  });
+  observer.observe(document.body, { childList: true, subtree: true });
+})();
 </script>
 </body>
 </html>
