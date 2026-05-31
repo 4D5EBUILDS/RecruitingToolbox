@@ -169,24 +169,12 @@ body{
 .event-info{flex:1;min-width:0;}
 .event-num-lbl{font-size:10px;font-weight:530;letter-spacing:1.5px;color:var(--army-gold);text-transform:uppercase;margin-bottom:4px;}
 .event-title{font-weight:750;font-size:22px;letter-spacing:0.3px;text-transform:uppercase;color:var(--white);margin-bottom:20px;line-height:1.1;}
-.metric-row{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px;}
+.metric-row{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px;}
 .metric-lbl{font-size:10px;font-weight:530;letter-spacing:0.5px;color:var(--gray-01);text-transform:uppercase;}
 .metric-val{font-size:13px;font-weight:530;color:var(--white);}
 
-/* ── INPUTS ──────────────────────────────────────────────────────────────────── */
-.input-row{display:flex;align-items:center;gap:12px;margin-bottom:8px;}
-input[type=range]{
-  flex:1;-webkit-appearance:none;appearance:none;
-  height:4px;background:var(--gray-02);outline:none;cursor:pointer;
-}
-input[type=range]::-webkit-slider-thumb{
-  -webkit-appearance:none;width:16px;height:16px;
-  background:var(--army-gold);cursor:pointer;border:none;border-radius:0;
-}
-input[type=range]::-moz-range-thumb{
-  width:16px;height:16px;background:var(--army-gold);
-  cursor:pointer;border-radius:0;border:none;
-}
+/* ── NUMBER INPUT ────────────────────────────────────────────────────────────── */
+.input-num-row{display:flex;align-items:center;gap:10px;margin-top:10px;}
 input[type=number]{
   width:76px;background:var(--army-black);border:2px solid var(--army-gold);
   color:var(--white);font-family:'G.I.',sans-serif;font-weight:400;font-size:16px;
@@ -198,24 +186,112 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0;}
 input[type=number]:focus{outline:3px solid var(--army-gold);outline-offset:3px;}
 .input-hint{
   font-size:9px;font-weight:530;letter-spacing:0.5px;
-  color:var(--gray-02);text-transform:uppercase;margin-top:4px;
+  color:var(--gray-02);text-transform:uppercase;margin-top:6px;
+}
+.input-unit{font-size:10px;font-weight:530;letter-spacing:0.5px;color:var(--gray-02);text-transform:uppercase;}
+
+/* ── ZONE TRACK ──────────────────────────────────────────────────────────────── */
+/*  Replaces the old slider + static zone bar.
+    The zone bar IS the draggable control.
+    A gold needle with a value bubble rides on top.        */
+.zone-track{
+  position:relative;
+  display:flex;
+  height:28px;
+  margin:16px 0 40px;
+  cursor:col-resize;
+  user-select:none;
+  border:1px solid rgba(255,255,255,0.10);
+  overflow:visible;           /* needle extends above */
+}
+.zone-track.zt-readonly{
+  cursor:default;
+  margin:10px 0 32px;
+}
+.zone-track:not(.zt-readonly):hover .zt-seg{filter:brightness(1.15);}
+.zt-seg{
+  position:relative;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+  transition:filter 0.12s ease;
+}
+.zt-below{background:rgba(110,108,104,0.22);}
+.zt-gold {background:rgba(255,204,1,0.20);border-left:2px solid var(--army-gold);}
+.zt-gray {background:rgba(168,166,162,0.17);border-left:2px solid var(--gray-01);}
+.zt-black{background:rgba(255,255,255,0.09);border-left:2px solid rgba(255,255,255,0.32);}
+
+.zt-lbl{
+  font-size:7px;font-weight:530;letter-spacing:0.9px;
+  text-transform:uppercase;pointer-events:none;white-space:nowrap;
+  color:rgba(255,255,255,0.28);
+}
+.zt-below .zt-lbl{color:rgba(110,108,104,0.7);}
+.zt-gold  .zt-lbl{color:rgba(255,204,1,0.65);}
+.zt-gray  .zt-lbl{color:rgba(168,166,162,0.70);}
+.zt-black .zt-lbl{color:rgba(255,255,255,0.38);}
+
+/* ── NEEDLE ────────── */
+.zt-needle{
+  position:absolute;
+  top:-8px;bottom:-8px;
+  width:2px;
+  background:var(--army-gold);
+  box-shadow:0 0 7px rgba(255,204,1,.85),0 0 2px rgba(255,204,1,1);
+  pointer-events:none;
+  transform:translateX(-50%);
+  z-index:5;
+  transition:left 0.09s ease;
 }
 
-/* ── ZONE BAR ────────────────────────────────────────────────────────────────── */
-.zone-bar{
-  display:flex;height:20px;
-  margin:10px 0 6px;overflow:hidden;
-  border:1px solid rgba(255,255,255,0.08);
+/* diamond cap on bottom of needle */
+.zt-needle::after{
+  content:'';
+  position:absolute;
+  bottom:-5px;left:50%;
+  transform:translateX(-50%) rotate(45deg);
+  width:8px;height:8px;
+  background:var(--army-gold);
+  box-shadow:0 0 6px rgba(255,204,1,.7);
 }
-.zb-seg{
-  display:flex;align-items:center;justify-content:center;
-  font-size:8px;font-weight:530;letter-spacing:1px;text-transform:uppercase;
-  overflow:hidden;white-space:nowrap;
+
+/* value bubble above needle */
+.zt-bubble{
+  position:absolute;
+  bottom:calc(100% + 10px);
+  left:50%;
+  transform:translateX(-50%);
+  background:var(--army-gold);
+  color:var(--army-black);
+  font-family:'G.I.',sans-serif;
+  font-size:9px;font-weight:750;letter-spacing:0.5px;
+  padding:3px 7px;
+  white-space:nowrap;
+  pointer-events:none;
 }
-.zb-below{background:rgba(110,108,104,0.2);color:var(--gray-02);}
-.zb-gold {background:rgba(255,204,1,0.18);color:var(--army-gold);border-left:2px solid var(--army-gold);}
-.zb-gray {background:rgba(168,166,162,0.15);color:var(--gray-01);border-left:2px solid var(--gray-01);}
-.zb-black{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.55);border-left:2px solid rgba(255,255,255,0.3);}
+.zt-bubble::after{
+  content:'';
+  position:absolute;
+  top:100%;left:50%;
+  transform:translateX(-50%);
+  border-left:5px solid transparent;
+  border-right:5px solid transparent;
+  border-top:6px solid var(--army-gold);
+}
+
+/* ── ZONE THRESHOLD LABELS (below track) ──── */
+.zt-labels{
+  display:flex;
+  margin-top:4px;
+}
+.zt-label-item{
+  font-size:8px;font-weight:530;letter-spacing:0.6px;
+  text-transform:uppercase;
+  color:var(--gray-02);
+  white-space:nowrap;
+}
+.zt-label-item.lbl-gold {color:rgba(255,204,1,.7);}
+.zt-label-item.lbl-gray {color:rgba(168,166,162,.8);}
+.zt-label-item.lbl-black{color:rgba(255,255,255,.5);}
 
 /* ── EVENT GRADE COLUMN ──────────────────────────────────────────────────────── */
 .event-grade-col{
@@ -234,7 +310,7 @@ input[type=number]:focus{outline:3px solid var(--army-gold);outline-offset:3px;}
 }
 
 /* ── SDL LADDER ──────────────────────────────────────────────────────────────── */
-.sdl-ladder{display:flex;gap:5px;flex-wrap:wrap;margin:10px 0 6px;}
+.sdl-ladder{display:flex;gap:5px;flex-wrap:wrap;margin:10px 0 8px;}
 .sdl-step{
   font-size:10px;font-weight:530;padding:5px 10px;
   border:1px solid var(--gray-02);color:var(--gray-02);
@@ -248,7 +324,7 @@ input[type=number]:focus{outline:3px solid var(--army-gold);outline-offset:3px;}
 .iar-inputs input[type=number]{width:100%;font-size:24px;padding:12px;}
 .iar-total-line{font-size:11px;font-weight:530;letter-spacing:0.5px;color:var(--gray-01);text-transform:uppercase;margin-bottom:10px;}
 .iar-total-line strong{color:var(--army-gold);font-weight:750;}
-.iar-ref{display:flex;gap:16px;margin-bottom:8px;}
+.iar-ref{display:flex;gap:16px;margin-bottom:8px;flex-wrap:wrap;}
 .iar-ref-item{font-size:10px;font-weight:530;letter-spacing:0.5px;text-transform:uppercase;padding:4px 10px;border-left:3px solid;}
 .iar-ref-item.gc{border-color:var(--army-gold);color:var(--army-gold);}
 .iar-ref-item.sc{border-color:var(--gray-01);color:var(--gray-01);}
@@ -285,7 +361,7 @@ input[type=number]:focus{outline:3px solid var(--army-gold);outline-offset:3px;}
 
 <!-- HEADER -->
 <header class="site-header">
-  <a class="header-back" href="index.html">← Toolbox</a>
+  <a class="header-back" href="../index.html">← Toolbox</a>
   <svg class="header-star" width="22" height="22" viewBox="0 0 22 22" fill="none" aria-label="U.S. Army">
     <polygon points="11,1.5 13.6,8.2 21,8.2 15.2,12.6 17.4,19.5 11,15.2 4.6,19.5 6.8,12.6 1,8.2 8.4,8.2" fill="#FFCC01"/>
   </svg>
@@ -329,7 +405,7 @@ input[type=number]:focus{outline:3px solid var(--army-gold);outline-offset:3px;}
   </div>
 </section>
 
-<!-- hidden compat — JS still writes these; values unused in new layout -->
+<!-- hidden compat spans -->
 <span id="sb-grade" style="display:none"></span>
 <div id="hero-mos" style="display:none"></div>
 
@@ -340,8 +416,8 @@ input[type=number]:focus{outline:3px solid var(--army-gold);outline-offset:3px;}
 
 <div class="event-list">
 
-  <!-- SLJ -->
-  <div class="event-card none" id="card-slj">
+  <!-- ── SLJ ─────────────────────────────────────────────── -->
+  <div class="event-card" id="card-slj">
     <div class="event-info">
       <div class="event-num-lbl">01 · Standing Long Jump</div>
       <div class="event-title">SLJ</div>
@@ -349,29 +425,35 @@ input[type=number]:focus{outline:3px solid var(--army-gold);outline-offset:3px;}
         <span class="metric-lbl">Jump Distance</span>
         <span class="metric-val" id="val-slj">—</span>
       </div>
-      <div class="input-row">
-        <input type="range" id="rng-slj" min="20" max="110" step="1" value="55">
+
+      <!--  ZONE TRACK — drag anywhere on the bar to set value  -->
+      <div class="zone-track" id="zt-slj">
+        <!-- flex values = proportional units within range 20–110 (90 total) -->
+        <div class="zt-seg zt-below" style="flex:27"><span class="zt-lbl">Below</span></div>
+        <div class="zt-seg zt-gold"  style="flex:8" ><span class="zt-lbl">Gold · 47"</span></div>
+        <div class="zt-seg zt-gray"  style="flex:8" ><span class="zt-lbl">Gray · 55"</span></div>
+        <div class="zt-seg zt-black" style="flex:47"><span class="zt-lbl">Black · 63"</span></div>
+        <div class="zt-needle" id="zt-needle-slj">
+          <div class="zt-bubble" id="zt-bubble-slj">55"</div>
+        </div>
+      </div>
+
+      <div class="input-num-row">
         <input type="number" id="txt-slj" value="55" min="20" max="110">
+        <span class="input-unit">inches</span>
+        <span class="input-hint" style="margin:0">— or drag the bar above</span>
       </div>
-      <div class="zone-bar">
-        <div class="zb-seg zb-below" style="flex:27"><span>Below</span></div>
-        <div class="zb-seg zb-gold"  style="flex:8"><span>Gold 47"</span></div>
-        <div class="zb-seg zb-gray"  style="flex:8"><span>Gray 55"</span></div>
-        <div class="zb-seg zb-black" style="flex:47"><span>Black 63"</span></div>
-      </div>
-      <div class="input-hint">Inches · Range: 20–110 in</div>
     </div>
     <div class="event-grade-col">
-      <div class="grade-badge none" id="badge-slj">
+      <div class="grade-badge" id="badge-slj">
         <div class="grade-badge-text" id="badge-slj-text">—</div>
         <div class="grade-badge-sub">Lower Body Power</div>
       </div>
     </div>
-    <span id="fill-slj" style="display:none"></span>
   </div>
 
-  <!-- SPT -->
-  <div class="event-card none" id="card-spt">
+  <!-- ── SPT ─────────────────────────────────────────────── -->
+  <div class="event-card" id="card-spt">
     <div class="event-info">
       <div class="event-num-lbl">02 · Seated Power Throw</div>
       <div class="event-title">SPT</div>
@@ -379,29 +461,34 @@ input[type=number]:focus{outline:3px solid var(--army-gold);outline-offset:3px;}
         <span class="metric-lbl">Throw Distance</span>
         <span class="metric-val" id="val-spt">—</span>
       </div>
-      <div class="input-row">
-        <input type="range" id="rng-spt" min="150" max="700" step="10" value="400">
+
+      <!-- range 150–700 (550 total) -->
+      <div class="zone-track" id="zt-spt">
+        <div class="zt-seg zt-below" style="flex:200"><span class="zt-lbl">Below</span></div>
+        <div class="zt-seg zt-gold"  style="flex:50" ><span class="zt-lbl">Gold · 350</span></div>
+        <div class="zt-seg zt-gray"  style="flex:50" ><span class="zt-lbl">Gray · 400</span></div>
+        <div class="zt-seg zt-black" style="flex:250"><span class="zt-lbl">Black · 450</span></div>
+        <div class="zt-needle" id="zt-needle-spt">
+          <div class="zt-bubble" id="zt-bubble-spt">400 cm</div>
+        </div>
+      </div>
+
+      <div class="input-num-row">
         <input type="number" id="txt-spt" value="400" min="150" max="700" step="10">
+        <span class="input-unit">cm</span>
+        <span class="input-hint" style="margin:0">4.4 lb medicine ball — or drag above</span>
       </div>
-      <div class="zone-bar">
-        <div class="zb-seg zb-below" style="flex:200"><span>Below</span></div>
-        <div class="zb-seg zb-gold"  style="flex:50"><span>Gold 350</span></div>
-        <div class="zb-seg zb-gray"  style="flex:50"><span>Gray 400</span></div>
-        <div class="zb-seg zb-black" style="flex:250"><span>Black 450</span></div>
-      </div>
-      <div class="input-hint">Centimeters · 4.4 lb medicine ball · Range: 150–700 cm</div>
     </div>
     <div class="event-grade-col">
-      <div class="grade-badge none" id="badge-spt">
+      <div class="grade-badge" id="badge-spt">
         <div class="grade-badge-text" id="badge-spt-text">—</div>
         <div class="grade-badge-sub">Upper Body Power</div>
       </div>
     </div>
-    <span id="fill-spt" style="display:none"></span>
   </div>
 
-  <!-- SDL -->
-  <div class="event-card none" id="card-sdl">
+  <!-- ── SDL ─────────────────────────────────────────────── -->
+  <div class="event-card" id="card-sdl">
     <div class="event-info">
       <div class="event-num-lbl">03 · Strength Deadlift</div>
       <div class="event-title">SDL</div>
@@ -409,6 +496,8 @@ input[type=number]:focus{outline:3px solid var(--army-gold);outline-offset:3px;}
         <span class="metric-lbl">Max Lift</span>
         <span class="metric-val" id="val-sdl">—</span>
       </div>
+
+      <!-- Ladder buttons — select weight -->
       <div class="sdl-ladder">
         <div class="sdl-step" data-w="60">60</div>
         <div class="sdl-step" data-w="120">120 ★</div>
@@ -420,27 +509,34 @@ input[type=number]:focus{outline:3px solid var(--army-gold);outline-offset:3px;}
         <div class="sdl-step" data-w="210">210</div>
         <div class="sdl-step" data-w="220">220</div>
       </div>
-      <div class="zone-bar">
-        <div class="zb-seg zb-below" style="flex:60"><span>Below</span></div>
-        <div class="zb-seg zb-gold"  style="flex:20"><span>Gold 120</span></div>
-        <div class="zb-seg zb-gray"  style="flex:20"><span>Gray 140</span></div>
-        <div class="zb-seg zb-black" style="flex:60"><span>Black 160</span></div>
+
+      <!-- Zone track — drag or click also works for SDL (snaps to ladder) -->
+      <!-- range 60–220 (160 total) -->
+      <div class="zone-track" id="zt-sdl">
+        <div class="zt-seg zt-below" style="flex:60"><span class="zt-lbl">Below</span></div>
+        <div class="zt-seg zt-gold"  style="flex:20"><span class="zt-lbl">Gold · 120</span></div>
+        <div class="zt-seg zt-gray"  style="flex:20"><span class="zt-lbl">Gray · 140</span></div>
+        <div class="zt-seg zt-black" style="flex:60"><span class="zt-lbl">Black · 160</span></div>
+        <div class="zt-needle" id="zt-needle-sdl">
+          <div class="zt-bubble" id="zt-bubble-sdl">140 lbs</div>
+        </div>
       </div>
-      <div class="input-hint">Pounds (hex bar) · ★ = PDC threshold weight</div>
+
+      <div class="input-hint">Hex bar (lbs) · ★ = PDC threshold · Select above or drag the bar</div>
+
+      <!-- hidden inputs kept for JS state -->
+      <input type="number" id="txt-sdl" value="140" min="60" max="220" style="display:none">
     </div>
     <div class="event-grade-col">
-      <div class="grade-badge none" id="badge-sdl">
+      <div class="grade-badge" id="badge-sdl">
         <div class="grade-badge-text" id="badge-sdl-text">—</div>
         <div class="grade-badge-sub">Lower Body Strength</div>
       </div>
     </div>
-    <span id="fill-sdl" style="display:none"></span>
-    <input type="range" id="rng-sdl" min="60" max="220" step="20" value="140" style="display:none">
-    <input type="number" id="txt-sdl" value="140" min="60" max="220" style="display:none">
   </div>
 
-  <!-- IAR -->
-  <div class="event-card none" id="card-iar">
+  <!-- ── IAR ─────────────────────────────────────────────── -->
+  <div class="event-card" id="card-iar">
     <div class="event-info">
       <div class="event-num-lbl">04 · Interval Aerobic Run</div>
       <div class="event-title">IAR</div>
@@ -456,13 +552,26 @@ input[type=number]:focus{outline:3px solid var(--army-gold);outline-offset:3px;}
       </div>
       <div class="iar-total-line">Total shuttles: <strong id="iar-total">—</strong></div>
       <div class="iar-ref">
-        <div class="iar-ref-item gc">Gold · Lvl 5-4 · 36 shuttles</div>
-        <div class="iar-ref-item sc">Gray · Lvl 5-8 · 40 shuttles</div>
-        <div class="iar-ref-item bc">Black · Lvl 6-2 · 43 shuttles</div>
+        <div class="iar-ref-item gc">Gold · Lvl 5-4 · 36 sh</div>
+        <div class="iar-ref-item sc">Gray · Lvl 5-8 · 40 sh</div>
+        <div class="iar-ref-item bc">Black · Lvl 6-2 · 43 sh</div>
       </div>
+
+      <!-- IAR zone track — read-only; needle shows where you land -->
+      <!-- range 0–60 total shuttles -->
+      <div class="zone-track zt-readonly" id="zt-iar">
+        <div class="zt-seg zt-below" style="flex:36"><span class="zt-lbl">Below min</span></div>
+        <div class="zt-seg zt-gold"  style="flex:4" ><span class="zt-lbl">Gold</span></div>
+        <div class="zt-seg zt-gray"  style="flex:3" ><span class="zt-lbl">Gray</span></div>
+        <div class="zt-seg zt-black" style="flex:17"><span class="zt-lbl">Black · 43+</span></div>
+        <div class="zt-needle" id="zt-needle-iar">
+          <div class="zt-bubble" id="zt-bubble-iar">—</div>
+        </div>
+      </div>
+      <div class="input-hint">Needle shows your cumulative shuttle count on the zone scale</div>
     </div>
     <div class="event-grade-col">
-      <div class="grade-badge none" id="badge-iar">
+      <div class="grade-badge" id="badge-iar">
         <div class="grade-badge-text" id="badge-iar-text">—</div>
         <div class="grade-badge-sub">Aerobic Capacity</div>
       </div>
@@ -470,7 +579,6 @@ input[type=number]:focus{outline:3px solid var(--army-gold);outline-offset:3px;}
   </div>
 
 </div><!-- /event-list -->
-
 
 </div><!-- /content-area -->
 
@@ -482,201 +590,205 @@ input[type=number]:focus{outline:3px solid var(--army-gold);outline-offset:3px;}
 <script>
 // ── TIMESTAMP ──────────────────────────────────────────────────────────────
 function tick(){
-  const now = new Date();
-  document.getElementById('timestamp').textContent =
+  const now=new Date();
+  document.getElementById('timestamp').textContent=
     now.toISOString().replace('T',' ').substring(0,19)+' UTC // SYSTEM ACTIVE';
 }
-tick(); setInterval(tick, 1000);
+tick(); setInterval(tick,1000);
 
-// ── SCORING FUNCTIONS ──────────────────────────────────────────────────────
-function gradeEvent(event, val) {
-  const T = {
-    slj: {black:63, gray:55, gold:47},
-    spt: {black:450,gray:400,gold:350},
-    sdl: {black:160,gray:140,gold:120},
-  };
-  if (event === 'iar') return null; // handled separately
-  const t = T[event];
-  if (val >= t.black) return 'black';
-  if (val >= t.gray)  return 'gray';
-  if (val >= t.gold)  return 'gold';
-  return 'white';
-}
-
-// IAR: cumulative shuttles per level
-// Level 1: 7 shuttles, Level 2: 8, Level 3: 8, Level 4: 9, Level 5: 9, Level 6: 10, Level 7: 10, ...
-// Total shuttles to end of each level:
-const IAR_SHUTTLES_PER_LEVEL = [0,7,8,8,9,9,10,10,11,11,12]; // index=level, value=shuttles in that level
-function iarTotalShuttles(level, shuttle) {
-  let total = 0;
-  for (let l = 1; l < level; l++) {
-    total += IAR_SHUTTLES_PER_LEVEL[l] || (l < 5 ? 7 : l < 8 ? 9 : 10);
-  }
-  total += shuttle;
-  return total;
-}
-function gradeIAR(total) {
-  if (total >= 43) return 'black';
-  if (total >= 40) return 'gray';
-  if (total >= 36) return 'gold';
-  return 'white';
-}
-
-const GRADE_INFO = {
-  black: { label:'BLACK',  sub:'Heavy PDC — Combat Arms eligible',       color:'#FFFFFF',  icon:'', mos:'Combat Arms (11B, 19D, 12B, 13F...)' },
-  gray:  { label:'GRAY',   sub:'Significant PDC — Support MOS eligible', color:'#A8A6A2',  icon:'', mos:'Significant (31A, 25U, 92F...)' },
-  gold:  { label:'GOLD',   sub:'Moderate PDC — Minimum qualified',       color:'#FFCC01',  icon:'', mos:'Moderate (17C, 42A, 25B...)' },
-  white: { label:'WHITE',  sub:'Not qualified — BELOW minimum standard', color:'#A02E2E',  icon:'', mos:'NOT QUALIFIED' },
+// ── ZONE TRACK CONFIG ──────────────────────────────────────────────────────
+//  min, max, step, ladder (optional), format
+const ZT = {
+  slj:{ min:20,  max:110, step:1,  format:v=>v+'"' },
+  spt:{ min:150, max:700, step:10, format:v=>v+' cm' },
+  sdl:{ min:60,  max:220, step:20,
+        ladder:[60,120,140,160,180,190,200,210,220],
+        format:v=>v+' lbs' },
 };
-const GRADE_ORDER = {black:4, gray:3, gold:2, white:1};
 
-function lowestGrade(grades) {
-  return grades.reduce((a,b) => GRADE_ORDER[a] <= GRADE_ORDER[b] ? a : b);
+// ── NEEDLE UPDATE ──────────────────────────────────────────────────────────
+function updateNeedle(id, value, min, max, label){
+  const needle = document.getElementById('zt-needle-'+id);
+  const bubble = document.getElementById('zt-bubble-'+id);
+  if(!needle) return;
+  const pct = Math.max(0.5, Math.min(99.5, (value-min)/(max-min)*100));
+  needle.style.left = pct+'%';
+  bubble.textContent = label;
 }
+
+// ── SCORING ────────────────────────────────────────────────────────────────
+function gradeEvent(event,val){
+  const T={slj:{black:63,gray:55,gold:47},spt:{black:450,gray:400,gold:350},sdl:{black:160,gray:140,gold:120}};
+  const t=T[event];
+  if(val>=t.black) return 'black';
+  if(val>=t.gray)  return 'gray';
+  if(val>=t.gold)  return 'gold';
+  return 'white';
+}
+
+// IAR cumulative shuttles
+const IAR_PER_LVL=[0,7,8,8,9,9,10,10,11,11,12];
+function iarTotal(level,shuttle){
+  let t=0;
+  for(let l=1;l<level;l++) t+=(IAR_PER_LVL[l]||(l<5?7:l<8?9:10));
+  return t+shuttle;
+}
+function gradeIAR(total){
+  if(total>=43) return 'black';
+  if(total>=40) return 'gray';
+  if(total>=36) return 'gold';
+  return 'white';
+}
+
+const GRADE_INFO={
+  black:{label:'BLACK', sub:'Heavy PDC — Combat Arms eligible',       color:'#FFFFFF'},
+  gray: {label:'GRAY',  sub:'Significant PDC — Support MOS eligible', color:'#A8A6A2'},
+  gold: {label:'GOLD',  sub:'Moderate PDC — Minimum qualified',       color:'#FFCC01'},
+  white:{label:'WHITE', sub:'Not qualified — BELOW minimum standard', color:'#A02E2E'},
+};
+const GRADE_ORDER={black:4,gray:3,gold:2,white:1};
+function lowestGrade(grades){return grades.reduce((a,b)=>GRADE_ORDER[a]<=GRADE_ORDER[b]?a:b);}
 
 // ── STATE ──────────────────────────────────────────────────────────────────
-let S = { slj:55, spt:400, sdl:140, iarLvl:5, iarSht:8 };
+let S={slj:55, spt:400, sdl:140, iarLvl:5, iarSht:8};
 
 // ── RENDER ─────────────────────────────────────────────────────────────────
-function render() {
-  const { slj, spt, sdl, iarLvl, iarSht } = S;
-  const iarTotal = iarTotalShuttles(iarLvl, iarSht);
+function render(){
+  const{slj,spt,sdl,iarLvl,iarSht}=S;
+  const iarTot=iarTotal(iarLvl,iarSht);
 
-  // Sync inputs
-  document.getElementById('rng-slj').value = slj;
-  document.getElementById('txt-slj').value = slj;
-  document.getElementById('rng-spt').value = spt;
-  document.getElementById('txt-spt').value = spt;
-  document.getElementById('rng-sdl').value = sdl;
-  document.getElementById('txt-sdl').value = sdl;
+  // Sync visible number inputs
+  document.getElementById('txt-slj').value=slj;
+  document.getElementById('txt-spt').value=spt;
+  document.getElementById('txt-sdl').value=sdl;
 
   // Event grades
-  const gSlj = gradeEvent('slj', slj);
-  const gSpt = gradeEvent('spt', spt);
-  const gSdl = gradeEvent('sdl', sdl);
-  const gIar = gradeIAR(iarTotal);
-  const grades = [gSlj, gSpt, gSdl, gIar];
-  const overall = lowestGrade(grades);
+  const gSlj=gradeEvent('slj',slj);
+  const gSpt=gradeEvent('spt',spt);
+  const gSdl=gradeEvent('sdl',sdl);
+  const gIar=gradeIAR(iarTot);
+  const grades=[gSlj,gSpt,gSdl,gIar];
+  const overall=lowestGrade(grades);
 
   // Value displays
-  document.getElementById('val-slj').textContent = slj+'" ('+Math.floor(slj/12)+"'"+slj%12+'")';
-  document.getElementById('val-spt').textContent = spt+' cm ('+(spt/30.48).toFixed(1)+"')";
-  document.getElementById('val-sdl').textContent = sdl+' lbs';
-  document.getElementById('iar-total').textContent = iarTotal+' total shuttles';
+  document.getElementById('val-slj').textContent=slj+'" ('+Math.floor(slj/12)+"'"+slj%12+'")';
+  document.getElementById('val-spt').textContent=spt+' cm ('+(spt/30.48).toFixed(1)+"')";
+  document.getElementById('val-sdl').textContent=sdl+' lbs';
+  document.getElementById('iar-total').textContent=iarTot+' total shuttles';
 
-  // Update event cards and badges
-  function updateCard(id, grade) {
-    const card = document.getElementById('card-'+id);
-    const badge = document.getElementById('badge-'+id);
-    const badgeText = document.getElementById('badge-'+id+'-text');
-    card.className = 'event-card '+(grade||'none');
-    badge.className = 'grade-badge '+(grade||'none');
-    badgeText.textContent = grade ? GRADE_INFO[grade].label : '—';
-    if(grade) {
-      badge.querySelector('.grade-badge-text').style.color = GRADE_INFO[grade].color;
-    } else {
-      badgeText.style.color = '';
-    }
+  // ── Needle positions ──────────────────────────────────────────────
+  updateNeedle('slj', slj, 20, 110, ZT.slj.format(slj));
+  updateNeedle('spt', spt, 150, 700, ZT.spt.format(spt));
+  updateNeedle('sdl', sdl, 60, 220, ZT.sdl.format(sdl));
+  // IAR: display on 0–60 scale (clamp at 60 for visual)
+  const iarDisplay=Math.min(iarTot,60);
+  updateNeedle('iar', iarDisplay, 0, 60, iarTot+' sh');
+
+  // ── Event badge + card highlight ─────────────────────────────────
+  function updateCard(id,grade){
+    const card=document.getElementById('card-'+id);
+    const badge=document.getElementById('badge-'+id);
+    const badgeText=document.getElementById('badge-'+id+'-text');
+    card.className='event-card '+(grade||'');
+    badge.className='grade-badge '+(grade||'');
+    badgeText.textContent=grade?GRADE_INFO[grade].label:'—';
+    badgeText.style.color=grade?GRADE_INFO[grade].color:'';
   }
+  updateCard('slj',gSlj); updateCard('spt',gSpt);
+  updateCard('sdl',gSdl); updateCard('iar',gIar);
 
-  updateCard('slj', gSlj);
-  updateCard('spt', gSpt);
-  updateCard('sdl', gSdl);
-  updateCard('iar', gIar);
-
-  // SDL ladder highlight
-  document.querySelectorAll('.sdl-step').forEach(el => {
-    const w = parseInt(el.dataset.w);
-    const isActive = w === sdl;
-    if(isActive){
-      el.style.background = 'rgba(255,204,1,0.15)';
-      el.style.color = '#FFCC01';
-      el.style.borderColor = '#FFCC01';
-    } else if(w === 120){
-      el.style.background='transparent'; el.style.color='#FFCC01'; el.style.borderColor='#FFCC01';
-    } else if(w === 140){
-      el.style.background='transparent'; el.style.color='#A8A6A2'; el.style.borderColor='#A8A6A2';
-    } else if(w === 160){
-      el.style.background='transparent'; el.style.color='#FFFFFF'; el.style.borderColor='#FFFFFF';
-    } else {
-      el.style.background='transparent'; el.style.color='#6E6C68'; el.style.borderColor='#6E6C68';
-    }
+  // ── SDL ladder highlight ──────────────────────────────────────────
+  document.querySelectorAll('.sdl-step').forEach(el=>{
+    const w=parseInt(el.dataset.w), active=w===sdl;
+    if(active){el.style.background='rgba(255,204,1,0.15)';el.style.color='#FFCC01';el.style.borderColor='#FFCC01';}
+    else if(w===120){el.style.background='transparent';el.style.color='#FFCC01';el.style.borderColor='#FFCC01';}
+    else if(w===140){el.style.background='transparent';el.style.color='#A8A6A2';el.style.borderColor='#A8A6A2';}
+    else if(w===160){el.style.background='transparent';el.style.color='#FFFFFF';el.style.borderColor='#FFFFFF';}
+    else{el.style.background='transparent';el.style.color='#6E6C68';el.style.borderColor='#6E6C68';}
   });
 
-  // IAR badge
-  const iarBadge = document.getElementById('badge-iar');
-  const iarBadgeText = document.getElementById('badge-iar-text');
-  iarBadge.className = 'grade-badge '+(gIar||'none');
-  iarBadgeText.textContent = gIar ? GRADE_INFO[gIar].label : '—';
-  if(gIar){
-    iarBadge.querySelector('.grade-badge-text').style.color = GRADE_INFO[gIar].color;
-  } else {
-    iarBadgeText.style.color = '';
-  }
+  // ── Result hero ───────────────────────────────────────────────────
+  const info=GRADE_INFO[overall];
+  const hero=document.getElementById('hero-grade');
+  hero.textContent=info.label;
+  hero.className='pdc-grade grade-'+overall;
+  document.getElementById('hero-sub').textContent=info.sub;
 
-  // RESULT HERO
-  const info = GRADE_INFO[overall];
-  const hero = document.getElementById('hero-grade');
-  hero.textContent = info.label;
-  hero.className = 'pdc-grade grade-'+overall;
-  document.getElementById('hero-sub').textContent = info.sub;
-
-  // Band chips
-  ['black','gray','gold'].forEach(function(band) {
-    const chip = document.getElementById('chip-'+band);
-    if (!chip) return;
-    const eligible = GRADE_ORDER[overall] >= GRADE_ORDER[band];
-    chip.className = 'band-chip' + (eligible ? ' active-'+band : '');
-    chip.querySelector('.band-chip-status').textContent = eligible ? '✓' : '✗';
+  // ── Band chips ────────────────────────────────────────────────────
+  ['black','gray','gold'].forEach(band=>{
+    const chip=document.getElementById('chip-'+band);
+    if(!chip) return;
+    const eligible=GRADE_ORDER[overall]>=GRADE_ORDER[band];
+    chip.className='band-chip'+(eligible?' active-'+band:'');
+    chip.querySelector('.band-chip-status').textContent=eligible?'✓':'✗';
   });
 
-  // MOS tags
-  const mosTags = document.getElementById('hero-mos');
-  const mosData = [
-    {label:'⬛ BLACK: Heavy PDC', eligible: GRADE_ORDER[overall] >= GRADE_ORDER['black'], mos:'Combat Arms'},
-    {label:'▪️ GRAY: Significant PDC', eligible: GRADE_ORDER[overall] >= GRADE_ORDER['gray'],  mos:'Support MOS'},
-    {label:'🟡 GOLD: Moderate PDC', eligible: GRADE_ORDER[overall] >= GRADE_ORDER['gold'],  mos:'Moderate MOS'},
-  ];
-  mosTags.innerHTML = mosData.map(m =>
-    `<div class="mos-tag ${m.eligible?'eligible':'ineligible'}">${m.eligible?'✓':'✗'} ${m.label}</div>`
-  ).join('');
-
-  // STATUS BAR
-  const lowestEvent = ['SLJ','SPT','SDL','IAR'][grades.indexOf(overall)] || '—';
-  document.getElementById('sb-grade').textContent = info.label;
-  document.getElementById('sb-grade').style.color = info.color;
-  document.getElementById('sb-lowest').textContent = lowestEvent;
-  document.getElementById('sb-pdc').textContent = overall==='white' ? 'NOT QUALIFIED' : info.label + ' AND BELOW';
-
+  // ── Status bar ────────────────────────────────────────────────────
+  const lowestEvent=['SLJ','SPT','SDL','IAR'][grades.indexOf(overall)]||'—';
+  document.getElementById('sb-grade').textContent=info.label;
+  document.getElementById('sb-grade').style.color=info.color;
+  document.getElementById('sb-lowest').textContent=lowestEvent;
+  document.getElementById('sb-pdc').textContent=overall==='white'?'NOT QUALIFIED':info.label+' AND BELOW';
 }
 
-// ── EVENT LISTENERS ────────────────────────────────────────────────────────
-document.getElementById('rng-slj').addEventListener('input',function(){S.slj=parseInt(this.value);render();});
-document.getElementById('txt-slj').addEventListener('change',function(){S.slj=Math.max(20,Math.min(110,parseInt(this.value)||55));render();});
-document.getElementById('rng-spt').addEventListener('input',function(){S.spt=parseInt(this.value);render();});
-document.getElementById('txt-spt').addEventListener('change',function(){S.spt=Math.max(150,Math.min(700,parseInt(this.value)||400));render();});
-document.getElementById('rng-sdl').addEventListener('input',function(){
-  // Snap to ladder values
-  const ladder=[60,120,140,160,180,190,200,210,220];
-  const v=parseInt(this.value);
-  S.sdl=ladder.reduce((a,b)=>Math.abs(b-v)<Math.abs(a-v)?b:a);
-  render();
+// ── DRAGGABLE ZONE TRACKS ──────────────────────────────────────────────────
+function setupZoneTrack(trackId, stateKey){
+  const track=document.getElementById(trackId);
+  if(!track) return;
+  const cfg=ZT[stateKey];
+
+  function valFromPointer(e){
+    const rect=track.getBoundingClientRect();
+    const clientX=e.touches?e.touches[0].clientX:e.clientX;
+    const pct=Math.max(0,Math.min(1,(clientX-rect.left)/rect.width));
+    let v=cfg.min+pct*(cfg.max-cfg.min);
+    if(cfg.ladder){
+      v=cfg.ladder.reduce((a,b)=>Math.abs(b-v)<Math.abs(a-v)?b:a);
+    } else {
+      v=Math.round(v/cfg.step)*cfg.step;
+      v=Math.max(cfg.min,Math.min(cfg.max,v));
+    }
+    return v;
+  }
+
+  function apply(val){
+    S[stateKey]=val;
+    render();
+  }
+
+  let dragging=false;
+  track.addEventListener('mousedown',e=>{dragging=true;apply(valFromPointer(e));});
+  document.addEventListener('mousemove',e=>{if(dragging) apply(valFromPointer(e));});
+  document.addEventListener('mouseup',()=>{dragging=false;});
+  track.addEventListener('touchstart',e=>{e.preventDefault();apply(valFromPointer(e));},{passive:false});
+  track.addEventListener('touchmove',e=>{e.preventDefault();apply(valFromPointer(e));},{passive:false});
+}
+
+setupZoneTrack('zt-slj','slj');
+setupZoneTrack('zt-spt','spt');
+setupZoneTrack('zt-sdl','sdl');
+
+// ── NUMBER INPUT LISTENERS ─────────────────────────────────────────────────
+document.getElementById('txt-slj').addEventListener('change',function(){
+  S.slj=Math.max(20,Math.min(110,parseInt(this.value)||55)); render();
+});
+document.getElementById('txt-spt').addEventListener('change',function(){
+  S.spt=Math.max(150,Math.min(700,Math.round((parseInt(this.value)||400)/10)*10)); render();
 });
 document.getElementById('txt-sdl').addEventListener('change',function(){
   const ladder=[60,120,140,160,180,190,200,210,220];
   const v=parseInt(this.value)||140;
-  S.sdl=ladder.reduce((a,b)=>Math.abs(b-v)<Math.abs(a-v)?b:a);
-  render();
+  S.sdl=ladder.reduce((a,b)=>Math.abs(b-v)<Math.abs(a-v)?b:a); render();
 });
-// SDL ladder click
+
+// ── SDL LADDER CLICK ───────────────────────────────────────────────────────
 document.querySelectorAll('.sdl-step').forEach(el=>{
   el.addEventListener('click',function(){
-    S.sdl=parseInt(this.dataset.w);
-    document.getElementById('rng-sdl').value=S.sdl;
-    render();
+    S.sdl=parseInt(this.dataset.w); render();
   });
 });
 
+// ── IAR SYNC ──────────────────────────────────────────────────────────────
 window.syncIAR=function(){
   S.iarLvl=Math.max(1,Math.min(15,parseInt(document.getElementById('txt-iar-lvl').value)||5));
   S.iarSht=Math.max(1,Math.min(13,parseInt(document.getElementById('txt-iar-sht').value)||8));
