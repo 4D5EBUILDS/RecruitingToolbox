@@ -1358,34 +1358,112 @@ const TweakPanel = ({ theme, setTheme, compact, setCompact, onClose }) => {
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{"theme":"dark","compact":false}/*EDITMODE-END*/;
 
 /* ── Tab Bar ─────────────────────────────────────────── */
-const TabBar = ({ activeTab, setActiveTab }) => (
-  <div style={{ display:"flex", background:"#0c0a0e",
-    borderBottom:"1px solid var(--border-str)", flexShrink:0, overflowX:"auto" }}>
-    {[
-      { id:"recruiter", label:"⬛  Recruiter Checklist" },
-      { id:"gc",        label:"📋  GC Reference" },
-      { id:"autopsy",   label:"☠  Autopsy Edition" },
-      { id:"gaps",      label:"📍  Gap Finder" },
-      { id:"mfrs",      label:"✍️  MFR Generator" },
-      { id:"vault",     label:"🔒  Document Vault" },
-      { id:"references",label:"👥  Reference Auditor" }
-    ].map(({ id, label }) => (
-      <button key={id} onClick={() => setActiveTab(id)} style={{
-        background:"transparent", border:"none",
-        borderBottom: activeTab===id ? "3px solid var(--gold)" : "3px solid transparent",
-        padding:"11px 22px 8px",
-        fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:11,
-        textTransform:"uppercase", letterSpacing:".06em",
-        color: activeTab===id ? "var(--gold)" : "var(--fg-muted)",
-        cursor:"pointer",
-        transition:"color .2s, border-color .2s, opacity .2s",
-        opacity: activeTab===id ? 1 : 0.6,
-        boxShadow: activeTab===id ? "inset 0 -1px 0 rgba(255,204,1,.15)" : "none",
-        whiteSpace:"nowrap"
-      }}>{label}</button>
-    ))}
-  </div>
-);
+const PRIMARY_TABS = [
+  { id:"recruiter", label:"⬛  Recruiter Checklist" },
+  { id:"gc",        label:"📋  GC Reference" },
+];
+const TOOL_TABS = [
+  { id:"autopsy",    label:"☠  Autopsy Edition" },
+  { id:"gaps",       label:"📍  Gap Finder" },
+  { id:"mfrs",       label:"✍️  MFR Generator" },
+  { id:"vault",      label:"🔒  Document Vault" },
+  { id:"references", label:"👥  Reference Auditor" },
+];
+
+const TabBar = ({ activeTab, setActiveTab }) => {
+  const [toolsOpen, setToolsOpen] = React.useState(false);
+  const [toolsHover, setToolsHover] = React.useState(false);
+  const activeTool = TOOL_TABS.find(t => t.id === activeTab);
+  const toolActive = !!activeTool;
+
+  const tabStyle = id => ({
+    background:"transparent", border:"none",
+    borderBottom: activeTab===id ? "3px solid var(--gold)" : "3px solid transparent",
+    padding:"11px 22px 8px",
+    fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:11,
+    textTransform:"uppercase", letterSpacing:".06em",
+    color: activeTab===id ? "var(--gold)" : "var(--fg-muted)",
+    cursor:"pointer",
+    transition:"color .2s, border-color .2s, opacity .2s",
+    opacity: activeTab===id ? 1 : 0.6,
+    boxShadow: activeTab===id ? "inset 0 -1px 0 rgba(255,204,1,.15)" : "none",
+    whiteSpace:"nowrap"
+  });
+
+  return (
+    <div style={{ display:"flex", alignItems:"stretch", background:"#0c0a0e",
+      borderBottom:"1px solid var(--border-str)", flexShrink:0, position:"relative", zIndex:30 }}>
+      {PRIMARY_TABS.map(({ id, label }) => (
+        <button key={id} onClick={() => { setActiveTab(id); setToolsOpen(false); }}
+          style={tabStyle(id)}>{label}</button>
+      ))}
+
+      {/* ── Tools dropdown — holds the secondary tools so the main bar stays clean ── */}
+      <div style={{ marginLeft:"auto", position:"relative" }}>
+        <button
+          onClick={() => setToolsOpen(o => !o)}
+          onMouseEnter={() => setToolsHover(true)}
+          onMouseLeave={() => setToolsHover(false)}
+          aria-haspopup="true" aria-expanded={toolsOpen}
+          title={toolActive ? activeTool.label.replace(/^\S+\s+/, "") : "Tools"}
+          style={{
+            background: toolsOpen ? "rgba(255,204,1,.06)" : "transparent", border:"none",
+            borderBottom: toolActive ? "3px solid var(--gold)" : "3px solid transparent",
+            padding:"11px 20px 8px",
+            fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:11,
+            textTransform:"uppercase", letterSpacing:".06em",
+            color: (toolActive || toolsOpen) ? "var(--gold)" : "var(--fg-muted)",
+            cursor:"pointer", whiteSpace:"nowrap",
+            opacity: (toolActive || toolsOpen || toolsHover) ? 1 : 0.6,
+            transition:"color .2s, border-color .2s, opacity .2s, background .2s"
+          }}>
+          🧰&nbsp;&nbsp;{toolActive ? activeTool.label : "Tools"}&nbsp;&nbsp;
+          <span style={{ fontSize:8, verticalAlign:"middle",
+            display:"inline-block", transform: toolsOpen ? "rotate(180deg)" : "none",
+            transition:"transform .2s" }}>▾</span>
+        </button>
+
+        {toolsOpen && (
+          <React.Fragment>
+            {/* click-away backdrop */}
+            <div onClick={() => setToolsOpen(false)}
+              style={{ position:"fixed", inset:0, zIndex:40 }}/>
+            <div style={{ position:"absolute", right:0, top:"100%", zIndex:41,
+              minWidth:230, background:"#15121a",
+              border:"1px solid var(--border-str)", borderTop:"2px solid var(--gold)",
+              boxShadow:"0 10px 30px rgba(0,0,0,.55)", animation:"slideDown .16s ease" }}>
+              <div style={{ padding:"7px 14px 5px", fontFamily:'"GI",Arial,sans-serif',
+                fontWeight:700, fontSize:8.5, textTransform:"uppercase", letterSpacing:".12em",
+                color:"var(--fg-dim)", opacity:.6, borderBottom:"1px solid var(--border-mid)" }}>
+                Tools
+              </div>
+              {TOOL_TABS.map(({ id, label }) => {
+                const isActive = activeTab === id;
+                return (
+                  <button key={id}
+                    onClick={() => { setActiveTab(id); setToolsOpen(false); }}
+                    style={{
+                      display:"block", width:"100%", textAlign:"left",
+                      background: isActive ? "rgba(255,204,1,.08)" : "transparent",
+                      border:"none", borderLeft: isActive ? "3px solid var(--gold)" : "3px solid transparent",
+                      padding:"10px 16px", cursor:"pointer",
+                      fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:11,
+                      textTransform:"uppercase", letterSpacing:".05em",
+                      color: isActive ? "var(--gold)" : "var(--fg-muted)",
+                      transition:"background .12s, color .12s", whiteSpace:"nowrap"
+                    }}
+                    onMouseEnter={e => { if(!isActive){ e.currentTarget.style.background="rgba(255,255,255,.04)"; e.currentTarget.style.color="var(--fg)"; } }}
+                    onMouseLeave={e => { if(!isActive){ e.currentTarget.style.background="transparent"; e.currentTarget.style.color="var(--fg-muted)"; } }}
+                  >{label}</button>
+                );
+              })}
+            </div>
+          </React.Fragment>
+        )}
+      </div>
+    </div>
+  );
+};
 
 const App = () => {
   const [theme,          setTheme]          = useState(TWEAK_DEFAULTS.theme);
