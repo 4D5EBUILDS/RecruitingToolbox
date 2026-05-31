@@ -162,26 +162,89 @@
     .tools-grid {
       display:grid;
       grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));
-      gap:2px;
+      gap:3px;
     }
+    /* Medallion card */
     .tool-card {
-      background:var(--army-green); padding:36px 32px;
+      background:
+        linear-gradient(148deg, rgba(255,255,255,.04) 0%, transparent 50%),
+        linear-gradient(160deg, #354435 0%, #1e2d1e 55%, #2c3b2c 100%);
+      padding:34px 30px 30px;
       display:flex; flex-direction:column;
       text-decoration:none; color:inherit;
-      border:1px solid rgba(255,255,255,0.06);
-      transition:background 0.18s, border-color 0.18s;
+      position:relative; overflow:hidden;
+      border-top:1.5px solid rgba(255,204,1,.38);
+      border-left:1.5px solid rgba(255,204,1,.22);
+      border-right:1px solid rgba(0,0,0,.4);
+      border-bottom:1.5px solid rgba(0,0,0,.5);
+      border-radius:2px;
+      will-change:transform;
+      cursor:pointer;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.05),
+        inset 0 -2px 0 rgba(0,0,0,.35),
+        0 6px 28px rgba(0,0,0,.5);
+      transition:border-color .3s ease;
     }
-    .tool-card:hover { background:#3a4a3a; border-color:var(--army-gold); }
+    .tool-card.tilt-leave {
+      transition:
+        border-color .3s ease,
+        transform .7s cubic-bezier(.23,1,.32,1),
+        box-shadow .7s cubic-bezier(.23,1,.32,1) !important;
+    }
+    /* Cursor-follow gloss layer */
+    .tool-card::before {
+      content:''; position:absolute; inset:0; pointer-events:none;
+      background:radial-gradient(circle at var(--mx,50%) var(--my,50%),
+        rgba(255,204,1,.22) 0%, rgba(255,204,1,.06) 38%, transparent 65%);
+      opacity:0; transition:opacity .28s ease;
+    }
+    .tool-card:hover { z-index:10; border-top-color:rgba(255,204,1,.7); border-left-color:rgba(255,204,1,.45); }
+    .tool-card:hover::before { opacity:1; }
     .tool-card-tag { font-size:9px; font-weight:700; letter-spacing:0.28em; text-transform:uppercase; color:var(--army-gold); margin-bottom:16px; }
     .tool-card-title { font-size:22px; font-weight:700; text-transform:uppercase; color:var(--white); line-height:1.1; margin-bottom:12px; }
     .tool-card-desc { font-size:13px; font-weight:400; color:var(--gray-02); line-height:1.6; flex:1; margin-bottom:28px; }
-    .tool-card-arrow { font-size:11px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:var(--army-gold); }
+    .tool-card-arrow { font-size:11px; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:var(--army-gold); transition:letter-spacing .3s ease; }
+    .tool-card:hover .tool-card-arrow { letter-spacing:.3em; }
+    /* Sticker — dormant emboss, springs to life on hover */
+    .tool-card-sticker {
+      position:absolute; top:18px; right:18px;
+      width:54px; height:54px;
+      color:var(--army-gold); opacity:.13;
+      transform:scale(.6) rotate(-14deg);
+      transform-origin:center;
+      pointer-events:none;
+      will-change:transform, opacity, filter;
+      filter:drop-shadow(0 0 0 rgba(255,204,1,0));
+    }
+    .tool-card-sticker svg { width:100%; height:100%; display:block; }
+    /* Shimmer sweep — light reflection across the coin face on hover */
+    .tool-card::after {
+      content:''; position:absolute;
+      top:-60%; left:-65%;
+      width:28%; height:220%;
+      background:linear-gradient(90deg, transparent, rgba(255,255,255,.09) 50%, transparent);
+      transform:skewX(-18deg);
+      pointer-events:none;
+    }
+    .tool-card:hover::after { animation:card-shimmer .65s ease forwards; }
+    @keyframes card-shimmer {
+      from { left:-65%; }
+      to   { left:120%; }
+    }
+    /* Arrow glyph nudge */
+    .arrow-symbol {
+      display:inline-block;
+      transition:transform .38s cubic-bezier(.34,1.56,.64,1);
+    }
+    .tool-card:hover .arrow-symbol { transform:translateX(7px); }
     /* QuickScreen distinguishing icon + badge */
     .tool-card--qs { position:relative; overflow:hidden; }
     .tool-card--qs .qs-ico {
-      position:absolute; top:24px; right:26px; font-size:34px; line-height:1;
+      position:absolute; top:22px; right:22px; font-size:34px; line-height:1;
       filter:drop-shadow(0 3px 8px rgba(0,0,0,.4));
       transition:transform .22s cubic-bezier(.34,1.7,.5,1);
+      z-index:3;
     }
     .tool-card--qs:hover .qs-ico { transform:scale(1.28) rotate(-6deg); }
     .qs-badge {
@@ -272,7 +335,7 @@
       <p class="tool-card-desc">AR 601-210 Chapter 4 waiver packet builder. Screen eligibility, log offenses, auto-fill UF 601-210.08, and generate the full document set.</p>
       <span class="tool-card-arrow">Open Tool →</span>
     </a>
-    <a href="recruiting-tools/apple-mdt-quickscreen.html" class="tool-card tool-card--qs">
+<a href="recruiting-tools/apple-mdt-quickscreen.html" class="tool-card tool-card--qs">
       <div class="tool-card-tag">Recruiting // Pre-Qualification <span class="qs-badge">Fast Call</span></div>
       <div class="tool-card-title">APPLE MDT QuickScreen</div>
       <p class="tool-card-desc">Keyboard-first, single-screen prescreen built for live lead calls. Tap one answer per step (Age, Citizenship, Prior Service, Physical, Legal, Education, Medical, Dependents, Tattoos) and it auto-advances with a running GO / WAIVER / NO-GO verdict, talk tracks, and one-click handoff to the Moral Waiver and Medical apps.</p>
@@ -830,6 +893,176 @@ stageEl.style.opacity = '1';
 stageEl.style.transform = 'translateY(0)';
 stageEl.style.transition = 'none';
 document.fonts.ready.then(() => runFact(0));
+
+/* ═══════════════════════════════════════════════════════
+   3D MEDALLION — tilt + SVG sticker activation + gloss
+═══════════════════════════════════════════════════════ */
+(function(){
+  /* Inline SVGs keyed by card title */
+  var S = {
+    tools:
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M2 2l4 1 1 4-2 2L1 5zm6 6l11 11 3-3L11 5zm10-6l4 4-3 3-4-4zM1 20l8-8 3 3-8 8z"/></svg>',
+    doc:
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M4 1h11l5 5v17H4zm10 1v5h5zM7 11h10v1H7zm0 3h10v1H7zm0 3h7v1H7z"/></svg>',
+    soldier:
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1a5 5 0 00-5 5v3h10V6a5 5 0 00-5-5zM6 11h12v3l-2 2v7h-8v-7l-2-2z"/></svg>',
+    fitness:
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M2 9h2v6H2zm18 0h2v6h-2zM5 7h2v10H5zm12 0h2v10h-2zM8 10h8v4H8z"/></svg>',
+    health:
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M9 1h6v8h8v6h-8v8H9v-8H1V9h8z"/></svg>',
+    medal:
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M7 1h3l2 5-2 3H6L4 5zm7 0h3l2 4-2 4h-4l-2-3zM6 11h12v2L12 23 6 13z"/></svg>',
+    edu:
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M1 9l11-5 11 5-11 5zm4 3.5l7 3.2 7-3.2V17c0 1.5-3.1 3-7 3s-7-1.5-7-3zM20 11v7h1.5v-7z"/></svg>',
+    cal:
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M6 1h2v3H6zm10 0h2v3h-2zM3 5h18v4H3zm0 6h18v11H3zm3 3v2h3v-2zm5 0v2h3v-2zm5 0v2h3v-2zm-10 4v2h3v-2zm5 0v2h3v-2z"/></svg>',
+    shield:
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v7c0 5 4 9 9 11 5-2 9-6 9-11V5zm0 4l6 3v4c0 3-2 6-6 7-4-1-6-4-6-7V8z"/></svg>',
+    pin:
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1a8 8 0 00-8 8c0 6 8 14 8 14s8-8 8-14a8 8 0 00-8-8zm0 5a3 3 0 110 6 3 3 0 010-6z"/></svg>',
+    check:
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1a11 11 0 100 22 11 11 0 000-22zm5 8l-7 7-4-4 1.5-1.5L10 13l5.5-5.5z"/></svg>',
+  };
+
+  var STICKERS = {
+    'Army Creative Studio' : S.tools,
+    'Moral Waiver Builder' : S.shield,
+    'APPLE MDT Pre-Qual'   : S.soldier,
+    'AFT Score Calculator' : S.fitness,
+    'Body Composition'     : S.fitness,
+    'OPAT Calculator'      : S.medal,
+    'ASVAB MOS Tool'       : S.edu,
+    'ETS Countdown'        : S.cal,
+    'Medical Screening'    : S.health,
+    'Recruiting Map'       : S.pin,
+    'Packet QC'            : S.check,
+  };
+
+  document.querySelectorAll('.tool-card').forEach(function(card) {
+    var titleEl = card.querySelector('.tool-card-title');
+    var svgStr  = STICKERS[titleEl ? titleEl.textContent.trim() : ''];
+
+    var sticker = null;
+    if (svgStr) {
+      sticker = document.createElement('div');
+      sticker.className = 'tool-card-sticker';
+      sticker.setAttribute('aria-hidden', 'true');
+      sticker.innerHTML = svgStr;
+      card.appendChild(sticker);
+    }
+
+    var stickerReady = false;
+    var enterTimer   = null;
+
+    card.addEventListener('mouseenter', function() {
+      if (!sticker) return;
+      clearTimeout(enterTimer);
+      stickerReady = false;
+      /* Entrance spring */
+      sticker.style.transition =
+        'transform .52s cubic-bezier(.34,1.56,.64,1), opacity .3s ease, filter .3s ease';
+      sticker.style.opacity   = '.92';
+      sticker.style.transform = 'scale(1.06) rotate(0deg)';
+      sticker.style.filter    = 'drop-shadow(0 3px 20px rgba(255,204,1,.65))';
+      /* After entrance settles, hand off to real-time parallax */
+      enterTimer = setTimeout(function() {
+        sticker.style.transition = 'opacity .22s ease, filter .22s ease';
+        stickerReady = true;
+      }, 560);
+    });
+
+    card.addEventListener('mousemove', function(e) {
+      card.classList.remove('tilt-leave');
+
+      var r  = card.getBoundingClientRect();
+      var x  = (e.clientX - r.left) / r.width;
+      var y  = (e.clientY - r.top)  / r.height;
+      var rx = -(y - .5) * 18;
+      var ry =  (x - .5) * 22;
+
+      card.style.transform =
+        'perspective(650px) rotateX(' + rx + 'deg) rotateY(' + ry + 'deg)';
+      card.style.setProperty('--mx', (x * 100) + '%');
+      card.style.setProperty('--my', (y * 100) + '%');
+
+      /* Coin-edge shadow shifts with tilt direction */
+      var sx = (-ry * 1.7).toFixed(1);
+      var sy = ( rx * 1.7).toFixed(1);
+      card.style.boxShadow =
+        'inset 0 1px 0 rgba(255,255,255,.06),' +
+        'inset 0 -2px 0 rgba(0,0,0,.38),' +
+        sx + 'px ' + sy + 'px 44px rgba(0,0,0,.68),' +
+        '0 0 0 1px rgba(255,204,1,.3),' +
+        '0 0 32px rgba(255,204,1,.07)';
+
+      /* Parallax sticker — moves counter to tilt for depth illusion */
+      if (sticker && stickerReady) {
+        var dx = ((x - .5) * -20).toFixed(2);
+        var dy = ((y - .5) * -20).toFixed(2);
+        sticker.style.transform =
+          'scale(1.06) rotate(0deg) translate(' + dx + 'px,' + dy + 'px)';
+      }
+    });
+
+    card.addEventListener('mouseleave', function() {
+      clearTimeout(enterTimer);
+      stickerReady = false;
+
+      card.classList.add('tilt-leave');
+      card.style.transform = '';
+      card.style.boxShadow = '';
+      card.style.removeProperty('--mx');
+      card.style.removeProperty('--my');
+
+      if (sticker) {
+        /* Spring back to dormant state */
+        sticker.style.transition =
+          'transform .6s cubic-bezier(.23,1,.32,1), opacity .35s ease, filter .35s ease';
+        sticker.style.opacity   = '.13';
+        sticker.style.transform = 'scale(.6) rotate(-14deg)';
+        sticker.style.filter    = 'drop-shadow(0 0 0 rgba(255,204,1,0))';
+      }
+    });
+  });
+
+  /* ── Stagger entrance — cards slide up as grid scrolls into view ── */
+  (function(){
+    var grid = document.querySelector('.tools-grid');
+    if (!grid) return;
+    var cards = Array.from(grid.querySelectorAll('.tool-card'));
+    /* Set initial hidden state via inline style */
+    cards.forEach(function(c){
+      c.style.opacity   = '0';
+      c.style.transform = 'translateY(22px)';
+    });
+    var io = new IntersectionObserver(function(ents){
+      if (!ents[0].isIntersecting) return;
+      cards.forEach(function(c, i){
+        setTimeout(function(){
+          c.style.transition = 'opacity .5s ease, transform .52s cubic-bezier(.23,1,.32,1)';
+          c.getBoundingClientRect(); /* force reflow so transition picks up */
+          c.style.opacity   = '1';
+          c.style.transform = 'translateY(0)';
+          /* Clear inline styles after entrance so hover JS takes over cleanly */
+          setTimeout(function(){
+            c.style.opacity    = '';
+            c.style.transform  = '';
+            c.style.transition = '';
+          }, 580);
+        }, i * 58);
+      });
+      io.unobserve(grid);
+    }, { threshold: 0.06 });
+    io.observe(grid);
+  })();
+
+  /* ── Arrow glyph wrap — lets CSS translate the → independently ── */
+  document.querySelectorAll('.tool-card-arrow').forEach(function(el){
+    el.innerHTML = el.innerHTML.replace('→',
+      '<span class="arrow-symbol" aria-hidden="true">→</span>');
+  });
+
+})();
 </script>
 </body>
 </html>
