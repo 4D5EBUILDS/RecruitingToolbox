@@ -169,7 +169,7 @@
       background:
         linear-gradient(148deg, rgba(255,255,255,.04) 0%, transparent 50%),
         linear-gradient(160deg, #354435 0%, #1e2d1e 55%, #2c3b2c 100%);
-      padding:34px 30px 30px;
+      padding:20px 22px 18px;
       display:flex; flex-direction:column;
       text-decoration:none; color:inherit;
       position:relative; overflow:hidden;
@@ -201,15 +201,19 @@
     }
     .tool-card:hover { z-index:10; border-top-color:rgba(255,204,1,.7); border-left-color:rgba(255,204,1,.45); }
     .tool-card:hover::before { opacity:1; }
-    .tool-card-tag { font-size:9px; font-weight:700; letter-spacing:0.28em; text-transform:uppercase; color:var(--army-gold); margin-bottom:16px; }
-    .tool-card-title { font-size:22px; font-weight:700; text-transform:uppercase; color:var(--white); line-height:1.1; margin-bottom:12px; }
-    .tool-card-desc { font-size:13px; font-weight:400; color:var(--gray-02); line-height:1.6; flex:1; margin-bottom:28px; }
-    .tool-card-arrow { font-size:11px; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:var(--army-gold); transition:letter-spacing .3s ease; }
+    .tool-card-tag { font-size:9px; font-weight:700; letter-spacing:0.28em; text-transform:uppercase; color:var(--army-gold); margin-bottom:10px; }
+    .tool-card-title { font-size:18px; font-weight:700; text-transform:uppercase; color:var(--white); line-height:1.1; margin-bottom:8px; }
+    .tool-card-desc {
+      font-size:12px; font-weight:400; color:var(--gray-02); line-height:1.55;
+      margin-bottom:16px; flex:1;
+      display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;
+    }
+    .tool-card-arrow { font-size:10px; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:var(--army-gold); transition:letter-spacing .3s ease; }
     .tool-card:hover .tool-card-arrow { letter-spacing:.3em; }
     /* Sticker — dormant emboss, springs to life on hover */
     .tool-card-sticker {
-      position:absolute; top:18px; right:18px;
-      width:54px; height:54px;
+      position:absolute; top:14px; right:14px;
+      width:42px; height:42px;
       color:var(--army-gold); opacity:.13;
       transform:scale(.6) rotate(-14deg);
       transform-origin:center;
@@ -241,7 +245,7 @@
     /* QuickScreen distinguishing icon + badge */
     .tool-card--qs { position:relative; overflow:hidden; }
     .tool-card--qs .qs-ico {
-      position:absolute; top:22px; right:22px; font-size:34px; line-height:1;
+      position:absolute; top:14px; right:16px; font-size:26px; line-height:1;
       filter:drop-shadow(0 3px 8px rgba(0,0,0,.4));
       transition:transform .22s cubic-bezier(.34,1.7,.5,1);
       z-index:3;
