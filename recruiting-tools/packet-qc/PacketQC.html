@@ -96,6 +96,9 @@ const initStatuses = () => {
 const loadNotes = () => { try { return JSON.parse(localStorage.getItem("pqc-notes") || "{}"); } catch { return {}; } };
 const loadTs    = () => { try { return JSON.parse(localStorage.getItem("pqc-ts")    || "{}"); } catch { return {}; } };
 const loadItemDates = () => { try { return JSON.parse(localStorage.getItem("pqc-item-dates") || "{}"); } catch { return {}; } };
+const loadProfile  = () => { try { const s = localStorage.getItem("pqc-profile"); return s ? { ...PROFILE_DEFAULTS, ...JSON.parse(s) } : PROFILE_DEFAULTS; } catch { return PROFILE_DEFAULTS; } };
+// Merge saved statuses over defaults so items added to the checklist later still get their default state.
+const loadStatuses = () => { try { const s = localStorage.getItem("pqc-status"); return s ? { ...initStatuses(), ...JSON.parse(s) } : initStatuses(); } catch { return initStatuses(); } };
 const fmtTime   = () => new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
 
 /* ── Alias Check ─────────────────────────────────────────
@@ -1468,8 +1471,8 @@ const TabBar = ({ activeTab, setActiveTab }) => {
 const App = () => {
   const [theme,          setTheme]          = useState(TWEAK_DEFAULTS.theme);
   const [compact,        setCompact]        = useState(TWEAK_DEFAULTS.compact);
-  const [profile,        setProfile]        = useState(PROFILE_DEFAULTS);
-  const [statuses,       setStatuses]       = useState(initStatuses);
+  const [profile,        setProfile]        = useState(loadProfile);
+  const [statuses,       setStatuses]       = useState(loadStatuses);
   const [timestamps,     setTimestamps]     = useState(loadTs);
   const [notes,          setNotes]          = useState(loadNotes);
   const [filter,         setFilter]         = useState("all");
@@ -1494,6 +1497,9 @@ const App = () => {
   const prevSecIds   = useRef(new Set());
 
   useEffect(() => { document.documentElement.setAttribute("data-theme", theme); }, [theme]);
+  // Auto-save the applicant profile and checkbox states so work survives reloads & tab switches.
+  useEffect(() => { try { localStorage.setItem("pqc-profile", JSON.stringify(profile)); } catch (e) {} }, [profile]);
+  useEffect(() => { try { localStorage.setItem("pqc-status", JSON.stringify(statuses)); } catch (e) {} }, [statuses]);
   useEffect(() => {
     const h = e => {
       if (e.data?.type === "__activate_edit_mode")   setTweaks(true);
@@ -1534,8 +1540,14 @@ const App = () => {
     setStatuses(blank);
     setTimestamps({});
     setNotes({});
+    setItemDates({});
     localStorage.removeItem("pqc-notes");
     localStorage.removeItem("pqc-ts");
+    localStorage.removeItem("pqc-item-dates");
+    localStorage.removeItem("pqc-profile");
+    localStorage.removeItem("pqc-status");
+    // Clear every interactive-tool's saved data too (Gap Finder, MFR, Vault, Reference Auditor).
+    (window.PQC_TOOL_KEYS || []).forEach(k => localStorage.removeItem(k));
     setEditingProfile(false);
     setResetFlash(true);
     setTimeout(() => setResetFlash(false), 900);
