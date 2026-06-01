@@ -62,6 +62,7 @@ button,select,textarea,input{font-family:inherit}
 }
 @keyframes navPulse{0%{opacity:1}50%{opacity:.4}100%{opacity:1}}
 @keyframes resetFlash{0%{background:rgba(255,204,1,.18)}60%{background:rgba(255,204,1,.06)}100%{background:transparent}}
+@keyframes saveBlink{0%{opacity:.25;transform:scale(.6)}45%{opacity:1;transform:scale(1.25)}100%{opacity:.9;transform:scale(1)}}
 @keyframes spinIn{from{stroke-dashoffset:999}to{stroke-dashoffset:var(--dash-off)}}
 @keyframes tsIn{from{opacity:0;transform:translateX(6px)}to{opacity:1;transform:none}}
 @keyframes drawerIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
@@ -951,8 +952,6 @@ const lbl = { fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:9, te
   letterSpacing:".1em", color:"var(--fg)", opacity:.5, display:"block", marginBottom:4 };
 
 const ProfileForm = ({ profile, onChange, onClose, onReset }) => {
-  const [importOpen, setImportOpen] = useState(false);
-  const [importText, setImportText] = useState("");
 
   const upd = (f, v) => onChange(f, v);
   const toggleArr = (f, v) => onChange(f, profile[f].includes(v)
@@ -974,140 +973,6 @@ const ProfileForm = ({ profile, onChange, onClose, onReset }) => {
     </div>
   );
 
-  const handleImportText = () => {
-    const lines = importText.split("\n");
-    let parsedCount = 0;
-    lines.forEach(line => {
-      const lower = line.toLowerCase();
-      if (line.match(/(name|applicant)\s*:\s*(.+)/i)) {
-        onChange("name", line.match(/(name|applicant)\s*:\s*(.+)/i)[2].trim());
-        parsedCount++;
-      }
-      if (line.match(/(ssn|ssn last 4|ssn4)\s*:\s*(\d{4})/i)) {
-        onChange("ssnLast4", line.match(/(ssn|ssn last 4|ssn4)\s*:\s*(\d{4})/i)[2].trim());
-        parsedCount++;
-      }
-      if (line.match(/(dob|date of birth|birthdate)\s*:\s*(.+)/i)) {
-        onChange("dob", line.match(/(dob|date of birth|birthdate)\s*:\s*(.+)/i)[2].trim());
-        parsedCount++;
-      }
-      if (line.match(/(gc|guidance counselor|counselor)\s*:\s*(.+)/i)) {
-        onChange("gc", line.match(/(gc|guidance counselor|counselor)\s*:\s*(.+)/i)[2].trim());
-        parsedCount++;
-      }
-      if (line.match(/(sc|station commander)\s*:\s*(.+)/i)) {
-        onChange("sc", line.match(/(sc|station commander)\s*:\s*(.+)/i)[2].trim());
-        parsedCount++;
-      }
-      if (line.match(/(meps date|meps|projected date)\s*:\s*(\d{4}-\d{2}-\d{2})/i)) {
-        onChange("mepsDate", line.match(/(meps date|meps|projected date)\s*:\s*(\d{4}-\d{2}-\d{2})/i)[2].trim());
-        parsedCount++;
-      }
-      if (lower.includes("citizenship") || lower.includes("citizen")) {
-        if (lower.includes("lpr") || lower.includes("permanent resident")) {
-          onChange("citizenship", "lpr");
-          parsedCount++;
-        } else if (lower.includes("naturalized")) {
-          onChange("citizenship", "naturalized");
-          parsedCount++;
-        } else if (lower.includes("us citizen") || lower.includes("natural born")) {
-          onChange("citizenship", "citizen");
-          parsedCount++;
-        }
-      }
-      if (lower.includes("prior service") || lower.includes("ps:")) {
-        if (lower.includes("none")) {
-          onChange("priorService", "none");
-          parsedCount++;
-        } else if (lower.includes("army")) {
-          onChange("priorService", "army");
-          parsedCount++;
-        } else if (lower.includes("reserve") || lower.includes("usar") || lower.includes("ng") || lower.includes("national guard")) {
-          onChange("priorService", "usar-ng");
-          parsedCount++;
-        } else if (lower.includes("navy") || lower.includes("usn")) {
-          onChange("priorService", "usn");
-          parsedCount++;
-        } else if (lower.includes("air force") || lower.includes("usaf")) {
-          onChange("priorService", "usaf");
-          parsedCount++;
-        } else if (lower.includes("marine") || lower.includes("usmc")) {
-          onChange("priorService", "usmc");
-          parsedCount++;
-        }
-      }
-      if (lower.includes("dependents") || lower.includes("dep:")) {
-        if (lower.includes("none")) {
-          onChange("dependents", "none");
-          parsedCount++;
-        } else if (lower.includes("single parent") || lower.includes("sole parent")) {
-          onChange("dependents", "single-parent");
-          parsedCount++;
-        } else if (lower.includes("married") && (lower.includes("kids") || lower.includes("children") || lower.includes("child"))) {
-          onChange("dependents", "married-kids");
-          parsedCount++;
-        } else if (lower.includes("married")) {
-          onChange("dependents", "married");
-          parsedCount++;
-        }
-      }
-    });
-    if (parsedCount > 0) {
-      alert(`Import Successful! Parsed and populated ${parsedCount} fields.`);
-      setImportOpen(false);
-      setImportText("");
-    } else {
-      alert("Could not parse any fields. Check format!");
-    }
-  };
-
-  const importModal = importOpen && (
-    <div onClick={() => setImportOpen(false)} style={{
-      position: "fixed", inset: 0, zIndex: 600, background: "rgba(10,8,12,.85)",
-      display: "flex", alignItems: "center", justifyContent: "center", padding: 24,
-      animation: "overlayIn .15s ease"
-    }}>
-      <div onClick={e => e.stopPropagation()} style={{
-        background: "var(--bg-card)", border: "1px solid var(--border-str)",
-        width: "100%", maxWidth: 440, padding: 20, position: "relative"
-      }}>
-        <div style={{ fontFamily: '"GI",Arial,sans-serif', fontWeight: 700, fontSize: 13, textTransform: "uppercase", color: "var(--gold)", marginBottom: 12 }}>
-          📥 RZ Profile Importer
-        </div>
-        <textarea 
-          value={importText} 
-          onChange={e => setImportText(e.target.value)}
-          placeholder="Paste raw RZ profile details here...
-Format example:
-Applicant: Martinez, Carlos A.
-SSN Last 4: 7742
-DOB: 15 MAR 2002
-MEPS Date: 2026-06-05
-Citizenship: US Citizen
-Prior Service: Army (Active)
-Dependents: Not Married w/ Kids" 
-          style={{
-            width: "100%", height: 160, background: "var(--input-bg)", border: "1px solid var(--input-border)",
-            color: "var(--fg-alt)", padding: 8, outline: "none", fontSize: "11.5px", fontFamily: "monospace", resize: "none"
-          }}
-        />
-        <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
-          <button onClick={handleImportText} style={{
-            flex: 1, background: "var(--gold)", color: "var(--black)", border: "none",
-            padding: "8px 12px", fontSize: "11px", fontWeight: 700, textTransform: "uppercase", cursor: "pointer"
-          }}>
-            Import Data
-          </button>
-          <button onClick={() => setImportOpen(false)} style={{
-            flex: 1, background: "transparent", border: "1px solid var(--border-str)", color: "var(--fg-muted)",
-            padding: "8px 12px", fontSize: "11px", fontWeight: 700, textTransform: "uppercase", cursor: "pointer"
-          }}>
-            Cancel
-          </button>
-        </div>
-      </div>
-    </div>
-  );
 
   return (
     <div style={{ position:"absolute", inset:0, zIndex:50, background:"var(--sidebar)",
@@ -1122,13 +987,7 @@ Dependents: Not Married w/ Kids"
           justifyContent:"center", cursor:"pointer" }}><IcoX c="currentColor" s={9}/></button>
       </div>
       <div style={{ flex:1, padding:"14px 16px", overflow:"auto" }}>
-        <button onClick={() => setImportOpen(true)} style={{
-          width: "100%", background: "rgba(255,204,1,.1)", border: "1px solid var(--gold)", color: "var(--gold)",
-          padding: "8px 10px", fontSize: "11px", fontWeight: 700, textTransform: "uppercase", cursor: "pointer",
-          marginBottom: 16, display: "block"
-        }}>
-          📥 Quick Import from RZ / SF 86
-        </button>
+        
         {[["name","Applicant Name (Last, First MI)"],["ssnLast4","SSN Last 4"],
           ["dob","Date of Birth"],["mepsDate","Projected MEPS Date (YYYY-MM-DD)"],["gc","Guidance Counselor"],["sc","Station Commander"]
         ].map(([f, l]) => (
@@ -1218,13 +1077,12 @@ Dependents: Not Married w/ Kids"
           Done — Update Checklist →
         </button>
       </div>
-      {importModal}
     </div>
   );
 };
 
 /* ── Header ──────────────────────────────────────────── */
-const Header = ({ theme, onThemeToggle, onRefOpen, total, done, flagged }) => {
+const Header = ({ theme, onThemeToggle, onRefOpen, total, done, flagged, savedAt }) => {
   const pct = total > 0 ? Math.round(done / total * 100) : 0;
   const isReady = pct === 100 && flagged === 0;
   return (
@@ -1246,6 +1104,15 @@ const Header = ({ theme, onThemeToggle, onRefOpen, total, done, flagged }) => {
         </div>
       )}
       <div style={{ marginLeft:"auto", display:"flex", alignItems:"center", gap:12 }}>
+        <span title="Your work saves automatically to this browser as you go — survives tab switches and reloads. Use ↺ New Applicant in Edit Profile to clear it."
+          style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:700, fontSize:9,
+          color:"#4ade80", textTransform:"uppercase", letterSpacing:".05em",
+          border:"1px solid rgba(74,222,128,.3)", padding:"4px 9px",
+          display:"flex", alignItems:"center", gap:6, cursor:"default" }}>
+          <span key={savedAt} style={{ display:"inline-block", width:6, height:6, borderRadius:"50%",
+            background:"#4ade80", animation:"saveBlink .6s ease" }}/>
+          Auto-Saved
+        </span>
         <span style={{ fontFamily:'"GI",Arial,sans-serif', fontWeight:400, fontSize:9.5,
           color:"rgba(255,255,255,.2)", textTransform:"uppercase", letterSpacing:".05em" }}>
           AR 601-210 · Mar 2026
@@ -1485,12 +1352,11 @@ const App = () => {
   const [newSectionIds,  setNewSectionIds]  = useState(new Set());
   const [activeSection,  setActiveSection]  = useState(null);
   const [resetFlash,     setResetFlash]     = useState(false);
+  const [savedAt,        setSavedAt]        = useState(Date.now());
   const [refOpen,        setRefOpen]        = useState(false);
   const [tweaks,         setTweaks]         = useState(false);
   const [activeTab,      setActiveTab]      = useState("recruiter");
   const [itemDates,      setItemDates]      = useState(loadItemDates);
-  const [returnText,     setReturnText]     = useState("");
-  const [returnParserOpen, setReturnParserOpen] = useState(false);
   const sectionRefs  = useRef({});
   const containerRef = useRef(null);
   const prevItemIds  = useRef(new Set());
@@ -1500,6 +1366,8 @@ const App = () => {
   // Auto-save the applicant profile and checkbox states so work survives reloads & tab switches.
   useEffect(() => { try { localStorage.setItem("pqc-profile", JSON.stringify(profile)); } catch (e) {} }, [profile]);
   useEffect(() => { try { localStorage.setItem("pqc-status", JSON.stringify(statuses)); } catch (e) {} }, [statuses]);
+  // Stamp the "Saved" indicator whenever any part of the packet changes (all of these auto-persist).
+  useEffect(() => { setSavedAt(Date.now()); }, [profile, statuses, notes, timestamps, itemDates]);
   useEffect(() => {
     const h = e => {
       if (e.data?.type === "__activate_edit_mode")   setTweaks(true);
@@ -1603,44 +1471,7 @@ const App = () => {
     });
   }, []);
 
-  const parseGCReturn = useCallback(() => {
-    if (!returnText.trim()) return;
-    const lower = returnText.toLowerCase();
-    const flagsToSet = [];
-    const mappings = [
-      { id: "livescan", terms: ["livescan", "live scan", "fingerprint"] },
-      { id: "uf15", terms: ["uf15", "uf 601-210.15", "uf.15", "601-210.15", "uf 15"] },
-      { id: "dd369", terms: ["dd369", "dd 369", "police record", "ebc"] },
-      { id: "ssc", terms: ["ssc", "social security", "ssn card"] },
-      { id: "bc", terms: ["birth cert", "birth certificate", " bc "] },
-      { id: "fcp-cmd", terms: ["fcp-cmd", "da 5305", "5305", "fcp cmd"] },
-      { id: "fcp-acceptance", terms: ["fcp-acceptance", "tpu acceptance", "acceptance letter", "unit acceptance"] },
-      { id: "dd2807", terms: ["dd2807", "dd 2807", "medical prescreen", "prescreen"] },
-      { id: "asvab", terms: ["asvab", "picat", "afqt"] },
-      { id: "mirs", terms: ["mirs", "usmirs"] },
-      { id: "dd368", terms: ["dd368", "dd 368", "conditional release", "irr release"] },
-      { id: "weight-b0m0", terms: ["weight", "height", "body fat", "da 5500", "da 5501"] }
-    ];
 
-    mappings.forEach(m => {
-      if (m.terms.some(t => lower.includes(t))) {
-        flagsToSet.push(m.id);
-      }
-    });
-
-    if (flagsToSet.length > 0) {
-      setStatuses(prev => {
-        const next = { ...prev };
-        flagsToSet.forEach(id => {
-          next[id] = "flagged";
-        });
-        return next;
-      });
-      alert(`Scan complete: flagged ${flagsToSet.length} item(s) matching your GC notes.`);
-    } else {
-      alert("Scan complete: No matching checklist item keywords found in the text.");
-    }
-  }, [returnText]);
 
   const quickCompleteSection = useCallback((sectionId) => {
     const sec = sections.find(s => s.id === sectionId);
@@ -1720,7 +1551,7 @@ const App = () => {
     <div style={{ height:"100%", display:"flex", flexDirection:"column" }}>
       <Header theme={theme} onThemeToggle={() => setTheme(t => t === "dark" ? "light" : "dark")}
         onRefOpen={() => setRefOpen(true)}
-        total={total} done={done} flagged={flagged}/>
+        total={total} done={done} flagged={flagged} savedAt={savedAt}/>
       <TabBar activeTab={activeTab} setActiveTab={setActiveTab}/>
       {activeTab === "autopsy"
         ? <div key="autopsy" style={{ flex:1, display:"flex", flexDirection:"column", overflow:"hidden", animation:"fadeUp .22s ease" }}>
@@ -1769,90 +1600,6 @@ const App = () => {
               </span>
             </div>
           )}
-
-          {/* GC Return Parser Card */}
-          <div style={{
-            background: "rgba(255, 204, 1, 0.02)",
-            borderBottom: "1px solid var(--border-mid)",
-            padding: "10px 20px",
-            flexShrink: 0
-          }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <span style={{ fontSize: 13 }}>📋</span>
-                <span style={{
-                  fontFamily: '"GI",Arial,sans-serif', fontWeight: 700, fontSize: 11,
-                  textTransform: "uppercase", letterSpacing: ".06em", color: "var(--gold)"
-                }}>
-                  GC Return / Kickback Notes Parser
-                </span>
-              </div>
-              <button
-                onClick={() => setReturnParserOpen(!returnParserOpen)}
-                style={{
-                  background: "transparent", border: "1px solid var(--border-str)",
-                  color: "var(--fg-muted)", fontSize: "9.5px", fontWeight: 700,
-                  textTransform: "uppercase", letterSpacing: ".04em", padding: "4px 8px",
-                  cursor: "pointer", transition: "all .15s"
-                }}
-                onMouseEnter={e => { e.currentTarget.style.color = "var(--fg)"; e.currentTarget.style.borderColor = "var(--fg)"; }}
-                onMouseLeave={e => { e.currentTarget.style.color = "var(--fg-muted)"; e.currentTarget.style.borderColor = "var(--border-str)"; }}
-              >
-                {returnParserOpen ? "Collapse ▴" : "Expand Parser ▾"}
-              </button>
-            </div>
-            
-            {returnParserOpen && (
-              <div style={{ marginTop: 10, animation: "slideDown 0.2s ease" }}>
-                <p style={{
-                  fontFamily: '"GI",Arial,sans-serif', fontWeight: 400, fontSize: 11.5,
-                  color: "var(--fg-dim)", marginBottom: 8, lineHeight: 1.45
-                }}>
-                  Paste the kickback/return notes from the Guidance Counselor below. The tool will parse the text for common issues and automatically flag the corresponding checklist items.
-                </p>
-                <div style={{ display: "flex", gap: 10 }}>
-                  <textarea
-                    value={returnText}
-                    onChange={e => setReturnText(e.target.value)}
-                    placeholder="Example: Livescan is expired, need a fresh DD 369 for the alias, and the medical prescreen DD 2807 dates do not align."
-                    style={{
-                      flex: 1, height: 70, background: "var(--input-bg)", border: "1px solid var(--input-border)",
-                      color: "var(--fg-alt)", padding: "8px 10px", outline: "none", fontSize: "12px",
-                      fontFamily: '"GI",Arial,sans-serif', resize: "none"
-                    }}
-                  />
-                  <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                    <button
-                      onClick={parseGCReturn}
-                      style={{
-                        background: "var(--gold)", color: "var(--black)", border: "none",
-                        fontFamily: '"GI",Arial,sans-serif', fontWeight: 700, fontSize: "10.5px",
-                        textTransform: "uppercase", letterSpacing: ".04em", padding: "10px 14px",
-                        cursor: "pointer", flex: 1, whiteSpace: "nowrap"
-                      }}
-                      onMouseEnter={e => e.currentTarget.style.filter = "brightness(1.1)"}
-                      onMouseLeave={e => e.currentTarget.style.filter = "none"}
-                    >
-                      Scan &amp; Flag
-                    </button>
-                    <button
-                      onClick={() => setReturnText("")}
-                      style={{
-                        background: "transparent", border: "1px solid var(--border-str)",
-                        color: "var(--fg-muted)", fontFamily: '"GI",Arial,sans-serif',
-                        fontWeight: 700, fontSize: "9px", textTransform: "uppercase",
-                        letterSpacing: ".04em", padding: "6px 10px", cursor: "pointer"
-                      }}
-                      onMouseEnter={e => { e.currentTarget.style.color = "var(--danger)"; e.currentTarget.style.borderColor = "var(--danger)"; }}
-                      onMouseLeave={e => { e.currentTarget.style.color = "var(--fg-muted)"; e.currentTarget.style.borderColor = "var(--border-str)"; }}
-                    >
-                      Clear
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
 
           <FilterBar filter={filter} onFilter={setFilter} total={total} done={done} flagged={flagged}
             search={search} onSearch={setSearch}/>
