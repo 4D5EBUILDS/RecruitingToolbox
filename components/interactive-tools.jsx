@@ -731,30 +731,38 @@ SUBJECT: Applicant Moral Statement & Waiver Justification - ${inputs.applicant.t
     }
 
     try {
-      const response = await fetch('/api/generate-docx', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          date: inputs.date,
-          subject: "SUBJECT: " + subjectLine,
-          paragraphs: bodyParagraphs,
-          signature: sigLines,
-          filename: `MFR_${template.toUpperCase()}_${inputs.applicant.replace(/\s+/g, '_')}.docx`
-        })
-      });
-      if (!response.ok) {
-        throw new Error(await response.text());
-      }
-      const blob = await response.blob();
+      // Build a Word-compatible HTML document and download it entirely in the browser.
+      // This is a static site (no backend), so we cannot POST to an API to render the file.
+      const esc = v => String(v == null ? "" : v)
+        .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      const para = txt => txt === ""
+        ? '<p style="margin:0 0 11pt;">&nbsp;</p>'
+        : `<p style="margin:0 0 11pt;white-space:pre-wrap;">${esc(txt)}</p>`;
+      const bodyHtml = bodyParagraphs.map(para).join("");
+      const sigHtml = sigLines.map(l => `<p style="margin:0;">${esc(l)}</p>`).join("");
+      const safeName = (inputs.applicant || "applicant").replace(/\s+/g, "_");
+      const html =
+        '<!DOCTYPE html><html xmlns:o="urn:schemas-microsoft-com:office:office" ' +
+        'xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">' +
+        '<head><meta charset="utf-8"><title>MFR</title></head>' +
+        "<body style=\"font-family:'Times New Roman',serif;font-size:12pt;line-height:1.3;\">" +
+        `<p style="margin:0 0 16pt;">${esc(inputs.date)}</p>` +
+        '<p style="margin:0 0 16pt;">MEMORANDUM FOR RECORD</p>' +
+        `<p style="margin:0 0 16pt;font-weight:bold;">SUBJECT: ${esc(subjectLine)}</p>` +
+        bodyHtml +
+        `<div style="margin-top:40pt;padding-left:50%;">${sigHtml}</div>` +
+        "</body></html>";
+      const blob = new Blob(["﻿", html], { type: "application/msword" });
       const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
+      const a = document.createElement("a");
       a.href = url;
-      a.download = `MFR_${template.toUpperCase()}_${inputs.applicant.replace(/\s+/g, '_')}.docx`;
+      a.download = `MFR_${template.toUpperCase()}_${safeName}.doc`;
       document.body.appendChild(a);
       a.click();
       a.remove();
+      window.URL.revokeObjectURL(url);
     } catch (e) {
-      alert(`Error generating DOCX: ${e.message}`);
+      alert(`Error generating Word document: ${e.message}`);
     }
   };
 
@@ -1135,7 +1143,7 @@ SUBJECT: Applicant Moral Statement & Waiver Justification - ${inputs.applicant.t
                 💾 Download .TXT
               </button>
               <button onClick={downloadMfrDocx} style={{ flex: 1.5, background: "var(--gold)", border: "none", color: "var(--black)", padding: "10px 14px", fontWeight: 700, fontSize: 11, textTransform: "uppercase", cursor: "pointer" }}>
-                📝 Download .DOCX (Template)
+                📝 Download Word (.doc)
               </button>
             </div>
           </div>
