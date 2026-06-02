@@ -840,6 +840,60 @@ body {
 
 /* ─── ACCESSIBILITY ───────────────────────────────────────────────── */
 :focus-visible { outline: 3px solid var(--army-gold); outline-offset: 3px; }
+
+/* ── ARMS PANEL ──────────────────────────────────────────────────────── */
+.arms-panel {
+  border: 2px solid var(--army-gold); border-radius: 8px;
+  padding: 16px 20px; margin-top: 16px;
+  background: rgba(255,198,0,.05);
+}
+.arms-panel__header {
+  font-size: 11px; font-weight: 700; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--army-gold);
+  margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+}
+.arms-panel__header span { opacity: .6; font-weight: 400; text-transform: none; letter-spacing: 0; }
+.arms-stats {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px; margin-bottom: 14px;
+}
+.arms-stat { background: rgba(255,255,255,.04); border-radius: 6px; padding: 10px 12px; }
+.arms-stat__label { font-size: 10px; color: var(--gray-01); letter-spacing: .05em; text-transform: uppercase; margin-bottom: 4px; }
+.arms-stat__value { font-size: 18px; font-weight: 800; }
+.arms-stat__value.over { color: var(--fail); }
+.arms-stat__value.warn { color: var(--army-gold); }
+.arms-cats {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 10px; margin-bottom: 14px;
+}
+.arms-cat {
+  border-radius: 6px; padding: 12px 14px;
+  border: 1px solid rgba(255,255,255,.1);
+  background: rgba(255,255,255,.03);
+  transition: border-color .15s, background .15s;
+}
+.arms-cat.eligible   { border-color: var(--army-gold); background: rgba(255,198,0,.08); }
+.arms-cat.ineligible { opacity: .38; }
+.arms-cat__code { font-size: 20px; font-weight: 900; letter-spacing: -.01em; margin-bottom: 2px; }
+.arms-cat__name { font-size: 11px; font-weight: 600; color: var(--gray-01); margin-bottom: 8px; }
+.arms-cat__range { font-size: 11px; color: var(--gray-01); }
+.arms-cat__max  { font-size: 22px; font-weight: 900; color: var(--army-gold); margin-top: 4px; }
+.arms-cat__sub  { font-size: 10px; color: var(--gray-01); }
+.arms-verdict {
+  font-size: 12px; line-height: 1.6;
+  padding: 10px 14px; border-radius: 6px;
+  border-left: 3px solid var(--army-gold);
+  background: rgba(255,255,255,.04);
+}
+/* BMI row */
+.bmi-info-row {
+  display: flex; align-items: center; gap: 8px;
+  margin-top: 12px; padding: 10px 14px;
+  background: rgba(255,255,255,.04); border-radius: 6px; font-size: 13px;
+}
+.bmi-info-row__label { color: var(--gray-01); }
+.bmi-info-row__value { font-weight: 800; font-size: 16px; margin-left: auto; }
+.bmi-info-row__cat   { font-size: 11px; color: var(--gray-01); margin-left: 6px; }
 </style>
 </head>
 <body>
@@ -917,7 +971,7 @@ body {
       <strong>Active Duty / Prior Service:</strong> Over screening weight triggers mandatory tape test. AFT score ≥465 with ≥80 pts/event = body fat exempt.
     </div>
     <div id="nps-note" class="info-box" style="display:none;">
-      <strong>Non-Prior Service / Recruiting:</strong> Stricter weight tables, higher BF% ceilings. Exceeding standard = disqualified from enlistment.
+      <strong>Non-Prior Service / Recruiting:</strong> Stricter weight tables, higher BF% ceilings. Exceeding standard = disqualified from enlistment unless eligible for the <strong>ARMS program</strong> (1–6% over max BF, NPS RA/AR only — USARD MSG 26-015, eff. 15 Dec 2025).
     </div>
 
     <div class="section-label">Gender</div>
@@ -1100,6 +1154,52 @@ body {
         <div class="result-card__value" id="val-a-result">—</div>
         <div class="result-card__sub" id="sub-a-result"></div>
       </div>
+    </div>
+
+    <!-- BMI (informational) -->
+    <div class="bmi-info-row">
+      <span class="bmi-info-row__label">BMI</span>
+      <span class="bmi-info-row__value" id="val-bmi">—</span>
+      <span class="bmi-info-row__cat" id="sub-bmi"></span>
+    </div>
+
+    <!-- ARMS eligibility panel (NPS only) -->
+    <div id="arms-panel" class="arms-panel" style="display:none;">
+      <div class="arms-panel__header">
+        ARMS Program Eligibility
+        <span>— USARD MSG 26-015 · eff. 15 Dec 2025 · NPS RA/AR only</span>
+      </div>
+      <div class="arms-stats">
+        <div class="arms-stat">
+          <div class="arms-stat__label">Current BF</div>
+          <div class="arms-stat__value" id="arms-val-actual">—</div>
+        </div>
+        <div class="arms-stat">
+          <div class="arms-stat__label">Max BF (Standard)</div>
+          <div class="arms-stat__value" id="arms-val-max">—</div>
+        </div>
+        <div class="arms-stat">
+          <div class="arms-stat__label">Over Standard By</div>
+          <div class="arms-stat__value" id="arms-val-over">—</div>
+        </div>
+      </div>
+      <div class="arms-cats">
+        <div class="arms-cat" id="arms-cat-am">
+          <div class="arms-cat__code">AM</div>
+          <div class="arms-cat__name">ARMS Standard</div>
+          <div class="arms-cat__range">1% – 2% over max BF</div>
+          <div class="arms-cat__max" id="arms-am-max">—</div>
+          <div class="arms-cat__sub">BN approval · AFQT 31+</div>
+        </div>
+        <div class="arms-cat" id="arms-cat-a6">
+          <div class="arms-cat__code">A6</div>
+          <div class="arms-cat__name">FSPC-ARMS</div>
+          <div class="arms-cat__range">2.1% – 6% over max BF</div>
+          <div class="arms-cat__max" id="arms-a6-max">—</div>
+          <div class="arms-cat__sub">EEPD approval · AFQT 50+ · Ft. Jackson</div>
+        </div>
+      </div>
+      <div class="arms-verdict" id="arms-verdict"></div>
     </div>
 
     <div class="btn-row">
@@ -1384,7 +1484,7 @@ function render(){
     overallTitle='DOES NOT MEET STANDARD';
     overallSub=standard==='ps'
       ?'Flag action initiated. Enroll in ABCP. May request supplemental assessment via DXA / InBody 770 / Bod Pod® if reasonably available.'
-      :'DISQUALIFIED from accession. Body fat exceeds maximum allowable standard under AR 40-501.';
+      :'Body fat exceeds AR 40-501 accession standard. See ARMS eligibility panel below.';
   }
 
   const banner = document.getElementById('overall-banner');
@@ -1422,6 +1522,49 @@ function render(){
   document.getElementById('form-number-title').textContent = gender==='M'?'5500':'5501';
   const genBtn = document.getElementById('gen-btn');
   genBtn.innerHTML = 'Generate DA Form '+(gender==='M'?'5500 (Male)':'5501 (Female)')+' <span class="arrow">→</span>';
+
+  // BMI (informational, not an accession standard)
+  const bmi = (703 * wt) / (ht * ht);
+  const bmiCat = bmi < 18.5 ? 'Underweight' : bmi < 25 ? 'Normal weight' : bmi < 30 ? 'Overweight' : 'Obese';
+  document.getElementById('val-bmi').textContent = bmi.toFixed(1);
+  document.getElementById('sub-bmi').textContent = '— ' + bmiCat;
+
+  // ARMS eligibility panel (NPS only, when over screening weight AND over BF max)
+  const armsPanel = document.getElementById('arms-panel');
+  if (standard === 'nps' && overWt && bf > maxBF) {
+    const overBy = bf - maxBF;
+    const armsAmMax = maxBF + 2;
+    const armsA6Max = maxBF + 6;
+    document.getElementById('arms-val-actual').textContent = bf.toFixed(1) + '%';
+    document.getElementById('arms-val-max').textContent = maxBF + '%';
+    document.getElementById('arms-am-max').textContent = 'up to ' + armsAmMax + '%';
+    document.getElementById('arms-a6-max').textContent = 'up to ' + armsA6Max + '%';
+    const overEl = document.getElementById('arms-val-over');
+    overEl.textContent = '+' + overBy.toFixed(1) + '%';
+    const amCard = document.getElementById('arms-cat-am');
+    const a6Card = document.getElementById('arms-cat-a6');
+    let verdict = '';
+    if (overBy <= 2) {
+      overEl.className = 'arms-stat__value warn';
+      amCard.className = 'arms-cat eligible';
+      a6Card.className = 'arms-cat ineligible';
+      verdict = '<strong>ARMS-AM Eligible</strong> — 1–2% over max BF. BN-level workflow approval required (program code “AM”). AFQT 31+ required. Enlistment at MEPS only (no remote). Must meet AR 40-501 BF standard within 1 year of accession onto Active Duty or IADT.';
+    } else if (overBy <= 6) {
+      overEl.className = 'arms-stat__value warn';
+      amCard.className = 'arms-cat ineligible';
+      a6Card.className = 'arms-cat eligible';
+      verdict = '<strong>ARMS-A6 Eligible (FSPC-ARMS)</strong> — 2.1–6% over max BF. EEPD-level workflow approval required (program code “A6”). AFQT 50+ required. Applicant ships to Fort Jackson for the Future Soldier Preparatory Course. Temporary reservations not authorized.';
+    } else {
+      overEl.className = 'arms-stat__value over';
+      amCard.className = 'arms-cat ineligible';
+      a6Card.className = 'arms-cat ineligible';
+      verdict = '<strong>NOT ARMS Eligible</strong> — More than 6% over the max allowable BF standard. Does not qualify for any ARMS category. Applicant must reduce body fat before accession processing.';
+    }
+    document.getElementById('arms-verdict').innerHTML = verdict;
+    armsPanel.style.display = '';
+  } else {
+    armsPanel.style.display = 'none';
+  }
 }
 
 function setCard(id, cls){
