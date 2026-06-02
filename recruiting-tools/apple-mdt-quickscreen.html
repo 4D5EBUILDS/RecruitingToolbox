@@ -200,6 +200,11 @@
   .ps-title{font-family:"GI",Arial,sans-serif;font-size:15px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;text-align:center;margin:20px 0 4px}
   .ps-meta{display:grid;grid-template-columns:1fr 1fr;gap:6px 26px;font-size:13px;margin:16px 0;border:1px solid #ccc;padding:14px 16px;border-radius:6px}
   .ps-meta div{display:flex;gap:8px}.ps-meta .k{color:#666;min-width:88px}.ps-meta .v{font-weight:700;border-bottom:1px solid #ddd;flex:1}
+  .ps-h{font-family:"GI",Arial,sans-serif;font-size:11px;letter-spacing:.1em;text-transform:uppercase;border-bottom:2px solid var(--army-black);padding-bottom:4px;margin:20px 0 9px;color:var(--army-black)}
+  .ps-data{display:grid;grid-template-columns:1fr 1fr;gap:0 26px;border:1px solid #ccc;border-radius:6px;padding:4px 14px;font-size:12.5px}
+  .ps-drow{display:flex;gap:10px;padding:7px 0;border-bottom:1px solid #eee}
+  .ps-dk{color:#555;min-width:120px;font-weight:700;font-family:"GI",Arial,sans-serif;font-size:10px;text-transform:uppercase;letter-spacing:.03em;padding-top:1px}
+  .ps-dv{flex:1;color:#111}
   .ps-verdict{display:flex;align-items:center;gap:12px;margin:14px 0;padding:12px 16px;border:2px solid #111;border-radius:6px}
   .ps-verdict .vk{font-family:"GI",Arial,sans-serif;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#555}
   .ps-verdict .vv{font-family:"GI",Arial,sans-serif;font-size:24px;font-weight:700}
@@ -716,6 +721,35 @@ function copySheet(){
 
 /* ════════ PRINT WORKSHEET ════════ */
 const ARMY_STAR='<svg class="ps-star" viewBox="0 0 100 100"><path fill="#FFCC01" d="M50 2 L61.8 36.4 L98 36.4 L68.6 57.7 L80.4 92.1 L50 70.8 L19.6 92.1 L31.4 57.7 L2 36.4 L38.2 36.4 Z"/><path fill="currentColor" d="M50 28 L55.3 43.5 L71.6 43.5 L58.4 53.1 L63.7 68.6 L50 59.1 L36.3 68.6 L41.6 53.1 L28.4 43.5 L44.7 43.5 Z"/></svg>';
+/* readable "as entered" values for the worksheet */
+const CIT_LBL={born:'U.S. citizen (born)',nat:'Naturalized citizen',lpr:'Permanent resident — green card (I-551)',none:'Non-citizen / visa / other'};
+const EDU_LBL={tier1:'Tier 1 — HS diploma',homeschool:'Home school',tier2:'Tier 2 — GED',tier3:'Tier 3 — no credential'};
+const DRUG_LBL={'':'',experimental:'experimental drug use',occasional:'occasional drug use',regular:'regular / habitual drug use'};
+const CUST_LBL={'':'',has:'has custody',transferred:'custody transferred',pregnant:'pregnant'};
+function applicantData(){
+  const a=getAge();
+  const ageV = lead.age.mode==='age'
+    ? (lead.age.years?`Age ${lead.age.years}`:'—')
+    : (lead.age.dob?`DOB ${lead.age.dob}  (age ${a??'—'})`:'—');
+  const ageStr = ageV + (lead.age.married?'  ·  married / legally separated':'');
+  const ps = lead.ps.isPS===null?'—':(!lead.ps.isPS?'Non-prior service (NPS)':`Prior service · ${lead.ps.reCode||'RE —'}`+(lead.ps.hasMSO?' · MSO remaining (DD 368)':''));
+  const p=lead.phys; let physStr='—';
+  if(p.height||p.weight){ const psFlag=lead.ps.isPS===true; const mx=maxWeight(p.gender,p.height,a,psFlag);
+    physStr=`${p.gender}, ${p.height||'—'} in, ${p.weight||'—'} lb`+(mx?`  ·  max ${mx} lb (${psFlag?'PS retention':'NPS accession'})`:''); }
+  const offN=lead.legal.offenses.map(id=>OFFENSES.find(x=>x.id===id)?.name).filter(Boolean);
+  const legalStr = lead.legal.touched ? [offN.length?offN.join(', '):'no offenses reported', DRUG_LBL[lead.legal.drugUse]].filter(Boolean).join('  ·  ') : '—';
+  const eduStr = lead.edu.tier ? EDU_LBL[lead.edu.tier]+(lead.edu.afqt?`  ·  AFQT ${lead.edu.afqt}`:'') : '—';
+  const medStr = lead.med.touched ? [lead.med.activeTx?'ACTIVE mental-health treatment':'', lead.med.conditions.length?lead.med.conditions.join(', '):'none reported'].filter(Boolean).join('  ·  ') : '—';
+  const depStr = lead.dep.status ? `${lead.dep.status}`+(lead.dep.kids?`  ·  ${lead.dep.kids} dependent(s)`:'')+(CUST_LBL[lead.dep.custody]?`  ·  ${CUST_LBL[lead.dep.custody]}`:'') : '—';
+  const tatN=lead.tat.locations.map(id=>TATLOCS.find(x=>x.id===id)?.name).filter(Boolean);
+  const tatStr = (lead.tat.touched||tatN.length||lead.tat.content) ? [tatN.length?tatN.join(', '):'none', lead.tat.content?'PROHIBITED content':''].filter(Boolean).join('  ·  ') : '—';
+  return [
+    ['A','Age',ageStr],['C','Citizenship',CIT_LBL[lead.cit.status]||'—'],
+    ['P','Prior Service',ps],['P','Physical',physStr],
+    ['L','Legal',legalStr],['E','Education',eduStr],
+    ['M','Medical',medStr],['D','Dependents',depStr],['T','Tattoos',tatStr],
+  ];
+}
 function buildPrintSheet(){
   const m=lead.meta; const all=allFlags(); const v=verdictOf(all);
   const today=new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
@@ -724,6 +758,7 @@ function buildPrintSheet(){
     if(!fls.length){ rows+=`<tr><td><b>${s.letter}</b> · ${s.title}</td><td><span class="ps-st none">—</span></td><td style="color:#999">Not screened</td><td></td></tr>`; return; }
     fls.forEach((x,idx)=>{ rows+=`<tr><td>${idx===0?'<b>'+s.letter+'</b> · '+s.title:''}</td><td><span class="ps-st ${x.tier}">${tierLabel(x.tier)}</span></td><td>${escapeHtml(x.title)}</td><td style="color:#666">${x.cite||''}</td></tr>`; }); });
   const noteRows=SECTIONS.filter(s=>(lead.notes[s.key]||'').trim()).map(s=>`<div class="ps-note"><b>${s.title}:</b> ${escapeHtml(lead.notes[s.key])}</div>`).join('');
+  const dataRows=applicantData().map(d=>`<div class="ps-drow"><span class="ps-dk">${d[0]} · ${d[1]}</span><span class="ps-dv">${escapeHtml(d[2])}</span></div>`).join('');
   document.getElementById('printsheet').innerHTML=`<div class="ps">
     <div class="ps-lh">${ARMY_STAR}<div class="ps-lh-txt">
       <div class="ps-dept">Department of the Army · U.S. Army Recruiting Command</div>
@@ -739,6 +774,9 @@ function buildPrintSheet(){
       <div><span class="k">Recruiter</span><span class="v">&nbsp;</span></div>
     </div>
     <div class="ps-verdict"><span class="vk">Prescreen result</span><span class="vv ${v.cls||''}">${v.label}</span><span style="color:#555;font-size:13px">${all.length?v.sub:''}</span></div>
+    <div class="ps-h">Applicant Data — As Entered</div>
+    <div class="ps-data">${dataRows}</div>
+    <div class="ps-h">Screening Findings</div>
     <table class="ps-tbl"><thead><tr><th style="width:24%">Area</th><th style="width:13%">Status</th><th>Finding</th><th style="width:24%">Reference</th></tr></thead><tbody>${rows}</tbody></table>
     ${noteRows?`<div class="ps-notes"><h4>Recruiter Notes</h4>${noteRows}</div>`:''}
     <div class="ps-sign"><div>Recruiter signature / date</div><div>Applicant initials / date</div></div>
