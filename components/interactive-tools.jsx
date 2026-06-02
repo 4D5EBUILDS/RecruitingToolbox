@@ -3,20 +3,36 @@
 
 const { useState, useEffect, useMemo, useCallback, useRef } = React;
 
+/* localStorage-backed state — survives tab switches (component unmounts) AND
+   full page reloads, so a recruiter never loses work mid-packet. */
+const usePersistedState = (key, initial) => {
+  const [state, setState] = useState(() => {
+    try { const s = localStorage.getItem(key); return s !== null ? JSON.parse(s) : initial; }
+    catch { return initial; }
+  });
+  useEffect(() => {
+    try { localStorage.setItem(key, JSON.stringify(state)); } catch (e) {}
+  }, [key, state]);
+  return [state, setState];
+};
+// Expose so the main app can clear all tool data on Reset.
+window.PQC_TOOL_KEYS = ["pqc-gap-residences","pqc-gap-employment","pqc-gap-dl",
+  "pqc-mfr-template","pqc-mfr-inputs","pqc-vault-filename","pqc-ref-type","pqc-ref-inputs"];
+
 /* =========================================================================
    1. GAP FINDER (10-Year Address & Employment Audit)
    ========================================================================= */
 const GapFinder = ({ profile }) => {
-  const [residences, setResidences] = useState([
-    { id: 1, desc: "Current Address", fromMonth: 5, fromYear: 2024, toMonth: 5, toYear: 2026, isPresent: true },
-    { id: 2, desc: "Prior Home", fromMonth: 8, fromYear: 2020, toMonth: 5, toYear: 2024, isPresent: false },
-    { id: 3, desc: "High School Dorms", fromMonth: 9, fromYear: 2016, toMonth: 8, toYear: 2020, isPresent: false }
+  const [residences, setResidences] = usePersistedState("pqc-gap-residences", [
+    { id: 1, desc: "Current Address", fromMonth: 5, fromDay: 1, fromYear: 2024, toMonth: 5, toDay: 1, toYear: 2026, isPresent: true },
+    { id: 2, desc: "Prior Home", fromMonth: 8, fromDay: 1, fromYear: 2020, toMonth: 5, toDay: 1, toYear: 2024, isPresent: false },
+    { id: 3, desc: "High School Dorms", fromMonth: 9, fromDay: 1, fromYear: 2016, toMonth: 8, toDay: 1, toYear: 2020, isPresent: false }
   ]);
-  const [employment, setEmployment] = useState([
-    { id: 1, desc: "Lincoln Target - Sales Clerk", fromMonth: 6, fromYear: 2024, toMonth: 5, toYear: 2026, isPresent: true },
-    { id: 2, desc: "Summer Lifeguard", fromMonth: 5, fromYear: 2022, toMonth: 8, toYear: 2022, isPresent: false }
+  const [employment, setEmployment] = usePersistedState("pqc-gap-employment", [
+    { id: 1, desc: "Lincoln Target - Sales Clerk", fromMonth: 6, fromDay: 1, fromYear: 2024, toMonth: 5, toDay: 1, toYear: 2026, isPresent: true },
+    { id: 2, desc: "Summer Lifeguard", fromMonth: 5, fromDay: 1, fromYear: 2022, toMonth: 8, toDay: 1, toYear: 2022, isPresent: false }
   ]);
-  const [dlAddress, setDlAddress] = useState("123 Tactical Way, Lincoln NE");
+  const [dlAddress, setDlAddress] = usePersistedState("pqc-gap-dl", "123 Tactical Way, Lincoln NE");
   const [results, setResults] = useState(null);
 
   const MONTHS = [
@@ -24,6 +40,7 @@ const GapFinder = ({ profile }) => {
     { v: 5, l: "May" }, { v: 6, l: "Jun" }, { v: 7, l: "Jul" }, { v: 8, l: "Aug" },
     { v: 9, l: "Sep" }, { v: 10, l: "Oct" }, { v: 11, l: "Nov" }, { v: 12, l: "Dec" }
   ];
+  const DAYS = Array.from({ length: 31 }, (_, i) => i + 1);
 
   const yearsRange = useMemo(() => {
     const curr = new Date().getFullYear();
@@ -34,12 +51,12 @@ const GapFinder = ({ profile }) => {
 
   const addResidence = () => {
     const y = new Date().getFullYear();
-    setResidences(p => [...p, { id: Date.now(), desc: "", fromMonth: 1, fromYear: y - 5, toMonth: 1, toYear: y - 4, isPresent: false }]);
+    setResidences(p => [...p, { id: Date.now(), desc: "", fromMonth: 1, fromDay: 1, fromYear: y - 5, toMonth: 1, toDay: 1, toYear: y - 4, isPresent: false }]);
   };
 
   const addEmployment = () => {
     const y = new Date().getFullYear();
-    setEmployment(p => [...p, { id: Date.now(), desc: "", fromMonth: 1, fromYear: y - 5, toMonth: 1, toYear: y - 4, isPresent: false }]);
+    setEmployment(p => [...p, { id: Date.now(), desc: "", fromMonth: 1, fromDay: 1, fromYear: y - 5, toMonth: 1, toDay: 1, toYear: y - 4, isPresent: false }]);
   };
 
   const removeRow = (type, id) => {
@@ -55,6 +72,7 @@ const GapFinder = ({ profile }) => {
       if (key === "isPresent" && val === true) {
         const now = new Date();
         next.toMonth = now.getMonth() + 1;
+        next.toDay = now.getDate();
         next.toYear = now.getFullYear();
       }
       return next;
@@ -62,87 +80,71 @@ const GapFinder = ({ profile }) => {
   };
 
   const runAudit = () => {
-    const now = new Date();
-    const currMonth = now.getMonth() + 1;
-    const currYear = now.getFullYear();
-    const targetMonths = 120; // 10 years
+    const MS = 86400000; // ms per day
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const todayIdx = Math.floor(today.getTime() / MS);
+    // 10-year window (or the GC may verify back to the 16th birthday — 10y is the floor)
+    const windowStart = new Date(today); windowStart.setFullYear(windowStart.getFullYear() - 10);
+    const windowStartIdx = Math.floor(windowStart.getTime() / MS);
 
-    const getTimelineMonths = (items) => {
-      const active = Array(targetMonths).fill(false);
-      const errors = [];
-      const overlaps = [];
+    const dayIdx = (y, m, d) => Math.floor(new Date(y, m - 1, d).getTime() / MS);
+    const fmtIdx = (idx) => {
+      const dt = new Date(idx * MS);
+      return `${MONTHS.find(x => x.v === dt.getMonth() + 1).l} ${dt.getDate()}, ${dt.getFullYear()}`;
+    };
+    const fmtRange = (s, e) => {
+      const days = e - s + 1;
+      return `${fmtIdx(s)} to ${fmtIdx(e)} (${days} day${days !== 1 ? "s" : ""})`;
+    };
 
+    const analyze = (items) => {
+      const errors = [], overlaps = [];
+      const intervals = [];
       items.forEach(item => {
-        const startTotal = item.fromYear * 12 + (item.fromMonth - 1);
-        const endYear = item.isPresent ? currYear : item.toYear;
-        const endMonth = item.isPresent ? currMonth : item.toMonth;
-        const endTotal = endYear * 12 + (endMonth - 1);
-
-        if (startTotal > endTotal) {
+        const s = dayIdx(item.fromYear, item.fromMonth, item.fromDay || 1);
+        const e = item.isPresent ? todayIdx : dayIdx(item.toYear, item.toMonth, item.toDay || 1);
+        if (s > e) {
           errors.push(`"${item.desc || 'Unnamed Entry'}" has start date after end date.`);
           return;
         }
-
-        // Map to index relative to 120 months ago
-        const currTotal = currYear * 12 + (currMonth - 1);
-        const startIdx = Math.max(0, targetMonths - 1 - (currTotal - startTotal));
-        const endIdx = Math.min(targetMonths - 1, targetMonths - 1 - (currTotal - endTotal));
-
-        for (let i = startIdx; i <= endIdx; i++) {
-          if (active[i]) {
-            overlaps.push(i);
-          }
-          active[i] = true;
-        }
+        intervals.push({ s, e, desc: item.desc || "Unnamed Entry" });
       });
 
-      return { active, errors, overlaps };
-    };
-
-    const resAudit = getTimelineMonths(residences);
-    const empAudit = getTimelineMonths(employment);
-
-    // Calculate gaps
-    const findGaps = (activeArray) => {
-      const gaps = [];
-      let inGap = false;
-      let gapStart = null;
-
-      for (let i = 0; i < targetMonths; i++) {
-        if (!activeArray[i] && !inGap) {
-          inGap = true;
-          gapStart = i;
-        } else if (activeArray[i] && inGap) {
-          inGap = false;
-          gaps.push({ start: gapStart, end: i - 1 });
+      // Overlaps — sort by start, compare consecutive
+      intervals.sort((a, b) => a.s - b.s || a.e - b.e);
+      for (let i = 1; i < intervals.length; i++) {
+        if (intervals[i].s <= intervals[i - 1].e) {
+          overlaps.push(`"${intervals[i - 1].desc}" overlaps "${intervals[i].desc}" (${fmtIdx(intervals[i].s)} – ${fmtIdx(Math.min(intervals[i - 1].e, intervals[i].e))})`);
         }
       }
-      if (inGap) {
-        gaps.push({ start: gapStart, end: targetMonths - 1 });
-      }
-      return gaps;
+
+      // Gaps — clamp to the 10-year window, sweep for uncovered stretches
+      const clamped = intervals
+        .map(iv => ({ s: Math.max(iv.s, windowStartIdx), e: Math.min(iv.e, todayIdx) }))
+        .filter(iv => iv.s <= iv.e)
+        .sort((a, b) => a.s - b.s);
+      const gaps = [];
+      let cursor = windowStartIdx;
+      clamped.forEach(iv => {
+        if (iv.s > cursor) gaps.push(fmtRange(cursor, iv.s - 1));
+        cursor = Math.max(cursor, iv.e + 1);
+      });
+      if (cursor <= todayIdx) gaps.push(fmtRange(cursor, todayIdx));
+
+      return { errors, overlaps, gaps };
     };
 
-    const resGaps = findGaps(resAudit.active);
-    const empGaps = findGaps(empAudit.active);
-
-    const formatGapMsg = (gap) => {
-      const curr = currYear * 12 + (currMonth - 1);
-      
-      const idxToDate = (idx) => {
-        const total = curr - (targetMonths - 1 - idx);
-        const y = Math.floor(total / 12);
-        const m = (total % 12) + 1;
-        return `${MONTHS.find(x => x.v === m).l} ${y}`;
-      };
-
-      return `${idxToDate(gap.start)} to ${idxToDate(gap.end)} (${(gap.end - gap.start + 1)} months)`;
-    };
+    const resAudit = analyze(residences);
+    const empAudit = analyze(employment);
 
     const findings = {
-      resGaps: resGaps.map(formatGapMsg),
-      empGaps: empGaps.map(formatGapMsg),
-      errors: [...resAudit.errors, ...empAudit.errors],
+      resGaps: resAudit.gaps,
+      empGaps: empAudit.gaps,
+      errors: [
+        ...resAudit.errors, ...empAudit.errors,
+        ...resAudit.overlaps.map(o => `Residence overlap — ${o}`),
+        ...empAudit.overlaps.map(o => `Employment overlap — ${o}`),
+      ],
       dlMatches: dlAddress.toLowerCase().includes(residences.find(r => r.isPresent)?.desc?.toLowerCase() || "___")
     };
 
@@ -200,7 +202,7 @@ const GapFinder = ({ profile }) => {
             </div>
             
             {residences.map((r, idx) => (
-              <div key={r.id} style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr 1fr 100px 30px", gap: 8, alignItems: "center", padding: "10px 0", borderBottom: idx < residences.length - 1 ? "1px solid var(--border)" : "none" }}>
+              <div key={r.id} style={{ display: "grid", gridTemplateColumns: "1.4fr 1.3fr 1.3fr 78px 24px", gap: 8, alignItems: "center", padding: "10px 0", borderBottom: idx < residences.length - 1 ? "1px solid var(--border)" : "none" }}>
                 <input 
                   type="text" 
                   value={r.desc} 
@@ -214,6 +216,9 @@ const GapFinder = ({ profile }) => {
                   <select value={r.fromMonth} onChange={e => updateRow("res", r.id, "fromMonth", parseInt(e.target.value))} style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", fontSize: 11, padding: 4 }}>
                     {MONTHS.map(m => <option key={m.v} value={m.v}>{m.l}</option>)}
                   </select>
+                  <select value={r.fromDay} onChange={e => updateRow("res", r.id, "fromDay", parseInt(e.target.value))} style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", fontSize: 11, padding: 4 }}>
+                    {DAYS.map(d => <option key={d} value={d}>{d}</option>)}
+                  </select>
                   <select value={r.fromYear} onChange={e => updateRow("res", r.id, "fromYear", parseInt(e.target.value))} style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", fontSize: 11, padding: 4 }}>
                     {yearsRange.map(y => <option key={y} value={y}>{y}</option>)}
                   </select>
@@ -223,6 +228,9 @@ const GapFinder = ({ profile }) => {
                 <div style={{ display: "flex", gap: 4 }}>
                   <select value={r.toMonth} disabled={r.isPresent} onChange={e => updateRow("res", r.id, "toMonth", parseInt(e.target.value))} style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", fontSize: 11, padding: 4, opacity: r.isPresent ? 0.4 : 1 }}>
                     {MONTHS.map(m => <option key={m.v} value={m.v}>{m.l}</option>)}
+                  </select>
+                  <select value={r.toDay} disabled={r.isPresent} onChange={e => updateRow("res", r.id, "toDay", parseInt(e.target.value))} style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", fontSize: 11, padding: 4, opacity: r.isPresent ? 0.4 : 1 }}>
+                    {DAYS.map(d => <option key={d} value={d}>{d}</option>)}
                   </select>
                   <select value={r.toYear} disabled={r.isPresent} onChange={e => updateRow("res", r.id, "toYear", parseInt(e.target.value))} style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", fontSize: 11, padding: 4, opacity: r.isPresent ? 0.4 : 1 }}>
                     {yearsRange.map(y => <option key={y} value={y}>{y}</option>)}
@@ -252,44 +260,50 @@ const GapFinder = ({ profile }) => {
               </button>
             </div>
             
-            {employment.map((e, idx) => (
-              <div key={e.id} style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr 1fr 100px 30px", gap: 8, alignItems: "center", padding: "10px 0", borderBottom: idx < employment.length - 1 ? "1px solid var(--border)" : "none" }}>
-                <input 
-                  type="text" 
-                  value={e.desc} 
-                  onChange={e => updateRow("emp", e.id, "desc", e.target.value)} 
+            {employment.map((emp, idx) => (
+              <div key={emp.id} style={{ display: "grid", gridTemplateColumns: "1.4fr 1.3fr 1.3fr 78px 24px", gap: 8, alignItems: "center", padding: "10px 0", borderBottom: idx < employment.length - 1 ? "1px solid var(--border)" : "none" }}>
+                <input
+                  type="text"
+                  value={emp.desc}
+                  onChange={e => updateRow("emp", emp.id, "desc", e.target.value)}
                   placeholder="Employer Name (or 'Unemployed')..."
                   style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", padding: "6px 8px", fontSize: 12, fontFamily: '"GI",Arial,sans-serif' }}
                 />
-                
+
                 {/* FROM */}
                 <div style={{ display: "flex", gap: 4 }}>
-                  <select value={e.fromMonth} onChange={e => updateRow("emp", e.id, "fromMonth", parseInt(e.target.value))} style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", fontSize: 11, padding: 4 }}>
+                  <select value={emp.fromMonth} onChange={e => updateRow("emp", emp.id, "fromMonth", parseInt(e.target.value))} style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", fontSize: 11, padding: 4 }}>
                     {MONTHS.map(m => <option key={m.v} value={m.v}>{m.l}</option>)}
                   </select>
-                  <select value={e.fromYear} onChange={e => updateRow("emp", e.id, "fromYear", parseInt(e.target.value))} style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", fontSize: 11, padding: 4 }}>
+                  <select value={emp.fromDay} onChange={e => updateRow("emp", emp.id, "fromDay", parseInt(e.target.value))} style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", fontSize: 11, padding: 4 }}>
+                    {DAYS.map(d => <option key={d} value={d}>{d}</option>)}
+                  </select>
+                  <select value={emp.fromYear} onChange={e => updateRow("emp", emp.id, "fromYear", parseInt(e.target.value))} style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", fontSize: 11, padding: 4 }}>
                     {yearsRange.map(y => <option key={y} value={y}>{y}</option>)}
                   </select>
                 </div>
 
                 {/* TO */}
                 <div style={{ display: "flex", gap: 4 }}>
-                  <select value={e.toMonth} disabled={e.isPresent} onChange={e => updateRow("emp", e.id, "toMonth", parseInt(e.target.value))} style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", fontSize: 11, padding: 4, opacity: e.isPresent ? 0.4 : 1 }}>
+                  <select value={emp.toMonth} disabled={emp.isPresent} onChange={e => updateRow("emp", emp.id, "toMonth", parseInt(e.target.value))} style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", fontSize: 11, padding: 4, opacity: emp.isPresent ? 0.4 : 1 }}>
                     {MONTHS.map(m => <option key={m.v} value={m.v}>{m.l}</option>)}
                   </select>
-                  <select value={e.toYear} disabled={e.isPresent} onChange={e => updateRow("emp", e.id, "toYear", parseInt(e.target.value))} style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", fontSize: 11, padding: 4, opacity: e.isPresent ? 0.4 : 1 }}>
+                  <select value={emp.toDay} disabled={emp.isPresent} onChange={e => updateRow("emp", emp.id, "toDay", parseInt(e.target.value))} style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", fontSize: 11, padding: 4, opacity: emp.isPresent ? 0.4 : 1 }}>
+                    {DAYS.map(d => <option key={d} value={d}>{d}</option>)}
+                  </select>
+                  <select value={emp.toYear} disabled={emp.isPresent} onChange={e => updateRow("emp", emp.id, "toYear", parseInt(e.target.value))} style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", fontSize: 11, padding: 4, opacity: emp.isPresent ? 0.4 : 1 }}>
                     {yearsRange.map(y => <option key={y} value={y}>{y}</option>)}
                   </select>
                 </div>
 
                 {/* PRESENT */}
                 <label style={{ display: "flex", alignItems: "center", gap: 4, cursor: "pointer", fontSize: 10, fontFamily: '"GI",Arial,sans-serif', textTransform: "uppercase", color: "var(--fg-muted)" }}>
-                  <input type="checkbox" checked={e.isPresent} onChange={e => updateRow("emp", e.id, "isPresent", e.target.checked)} />
+                  <input type="checkbox" checked={emp.isPresent} onChange={e => updateRow("emp", emp.id, "isPresent", e.target.checked)} />
                   Present
                 </label>
 
                 {/* REMOVE */}
-                <button onClick={() => removeRow("emp", e.id)} style={{ background: "transparent", border: "none", color: "var(--danger)", fontSize: 14, cursor: "pointer" }}>✕</button>
+                <button onClick={() => removeRow("emp", emp.id)} style={{ background: "transparent", border: "none", color: "var(--danger)", fontSize: 14, cursor: "pointer" }}>✕</button>
               </div>
             ))}
           </div>
@@ -312,7 +326,7 @@ const GapFinder = ({ profile }) => {
 
             {results.errors.length > 0 && (
               <div style={{ marginBottom: 16 }}>
-                <div style={{ color: "var(--danger)", fontSize: 11, fontWeight: 700, textTransform: "uppercase", fontFamily: '"GI",Arial,sans-serif', marginBottom: 4 }}>❌ Input Errors Detected</div>
+                <div style={{ color: "var(--danger)", fontSize: 11, fontWeight: 700, textTransform: "uppercase", fontFamily: '"GI",Arial,sans-serif', marginBottom: 4 }}>❌ Errors &amp; Overlaps Detected</div>
                 {results.errors.map((err, i) => <div key={i} style={{ fontSize: 12.5, color: "var(--fg-alt)", padding: "2px 0" }}>• {err}</div>)}
               </div>
             )}
@@ -356,8 +370,8 @@ const GapFinder = ({ profile }) => {
 };
 
 const MfrGenerator = ({ profile }) => {
-  const [template, setTemplate] = useState("tattoo");
-  const [inputs, setInputs] = useState({
+  const [template, setTemplate] = usePersistedState("pqc-mfr-template", "tattoo");
+  const [inputs, setInputs] = usePersistedState("pqc-mfr-inputs", {
     recruiter: profile.gc || "SSG Thompson, R.",
     station: "Lincoln Recruiting Station, USAREC",
     applicant: profile.name || "Martinez, Carlos A.",
@@ -1137,7 +1151,7 @@ SUBJECT: Applicant Moral Statement & Waiver Justification - ${inputs.applicant.t
    3. DOCUMENT VAULT (Filename Check & Validation Vault)
    ========================================================================= */
 const DocumentVault = ({ profile }) => {
-  const [fileName, setFileName] = useState("");
+  const [fileName, setFileName] = usePersistedState("pqc-vault-filename", "");
   const [results, setResults] = useState(null);
 
   const checkFileName = () => {
@@ -1297,8 +1311,8 @@ const DocumentVault = ({ profile }) => {
    4. REFERENCE AUDITOR (DD Form 370 Verification Tool)
    ========================================================================= */
 const ReferenceAuditor = ({ profile }) => {
-  const [refType, setRefType] = useState("personal");
-  const [inputs, setInputs] = useState({
+  const [refType, setRefType] = usePersistedState("pqc-ref-type", "personal");
+  const [inputs, setInputs] = usePersistedState("pqc-ref-inputs", {
     name: "Martinez, Julia A.",
     relationship: "Sister",
     yearsKnown: "5",
