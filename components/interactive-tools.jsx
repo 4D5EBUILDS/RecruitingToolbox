@@ -376,7 +376,7 @@ const MfrGenerator = ({ profile }) => {
     station: "Lincoln Recruiting Station, USAREC",
     applicant: profile.name || "Martinez, Carlos A.",
     ssn: profile.ssnLast4 ? `XXX-XX-${profile.ssnLast4}` : "XXX-XX-7742",
-    date: new Date().toLocaleDateString("en-US", { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase(),
+    date: `${new Date().getDate()} ${new Date().toLocaleDateString("en-US", { month: "long" })} ${new Date().getFullYear()}`,
     details: "Neck Tattoo: 'BLESSED' in cursive script, approximately 2x3 inches, placed on left lateral neck.",
     commander: "CPT Harris, Marcus L.",
     gainingUnit: "174th Infantry Regiment (TPU)",
@@ -402,172 +402,140 @@ const MfrGenerator = ({ profile }) => {
     efmpStatus: "No"
   });
 
-  const getMfrText = () => {
+  // ── Editable letterhead (AR 25-50 ¶2-3a / 1-16) ─────────────────────────────
+  const LH_DEFAULTS = {
+    unitName: "U.S. ARMY GRAND ISLAND DETACHMENT, DENVER RECRUITING BATTALION",
+    unitAddress: "3341 W STATE ST, SUITE B1, GRAND ISLAND, NEBRASKA 68803",
+    officeSymbol: "RCSW-DEN-GI",
+  };
+  const lh = k => (inputs[k] != null && inputs[k] !== "" ? inputs[k] : LH_DEFAULTS[k]);
+
+  // ── Single source of truth: memo content model per template ─────────────────
+  // Returns { subject, paras:[{t, sub}], sig:[{t, b}] }. Rendered identically into
+  // the live preview, the .TXT, and the Word .doc so they can never drift apart.
+  const buildMemo = () => {
+    const A = inputs.applicant || "Martinez, Carlos A.";
+    const ssn = inputs.ssn || "XXX-XX-7742";
+    const recruiter = inputs.recruiter || "SSG Thompson, R.";
+    const phone = inputs.recruiterPhone || "555-0199";
+    const cdr = (inputs.commander || "CPT Harris, Marcus L.").toUpperCase();
+
     if (template === "tattoo") {
-      const loc = inputs.tattooLocation ? inputs.tattooLocation.trim() : "left lateral neck";
-      const desc = inputs.tattooDescription ? inputs.tattooDescription.trim() : "'BLESSED' in cursive script";
-      const dim = inputs.tattooDimensions ? inputs.tattooDimensions.trim() : "2x3 inches";
-      const meaning = inputs.tattooMeaning ? inputs.tattooMeaning.trim() : "represents personal faith and family blessings";
+      const loc = (inputs.tattooLocation || "left lateral neck").trim();
+      const desc = (inputs.tattooDescription || "'BLESSED' in cursive script").trim();
+      const dim = (inputs.tattooDimensions || "2x3 inches").trim();
+      const meaning = (inputs.tattooMeaning || "represents personal faith and family blessings").trim();
       const afqt = inputs.afqtScore || "91";
-      const phone = inputs.recruiterPhone || "555-0199";
-      const formattedLoc = loc.charAt(0).toUpperCase() + loc.slice(1);
-      const detailsStr = `${formattedLoc} Tattoo: ${desc}, approximately ${dim}, placed on ${loc}. Meaning: ${meaning}.`;
-
-      return `DEPARTMENT OF THE ARMY
-${inputs.station.toUpperCase()}
-123 RECRUITER BLVD, LINCOLN, NE 68508
-
-SUBJECT: Self-Identification and Recommendation for Tattoo Waiver - Applicant ${inputs.applicant.toUpperCase()}
-
-1. References:
-   a. AR 670-1 (Wear and Appearance of Army Uniforms and Insignia).
-   b. USAREC Regulation 601-210 (Enlistment and Accessions Processing).
-
-2. In accordance with reference 1a, the undersigned has inspected the tattoo(s) of Applicant ${inputs.applicant} (SSN: ${inputs.ssn}). 
-
-3. Tattoo details:
-   - Location/Description: ${detailsStr}
-   - The tattoo does not contain extremist, indecent, sexist, or racist imagery and is fully compliant with Army values.
-
-4. Recommendation: The Station Commander strongly recommends approval of this waiver. The applicant possesses outstanding potential for military service, holding an AFQT score of ${afqt}, and demonstrates exceptional motivation.
-
-5. Point of contact for this action is the enlisting recruiter, ${inputs.recruiter}, at ${phone}.
-
-
-
-                                  ${inputs.commander.toUpperCase()}
-                                  CPT, IN
-                                  Commanding`;
+      const fLoc = loc.charAt(0).toUpperCase() + loc.slice(1);
+      return {
+        subject: `Self-Identification and Recommendation for Tattoo Waiver - Applicant ${A.toUpperCase()}`,
+        paras: [
+          { t: "1. References:" },
+          { t: "a. AR 670-1 (Wear and Appearance of Army Uniforms and Insignia).", sub: true },
+          { t: "b. USAREC Regulation 601-210 (Enlistment and Accessions Processing).", sub: true },
+          { t: `2. In accordance with reference 1a, the undersigned has inspected the tattoo(s) of Applicant ${A} (SSN: ${ssn}).` },
+          { t: "3. Tattoo details:" },
+          { t: `a. Location/Description: ${fLoc} Tattoo: ${desc}, approximately ${dim}, placed on ${loc}. Meaning: ${meaning}.`, sub: true },
+          { t: "b. The tattoo does not contain extremist, indecent, sexist, or racist imagery and is fully compliant with Army values.", sub: true },
+          { t: `4. Recommendation: The Station Commander strongly recommends approval of this waiver. The applicant possesses outstanding potential for military service, holding an AFQT score of ${afqt}, and demonstrates exceptional motivation.` },
+          { t: `5. Point of contact for this action is the enlisting recruiter, ${recruiter}, at ${phone}.` },
+        ],
+        sig: [{ t: cdr, b: true }, { t: "CPT, IN" }, { t: "Commanding" }],
+      };
     }
 
     if (template === "b0m0") {
-      return `DEPARTMENT OF THE ARMY
-${inputs.gainingUnit.toUpperCase()}
-LINCOLN RESERVE CENTER, LINCOLN, NE 68508
-
-SUBJECT: Command Endorsement for B0M0 "No Medical Required" Enlistment - ${inputs.applicant.toUpperCase()}
-
-1. References:
-   a. USAREC Message 26-046 (B0M0 Processing Guidance).
-   b. USMEPCOM Regulation 40-1 (Medical Processing).
-
-2. Applicant ${inputs.applicant} (SSN: ${inputs.ssn}) is enlisting into the ${inputs.gainingUnit} via the "No Medical Required" (B0M0) program.
-
-3. The command has audited the applicant's medical readiness files and certifies:
-   - Periodic Health Assessment (PHA) is green/amber and active (PHA Date: ${inputs.date}).
-   - Individual Medical Readiness (IMR) indicates a fully deployable status with valid HIV testing within 24 months.
-   - Medical justification for IMR Red Categories: ${inputs.reason}.
-
-4. The gaining unit accepts full administrative and medical readiness custody of the applicant upon enlistment. 
-
-
-
-                                  ${inputs.commander.toUpperCase()}
-                                  LTC, IN
-                                  Commanding`;
+      const unit = inputs.gainingUnit || "174th Infantry Regiment (TPU)";
+      return {
+        subject: `Command Endorsement for B0M0 "No Medical Required" Enlistment - ${A.toUpperCase()}`,
+        paras: [
+          { t: "1. References:" },
+          { t: "a. USAREC Message 26-046 (B0M0 Processing Guidance).", sub: true },
+          { t: "b. USMEPCOM Regulation 40-1 (Medical Processing).", sub: true },
+          { t: `2. Applicant ${A} (SSN: ${ssn}) is enlisting into the ${unit} via the "No Medical Required" (B0M0) program.` },
+          { t: "3. The command has audited the applicant's medical readiness files and certifies:" },
+          { t: `a. Periodic Health Assessment (PHA) is green/amber and active (PHA Date: ${inputs.details || "N/A"}).`, sub: true },
+          { t: "b. Individual Medical Readiness (IMR) indicates a fully deployable status with valid HIV testing within 24 months.", sub: true },
+          { t: `c. Medical justification for IMR Red Categories: ${inputs.reason || "N/A"}.`, sub: true },
+          { t: "4. The gaining unit accepts full administrative and medical readiness custody of the applicant upon enlistment." },
+        ],
+        sig: [{ t: cdr, b: true }, { t: "LTC, IN" }, { t: "Commanding" }],
+      };
     }
 
     if (template === "tpu_acceptance") {
       const unit = inputs.gainingUnit || "174th Infantry Regiment (TPU)";
-      const applicant = inputs.applicant || "Martinez, Carlos A.";
       const rank = inputs.rank || "SGT / E-5";
       const mos = inputs.mos || "11B";
-      const paraLinePos = inputs.paraLinePos || "Para 101, Line 03, Position 04221980";
-      const recruiter = inputs.recruiter || "SSG Thompson, R.";
-      const phone = inputs.recruiterPhone || "555-0199";
-
-      return `DEPARTMENT OF THE ARMY
-${unit.toUpperCase()}
-LINCOLN RESERVE CENTER, LINCOLN, NE 68508
-
-SUBJECT: Gaining Unit Acceptance and Family Care Plan Endorsement - ${applicant.toUpperCase()}
-
-1. References:
-   a. AR 140-111 (U.S. Army Reserve Reenlistment Program).
-   b. AR 600-20 (Army Command Policy) - Chapter 5 (Family Care Plans).
-   c. AR 601-210 (Active and Reserve Component Enlistment Program).
-
-2. Gaining Unit Acceptance: The gaining unit accepts the enlistment/assignment of applicant ${applicant} in the grade of ${rank} and MOS ${mos}. The applicant will be assigned to ${paraLinePos} of this unit.
-
-3. Skills Certification: Gaining command certifies that the applicant possesses the necessary technical and administrative skills required for the assigned position, and maintenance of prior grade is approved.
-
-4. Family Care Plan Certification: In accordance with reference 1b, the command has reviewed the sole-parent Family Care Plan (FCP) bundle (DA Forms 5304, 5840, and 5841) for applicant ${applicant}. The command certifies that the FCP is feasible and accepts the applicant for enlistment.
-
-5. Gaining unit point of contact for this action is the enlisting recruiter, ${recruiter}, at ${phone}.
-
-
-
-                                  ${inputs.commander.toUpperCase()}
-                                  LTC, IN
-                                  Commanding`;
+      const plp = inputs.paraLinePos || "Para 101, Line 03, Position 04221980";
+      return {
+        subject: `Gaining Unit Acceptance and Family Care Plan Endorsement - ${A.toUpperCase()}`,
+        paras: [
+          { t: "1. References:" },
+          { t: "a. AR 140-111 (U.S. Army Reserve Reenlistment Program).", sub: true },
+          { t: "b. AR 600-20 (Army Command Policy), Chapter 5 (Family Care Plans).", sub: true },
+          { t: "c. AR 601-210 (Active and Reserve Component Enlistment Program).", sub: true },
+          { t: `2. Gaining Unit Acceptance: The gaining unit (${unit}) accepts the enlistment/assignment of applicant ${A} in the grade of ${rank} and MOS ${mos}. The applicant will be assigned to ${plp} of this unit.` },
+          { t: "3. Skills Certification: Gaining command certifies that the applicant possesses the necessary technical and administrative skills required for the assigned position, and maintenance of prior grade is approved." },
+          { t: "4. Family Care Plan Certification: In accordance with reference 1b, the command has reviewed the sole-parent Family Care Plan (FCP) bundle (DA Forms 5304, 5840, and 5841) for the applicant. The command certifies that the FCP is feasible and accepts the applicant for enlistment." },
+          { t: `5. Gaining unit point of contact for this action is the enlisting recruiter, ${recruiter}, at ${phone}.` },
+        ],
+        sig: [{ t: cdr, b: true }, { t: "LTC, IN" }, { t: "Commanding" }],
+      };
     }
 
     if (template === "ra_grade") {
-      const applicant = inputs.applicant || "Martinez, Carlos A.";
-      const ssn = inputs.ssn || "XXX-XX-7742";
       const rank = inputs.rank || "SGT / E-5";
       const mos = inputs.mos || "11B";
-      const recruiter = inputs.recruiter || "SSG Thompson, R.";
-      const phone = inputs.recruiterPhone || "555-0199";
       const pref1 = inputs.dutyPref1 || "Fort Carson, CO";
       const pref2 = inputs.dutyPref2 || "Fort Riley, KS";
       const pref3 = inputs.dutyPref3 || "Fort Cavazos, TX";
-
       const spouseStr = inputs.spouseServing
         ? `My spouse is a serving member of the Armed Forces. Component: ${inputs.spouseComponent || "N/A"}, Location: ${inputs.spouseLocation || "N/A"}, SSN: ${inputs.spouseSSN || "N/A"}. Joint domicile is requested.`
         : "My spouse is not a serving member of the Armed Forces. Joint domicile is not requested.";
-
-      const efmpStr = `I am ${inputs.efmpStatus === "Yes" ? "currently" : "not"} enrolled in the Exceptional Family Member Program.`;
-
-      return `DEPARTMENT OF THE ARMY
-${inputs.station.toUpperCase()}
-123 RECRUITER BLVD, LINCOLN, NE 68508
-
-SUBJECT: Prior Service Grade Determination Statement - Applicant ${applicant.toUpperCase()}
-
-1. References:
-   a. AR 601-210 (Active and Reserve Component Enlistment Program) - Chapter 3.
-   b. USAREC Regular Army Grade Determination Worksheet.
-
-2. In connection with my application for Regular Army prior service enlistment in the rank of ${rank} and MOS ${mos}, I, ${applicant} (SSN: ${ssn}), submit the following statement as required for grade determination:
-
-3. Duty Preferences: I request assignment to one of the following three duty locations in my enlisting MOS:
-   a. Preference 1: ${pref1}
-   b. Preference 2: ${pref2}
-   c. Preference 3: ${pref3}
-
-4. Joint Domicile / Serving Spouse Information: ${spouseStr}
-
-5. Exceptional Family Member Program (EFMP): ${efmpStr}
-
-6. Point of contact is the enlisting recruiter, ${recruiter}, at ${phone}.
-
-
-
-                                  ${applicant.toUpperCase()}
-                                  Applicant`;
+      return {
+        subject: `Prior Service Grade Determination Statement - Applicant ${A.toUpperCase()}`,
+        paras: [
+          { t: "1. References:" },
+          { t: "a. AR 601-210 (Active and Reserve Component Enlistment Program), Chapter 3.", sub: true },
+          { t: "b. USAREC Regular Army Grade Determination Worksheet.", sub: true },
+          { t: `2. In connection with my application for Regular Army prior service enlistment in the rank of ${rank} and MOS ${mos}, I, ${A} (SSN: ${ssn}), submit the following statement as required for grade determination:` },
+          { t: "3. Duty Preferences: I request assignment to one of the following three duty locations in my enlisting MOS:" },
+          { t: `a. Preference 1: ${pref1}`, sub: true },
+          { t: `b. Preference 2: ${pref2}`, sub: true },
+          { t: `c. Preference 3: ${pref3}`, sub: true },
+          { t: `4. Joint Domicile / Serving Spouse Information: ${spouseStr}` },
+          { t: `5. Exceptional Family Member Program (EFMP): I am ${inputs.efmpStatus === "Yes" ? "currently" : "not"} enrolled in the Exceptional Family Member Program.` },
+          { t: `6. Point of contact is the enlisting recruiter, ${recruiter}, at ${phone}.` },
+        ],
+        sig: [{ t: A.toUpperCase(), b: true }, { t: "Applicant" }],
+      };
     }
 
-    return `DEPARTMENT OF THE ARMY
-${inputs.station.toUpperCase()}
-123 RECRUITER BLVD, LINCOLN, NE 68508
+    // moral
+    return {
+      subject: `Applicant Moral Statement & Waiver Justification - ${A.toUpperCase()}`,
+      paras: [
+        { t: `1. Under the guidance of enlisting recruiter ${recruiter}, Applicant ${A} (SSN: ${ssn}) submits the following personal statement regarding moral offenses being waived:` },
+        { t: "2. Incident Details:" },
+        { t: `a. ${inputs.details || "N/A"}`, sub: true },
+        { t: "3. Applicant Statement of Hardship and Rehabilitation:" },
+        { t: `a. "${inputs.reason || "N/A"}"`, sub: true },
+        { t: "4. The applicant has completed all court mandates, paid all fines, and has shown complete rehabilitation. Recommending waiver approval." },
+      ],
+      sig: [{ t: A.toUpperCase(), b: true }, { t: "Applicant" }],
+    };
+  };
 
-SUBJECT: Applicant Moral Statement & Waiver Justification - ${inputs.applicant.toUpperCase()}
-
-1. Under the guidance of enlisting recruiter ${inputs.recruiter}, Applicant ${inputs.applicant} (SSN: ${inputs.ssn}) submits the following personal statement regarding moral offenses being waived:
-
-2. Incident Details:
-   - ${inputs.details}
-
-3. Applicant Statement of Hardship and Rehabilitation:
-   - "${inputs.reason}"
-
-4. The applicant has completed all court mandates, paid all fines, and has shown complete rehabilitation. Recommending waiver approval.
-
-
-
-                                  ${inputs.applicant.toUpperCase()}
-                                  Applicant`;
+  // Plain-text rendering (Copy / .TXT) — AR 25-50 heading + body + signature.
+  const getMfrText = () => {
+    const m = buildMemo();
+    const pad = "                                  "; // signature ~ center
+    const body = m.paras.map(p => (p.sub ? "   " + p.t : p.t)).join("\n\n");
+    const sig = m.sig.map(s => pad + s.t).join("\n");
+    return `DEPARTMENT OF THE ARMY\n${lh("unitName")}\n${lh("unitAddress")}\n\n` +
+      `${lh("officeSymbol")}${" ".repeat(40)}${inputs.date}\n\n` +
+      `MEMORANDUM FOR RECORD\n\nSUBJECT: ${m.subject}\n\n${body}\n\n\n${sig}`;
   };
 
   const copyToClipboard = () => {
@@ -585,173 +553,56 @@ SUBJECT: Applicant Moral Statement & Waiver Justification - ${inputs.applicant.t
     element.remove();
   };
 
+  // Build the Word .doc entirely in the browser (static site, no backend) from the
+  // shared buildMemo() model, formatted per AR 25-50 (Arial 12, 1" margins, DA
+  // letterhead with embedded seal, flush-right date, centered signature block).
   const downloadMfrDocx = async () => {
-    let subjectLine = "";
-    let bodyParagraphs = [];
-    let sigLines = [];
-    
-    if (template === "tattoo") {
-      subjectLine = `Self-Identification and Recommendation for Tattoo Waiver - Applicant ${inputs.applicant.toUpperCase()}`;
-      const loc = inputs.tattooLocation ? inputs.tattooLocation.trim() : "left lateral neck";
-      const desc = inputs.tattooDescription ? inputs.tattooDescription.trim() : "'BLESSED' in cursive script";
-      const dim = inputs.tattooDimensions ? inputs.tattooDimensions.trim() : "2x3 inches";
-      const meaning = inputs.tattooMeaning ? inputs.tattooMeaning.trim() : "represents personal faith and family blessings";
-      const afqt = inputs.afqtScore || "91";
-      const phone = inputs.recruiterPhone || "555-0199";
-      const formattedLoc = loc.charAt(0).toUpperCase() + loc.slice(1);
-      const detailsStr = `${formattedLoc} Tattoo: ${desc}, approximately ${dim}, placed on ${loc}. Meaning: ${meaning}.`;
-
-      bodyParagraphs = [
-        "1. References:",
-        "   a. AR 670-1 (Wear and Appearance of Army Uniforms and Insignia).",
-        "   b. USAREC Regulation 601-210 (Enlistment and Accessions Processing).",
-        "",
-        `2. In accordance with reference 1a, the enlisting recruiter has inspected the tattoo(s) of Applicant ${inputs.applicant} (SSN: ${inputs.ssn}).`,
-        "",
-        "3. Tattoo details:",
-        `   - Location/Description: ${detailsStr}`,
-        "   - The tattoo does not contain extremist, indecent, sexist, or racist imagery and is fully compliant with Army values.",
-        "",
-        `4. Recommendation: The Station Commander strongly recommends approval of this waiver. The applicant possesses outstanding potential for military service, holding an AFQT score of ${afqt}, and demonstrates exceptional motivation.`,
-        "",
-        `5. Point of contact for this action is the enlisting recruiter, ${inputs.recruiter}, at ${phone}.`
-      ];
-      sigLines = [
-        inputs.commander.toUpperCase(),
-        "CPT, IN",
-        "Commanding"
-      ];
-    } else if (template === "b0m0") {
-      subjectLine = `Command Endorsement for B0M0 "No Medical Required" Enlistment - ${inputs.applicant.toUpperCase()}`;
-      bodyParagraphs = [
-        "1. References:",
-        "   a. USAREC Message 26-046 (B0M0 Processing Guidance).",
-        "   b. USMEPCOM Regulation 40-1 (Medical Processing).",
-        "",
-        `2. Applicant ${inputs.applicant} (SSN: ${inputs.ssn}) is enlisting into the ${inputs.gainingUnit} via the "No Medical Required" (B0M0) program.`,
-        "",
-        "3. The command has audited the applicant's medical readiness files and certifies:",
-        `   - Periodic Health Assessment (PHA) is green/amber and active (PHA Date: ${inputs.details}).`,
-        "   - Individual Medical Readiness (IMR) indicates a fully deployable status with valid HIV testing within 24 months.",
-        `   - Medical justification for IMR Red Categories: ${inputs.reason}.`,
-        "",
-        "4. The gaining unit accepts full administrative and medical readiness custody of the applicant upon enlistment."
-      ];
-      sigLines = [
-        inputs.commander.toUpperCase(),
-        "LTC, IN",
-        "Commanding"
-      ];
-    } else if (template === "tpu_acceptance") {
-      subjectLine = `Gaining Unit Acceptance and Family Care Plan Endorsement - ${inputs.applicant.toUpperCase()}`;
-      const unit = inputs.gainingUnit || "174th Infantry Regiment (TPU)";
-      const applicant = inputs.applicant || "Martinez, Carlos A.";
-      const rank = inputs.rank || "SGT / E-5";
-      const mos = inputs.mos || "11B";
-      const paraLinePos = inputs.paraLinePos || "Para 101, Line 03, Position 04221980";
-      const recruiter = inputs.recruiter || "SSG Thompson, R.";
-      const phone = inputs.recruiterPhone || "555-0199";
-
-      bodyParagraphs = [
-        "1. References:",
-        "   a. AR 140-111 (U.S. Army Reserve Reenlistment Program).",
-        "   b. AR 600-20 (Army Command Policy) - Chapter 5 (Family Care Plans).",
-        "   c. AR 601-210 (Active and Reserve Component Enlistment Program).",
-        "",
-        `2. Gaining Unit Acceptance: The gaining unit accepts the enlistment/assignment of applicant ${applicant} in the grade of ${rank} and MOS ${mos}. The applicant will be assigned to ${paraLinePos} of this unit.`,
-        "",
-        "3. Skills Certification: Gaining command certifies that the applicant possesses the necessary technical and administrative skills required for the assigned position, and maintenance of prior grade is approved.",
-        "",
-        `4. Family Care Plan Certification: In accordance with reference 1b, the command has reviewed the sole-parent Family Care Plan (FCP) bundle (DA Forms 5304, 5840, and 5841) for applicant ${applicant}. The command certifies that the FCP is feasible and accepts the applicant for enlistment.`,
-        "",
-        `5. Gaining unit point of contact for this action is ${recruiter} at ${phone}.`
-      ];
-      sigLines = [
-        inputs.commander.toUpperCase(),
-        "LTC, IN",
-        "Commanding"
-      ];
-    } else if (template === "ra_grade") {
-      subjectLine = `Prior Service Grade Determination Statement - Applicant ${inputs.applicant.toUpperCase()}`;
-      const applicant = inputs.applicant || "Martinez, Carlos A.";
-      const ssn = inputs.ssn || "XXX-XX-7742";
-      const rank = inputs.rank || "SGT / E-5";
-      const mos = inputs.mos || "11B";
-      const recruiter = inputs.recruiter || "SSG Thompson, R.";
-      const phone = inputs.recruiterPhone || "555-0199";
-      const pref1 = inputs.dutyPref1 || "Fort Carson, CO";
-      const pref2 = inputs.dutyPref2 || "Fort Riley, KS";
-      const pref3 = inputs.dutyPref3 || "Fort Cavazos, TX";
-
-      const spouseStr = inputs.spouseServing
-        ? `My spouse is a serving member of the Armed Forces. Component: ${inputs.spouseComponent || "N/A"}, Location: ${inputs.spouseLocation || "N/A"}, SSN: ${inputs.spouseSSN || "N/A"}. Joint domicile is requested.`
-        : "My spouse is not a serving member of the Armed Forces. Joint domicile is not requested.";
-
-      const efmpStr = `I am ${inputs.efmpStatus === "Yes" ? "currently" : "not"} enrolled in the Exceptional Family Member Program.`;
-
-      bodyParagraphs = [
-        "1. References:",
-        "   a. AR 601-210 (Active and Reserve Component Enlistment Program) - Chapter 3.",
-        "   b. USAREC Regular Army Grade Determination Worksheet.",
-        "",
-        `2. In connection with my application for Regular Army prior service enlistment in the rank of ${rank} and MOS ${mos}, I, ${applicant} (SSN: ${ssn}), submit the following statement as required for grade determination:`,
-        "",
-        "3. Duty Preferences: I request assignment to one of the following three duty locations in my enlisting MOS:",
-        `   a. Preference 1: ${pref1}`,
-        `   b. Preference 2: ${pref2}`,
-        `   c. Preference 3: ${pref3}`,
-        "",
-        `4. Joint Domicile / Serving Spouse Information: ${spouseStr}`,
-        "",
-        `5. Exceptional Family Member Program (EFMP): ${efmpStr}`,
-        "",
-        `6. Point of contact is the enlisting recruiter, ${recruiter}, at ${phone}.`
-      ];
-      sigLines = [
-        inputs.applicant.toUpperCase(),
-        "Applicant"
-      ];
-    } else {
-      subjectLine = `Applicant Moral Statement & Waiver Justification - ${inputs.applicant.toUpperCase()}`;
-      bodyParagraphs = [
-        `1. Under the guidance of enlisting recruiter ${inputs.recruiter}, Applicant ${inputs.applicant} (SSN: ${inputs.ssn}) submits the following personal statement regarding moral offenses being waived:`,
-        "",
-        "2. Incident Details:",
-        `   - ${inputs.details}`,
-        "",
-        "3. Applicant Statement of Hardship and Rehabilitation:",
-        `   - "${inputs.reason}"`,
-        "",
-        "4. The applicant has completed all court mandates, paid all fines, and has shown complete rehabilitation. Recommending waiver approval."
-      ];
-      sigLines = [
-        inputs.applicant.toUpperCase(),
-        "Applicant"
-      ];
-    }
-
     try {
-      // Build a Word-compatible HTML document and download it entirely in the browser.
-      // This is a static site (no backend), so we cannot POST to an API to render the file.
-      const esc = v => String(v == null ? "" : v)
-        .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-      const para = txt => txt === ""
-        ? '<p style="margin:0 0 11pt;">&nbsp;</p>'
-        : `<p style="margin:0 0 11pt;white-space:pre-wrap;">${esc(txt)}</p>`;
-      const bodyHtml = bodyParagraphs.map(para).join("");
-      const sigHtml = sigLines.map(l => `<p style="margin:0;">${esc(l)}</p>`).join("");
+      const m = buildMemo();
+      const esc = v => String(v == null ? "" : v).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+      // Embed the DA seal as base64 so the letterhead survives offline.
+      let sealImg = "";
+      try {
+        const resp = await fetch("../../assets/logos/memo-emblem.jpg");
+        const blob = await resp.blob();
+        const dataUrl = await new Promise((res, rej) => {
+          const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(blob);
+        });
+        sealImg = `<img src="${dataUrl}" width="78" height="78" style="display:block;"/>`;
+      } catch (e) { /* seal optional */ }
+
+      const bodyHtml = m.paras.map(p =>
+        `<p style="margin:0 0 12pt 0;${p.sub ? "margin-left:0.25in;" : ""}">${esc(p.t)}</p>`
+      ).join("");
+      const sigHtml = m.sig.map(s => `<p style="margin:0;${s.b ? "font-weight:normal;" : ""}">${esc(s.t)}</p>`).join("");
       const safeName = (inputs.applicant || "applicant").replace(/\s+/g, "_");
+
       const html =
-        '<!DOCTYPE html><html xmlns:o="urn:schemas-microsoft-com:office:office" ' +
-        'xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">' +
-        '<head><meta charset="utf-8"><title>MFR</title></head>' +
-        "<body style=\"font-family:'Times New Roman',serif;font-size:12pt;line-height:1.3;\">" +
-        `<p style="margin:0 0 16pt;">${esc(inputs.date)}</p>` +
-        '<p style="margin:0 0 16pt;">MEMORANDUM FOR RECORD</p>' +
-        `<p style="margin:0 0 16pt;font-weight:bold;">SUBJECT: ${esc(subjectLine)}</p>` +
+        '<!DOCTYPE html><html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">' +
+        '<head><meta charset="utf-8"><title>MFR</title>' +
+        "<style>@page WordSection1 { size:8.5in 11.0in; margin:1.0in 1.0in 1.0in 1.0in; } " +
+        "div.WordSection1 { page:WordSection1; } body,p,td { font-family:Arial,sans-serif; font-size:12.0pt; }</style></head>" +
+        '<body><div class="WordSection1">' +
+        '<table style="width:100%;border-collapse:collapse;"><tr>' +
+          `<td style="width:90pt;vertical-align:top;">${sealImg}</td>` +
+          '<td style="text-align:center;vertical-align:top;">' +
+            '<p style="margin:0;font-size:10pt;font-weight:bold;">DEPARTMENT OF THE ARMY</p>' +
+            `<p style="margin:0;font-size:8.5pt;font-weight:bold;">${esc(lh("unitName"))}</p>` +
+            `<p style="margin:0;font-size:8.5pt;font-weight:bold;">${esc(lh("unitAddress"))}</p>` +
+          '</td><td style="width:90pt;"></td>' +
+        '</tr></table>' +
+        '<p style="margin:18pt 0 0 0;">&nbsp;</p>' +
+        '<table style="width:100%;border-collapse:collapse;"><tr>' +
+          `<td style="text-align:left;">${esc(lh("officeSymbol"))}</td>` +
+          `<td style="text-align:right;">${esc(inputs.date)}</td>` +
+        '</tr></table>' +
+        '<p style="margin:24pt 0 0 0;">MEMORANDUM FOR RECORD</p>' +
+        `<p style="margin:12pt 0 18pt 0;">SUBJECT: ${esc(m.subject)}</p>` +
         bodyHtml +
-        `<div style="margin-top:40pt;padding-left:50%;">${sigHtml}</div>` +
-        "</body></html>";
+        `<div style="margin-top:36pt;margin-left:3.25in;">${sigHtml}</div>` +
+        '</div></body></html>';
+
       const blob = new Blob(["﻿", html], { type: "application/msword" });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -814,6 +665,29 @@ SUBJECT: Applicant Moral Statement & Waiver Justification - ${inputs.applicant.t
               Recruiting Station
               <input type="text" value={inputs.station} onChange={e => setInputs(p => ({ ...p, station: e.target.value }))} style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", padding: 6, fontSize: 12 }} />
             </label>
+
+            {/* ── Letterhead (prints on the memo per AR 25-50) ── */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 8, padding: 8, background: "rgba(255,204,1,0.03)", border: "1px dashed var(--border)" }}>
+              <div style={{ fontFamily: '"GI",Arial,sans-serif', fontWeight: 700, fontSize: 8.5, textTransform: "uppercase", letterSpacing: ".1em", color: "var(--gold)", opacity: .8 }}>
+                Letterhead
+              </div>
+              <label style={{ display: "flex", flexDirection: "column", gap: 2, fontSize: 10, color: "var(--fg-muted)" }}>
+                Unit / Organization
+                <input type="text" value={lh("unitName")} onChange={e => setInputs(p => ({ ...p, unitName: e.target.value }))} style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", padding: 5, fontSize: 11 }} />
+              </label>
+              <label style={{ display: "flex", flexDirection: "column", gap: 2, fontSize: 10, color: "var(--fg-muted)" }}>
+                Unit Address
+                <input type="text" value={lh("unitAddress")} onChange={e => setInputs(p => ({ ...p, unitAddress: e.target.value }))} style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", padding: 5, fontSize: 11 }} />
+              </label>
+              <label style={{ display: "flex", flexDirection: "column", gap: 2, fontSize: 10, color: "var(--fg-muted)" }}>
+                Office Symbol
+                <input type="text" value={lh("officeSymbol")} onChange={e => setInputs(p => ({ ...p, officeSymbol: e.target.value }))} style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", padding: 5, fontSize: 11 }} />
+              </label>
+              <label style={{ display: "flex", flexDirection: "column", gap: 2, fontSize: 10, color: "var(--fg-muted)" }}>
+                Date (AR 25-50 format, e.g. 1 June 2026)
+                <input type="text" value={inputs.date} onChange={e => setInputs(p => ({ ...p, date: e.target.value }))} style={{ background: "var(--input-bg)", border: "1px solid var(--input-border)", color: "var(--fg-alt)", padding: 5, fontSize: 11 }} />
+              </label>
+            </div>
 
             <label style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 11, color: "var(--fg-muted)" }}>
               Applicant Name
@@ -974,165 +848,40 @@ SUBJECT: Applicant Moral Statement & Waiver Justification - ${inputs.applicant.t
 
           {/* Preview */}
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            <div style={{ flex: 1, background: "#FFFFFF", border: "1px solid #CCCCCC", color: "#333333", padding: "30px", fontFamily: '"Times New Roman", Times, serif', fontSize: 13, lineHeight: 1.25, overflow: "auto", minHeight: 440, maxHeight: 520, boxShadow: "inset 0 0 10px rgba(0,0,0,0.1)", display: "flex", flexDirection: "column" }}>
-              {/* Header block with Logo */}
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 20, borderBottom: "2px solid #000000", paddingBottom: 10, alignItems: "center" }}>
-                <div style={{ fontWeight: "bold", fontSize: 10.5, color: "#111111", letterSpacing: "0.02em" }}>
-                  REPLY TO ATTENTION OF<br/>
-                  RCSW-DEN-GI<br/><br/>
-                  DEPARTMENT OF THE ARMY<br/>
-                  U.S. ARMY GRAND ISLAND DETACHMENT DENVER RECRUITING BATTALION<br/>
-                  3341 W STATE ST. SUITE B1 GRAND ISLAND, NEBRASKA 68803
-                </div>
-                <div>
-                  <img src="../../assets/logos/memo-emblem.jpg" alt="Army Seal" style={{ height: 64, width: "auto" }}/>
-                </div>
-              </div>
-
-              {/* Date */}
-              <div style={{ text_align: "right", marginBottom: 15, fontWeight: "bold", color: "#111111" }}>
-                {inputs.date}
-              </div>
-
-              {/* MFR Header */}
-              <div style={{ fontWeight: "bold", marginBottom: 15, color: "#111111" }}>
-                MEMORANDUM FOR RECORD
-              </div>
-
-              {/* Subject */}
-              <div style={{ fontWeight: "bold", marginBottom: 15, textTransform: "uppercase", color: "#111111" }}>
-                SUBJECT: {template === "tattoo" 
-                  ? `Self-Identification and Recommendation for Tattoo Waiver - Applicant ${inputs.applicant.toUpperCase()}`
-                  : template === "b0m0"
-                  ? `Command Endorsement for B0M0 "No Medical Required" Enlistment - ${inputs.applicant.toUpperCase()}`
-                  : template === "moral"
-                  ? `Applicant Moral Statement & Waiver Justification - ${inputs.applicant.toUpperCase()}`
-                  : template === "tpu_acceptance"
-                  ? `Gaining Unit Acceptance and Family Care Plan Endorsement - ${inputs.applicant.toUpperCase()}`
-                  : `Prior Service Grade Determination Statement - Applicant ${inputs.applicant.toUpperCase()}`
-                }
-              </div>
-
-              {/* Body Paragraphs */}
-              <div style={{ flex: 1, color: "#222222" }}>
-                {template === "tattoo" && (() => {
-                  const loc = inputs.tattooLocation ? inputs.tattooLocation.trim() : "left lateral neck";
-                  const desc = inputs.tattooDescription ? inputs.tattooDescription.trim() : "'BLESSED' in cursive script";
-                  const dim = inputs.tattooDimensions ? inputs.tattooDimensions.trim() : "2x3 inches";
-                  const meaning = inputs.tattooMeaning ? inputs.tattooMeaning.trim() : "represents personal faith and family blessings";
-                  const afqt = inputs.afqtScore || "91";
-                  const phone = inputs.recruiterPhone || "555-0199";
-                  const formattedLoc = loc.charAt(0).toUpperCase() + loc.slice(1);
-                  const detailsStr = `${formattedLoc} Tattoo: ${desc}, approximately ${dim}, placed on ${loc}. Meaning: ${meaning}.`;
-                  
-                  return (
-                    <div>
-                      <p style={{ marginBottom: 10 }}>1. References:</p>
-                      <p style={{ paddingLeft: 20, marginBottom: 5 }}>a. AR 670-1 (Wear and Appearance of Army Uniforms and Insignia).</p>
-                      <p style={{ paddingLeft: 20, marginBottom: 15 }}>b. USAREC Regulation 601-210 (Enlistment and Accessions Processing).</p>
-                      <p style={{ marginBottom: 15 }}>2. In accordance with reference 1a, the undersigned has inspected the tattoo(s) of Applicant {inputs.applicant} (SSN: {inputs.ssn}).</p>
-                      <p style={{ marginBottom: 5 }}>3. Tattoo details:</p>
-                      <p style={{ paddingLeft: 20, marginBottom: 5 }}>- Location/Description: {detailsStr}</p>
-                      <p style={{ paddingLeft: 20, marginBottom: 15 }}>- The tattoo does not contain extremist, indecent, sexist, or racist imagery and is fully compliant with Army values.</p>
-                      <p style={{ marginBottom: 15 }}>4. Recommendation: The Station Commander strongly recommends approval of this waiver. The applicant possesses outstanding potential for military service, holding an AFQT score of {afqt}, and demonstrates exceptional motivation.</p>
-                      <p style={{ marginBottom: 15 }}>5. Point of contact for this action is the enlisting recruiter, {inputs.recruiter}, at {phone}.</p>
+            <div style={{ flex: 1, background: "#FFFFFF", border: "1px solid #CCCCCC", color: "#000000", padding: "40px 46px", fontFamily: "Arial, Helvetica, sans-serif", fontSize: 12, lineHeight: 1.3, overflow: "auto", minHeight: 440, maxHeight: 560, boxShadow: "inset 0 0 10px rgba(0,0,0,0.1)" }}>
+              {(() => {
+                const m = buildMemo();
+                return (
+                  <React.Fragment>
+                    {/* Letterhead (AR 25-50 ¶1-16) */}
+                    <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 4 }}>
+                      <img src="../../assets/logos/memo-emblem.jpg" alt="DA Seal" style={{ height: 68, width: "auto", flexShrink: 0 }}/>
+                      <div style={{ flex: 1, textAlign: "center", lineHeight: 1.25 }}>
+                        <div style={{ fontWeight: "bold", fontSize: 11 }}>DEPARTMENT OF THE ARMY</div>
+                        <div style={{ fontWeight: "bold", fontSize: 8.5 }}>{lh("unitName")}</div>
+                        <div style={{ fontWeight: "bold", fontSize: 8.5 }}>{lh("unitAddress")}</div>
+                      </div>
+                      <div style={{ width: 68, flexShrink: 0 }}/>
                     </div>
-                  );
-                })()}
-
-                {template === "b0m0" && (
-                  <div>
-                    <p style={{ marginBottom: 10 }}>1. References:</p>
-                    <p style={{ paddingLeft: 20, marginBottom: 5 }}>a. USAREC Message 26-046 (B0M0 Processing Guidance).</p>
-                    <p style={{ paddingLeft: 20, marginBottom: 15 }}>b. USMEPCOM Regulation 40-1 (Medical Processing).</p>
-                    <p style={{ marginBottom: 15 }}>2. Applicant {inputs.applicant} (SSN: {inputs.ssn}) is enlisting into the {inputs.gainingUnit} via the "No Medical Required" (B0M0) program.</p>
-                    <p style={{ marginBottom: 5 }}>3. The command has audited the applicant's medical readiness files and certifies:</p>
-                    <p style={{ paddingLeft: 20, marginBottom: 5 }}>- Periodic Health Assessment (PHA) is green/amber and active (PHA Date: {inputs.details}).</p>
-                    <p style={{ paddingLeft: 20, marginBottom: 5 }}>- Individual Medical Readiness (IMR) indicates a fully deployable status with valid HIV testing within 24 months.</p>
-                    <p style={{ paddingLeft: 20, marginBottom: 15 }}>- Medical justification for IMR Red Categories: {inputs.reason}.</p>
-                    <p style={{ marginBottom: 15 }}>4. The gaining unit accepts full administrative and medical readiness custody of the applicant upon enlistment.</p>
-                  </div>
-                )}
-                
-                {template === "moral" && (
-                  <div>
-                    <p style={{ marginBottom: 15 }}>1. Under the guidance of enlisting recruiter {inputs.recruiter}, Applicant {inputs.applicant} (SSN: {inputs.ssn}) submits the following personal statement regarding moral offenses being waived:</p>
-                    <p style={{ marginBottom: 5 }}>2. Incident Details:</p>
-                    <p style={{ paddingLeft: 20, marginBottom: 15 }}>- {inputs.details}</p>
-                    <p style={{ marginBottom: 15 }}>3. Applicant Statement of Hardship and Rehabilitation:</p>
-                    <p style={{ paddingLeft: 20, marginBottom: 15 }}>- "{inputs.reason}"</p>
-                    <p style={{ marginBottom: 15 }}>4. The applicant has completed all court mandates, paid all fines, and has shown complete rehabilitation. Recommending waiver approval.</p>
-                  </div>
-                )}
-
-                {template === "tpu_acceptance" && (() => {
-                  const unit = inputs.gainingUnit || "174th Infantry Regiment (TPU)";
-                  const applicant = inputs.applicant || "Martinez, Carlos A.";
-                  const rank = inputs.rank || "SGT / E-5";
-                  const mos = inputs.mos || "11B";
-                  const paraLinePos = inputs.paraLinePos || "Para 101, Line 03, Position 04221980";
-                  const recruiter = inputs.recruiter || "SSG Thompson, R.";
-                  const phone = inputs.recruiterPhone || "555-0199";
-                  return (
-                    <div>
-                      <p style={{ marginBottom: 10 }}>1. References:</p>
-                      <p style={{ paddingLeft: 20, marginBottom: 5 }}>a. AR 140-111 (U.S. Army Reserve Reenlistment Program).</p>
-                      <p style={{ paddingLeft: 20, marginBottom: 5 }}>b. AR 600-20 (Army Command Policy) - Chapter 5 (Family Care Plans).</p>
-                      <p style={{ paddingLeft: 20, marginBottom: 15 }}>c. AR 601-210 (Active and Reserve Component Enlistment Program).</p>
-                      <p style={{ marginBottom: 15 }}>2. Gaining Unit Acceptance: The gaining unit accepts the enlistment/assignment of applicant {applicant} in the grade of {rank} and MOS {mos}. The applicant will be assigned to {paraLinePos} of this unit.</p>
-                      <p style={{ marginBottom: 15 }}>3. Skills Certification: Gaining command certifies that the applicant possesses the necessary technical and administrative skills required for the assigned position, and maintenance of prior grade is approved.</p>
-                      <p style={{ marginBottom: 15 }}>4. Family Care Plan Certification: In accordance with reference 1b, the command has reviewed the sole-parent Family Care Plan (FCP) bundle (DA Forms 5304, 5840, and 5841) for applicant {applicant}. The command certifies that the FCP is feasible and accepts the applicant for enlistment.</p>
-                      <p style={{ marginBottom: 15 }}>5. Gaining unit point of contact for this action is {recruiter} at {phone}.</p>
+                    {/* Office symbol (left) + date flush right (AR 25-50 ¶2-4a) */}
+                    <div style={{ display: "flex", justifyContent: "space-between", marginTop: 26, marginBottom: 26 }}>
+                      <span>{lh("officeSymbol")}</span>
+                      <span>{inputs.date}</span>
                     </div>
-                  );
-                })()}
-
-                {template === "ra_grade" && (() => {
-                  const applicant = inputs.applicant || "Martinez, Carlos A.";
-                  const ssn = inputs.ssn || "XXX-XX-7742";
-                  const rank = inputs.rank || "SGT / E-5";
-                  const mos = inputs.mos || "11B";
-                  const recruiter = inputs.recruiter || "SSG Thompson, R.";
-                  const phone = inputs.recruiterPhone || "555-0199";
-                  const pref1 = inputs.dutyPref1 || "Fort Carson, CO";
-                  const pref2 = inputs.dutyPref2 || "Fort Riley, KS";
-                  const pref3 = inputs.dutyPref3 || "Fort Cavazos, TX";
-                  
-                  return (
-                    <div>
-                      <p style={{ marginBottom: 10 }}>1. References:</p>
-                      <p style={{ paddingLeft: 20, marginBottom: 5 }}>a. AR 601-210 (Active and Reserve Component Enlistment Program) - Chapter 3.</p>
-                      <p style={{ paddingLeft: 20, marginBottom: 15 }}>b. USAREC Regular Army Grade Determination Worksheet.</p>
-                      <p style={{ marginBottom: 15 }}>2. In connection with my application for Regular Army prior service enlistment in the rank of {rank} and MOS {mos}, I, {applicant} (SSN: {ssn}), submit the following statement as required for grade determination:</p>
-                      <p style={{ marginBottom: 5 }}>3. Duty Preferences: I request assignment to one of the following three duty locations in my enlisting MOS:</p>
-                      <p style={{ paddingLeft: 20, marginBottom: 5 }}>a. Preference 1: {pref1}</p>
-                      <p style={{ paddingLeft: 20, marginBottom: 5 }}>b. Preference 2: {pref2}</p>
-                      <p style={{ paddingLeft: 20, marginBottom: 15 }}>c. Preference 3: {pref3}</p>
-                      <p style={{ marginBottom: 15 }}>4. Joint Domicile / Serving Spouse Information: {inputs.spouseServing 
-                        ? `My spouse is a serving member of the Armed Forces. Component: ${inputs.spouseComponent || "N/A"}, Location: ${inputs.spouseLocation || "N/A"}, SSN: ${inputs.spouseSSN || "N/A"}. Joint domicile is requested.` 
-                        : "My spouse is not a serving member of the Armed Forces. Joint domicile is not requested."}</p>
-                      <p style={{ marginBottom: 15 }}>5. Exceptional Family Member Program (EFMP): I am {inputs.efmpStatus === "Yes" ? "currently" : "not"} enrolled in the Exceptional Family Member Program.</p>
-                      <p style={{ marginBottom: 15 }}>6. Point of contact is the enlisting recruiter, {recruiter}, at {phone}.</p>
+                    <div style={{ marginBottom: 18 }}>MEMORANDUM FOR RECORD</div>
+                    <div style={{ marginBottom: 18 }}>SUBJECT: {m.subject}</div>
+                    {m.paras.map((p, idx) => (
+                      <p key={idx} style={{ margin: "0 0 12px 0", paddingLeft: p.sub ? 28 : 0 }}>{p.t}</p>
+                    ))}
+                    {/* Signature block — center of page (AR 25-50 ¶2-4c) */}
+                    <div style={{ marginTop: 44, marginLeft: "50%" }}>
+                      {m.sig.map((s2, idx) => (
+                        <div key={idx} style={{ fontWeight: s2.b ? "bold" : "normal" }}>{s2.t}</div>
+                      ))}
                     </div>
-                  );
-                })()}
-              </div>
-
-              {/* Signature block */}
-              <div style={{ marginTop: "40px", paddingLeft: "240px", fontStyle: "normal", color: "#111111" }}>
-                {(template === "tattoo" || template === "tpu_acceptance" || template === "b0m0") ? (
-                  <div>
-                    <span style={{ fontWeight: "bold" }}>{inputs.commander.toUpperCase()}</span><br/>
-                    {template === "tattoo" ? "CPT, IN" : "LTC, IN"}<br/>
-                    Commanding
-                  </div>
-                ) : (
-                  <div>
-                    <span style={{ fontWeight: "bold" }}>{inputs.applicant.toUpperCase()}</span><br/>
-                    {template === "moral" ? "Applicant" : "Applicant"}
-                  </div>
-                )}
-              </div>
+                  </React.Fragment>
+                );
+              })()}
             </div>
             
             <div style={{ display: "flex", gap: 10 }}>
