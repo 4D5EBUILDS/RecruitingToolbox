@@ -12,12 +12,9 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "archiver": "^8.0.0",
     "cors": "^2.8.6",
-    "docxtemplater": "^3.68.7",
     "express": "^5.2.1",
     "multer": "^2.1.1",
-    "pizzip": "^3.2.0",
     "xlsx": "^0.18.5"
   }
 }
