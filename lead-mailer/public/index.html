@@ -12,7 +12,6 @@
       --border: #2a2a2a;
       --amber: #ffb300;
       --green: #4a5c3a;
-      --green-light: #6b7c5a;
       --text: #e0e0e0;
       --muted: #666;
       --danger: #c0392b;
@@ -33,7 +32,7 @@
     input[type="file"] { display: none; }
     .btn { background: var(--amber); color: #000; border: none; padding: 10px 24px; font-family: 'Oswald', sans-serif; font-size: 0.95rem; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; width: 100%; margin-top: 12px; }
     .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-    .btn.secondary { background: var(--green); color: var(--amber); }
+    .btn.sm { width: auto; margin-top: 0; padding: 6px 14px; font-size: 0.8rem; }
     .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
     .stat { background: #0d0d0d; border: 1px solid var(--border); padding: 16px; text-align: center; }
     .stat .num { font-family: 'Oswald', sans-serif; font-size: 2rem; color: var(--amber); }
@@ -41,22 +40,25 @@
     .preview-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
     .preview-table th { text-align: left; color: var(--amber); font-family: 'Oswald', sans-serif; letter-spacing: 1px; padding: 6px 8px; border-bottom: 1px solid var(--border); }
     .preview-table td { padding: 6px 8px; border-bottom: 1px solid #1a1a1a; color: var(--text); }
+    .template-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .template-row:last-child { border-bottom: none; }
+    .template-name { font-size: 0.85rem; color: var(--text); }
     .msg { padding: 12px; font-size: 0.8rem; margin-top: 12px; }
     .msg.error { background: #1a0a0a; border-left: 3px solid var(--danger); color: #e74c3c; }
     .msg.success { background: #0a1a0a; border-left: 3px solid var(--success); color: #2ecc71; }
     .msg.info { background: #1a1500; border-left: 3px solid var(--amber); color: var(--amber); }
     .hidden { display: none; }
-    #sentLogCount { color: var(--amber); }
   </style>
 </head>
 <body>
   <header>
     <h1>★ Lead Mailer</h1>
-    <span>Lincoln North Recruiting Station // iKrome Export → Parent Letters</span>
+    <span>Lincoln North Recruiting Station // iKrome Export → Clean Excel for Mail Merge</span>
   </header>
 
   <div class="container">
 
+    <!-- Sent Log Status -->
     <div class="card">
       <h2>Sent Log Status</h2>
       <div class="stats-grid">
@@ -66,6 +68,7 @@
       </div>
     </div>
 
+    <!-- Step 1: Upload -->
     <div class="card">
       <h2>Step 1 — Upload iKrome Export</h2>
       <div class="drop-zone" id="dropZone">
@@ -77,15 +80,23 @@
       <div id="uploadMsg"></div>
     </div>
 
+    <!-- Step 2: Preview + Download -->
     <div class="card hidden" id="previewCard">
-      <h2>Step 2 — Review & Confirm</h2>
-      <table class="preview-table" id="previewTable">
+      <h2>Step 2 — Download Clean List</h2>
+      <table class="preview-table">
         <thead><tr><th>First Name</th><th>Last Name</th><th>Email</th></tr></thead>
         <tbody id="previewBody"></tbody>
       </table>
       <p style="font-size:0.75rem;color:var(--muted);margin-top:8px;" id="previewNote"></p>
-      <button class="btn" id="generateBtn">Generate Letters & Mark as Sent</button>
-      <div id="generateMsg"></div>
+      <button class="btn" id="downloadBtn">Download Clean List & Mark as Sent</button>
+      <div id="downloadMsg"></div>
+    </div>
+
+    <!-- Templates -->
+    <div class="card">
+      <h2>Word Templates</h2>
+      <p style="font-size:0.75rem;color:var(--muted);margin-bottom:16px;">Download a pre-formatted Word template with mail merge fields built in. In Word: Mailings → Select Recipients → Use an Existing List → select your clean Excel.</p>
+      <div id="templatesList"></div>
     </div>
 
   </div>
@@ -95,10 +106,32 @@
     const fileInput = document.getElementById('fileInput');
     let currentSessionId = null;
 
+    // Load sent log count on page load
     fetch('/stats').then(r => r.json()).then(d => {
       document.getElementById('sentLogCount').textContent = d.totalSent;
     });
 
+    // Load template list on page load
+    fetch('/templates').then(r => r.json()).then(files => {
+      const list = document.getElementById('templatesList');
+      if (files.length === 0) {
+        list.innerHTML = '<p style="font-size:0.8rem;color:var(--muted);">No templates found in the templates/ folder.</p>';
+        return;
+      }
+      list.innerHTML = files.map(f => `
+        <div class="template-row">
+          <span class="template-name">${f.replace(/_/g, ' ')}</span>
+          <a href="/templates/${encodeURIComponent(f)}" download style="text-decoration:none;">
+            <button class="btn sm">Download</button>
+          </a>
+        </div>
+      `).join('');
+    }).catch(() => {
+      document.getElementById('templatesList').innerHTML =
+        '<p style="font-size:0.8rem;color:var(--muted);">Could not load templates.</p>';
+    });
+
+    // Drop zone events
     dropZone.addEventListener('click', () => fileInput.click());
     dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
     dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
@@ -138,52 +171,32 @@
         });
 
         document.getElementById('previewNote').textContent =
-          `Showing ${data.preview.length} of ${data.totalClean} prospects. ${data.totalDupes} duplicates removed.`;
+          `Showing ${data.preview.length} of ${data.totalClean} new prospects. ${data.totalDupes} already in sent log.`;
 
         document.getElementById('previewCard').classList.remove('hidden');
-        showMsg('uploadMsg', 'success', `Loaded ${data.totalIn} leads. ${data.totalClean} ready to merge.`);
+        showMsg('uploadMsg', 'success', `Loaded ${data.totalIn} leads. ${data.totalClean} ready to download.`);
       } catch (err) {
         showMsg('uploadMsg', 'error', 'Upload failed. Is the server running?');
       }
     }
 
-    document.getElementById('generateBtn').addEventListener('click', async () => {
+    // Download clean list — triggers file download, marks as sent server-side
+    document.getElementById('downloadBtn').addEventListener('click', () => {
       if (!currentSessionId) return;
-      const btn = document.getElementById('generateBtn');
-      btn.disabled = true;
-      btn.textContent = 'Generating...';
-      showMsg('generateMsg', 'info', 'Building documents...');
-      try {
-        const res = await fetch('/generate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ sessionId: currentSessionId })
+      showMsg('downloadMsg', 'info', 'Downloading...');
+      window.location.href = `/download-clean/${currentSessionId}`;
+
+      setTimeout(() => {
+        fetch('/stats').then(r => r.json()).then(d => {
+          document.getElementById('sentLogCount').textContent = d.totalSent;
         });
-        const data = await res.json();
-        if (!res.ok) {
-          showMsg('generateMsg', 'error', data.error);
-          btn.disabled = false;
-          btn.textContent = 'Generate Letters & Mark as Sent';
-          return;
-        }
-
-        showMsg('generateMsg', 'success', 'Done! Downloading your letters...');
-        window.location.href = data.downloadUrl;
-
-        setTimeout(() => {
-          fetch('/stats').then(r => r.json()).then(d => {
-            document.getElementById('sentLogCount').textContent = d.totalSent;
-          });
-          document.getElementById('previewCard').classList.add('hidden');
-          btn.disabled = false;
-          btn.textContent = 'Generate Letters & Mark as Sent';
-          currentSessionId = null;
-        }, 2000);
-      } catch (err) {
-        showMsg('generateMsg', 'error', 'Generation failed.');
-        btn.disabled = false;
-        btn.textContent = 'Generate Letters & Mark as Sent';
-      }
+        document.getElementById('previewCard').classList.add('hidden');
+        document.getElementById('previewBody').innerHTML = '';
+        document.getElementById('statClean').textContent = '—';
+        document.getElementById('statDupes').textContent = '—';
+        currentSessionId = null;
+        showMsg('uploadMsg', 'success', 'Clean list downloaded and leads marked as sent.');
+      }, 1500);
     });
 
     function showMsg(id, type, text) {
