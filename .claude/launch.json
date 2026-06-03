@@ -7,6 +7,12 @@
       "runtimeArgs": ["-m", "http.server", "7771"],
       "port": 7771,
       "autoPort": false
+    },
+    {
+      "name": "Lead Mailer",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["lead-mailer/server/index.js"],
+      "port": 3001
     }
   ]
 }

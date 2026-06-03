@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lead Mailer // Lincoln North</title>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --surface: #111;
+      --border: #2a2a2a;
+      --amber: #ffb300;
+      --green: #4a5c3a;
+      --green-light: #6b7c5a;
+      --text: #e0e0e0;
+      --muted: #666;
+      --danger: #c0392b;
+      --success: #27ae60;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'IBM Plex Mono', monospace; min-height: 100vh; }
+    header { background: var(--green); border-bottom: 2px solid var(--amber); padding: 16px 24px; display: flex; align-items: center; gap: 12px; }
+    header h1 { font-family: 'Oswald', sans-serif; font-size: 1.4rem; letter-spacing: 2px; color: var(--amber); text-transform: uppercase; }
+    header span { font-size: 0.75rem; color: #aaa; }
+    .container { max-width: 720px; margin: 40px auto; padding: 0 20px; }
+    .card { background: var(--surface); border: 1px solid var(--border); padding: 24px; margin-bottom: 24px; }
+    .card h2 { font-family: 'Oswald', sans-serif; font-size: 1rem; letter-spacing: 1px; color: var(--amber); text-transform: uppercase; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+    .drop-zone { border: 2px dashed var(--border); padding: 40px; text-align: center; cursor: pointer; transition: border-color 0.2s; }
+    .drop-zone:hover, .drop-zone.drag-over { border-color: var(--amber); }
+    .drop-zone p { color: var(--muted); font-size: 0.85rem; margin-top: 8px; }
+    .drop-zone .icon { font-size: 2rem; color: var(--amber); }
+    input[type="file"] { display: none; }
+    .btn { background: var(--amber); color: #000; border: none; padding: 10px 24px; font-family: 'Oswald', sans-serif; font-size: 0.95rem; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; width: 100%; margin-top: 12px; }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn.secondary { background: var(--green); color: var(--amber); }
+    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .stat { background: #0d0d0d; border: 1px solid var(--border); padding: 16px; text-align: center; }
+    .stat .num { font-family: 'Oswald', sans-serif; font-size: 2rem; color: var(--amber); }
+    .stat .label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+    .preview-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+    .preview-table th { text-align: left; color: var(--amber); font-family: 'Oswald', sans-serif; letter-spacing: 1px; padding: 6px 8px; border-bottom: 1px solid var(--border); }
+    .preview-table td { padding: 6px 8px; border-bottom: 1px solid #1a1a1a; color: var(--text); }
+    .msg { padding: 12px; font-size: 0.8rem; margin-top: 12px; }
+    .msg.error { background: #1a0a0a; border-left: 3px solid var(--danger); color: #e74c3c; }
+    .msg.success { background: #0a1a0a; border-left: 3px solid var(--success); color: #2ecc71; }
+    .msg.info { background: #1a1500; border-left: 3px solid var(--amber); color: var(--amber); }
+    .hidden { display: none; }
+    #sentLogCount { color: var(--amber); }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>★ Lead Mailer</h1>
+    <span>Lincoln North Recruiting Station // iKrome Export → Parent Letters</span>
+  </header>
+
+  <div class="container">
+
+    <div class="card">
+      <h2>Sent Log Status</h2>
+      <div class="stats-grid">
+        <div class="stat"><div class="num" id="sentLogCount">—</div><div class="label">Total Sent</div></div>
+        <div class="stat"><div class="num" id="statClean">—</div><div class="label">Ready to Merge</div></div>
+        <div class="stat"><div class="num" id="statDupes">—</div><div class="label">Duplicates Removed</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Step 1 — Upload iKrome Export</h2>
+      <div class="drop-zone" id="dropZone">
+        <div class="icon">📋</div>
+        <strong>Drop your iKrome Excel export here</strong>
+        <p>or click to browse — .xlsx files only</p>
+      </div>
+      <input type="file" id="fileInput" accept=".xlsx">
+      <div id="uploadMsg"></div>
+    </div>
+
+    <div class="card hidden" id="previewCard">
+      <h2>Step 2 — Review & Confirm</h2>
+      <table class="preview-table" id="previewTable">
+        <thead><tr><th>First Name</th><th>Last Name</th><th>Email</th></tr></thead>
+        <tbody id="previewBody"></tbody>
+      </table>
+      <p style="font-size:0.75rem;color:var(--muted);margin-top:8px;" id="previewNote"></p>
+      <button class="btn" id="generateBtn">Generate Letters & Mark as Sent</button>
+      <div id="generateMsg"></div>
+    </div>
+
+  </div>
+
+  <script>
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    let currentSessionId = null;
+
+    fetch('/stats').then(r => r.json()).then(d => {
+      document.getElementById('sentLogCount').textContent = d.totalSent;
+    });
+
+    dropZone.addEventListener('click', () => fileInput.click());
+    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+    dropZone.addEventListener('drop', e => {
+      e.preventDefault();
+      dropZone.classList.remove('drag-over');
+      const file = e.dataTransfer.files[0];
+      if (file) handleUpload(file);
+    });
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files[0]) handleUpload(fileInput.files[0]);
+    });
+
+    async function handleUpload(file) {
+      if (!file.name.endsWith('.xlsx')) {
+        showMsg('uploadMsg', 'error', 'File must be .xlsx format.');
+        return;
+      }
+      showMsg('uploadMsg', 'info', 'Processing...');
+      const formData = new FormData();
+      formData.append('leads', file);
+      try {
+        const res = await fetch('/upload', { method: 'POST', body: formData });
+        const data = await res.json();
+        if (!res.ok) { showMsg('uploadMsg', 'error', data.error); return; }
+
+        currentSessionId = data.sessionId;
+        document.getElementById('statClean').textContent = data.totalClean;
+        document.getElementById('statDupes').textContent = data.totalDupes;
+
+        const tbody = document.getElementById('previewBody');
+        tbody.innerHTML = '';
+        data.preview.forEach(p => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td>${p.First_Name}</td><td>${p.Last_Name}</td><td>${p.Email_Address}</td>`;
+          tbody.appendChild(tr);
+        });
+
+        document.getElementById('previewNote').textContent =
+          `Showing ${data.preview.length} of ${data.totalClean} prospects. ${data.totalDupes} duplicates removed.`;
+
+        document.getElementById('previewCard').classList.remove('hidden');
+        showMsg('uploadMsg', 'success', `Loaded ${data.totalIn} leads. ${data.totalClean} ready to merge.`);
+      } catch (err) {
+        showMsg('uploadMsg', 'error', 'Upload failed. Is the server running?');
+      }
+    }
+
+    document.getElementById('generateBtn').addEventListener('click', async () => {
+      if (!currentSessionId) return;
+      const btn = document.getElementById('generateBtn');
+      btn.disabled = true;
+      btn.textContent = 'Generating...';
+      showMsg('generateMsg', 'info', 'Building documents...');
+      try {
+        const res = await fetch('/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sessionId: currentSessionId })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          showMsg('generateMsg', 'error', data.error);
+          btn.disabled = false;
+          btn.textContent = 'Generate Letters & Mark as Sent';
+          return;
+        }
+
+        showMsg('generateMsg', 'success', 'Done! Downloading your letters...');
+        window.location.href = data.downloadUrl;
+
+        setTimeout(() => {
+          fetch('/stats').then(r => r.json()).then(d => {
+            document.getElementById('sentLogCount').textContent = d.totalSent;
+          });
+          document.getElementById('previewCard').classList.add('hidden');
+          btn.disabled = false;
+          btn.textContent = 'Generate Letters & Mark as Sent';
+          currentSessionId = null;
+        }, 2000);
+      } catch (err) {
+        showMsg('generateMsg', 'error', 'Generation failed.');
+        btn.disabled = false;
+        btn.textContent = 'Generate Letters & Mark as Sent';
+      }
+    });
+
+    function showMsg(id, type, text) {
+      const el = document.getElementById(id);
+      el.className = `msg ${type}`;
+      el.textContent = text;
+    }
+  </script>
+</body>
+</html>
