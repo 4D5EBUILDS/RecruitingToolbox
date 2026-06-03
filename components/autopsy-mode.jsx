@@ -228,7 +228,7 @@ const AUTOPSY_SUBS = {
   "dd369":        "City police + county sheriff + state. ALL THREE RETURNED. Every alias gets its own separate DD 369 — hand-writing an alias onto an existing form is how you get blacklisted from GC's good graces permanently. GC will not negotiate. They will not count two out of three as 'close enough.'",
   "sex-off":      "NSOPW.gov plus applicable state registry. Document results in GENESIS remarks before SC QC. A hit means you stop immediately, call GC, and do not move. 'I thought I'd check after projecting' is career-altering logic.",
   "legal":        "Compare DD 369 returns against what the applicant disclosed during moral screening. New offense discovered = immediate GC call. Disclosure inconsistency (medical vs. moral) is also a GC return. Cross-reference everything.",
-  "umf680":       "Sign in front of you. Not mailed. Not before the appointment. In your physical presence. Dates must match DD 2807-2 and GENESIS. Do not accept pre-signed forms. GC will ask the applicant directly. They will know.",
+  "umf680":       "The Request for Examination — the applicant's personal data (name, SSN, citizenship, education, exam requests). NOT the medical prescreen; that's the DD 2807-2. Under USMIRS 1.1 MVP no applicant signature is required here (Item 21) — stop chasing one. Dates in YYYYMMDD. Every field matches USMIRS/GENESIS or QRP returns it. Corrections: single strike, initial, date — whiteout is how you confess to the GC that you gave up.",
   "umf680-2":     "Companion form to the 680-3A. Required for all applicants. Not optional. Not 'we usually skip this.' If the applicant has braces, attach the orthodontist letter here. GC checks for this specifically.",
   "umf408":       "MEPS processing form. Required. Has braces? Attach the braces letter from the orthodontist. MEPS will send the applicant home without it. You will explain this to the applicant. It will not be a fun conversation.",
   "dd2807":       "Every block answered. Write N/A for non-applicable. Blank blocks are where packets go to die slowly and expensively. Dates must match UMF 680-3A and GENESIS. Disclosure inconsistency with moral screening = GC return.",
@@ -719,7 +719,7 @@ const AutopsyMode = ({ sections, statuses, profile, aliasCheck, onToggle, onQuic
 
     // 1. Minor (17yo) Check
     if (p.ageGender.startsWith("17")) {
-      flag("dd2807", "Minor consent date mismatch: parent signed UMF 680-3A/DD 2807-2 before applicant. Re-run forms.", "medical");
+      flag("dd2807", "Minor consent date mismatch: parent signed DD 2807-2 before applicant. Re-run forms.", "medical");
       if (p.ageGender.includes("sp")) {
         flag("dd1966-sp", "Parent signature missing from Section VI of DD 1966.", "identity");
       } else {
