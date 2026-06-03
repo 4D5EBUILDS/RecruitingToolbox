@@ -49,7 +49,7 @@ const REF_SECTIONS = [
     items:[
       {type:"nogo", text:"Live Scan authorization entered in SC Remarks instead of Contact History — wrong field, automatic return."},
       {type:"nogo", text:"DD 369s not all returned before projection — even one missing return stops processing."},
-      {type:"nogo", text:"Dates inconsistent across forms — DD 2807-2, UMF 680-3A, and GENESIS must all agree."},
+      {type:"nogo", text:"Dates inconsistent across forms — DD 2807-2, UMF 680-3A (Request for Examination), and GENESIS must all agree. UMF 680-3A dates are in YYYYMMDD."},
       {type:"nogo", text:"UF 601-210.15 completed too early (expired by MEPS date) or missing from the packet."},
       {type:"nogo", text:"Complex prescreen submitted but no MEPS disposition received before projection — do not schedule until MEPS returns a disposition."},
       {type:"nogo", text:"Waiver packet initiated for a marijuana possession or use offense when none is required — per AR 601-210 para 4-6 (Mar 2026), marijuana possession and use offenses no longer require a formal waiver."},
