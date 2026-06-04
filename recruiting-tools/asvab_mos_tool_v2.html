@@ -1034,6 +1034,10 @@ function getScores() {
   const keys = ['GT','CL','CO','EL','FA','GM','MM','OF','SC','ST'];
   const s = {};
   keys.forEach(k => { const v=document.getElementById(k).value; if(v!=='') s[k]=parseInt(v); });
+  // CO (Combat) and GT (General Technical) use the same formula: VE + AR = WK + PC + AR
+  // Derive one from the other so users only need to enter one
+  if (s.GT !== undefined && s.CO === undefined) s.CO = s.GT;
+  if (s.CO !== undefined && s.GT === undefined) s.GT = s.CO;
   return s;
 }
 
