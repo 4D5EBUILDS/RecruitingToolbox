@@ -428,19 +428,19 @@ input[type=number]:focus{outline:3px solid var(--army-gold);outline-offset:3px;}
 
       <!--  ZONE TRACK — drag anywhere on the bar to set value  -->
       <div class="zone-track" id="zt-slj">
-        <!-- flex values = proportional units within range 20–110 (90 total) -->
-        <div class="zt-seg zt-below" style="flex:27"><span class="zt-lbl">Below</span></div>
-        <div class="zt-seg zt-gold"  style="flex:8" ><span class="zt-lbl">Gold · 47"</span></div>
-        <div class="zt-seg zt-gray"  style="flex:8" ><span class="zt-lbl">Gray · 55"</span></div>
-        <div class="zt-seg zt-black" style="flex:47"><span class="zt-lbl">Black · 63"</span></div>
+        <!-- flex values = proportional units within range 50–280 (230 total) -->
+        <div class="zt-seg zt-below" style="flex:69"><span class="zt-lbl">Below</span></div>
+        <div class="zt-seg zt-gold"  style="flex:21"><span class="zt-lbl">Gold · 119 cm</span></div>
+        <div class="zt-seg zt-gray"  style="flex:20"><span class="zt-lbl">Gray · 140 cm</span></div>
+        <div class="zt-seg zt-black" style="flex:120"><span class="zt-lbl">Black · 160 cm</span></div>
         <div class="zt-needle" id="zt-needle-slj">
-          <div class="zt-bubble" id="zt-bubble-slj">55"</div>
+          <div class="zt-bubble" id="zt-bubble-slj">140 cm</div>
         </div>
       </div>
 
       <div class="input-num-row">
-        <input type="number" id="txt-slj" value="55" min="20" max="110">
-        <span class="input-unit">inches</span>
+        <input type="number" id="txt-slj" value="140" min="50" max="280">
+        <span class="input-unit">cm</span>
         <span class="input-hint" style="margin:0">— or drag the bar above</span>
       </div>
     </div>
@@ -599,7 +599,7 @@ tick(); setInterval(tick,1000);
 // ── ZONE TRACK CONFIG ──────────────────────────────────────────────────────
 //  min, max, step, ladder (optional), format
 const ZT = {
-  slj:{ min:20,  max:110, step:1,  format:v=>v+'"' },
+  slj:{ min:50,  max:280, step:1,  format:v=>v+' cm' },
   spt:{ min:150, max:700, step:10, format:v=>v+' cm' },
   sdl:{ min:60,  max:220, step:20,
         ladder:[60,120,140,160,180,190,200,210,220],
@@ -618,7 +618,7 @@ function updateNeedle(id, value, min, max, label){
 
 // ── SCORING ────────────────────────────────────────────────────────────────
 function gradeEvent(event,val){
-  const T={slj:{black:63,gray:55,gold:47},spt:{black:450,gray:400,gold:350},sdl:{black:160,gray:140,gold:120}};
+  const T={slj:{black:160,gray:140,gold:119},spt:{black:450,gray:400,gold:350},sdl:{black:160,gray:140,gold:120}};
   const t=T[event];
   if(val>=t.black) return 'black';
   if(val>=t.gray)  return 'gray';
@@ -650,7 +650,7 @@ const GRADE_ORDER={black:4,gray:3,gold:2,white:1};
 function lowestGrade(grades){return grades.reduce((a,b)=>GRADE_ORDER[a]<=GRADE_ORDER[b]?a:b);}
 
 // ── STATE ──────────────────────────────────────────────────────────────────
-let S={slj:55, spt:400, sdl:140, iarLvl:5, iarSht:8};
+let S={slj:140, spt:400, sdl:140, iarLvl:5, iarSht:8};
 
 // ── RENDER ─────────────────────────────────────────────────────────────────
 function render(){
@@ -671,13 +671,13 @@ function render(){
   const overall=lowestGrade(grades);
 
   // Value displays
-  document.getElementById('val-slj').textContent=slj+'" ('+Math.floor(slj/12)+"'"+slj%12+'")';
+  document.getElementById('val-slj').textContent=slj+' cm';
   document.getElementById('val-spt').textContent=spt+' cm ('+(spt/30.48).toFixed(1)+"')";
   document.getElementById('val-sdl').textContent=sdl+' lbs';
   document.getElementById('iar-total').textContent=iarTot+' total shuttles';
 
   // ── Needle positions ──────────────────────────────────────────────
-  updateNeedle('slj', slj, 20, 110, ZT.slj.format(slj));
+  updateNeedle('slj', slj, 50, 280, ZT.slj.format(slj));
   updateNeedle('spt', spt, 150, 700, ZT.spt.format(spt));
   updateNeedle('sdl', sdl, 60, 220, ZT.sdl.format(sdl));
   // IAR: display on 0–60 scale (clamp at 60 for visual)
