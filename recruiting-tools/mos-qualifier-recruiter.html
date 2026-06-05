@@ -1,0 +1,888 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>MOS Qualifier — Recruiter Edition</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<style>
+@font-face{font-family:"GI";src:url("../fonts/G.I.-400.ttf") format("truetype");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"GI";src:url("../fonts/G.I.-400Italic.ttf") format("truetype");font-weight:400;font-style:italic;font-display:swap}
+@font-face{font-family:"GI";src:url("../fonts/G.I.-530.ttf") format("truetype");font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:"GI";src:url("../fonts/G.I.-530Italic.ttf") format("truetype");font-weight:500;font-style:italic;font-display:swap}
+@font-face{font-family:"GI";src:url("../fonts/G.I.-750.ttf") format("truetype");font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:"GI";src:url("../fonts/G.I.-750Italic.ttf") format("truetype");font-weight:700;font-style:italic;font-display:swap}
+html,body{margin:0;padding:0;overflow:hidden;background:#221F20}
+*,*::before,*::after{box-sizing:border-box}
+#root{width:100vw;height:100vh}
+::selection{background:#FFCC01;color:#221F20}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,204,1,0.3);border-radius:2px}
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button{opacity:.3}
+@keyframes r4QualFlash{0%{background:rgba(45,170,39,.30)}100%{background:transparent}}
+@keyframes r4LockFlash{0%{background:rgba(241,101,33,.22)}100%{background:transparent}}
+@keyframes r4BarGrow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes r4FadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes r4FadeIn{from{opacity:0}to{opacity:1}}
+@keyframes r4Counter{from{opacity:.3;transform:scale(.88)}to{opacity:1;transform:scale(1)}}
+.r4row{transition:background 180ms ease}
+.r4row:hover{background:rgba(255,204,1,.08)!important}
+.r4row:active{background:rgba(255,204,1,.15)!important}
+</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="root"></div>
+
+<!-- ── DATA ── -->
+<script type="text/babel">
+const LINE_SCORES=[
+  {key:'GT',name:'General Technical',            blurb:'Word knowledge · paragraph comp · arithmetic reasoning'},
+  {key:'CL',name:'Clerical',                     blurb:'Word knowledge · paragraph comp · math knowledge'},
+  {key:'CO',name:'Combat',                       blurb:'Arithmetic reasoning · coding · auto & shop · mechanical'},
+  {key:'EL',name:'Electronics',                  blurb:'General science · arithmetic · math · electronics'},
+  {key:'FA',name:'Field Artillery',              blurb:'Arithmetic reasoning · coding · math knowledge · mechanical'},
+  {key:'GM',name:'General Maintenance',          blurb:'General science · auto & shop · math · electronics'},
+  {key:'MM',name:'Mechanical Maintenance',       blurb:'Auto & shop · mechanical comp · electronics'},
+  {key:'OF',name:'Operators & Food',             blurb:'Word knowledge · paragraph comp · auto & shop · mechanical'},
+  {key:'SC',name:'Surveillance & Comm',          blurb:'Word knowledge · paragraph comp · arithmetic · auto & shop'},
+  {key:'ST',name:'Skilled Technical',            blurb:'Word knowledge · paragraph comp · general science · mechanical'},
+];
+const _RAW = [
+// OPTIONS (not MOS per se, but listed)
+{ code:"09C",  title:"Trainee Language (FLRI)",               cmf:"Special",            reqs:null,     combo:null,  clearance:"none", term:"48 mo",  ait:"Ft. Sill",              ait_len:"FLRI",       opat:3, pulhes:"222222", vision:"None",   acasp:false, notes:"AFQT 21-30. Assembling Objects (AO) ≥54. ECLT (English Comprehension Level Test / language) score 40-74. ESL track. Cannot combine with ARMS. AO/ECLT/AFQT are not standard line-score composites — verify eligibility in REQUEST.", civilian:"Interpreter, federal linguist" },
+{ code:"09M",  title:"AFQT 16-30 Enlistee",                   cmf:"Special",            reqs:null,     combo:null,  clearance:"none", term:"48 mo",  ait:"Varies",                ait_len:"",           opat:3, pulhes:"111221", vision:"None",   acasp:false, notes:"AFQT 16-20 requires Brigade Control Number. AFQT 24-30 must have USAR vacancy. Tier 1 only.", civilian:"" },
+{ code:"09R",  title:"Simultaneous Membership Program",        cmf:"Special",            reqs:null,     combo:null,  clearance:"none", term:"BCT only", ait:"Varies",               ait_len:"",           opat:3, pulhes:"222222", vision:"None",   acasp:false, notes:"USAR enlistment only. BCT requirement does not apply if already executed DD Form 4 or already enrolled in MS II/III/IV.", civilian:"" },
+{ code:"09S",  title:"US Army Commissioned Officer Candidate", cmf:"Officer Accessions", reqs:{GT:110}, combo:null,  clearance:"secret",term:"36 mo", ait:"OCS",                  ait_len:"",           opat:3, pulhes:"222222", vision:"R/G",    acasp:false, notes:"Bachelor degree required. Age 19-33. PSSP interview required. PS must not exceed 9 yrs AFS.", civilian:"Officer corps, federal leadership" },
+{ code:"09W",  title:"Warrant Officer Candidate",              cmf:"Officer Accessions", reqs:{GT:110}, combo:null,  clearance:"secret",term:"36 mo", ait:"WOCS",                  ait_len:"",          opat:3, pulhes:"222222", vision:"Normal", acasp:false, notes:"Class 1A flight physical. Height 64-76 inches. PSSP interview required.", civilian:"Warrant officer corps, aviation" },
+// ── ENLISTMENT OPTIONS (Ranger & Program Options) — Handbook pp.1-2 ──
+{ code:"OPT 40", title:"Ranger (Option 40)",        cmf:"Enlistment Option", reqs:{GT:100}, combo:null, clearance:"secret", term:"48 mo", ait:"BT/AIT/RASP/BAT",        ait_len:"", opat:1, pulhes:"111221", vision:"R/G", acasp:false, notes:"Order of training: BT, AIT, RASP, BAT. US citizen. Must obtain/maintain SECRET (not waiverable). No moral waivers (drug/criminal). No color vision ETP. No ETP for GT score. 4-year min term. Min weight 110 lbs, min reach. Airborne screening NOT required; if medical waiver approved, OPT 40 ETP required. Eligible MOS: 11X, 17C, 35F, 35G, 35N, 68W.", civilian:"Special operations, infantry, federal law enforcement" },
+{ code:"OPT 61", title:"Ranger (Option 61)",        cmf:"Enlistment Option", reqs:{GT:95},  combo:null, clearance:"secret", term:"48 mo", ait:"BT/AIT/RASP/BAT",        ait_len:"", opat:1, pulhes:"111221", vision:"R/G", acasp:false, notes:"Order of training: BT, AIT, RASP, BAT. US citizen. SECRET (not waiverable). No moral waivers. No color vision ETP. No GT score ETP. 4-year min term. Min weight 110 lbs. Airborne screening NOT required. Eligible MOS: 13U, 17E, 25H, 35M, 94E.", civilian:"Special operations support, intelligence, signal" },
+{ code:"OPT 62", title:"Ranger (Option 62)",        cmf:"Enlistment Option", reqs:{GT:90},  combo:null, clearance:"secret", term:"48 mo", ait:"BT/AIT/RASP/BAT",        ait_len:"", opat:1, pulhes:"111221", vision:"R/G", acasp:false, notes:"Order of training: BT, AIT, RASP, BAT. US citizen. SECRET (not waiverable). No moral waivers. No color vision ETP. No GT score ETP. 4-year min term. Min weight 110 lbs. Airborne screening NOT required. Eligible MOS: 12W, 12Y, 15E, 15W, 25B, 25S, 25U, 27D, 36B, 42A, 46V, 74D, 88M, 89B, 91B, 91C, 91D, 91F, 91S, 92A, 92F, 92G, 92R, 92Y, 94F.", civilian:"Special operations support, technical & logistics" },
+{ code:"OPT 1",  title:"Direct Assignment to SOAR", cmf:"Enlistment Option", reqs:{GT:100}, combo:null, clearance:"none",   term:"",      ait:"Per selected 15-series MOS", ait_len:"", opat:1, pulhes:"", vision:"—", acasp:false, notes:"100 GT in addition to the required line scores for the specific 15-series MOS. NPS Regular Army only. Full PSSP interview required regardless of MOS. Soldiers assigned to a location during IADT based on MOS/unit availability. Min weight 110 lbs, min reach. Airborne ETPs considered; OPT 1 ETP if medical waiver. All MOS qualifications remain in effect.", civilian:"160th SOAR aviation support" },
+{ code:"OPT 3",  title:"Training of Choice",        cmf:"Enlistment Option", reqs:null,     combo:null, clearance:"none",   term:"",      ait:"Per selected MOS",       ait_len:"", opat:3, pulhes:"", vision:"—", acasp:false, notes:"RA/USAR. Applicants may select their MOS based upon meeting all enlistment eligibilities and current training available at time of enlistment.", civilian:"" },
+{ code:"OPT 4",  title:"Airborne Training",         cmf:"Enlistment Option", reqs:null,     combo:null, clearance:"none",   term:"48 mo", ait:"BT/AIT/Airborne",        ait_len:"", opat:1, pulhes:"", vision:"—", acasp:false, notes:"Guarantees training in the basic airborne qualification course and a possible assignment to a unit listed in REQUEST. Min weight 110 lbs, min reach. Airborne screening NOT required; if medical waiver approved, OPT 4 ETP required.", civilian:"Airborne infantry, special operations pipeline" },
+{ code:"OPT 7",  title:"Army Buddy Team",           cmf:"Enlistment Option", reqs:null,     combo:null, clearance:"none",   term:"",      ait:"Together: BCT/AIT or OSUT", ait_len:"", opat:3, pulhes:"", vision:"—", acasp:false, notes:"NPS ONLY. Guarantees the opportunity to attend BCT/AIT or OSUT together. During AIT, assignments decided by Strength Management. All applicants enlisting under Option 7 must enlist the same day as the other applicant(s) they attend training with.", civilian:"" },
+{ code:"OPT 18", title:"First Assignment Only",     cmf:"Enlistment Option", reqs:null,     combo:null, clearance:"none",   term:"36 mo", ait:"Per held MOS",           ait_len:"", opat:3, pulhes:"", vision:"—", acasp:false, notes:"PS ONLY. Must meet all requirements to serve in a targeted HELD MOS as identified by the ROC thru HRC vacancies. If attending any form of OSUT/AIT, duty assignment is needs of the Army. If IRR time ended more than 5 yrs from date of enlistment, must attend Basic Training only if returning to held MOS.", civilian:"" },
+{ code:"OPT 19", title:"Station of Choice",         cmf:"Enlistment Option", reqs:null,     combo:null, clearance:"none",   term:"48 mo", ait:"Per selected MOS",       ait_len:"", opat:3, pulhes:"", vision:"—", acasp:false, notes:"Select first duty station based on availability for the selected MOS. NPS only unless Prior Service enlisting under the ACASP program. If a cash bonus is available for the MOS, choosing this option can result in a decreased bonus amount.", civilian:"" },
+{ code:"OPT 20", title:"Assignment to Alaska",      cmf:"Enlistment Option", reqs:null,     combo:null, clearance:"none",   term:"48 mo", ait:"Wainwright / Elmendorf-Richardson", ait_len:"", opat:1, pulhes:"", vision:"—", acasp:false, notes:"ALA8 = Ft. Wainwright (NOT airborne). ALA4 = JB Elmendorf-Richardson (airborne). Min weight 110 lbs, min reach. Airborne screening NOT required; if medical waiver approved, OPT 4 ETP required. NPS ONLY.", civilian:"" },
+{ code:"OPT 25", title:"Security Assignment",       cmf:"Enlistment Option", reqs:null,     combo:null, clearance:"ts",     term:"",      ait:"Per 25B / 42A / 92Y",    ait_len:"", opat:3, pulhes:"", vision:"—", acasp:false, notes:"Top Secret. US citizen. Must meet 25B, 42A or 92Y line scores, education level and OPAT quals. Enlist into 25B/42A/92Y. Assigned to Hawaii, San Antonio TX, Ft. Meade MD, Ft. Gordon GA, or Korea — location not guaranteed up front. NPS Regular Army only. Full PSSP interview required. See USAREC Message 20-040.", civilian:"Intelligence / signal / admin, CONUS & OCONUS" },
+{ code:"OPT 26", title:"2-Year Assignment",         cmf:"Enlistment Option", reqs:null,     combo:null, clearance:"none",   term:"24 mo", ait:"Per selected MOS",       ait_len:"", opat:3, pulhes:"", vision:"—", acasp:false, notes:"Allows selection of a two-year time of service plus training based on the availability of the selected MOS. NPS ONLY.", civilian:"" },
+// INFANTRY / COMBAT ARMS
+{ code:"11X",  title:"Infantry Recruit",                       cmf:"Infantry",           reqs:{CO:77},  combo:null,  clearance:"none", term:"48 mo",  ait:"OSUT Ft. Benning",        ait_len:"18 Weeks",   opat:1, pulhes:"111221", vision:"R/G",    acasp:false, notes:"Correctable distant vision: 20/20 one eye, 20/100 other. Assigns to 11B or 11C.", civilian:"Law enforcement, federal agent, security" },
+{ code:"12B",  title:"Combat Engineer",                        cmf:"Engineer",           reqs:{CO:82},  combo:null,  clearance:"none", term:"36 mo",  ait:"OSUT Ft. Leonard Wood", ait_len:"14 Weeks",   opat:1, pulhes:"111221", vision:"Normal", acasp:false, notes:"Color vision ETP for R/G must go to proponent.", civilian:"Construction, demolitions, civil engineering" },
+{ code:"12C",  title:"Bridge Crewmember",                      cmf:"Engineer",           reqs:{CO:82},  combo:null,  clearance:"none", term:"36 mo",  ait:"OSUT Ft. Leonard Wood", ait_len:"14 Weeks",   opat:1, pulhes:"111121", vision:"Normal", acasp:false, notes:"Driver's license must be valid to ship. Color vision ETP for R/G must go to proponent.", civilian:"Construction, heavy equipment, bridging" },
+{ code:"12D",  title:"Diver",                                  cmf:"Engineer",           reqs:{GT:107}, combo:[[{s:"GM",v:98},{s:"GT",v:107}],[{s:"ST",v:106}]], clearance:"none", term:"48 mo", ait:"Ph1 LNWD / Ph2 Panama City", ait_len:"29 Weeks", opat:1, pulhes:"111111", vision:"Normal", acasp:false, notes:"Meet medical fitness standards for diver per AR 40-501. MOSC qualification per AR 611-75. Must attend BCT at LNWD.", civilian:"Commercial diver, underwater welder, USCG" },
+{ code:"12K",  title:"Plumber",                                cmf:"Engineer",           reqs:{GM:88},  combo:null,  clearance:"none", term:"48 mo",  ait:"Ft. Sheppard",          ait_len:"7 Weeks",    opat:3, pulhes:"111221", vision:"Normal", acasp:true,  notes:"Freedom from vertigo. ACASP: No AIT, direct assignment with proponent approval.", civilian:"Licensed plumber, pipefitter" },
+{ code:"12M",  title:"Firefighter",                            cmf:"Engineer",           reqs:{GM:88},  combo:null,  clearance:"none", term:"60 mo",  ait:"Ft. Goodfellow AFB",    ait_len:"14 Weeks",   opat:1, pulhes:"111121", vision:"Normal", acasp:true,  notes:"NFPA 1582 medical standards. Far visual acuity no worse than 20/100 bilateral, corrected to 20/20. Valid driver's license to ship. Must attend BCT at LNWD.", civilian:"Municipal firefighter, ARFF, hazmat tech" },
+{ code:"12N",  title:"Horizontal Construction Engineer",       cmf:"Engineer",           reqs:{GM:85},  combo:null,  clearance:"none", term:"48 mo",  ait:"Ft. Leonard Wood",      ait_len:"9 Weeks",    opat:3, pulhes:"222221", vision:"R/G",    acasp:true,  notes:"Driver's license required to ship. Color vision ETP must go to proponent. Bulldozers, scrapers, graders.", civilian:"Heavy equipment operator, construction" },
+{ code:"12P",  title:"Prime Power Production Specialist",      cmf:"Engineer",           reqs:{GT:110,EL:107,ST:107}, combo:null, clearance:"secret", term:"60 mo", ait:"OSUT LNWD (12B) + LNWD (12P)", ait_len:"52 Weeks", opat:3, pulhes:"111121", vision:"Normal", acasp:false, notes:"Distinguish between red and green. HS grad required. Basic Math/Science Proficiency Test (BMST) required prior to course attendance.", civilian:"Electrical engineer, power plant operator" },
+{ code:"12Q",  title:"Power Line Distribution Specialist",     cmf:"Engineer",           reqs:{EL:93},  combo:null,  clearance:"none", term:"48 mo",  ait:"Ft. Leonard Wood",      ait_len:"",           opat:3, pulhes:"111221", vision:"Normal", acasp:true,  notes:"USAR ONLY MOS. ACASP: USAR only, no AIT with proponent approval.", civilian:"Lineman, electrical utility worker" },
+{ code:"12R",  title:"Interior Electrician",                   cmf:"Engineer",           reqs:{EL:93},  combo:null,  clearance:"none", term:"48 mo",  ait:"Ft. Leonard Wood",      ait_len:"6 Weeks",    opat:3, pulhes:"111221", vision:"Normal", acasp:true,  notes:"No record of acrophobia or claustrophobia. ACASP: No AIT, direct assignment with proponent approval.", civilian:"Licensed electrician, electrical contractor" },
+{ code:"12T",  title:"Technical Engineer",                     cmf:"Engineer",           reqs:{ST:101}, combo:null,  clearance:"none", term:"60 mo",  ait:"Ft. Leonard Wood",      ait_len:"18 Weeks",   opat:3, pulhes:"221211", vision:"Normal", acasp:false, notes:"Must have completed high school algebra, geometry or higher with official transcript.", civilian:"Civil/structural engineer, surveyor, GIS" },
+{ code:"12W",  title:"Carpentry & Masonry Specialist",         cmf:"Engineer",           reqs:{GM:88},  combo:null,  clearance:"none", term:"48 mo",  ait:"Ft. Gulfport",          ait_len:"8 Weeks",    opat:3, pulhes:"111221", vision:"Normal", acasp:true,  notes:"Freedom from vertigo. Color vision ETP authorized for no color vision. ACASP: No AIT, direct assignment.", civilian:"Carpenter, mason, construction trades" },
+{ code:"12Y",  title:"Geospatial Engineer",                    cmf:"Engineer",           reqs:{GT:100,ST:100}, combo:null, clearance:"ts", term:"48 mo", ait:"Ft. Leonard Wood", ait_len:"19 Weeks",  opat:3, pulhes:"211222", vision:"Normal", acasp:false, notes:"Top Secret. HS algebra/geometry with transcript. MCST depth perception test required within 14 days of FSTP. ARC Visual Stereoscopic Acuity test required.", civilian:"GIS analyst, cartographer, NGA contractor" },
+// FIELD ARTILLERY
+{ code:"13U",  title:"Field Artillery Recruit (ALL CMF 13 initial enlistments)",                cmf:"Field Artillery",    reqs:{GT:87},  combo:null,  clearance:"secret",term:"36 mo", ait:"Ft. Sill",             ait_len:"6 Weeks",    opat:1, pulhes:"111121", vision:"R/G",    acasp:false, notes:"ALL initial enlistments into 13 CMF will be 13U as of 7/23/24. Specific MOS (13B/13F/13J/13M/13R) determined during BCT. SECRET/US citizen required for E-5+.", civilian:"Fire control systems, artillery tech" },
+{ code:"13B",  title:"Cannon Crewmember",                      cmf:"Field Artillery",    reqs:{GT:87},  combo:null,  clearance:"none", term:"36 mo",  ait:"Ft. Sill",             ait_len:"",           opat:1, pulhes:"112221", vision:"R/G",    acasp:false, notes:"SECRET/US citizen required for E-5 and above. PS applicants only — NPS must enlist 13U.", civilian:"Heavy equipment, fire control, logistics" },
+{ code:"13F",  title:"Joint Fire Support Specialist",          cmf:"Field Artillery",    reqs:{GT:87},  combo:null,  clearance:"secret",term:"36 mo", ait:"Ft. Sill",             ait_len:"",           opat:1, pulhes:"111111", vision:"R/G",    acasp:false, notes:"Secret/US citizen. PS applicants only — NPS must enlist 13U.", civilian:"JTAC, FAC, defense analyst, air liaison" },
+{ code:"13J",  title:"Fire Control Specialist",                cmf:"Field Artillery",    reqs:{GT:87},  combo:null,  clearance:"secret",term:"48 mo", ait:"Ft. Sill",             ait_len:"",           opat:1, pulhes:"222221", vision:"R/G",    acasp:false, notes:"SECRET. US citizen. Finger dexterity both hands. Must hear wide range of voice tones through comm headphones. PS only.", civilian:"Fire systems technician, defense contractor" },
+{ code:"13M",  title:"MLRS/HIMARS Crewmember",                 cmf:"Field Artillery",    reqs:{GT:87},  combo:null,  clearance:"secret",term:"36 mo", ait:"Ft. Sill",             ait_len:"",           opat:1, pulhes:"222221", vision:"R/G",    acasp:false, notes:"Secret/US citizen. PS applicants only — NPS must enlist 13U.", civilian:"Rocket systems tech, defense contractor" },
+{ code:"13R",  title:"Weapons Locating Radar Specialist",      cmf:"Field Artillery",    reqs:{GT:87},  combo:null,  clearance:"secret",term:"36 mo", ait:"Ft. Sill",             ait_len:"",           opat:1, pulhes:"222221", vision:"Normal", acasp:false, notes:"Secret/US citizen. PS applicants only — NPS must enlist 13U.", civilian:"Radar operator, defense contractor" },
+// AIR DEFENSE
+{ code:"14U",  title:"Air Defense Artillery Recruit",          cmf:"Air Defense",        reqs:{GT:93},  combo:null,  clearance:"secret",term:"36 mo", ait:"Ft. Sill",             ait_len:"20 Weeks",   opat:3, pulhes:"222221", vision:"Normal", acasp:false, notes:"ALL initial enlistments into 14 CMF as 14U as of 7/23/24. Specific MOS (14E/14G/14H/14P/14T) determined at BCT.", civilian:"Air defense systems, radar tech, defense contractor" },
+{ code:"14E",  title:"Patriot Fire Control Enhanced Operator", cmf:"Air Defense",        reqs:{MM:92},  combo:null,  clearance:"secret",term:"36 mo", ait:"Ft. Sill",             ait_len:"",           opat:3, pulhes:"222221", vision:"Normal", acasp:false, notes:"Secret/US citizen. PS applicants only — NPS must enlist 14U.", civilian:"Patriot systems tech, defense contractor" },
+{ code:"14G",  title:"Air Defense Battle Management System Op",cmf:"Air Defense",        reqs:{GT:90,MM:91}, combo:null, clearance:"secret",term:"36 mo",ait:"Ft. Sill",          ait_len:"",           opat:3, pulhes:"222221", vision:"Normal", acasp:false, notes:"Secret/US citizen. PS applicants only — NPS must enlist 14U.", civilian:"Air defense systems analyst" },
+{ code:"14H",  title:"Air Defense Enhanced Early Warning Op",  cmf:"Air Defense",        reqs:{GT:90,MM:91}, combo:null, clearance:"secret",term:"36 mo",ait:"Ft. Sill",          ait_len:"",           opat:3, pulhes:"222221", vision:"Normal", acasp:false, notes:"Secret/US citizen. PS applicants only — NPS must enlist 14U.", civilian:"Early warning systems, defense contractor" },
+{ code:"14P",  title:"Air & Missile Defense Crewmember",       cmf:"Air Defense",        reqs:{OF:87},  combo:null,  clearance:"secret",term:"36 mo", ait:"Ft. Sill",             ait_len:"",           opat:2, pulhes:"111121", vision:"Normal", acasp:false, notes:"Secret/US citizen. Min height 64 inches. Distance vision correctable 20/20 without multi-focal lenses. PS only.", civilian:"Missile defense tech" },
+{ code:"14T",  title:"Patriot Launching Station Enhanced Op",  cmf:"Air Defense",        reqs:{OF:87},  combo:null,  clearance:"secret",term:"36 mo", ait:"Ft. Sill",             ait_len:"",           opat:3, pulhes:"222221", vision:"Normal", acasp:false, notes:"Secret/US citizen. PS applicants only — NPS must enlist 14U.", civilian:"Patriot launching systems tech" },
+// AVIATION
+{ code:"15B",  title:"Aircraft Powerplant Repairer",           cmf:"Aviation",           reqs:{MM:104}, combo:null,  clearance:"none", term:"48 mo",  ait:"Ft. Eustis",            ait_len:"19 Weeks",   opat:3, pulhes:"222222", vision:"Normal", acasp:false, notes:"Must attend BCT at Ft. Jackson. Fully physically qualified prior to proponent ETP.", civilian:"Aircraft mechanic, A&P certification path, airlines" },
+{ code:"15C",  title:"MQ-1 Operator",                          cmf:"Aviation",           reqs:{SC:102}, combo:null,  clearance:"secret",term:"60 mo", ait:"Ft. Huachuca",          ait_len:"24 Weeks",   opat:3, pulhes:"222221", vision:"Normal", acasp:false, notes:"HS grad required. Class IV flight physical at Ft. Jackson after reception. Must attend BCT at Ft. Jackson.", civilian:"UAS/drone operator, defense contractor" },
+{ code:"15D",  title:"Aircraft Powertrain Repairer",           cmf:"Aviation",           reqs:{MM:104}, combo:null,  clearance:"none", term:"48 mo",  ait:"Ft. Eustis",            ait_len:"22 Weeks",   opat:3, pulhes:"222222", vision:"Normal", acasp:false, notes:"Must be fully physically qualified prior to any proponent ETP.", civilian:"Rotor/drive systems mechanic, FAA path" },
+{ code:"15E",  title:"RQ-7 Repairer",                          cmf:"Aviation",           reqs:{EL:93,MM:104}, combo:null, clearance:"secret",term:"48 mo",ait:"Ft. Huachuca",      ait_len:"17 Weeks",   opat:3, pulhes:"222221", vision:"Normal", acasp:false, notes:"Secret/US citizen. Fully physically qualified prior to ETP.", civilian:"UAS repairer, avionics technician, defense contractor" },
+{ code:"15F",  title:"Aircraft Electrician",                   cmf:"Aviation",           reqs:{MM:104}, combo:null,  clearance:"none", term:"48 mo",  ait:"Ft. Eustis",            ait_len:"17 Weeks",   opat:3, pulhes:"222222", vision:"Normal", acasp:false, notes:"Must be fully physically qualified prior to any proponent ETP.", civilian:"Aircraft electrical systems tech, avionics" },
+{ code:"15G",  title:"Aircraft Structural Repairer",           cmf:"Aviation",           reqs:{MM:104}, combo:null,  clearance:"none", term:"48 mo",  ait:"Ft. Eustis",            ait_len:"17 Weeks",   opat:3, pulhes:"222222", vision:"Normal", acasp:false, notes:"Must be fully physically qualified prior to any proponent ETP.", civilian:"Aircraft structural tech, FAA path" },
+{ code:"15H",  title:"Aircraft Pneudraulics Repairer",         cmf:"Aviation",           reqs:{MM:104}, combo:null,  clearance:"none", term:"48 mo",  ait:"Ft. Eustis",            ait_len:"13 Weeks",   opat:3, pulhes:"222222", vision:"Normal", acasp:false, notes:"Must be fully physically qualified prior to any proponent ETP.", civilian:"Hydraulics systems technician, aerospace" },
+{ code:"15M",  title:"MQ-1 Repairer",                          cmf:"Aviation",           reqs:{MM:104,EL:93}, combo:null, clearance:"secret",term:"48 mo",ait:"Ft. Huachuca",      ait_len:"24 Weeks",   opat:3, pulhes:"222221", vision:"Normal", acasp:false, notes:"Secret/US citizen. Fully physically qualified prior to ETP.", civilian:"UAS repairer, defense contractor" },
+{ code:"15N",  title:"Avionic Mechanic",                       cmf:"Aviation",           reqs:{EL:93},  combo:null,  clearance:"none", term:"48 mo",  ait:"Ft. Eustis",            ait_len:"25 Weeks",   opat:3, pulhes:"222221", vision:"Normal", acasp:false, notes:"US citizen. Must be fully physically qualified prior to any proponent ETP.", civilian:"Avionics tech, FAA certification path" },
+{ code:"15P",  title:"Aviation Operations Specialist",         cmf:"Aviation",           reqs:{ST:91},  combo:null,  clearance:"secret",term:"48 mo", ait:"Ft. Rucker",            ait_len:"8 Weeks",    opat:3, pulhes:"222221", vision:"None",   acasp:false, notes:"Secret/US citizen. Fully physically qualified prior to ETP.", civilian:"Air traffic coordinator, aviation administrator" },
+{ code:"15Q",  title:"Air Traffic Control Operator",           cmf:"Aviation",           reqs:{ST:101}, combo:null,  clearance:"secret",term:"60 mo", ait:"Ft. Rucker",            ait_len:"18 Weeks",   opat:3, pulhes:"222211", vision:"Normal", acasp:true,  notes:"Secret/US citizen. Class IV flight physical at Ft. Jackson. Must enunciate English clearly — NOT waiverable. If Soldier fails flight physical, reclassified IAW needs of Army. BCT at Ft. Jackson.", civilian:"FAA ATC (highly lucrative), aviation safety" },
+{ code:"15R",  title:"AH-64 Attack Helicopter Repairer",       cmf:"Aviation",           reqs:{MM:99},  combo:null,  clearance:"none", term:"48 mo",  ait:"Ft. Eustis",            ait_len:"17 Weeks",   opat:3, pulhes:"222211", vision:"Normal", acasp:false, notes:"HS grad required. Fully physically qualified prior to ETP.", civilian:"Apache specialist, helicopter mechanic, defense contractor" },
+{ code:"15T",  title:"UH-60 Black Hawk Helicopter Repairer",   cmf:"Aviation",           reqs:{MM:104}, combo:null,  clearance:"none", term:"60 mo",  ait:"Ft. Eustis",            ait_len:"16 Weeks",   opat:3, pulhes:"222211", vision:"Normal", acasp:false, notes:"Most common Army helicopter. Fully physically qualified prior to ETP.", civilian:"Helicopter mechanic, FAA airframe license path" },
+{ code:"15U",  title:"CH-47 Chinook Helicopter Repairer",      cmf:"Aviation",           reqs:{MM:104}, combo:null,  clearance:"none", term:"60 mo",  ait:"Ft. Eustis",            ait_len:"18 Weeks",   opat:3, pulhes:"222211", vision:"Normal", acasp:false, notes:"Fully physically qualified prior to ETP.", civilian:"Helicopter mechanic, FAA path, defense contractor" },
+{ code:"15W",  title:"RQ-7 Operator",                          cmf:"Aviation",           reqs:{SC:102}, combo:null,  clearance:"secret",term:"60 mo", ait:"Ft. Huachuca",          ait_len:"16 Weeks",   opat:3, pulhes:"222221", vision:"Normal", acasp:false, notes:"Secret/US citizen. HS grad required. Fully physically qualified prior to ETP.", civilian:"UAS pilot, drone operator, defense analyst" },
+{ code:"15X",  title:"Tactical UAS (TAUS) Specialist",         cmf:"Aviation",           reqs:{EL:93,MM:99,SC:102}, combo:null, clearance:"secret",term:"60 mo",ait:"Ft. Huachuca",ait_len:"23 Weeks",  opat:2, pulhes:"111221", vision:"Normal", acasp:false, notes:"Secret/US citizen. HS grad. No alcohol or drug abuse — NOT waiverable. Fully physically qualified prior to ETP.", civilian:"UAS systems specialist, defense contractor" },
+{ code:"15Y",  title:"AH-64D Armament/Elec/Avionic Systems",   cmf:"Aviation",           reqs:{EL:98,MM:104}, combo:null, clearance:"secret",term:"48 mo",ait:"Ft. Eustis",        ait_len:"24 Weeks",   opat:3, pulhes:"222221", vision:"Normal", acasp:false, notes:"Secret/US citizen. HS grad. Fully physically qualified prior to ETP.", civilian:"Avionics technician, Apache armament specialist" },
+// CYBER / SIGNAL
+{ code:"17C",  title:"Cyber Operations Specialist",            cmf:"Cyber",              reqs:{GT:110,ST:112}, combo:null, clearance:"ts", term:"60 mo", ait:"Ft. Gordon",          ait_len:"36 Weeks",   opat:3, pulhes:"222221", vision:"None",   acasp:false, notes:"TS/SCI required (not waiverable). HS grad. No civil convictions other than minor traffic. Never Peace Corps member. Score 60+ on ICTL test. No immediate family in country with coercion risk.", civilian:"Cybersecurity analyst, penetration tester, NSA, CISO path" },
+{ code:"17E",  title:"Electronic Warfare Specialist",          cmf:"Cyber",              reqs:{SC:105,ST:105,EL:105}, combo:null, clearance:"ts", term:"60 mo",ait:"Ft. Sill / Ft. Gordon",ait_len:"28 Weeks", opat:3, pulhes:"222221", vision:"Normal",acasp:false, notes:"Top Secret/US citizen. HS grad.", civilian:"EW systems analyst, NSA, defense contractor" },
+{ code:"18X",  title:"Special Forces Recruit",                 cmf:"Special Forces",     reqs:{GT:110,CO:100}, combo:null, clearance:"secret",term:"48 mo",ait:"OSUT Ft. Benning + SFAS",ait_len:"ABN 3wk + SF Prep 5wk + SFAS 4wk", opat:1, pulhes:"111221", vision:"R/G", acasp:false, notes:"Secret/US citizen or LPR. Age 18-32. HS grad (Tier I). 20/20 or correctable to 20/20 both eyes — NOT waiverable. Min weight 110 lbs. If medical waiver, must have ETP specifically from 18X proponent.", civilian:"Special operations, federal law enforcement, defense contractor" },
+{ code:"19U",  title:"Armor Recruit",                          cmf:"Armor",              reqs:{CO:77},  combo:null,  clearance:"none", term:"36 mo",  ait:"OSUT Ft. Benning",        ait_len:"22 Weeks",   opat:1, pulhes:"111121", vision:"Normal", acasp:false, notes:"Assigns to 19C, 19D, or 19K during OSUT. Vision correctable 20/20 one eye / 20/100 other — NOT waiverable. Color vision ETP for R/G must go to USAREC.", civilian:"Law enforcement, heavy equipment, federal security" },
+{ code:"19C",  title:"Bradley Crewmember",                     cmf:"Armor",              reqs:{CO:77},  combo:null,  clearance:"none", term:"36 mo",  ait:"OSUT Ft. Benning",        ait_len:"",           opat:1, pulhes:"111121", vision:"Normal", acasp:false, notes:"Vision correctable 20/20 one eye & 20/70 other. PS applicants only.", civilian:"Tracked vehicle operator, defense contractor" },
+{ code:"19D",  title:"Cavalry Scout",                          cmf:"Armor",              reqs:{CO:77},  combo:null,  clearance:"none", term:"36 mo",  ait:"OSUT Ft. Benning",        ait_len:"",           opat:1, pulhes:"111121", vision:"Normal", acasp:false, notes:"Vision correctable 20/20 one eye / 20/100 other — NOT waiverable. PS applicants only.", civilian:"Law enforcement, intelligence, federal agent" },
+{ code:"19K",  title:"M1 Armor Crewmember",                    cmf:"Armor",              reqs:{CO:77},  combo:null,  clearance:"none", term:"36 mo",  ait:"OSUT Ft. Benning",        ait_len:"",           opat:1, pulhes:"111121", vision:"Normal", acasp:false, notes:"Vision correctable 20/20 one eye / 20/100 other. PS applicants only.", civilian:"Heavy equipment operator, defense contractor" },
+// SIGNAL
+{ code:"25B",  title:"IT Specialist",                          cmf:"Signal",             reqs:{ST:95},  combo:null,  clearance:"secret",term:"60 mo", ait:"Ft. Gordon",        ait_len:"20 Weeks",   opat:3, pulhes:"212221", vision:"Normal", acasp:false, notes:"Secret/US citizen. Ability to clearly enunciate English. Vision and R/G ETP will NOT be entertained.", civilian:"IT admin, network engineer, CompTIA cert path, DoD contractor" },
+{ code:"25D",  title:"Cyber Network Defender",                 cmf:"Signal",             reqs:{GT:105,ST:105}, combo:null, clearance:"ts", term:"48 mo",ait:"Ft. Gordon",           ait_len:"",           opat:3, pulhes:"212221", vision:"Normal", acasp:false, notes:"IN-SERVICE MOS ONLY. SGT with 4+ yrs IA/IT experience. ALC graduate. GT 100-104 / ST 100-104 requires proponent waiver.", civilian:"SOC analyst, network defender, cybersecurity" },
+{ code:"25H",  title:"Network Communication Systems Specialist",cmf:"Signal",            reqs:{EL:100,ST:102}, combo:null, clearance:"secret",term:"48 mo",ait:"Ft. Gordon",        ait_len:"19 Weeks",   opat:3, pulhes:"212221", vision:"Normal", acasp:false, notes:"Secret/US citizen. Must work at heights 40ft+. Must work underground in low light. Vision and R/G ETP NOT entertained.", civilian:"Network admin, telecom specialist, tower technician" },
+{ code:"25S",  title:"Satellite Comm System Operator/Maintainer",cmf:"Signal",           reqs:{EL:107}, combo:null,  clearance:"secret",term:"48 mo", ait:"Ft. Gordon",            ait_len:"27 Weeks",   opat:3, pulhes:"212221", vision:"Normal", acasp:false, notes:"Secret/US citizen. HS grad. Vision and R/G ETP NOT entertained.", civilian:"Satellite systems engineer, telecom" },
+{ code:"25U",  title:"Signal Operations Support Specialist",   cmf:"Signal",             reqs:{EL:95,SC:95}, combo:null, clearance:"secret",term:"48 mo",ait:"Ft. Gordon",          ait_len:"21 Weeks",   opat:3, pulhes:"111221", vision:"Normal", acasp:false, notes:"Secret/US citizen. Vision and R/G ETP NOT entertained.", civilian:"IT support, signal tech, network technician" },
+// LEGAL / FINANCE / ADMIN
+{ code:"27D",  title:"Paralegal Specialist",                   cmf:"Legal",              reqs:{CL:105}, combo:null,  clearance:"secret",term:"36 mo", ait:"Ft. Lee",               ait_len:"11 Weeks",   opat:1, pulhes:"222121", vision:"None",   acasp:false, notes:"Secret/US citizen. Must type 25 WPM. Min GED. No civil conviction other than minor traffic. No court-martial.", civilian:"Paralegal, legal assistant, law school prep" },
+{ code:"36B",  title:"Financial Management Technician",        cmf:"Finance",            reqs:{CL:101}, combo:null,  clearance:"none", term:"48 mo",  ait:"Ft. Jackson",           ait_len:"9 Weeks",    opat:3, pulhes:"323321", vision:"None",   acasp:false, notes:"No record/conviction of crimes involving moral turpitude, dishonesty, or integrity issues.", civilian:"Accountant, financial analyst, federal auditor" },
+{ code:"37F",  title:"Psychological Operations Specialist",    cmf:"Special Operations", reqs:{GT:105}, combo:null,  clearance:"secret",term:"60 mo", ait:"LNWD 20wk + BAT Benning + 37F Select Bragg", ait_len:"20+Weeks", opat:2, pulhes:"111221", vision:"Normal", acasp:false, notes:"Secret/US citizen. RA min age 18 at AIT start. Must meet 31B qualifications (RA). Valid driver's license to ship. No civil convictions other than minor traffic. HS grad. Must meet Airborne quals. Min weight 110 lbs. Never Peace Corps. DLAB 75 (ETP possible). USAR does not need 31B quals or ABN WT/reach.", civilian:"Communications strategist, federal agency, media/PR" },
+{ code:"38B",  title:"Civil Affairs Specialist",               cmf:"Special Operations", reqs:{GT:107}, combo:null,  clearance:"secret",term:"72 mo", ait:"Ft. Bragg",             ait_len:"11 Weeks",   opat:2, pulhes:"111221", vision:"None",   acasp:false, notes:"USAR ONLY. Secret/US or naturalized citizen. HS grad or GED. No domestic violence history. No DUI/reckless driving. No open investigations.", civilian:"Government relations, NGO, diplomat, federal agency" },
+{ code:"42A",  title:"Human Resources Specialist",             cmf:"Adjutant General",   reqs:{CL:90},  combo:null,  clearance:"none", term:"48 mo",  ait:"Ft. Jackson",           ait_len:"9 Weeks",    opat:3, pulhes:"323222", vision:"None",   acasp:false, notes:"Secret/US citizen.", civilian:"HR generalist, payroll specialist, talent management, SHRM path" },
+{ code:"42R",  title:"Musician",                               cmf:"Adjutant General",   reqs:null,     combo:null,  clearance:"none", term:"48 mo",  ait:"Audition",              ait_len:"",           opat:3, pulhes:"222222", vision:"None",   acasp:true,  notes:"Must meet technical proficiency requirements by audition. See Army Musician Proficiency Assessment Handbook. ACASP: RA only, 10 week AIT.", civilian:"Professional musician, music educator" },
+{ code:"42S",  title:"Special Band Musician",                  cmf:"Adjutant General",   reqs:null,     combo:null,  clearance:"none", term:"48 mo",  ait:"Audition",              ait_len:"",           opat:3, pulhes:"222222", vision:"None",   acasp:true,  notes:"Must meet technical proficiency requirements by audition. ACASP: RA only, no AIT, direct assignment.", civilian:"Professional musician, performing arts" },
+{ code:"46S",  title:"Public Affairs Mass Communication Spec", cmf:"Public Affairs",     reqs:{GT:105}, combo:null,  clearance:"secret",term:"60 mo", ait:"Ft. Meade",             ait_len:"13 Weeks",   opat:3, pulhes:"211121", vision:"Normal", acasp:false, notes:"Secret/US citizen. HS grad or GED. Must have completed 2 yrs HS English or 3-credit college English. Attends Mass Communication Foundations (MCF-87) course.", civilian:"Journalist, PR specialist, communications director" },
+{ code:"46T",  title:"Visual Information Equipment Op/Maint",  cmf:"Public Affairs",     reqs:{EL:93,ST:91,GT:97}, combo:null, clearance:"secret",term:"48 mo",ait:"Ft. Meade",    ait_len:"28 Weeks",   opat:3, pulhes:"212221", vision:"Normal", acasp:false, notes:"NO LONGER ACASP AS OF 10/1/25. Secret/US citizen. 1yr HS algebra and general science required. HS grad. NO LONGER ACASP as of 10/1/25.", civilian:"AV equipment technician, broadcast engineer" },
+{ code:"46V",  title:"Visual Information Specialist",          cmf:"Public Affairs",     reqs:{EL:93,ST:91}, combo:null, clearance:"secret",term:"48 mo",ait:"Ft. Meade",            ait_len:"25 Weeks",   opat:3, pulhes:"111221", vision:"Normal", acasp:false, notes:"Secret/US citizen. Normal binocular vision for fine close work. MCST depth perception test required. HS grad.", civilian:"Videographer, photojournalist, media production" },
+{ code:"51C",  title:"Contracting NCO",                        cmf:"Contracting",        reqs:{GT:110}, combo:null,  clearance:"secret",term:"36 mo", ait:"Huntsville",            ait_len:"9 Weeks",    opat:3, pulhes:"222222", vision:"None",   acasp:false, notes:"PRIOR SERVICE ONLY. SGT or SGT(P) thru SSG. Less than 10 years AFS. Valid driver's license required.", civilian:"Contracting officer, procurement specialist, federal acquisition" },
+{ code:"56M",  title:"Religious Affairs Specialist",           cmf:"Chaplain",           reqs:{CL:90},  combo:null,  clearance:"secret",term:"48 mo", ait:"Ft. Jackson",           ait_len:"7 Weeks",    opat:3, pulhes:"222221", vision:"None",   acasp:false, notes:"Secret/US citizen. 1yr computer/keyboarding coursework (waiverable with 25 WPM typing). Valid driver's license to ship. Must provide religious support to all religions. Is a combatant.", civilian:"Chaplain assistant, religious program coordinator, social work" },
+// MEDICAL
+{ code:"68A",  title:"Biomedical Equipment Specialist",        cmf:"Medical",            reqs:{EL:107}, combo:null,  clearance:"none", term:"72 mo",  ait:"Ft. Sam Houston",       ait_len:"48 Weeks",   opat:3, pulhes:"222221", vision:"Normal", acasp:false, notes:"1yr HS or college algebra (C or higher, 74%+). No felony conviction. Ref: UM 24-029.", civilian:"BMET — very high civilian demand, VA hospitals, medical facilities" },
+{ code:"68B",  title:"Orthopedic Specialist",                  cmf:"Medical",            reqs:{ST:101}, combo:null,  clearance:"none", term:"48 mo",  ait:"Ft. Sam Houston",       ait_len:"15 Weeks (+ 4wk IBAM)", opat:3, pulhes:"212221", vision:"None",   acasp:true,  notes:"No aversion to blood. HS diploma/GED. Finger dexterity both hands. No felony. No alcohol/drug history. ACASP: RA/USAR proponent ETP required.", civilian:"Orthopedic tech, PA school prep, physical therapy path" },
+{ code:"68C",  title:"Practical Nursing Specialist",           cmf:"Medical",            reqs:{ST:101}, combo:null,  clearance:"none", term:"72 mo",  ait:"Ft. Sam Houston",       ait_len:"52 Weeks",   opat:3, pulhes:"111121", vision:"Normal", acasp:true,  notes:"Effective 1 Mar 26: minimum 1yr of Chemistry, Biology, AND Algebra all with C or 75%+ grade. No felony. Must pass NCLEX and maintain state LPN license. ACASP: RA/USAR proponent ETP required.", civilian:"LPN, nursing school credit, healthcare" },
+{ code:"68D",  title:"Operating Room Specialist",              cmf:"Medical",            reqs:{ST:101}, combo:null,  clearance:"none", term:"48 mo",  ait:"Ft. Sam Houston",       ait_len:"22 Weeks",   opat:3, pulhes:"222221", vision:"Normal", acasp:true,  notes:"No aversion to blood. Freedom from skin infections/allergies. No latex allergies. Finger dexterity. Normal color perception. No felony. ACASP: RA/USAR proponent ETP required.", civilian:"Surgical tech — civilian cert available, OR tech" },
+{ code:"68E",  title:"Dental Specialist",                      cmf:"Medical",            reqs:{ST:91},  combo:null,  clearance:"none", term:"48 mo",  ait:"Ft. Sam Houston",       ait_len:"9 Weeks",    opat:3, pulhes:"222221", vision:"None",   acasp:true,  notes:"No felony. No drug/narcotic conviction. ACASP: RA/USAR proponent ETP required.", civilian:"Dental assistant, dental hygienist path" },
+{ code:"68F",  title:"Physical Therapy Specialist",            cmf:"Medical",            reqs:{ST:101}, combo:null,  clearance:"none", term:"48 mo",  ait:"Ft. Sam Houston",       ait_len:"29 Weeks (+ 4wk IBAM)", opat:3, pulhes:"111121", vision:"Normal", acasp:true,  notes:"No aversion to blood. HS diploma/GED. Finger dexterity. No felony. No alcohol/drug history. Includes IBAM. ACASP: RA/USAR proponent ETP required.", civilian:"Physical therapy assistant, PT school prep" },
+{ code:"68G",  title:"Patient Administration Specialist",      cmf:"Medical",            reqs:{CL:90},  combo:null,  clearance:"none", term:"48 mo",  ait:"Ft. Sam Houston",       ait_len:"8 Weeks",    opat:3, pulhes:"323221", vision:"None",   acasp:false, notes:"No felony. No drug conviction. Ref: UM 24-029.", civilian:"Medical records, healthcare administration, coding" },
+{ code:"68H",  title:"Optical Laboratory Specialist",          cmf:"Medical",            reqs:{GM:98},  combo:null,  clearance:"none", term:"48 mo",  ait:"Ft. Yorktown",          ait_len:"25 Weeks",   opat:3, pulhes:"323222", vision:"None",   acasp:true,  notes:"1yr HS algebra (grade C/74%+). No pre-algebra credit. Official transcripts required. No felony. ACASP: RA/USAR proponent ETP required.", civilian:"Optician, optical lab technician" },
+{ code:"68J",  title:"Medical Logistics Specialist",           cmf:"Medical",            reqs:{CL:90},  combo:null,  clearance:"none", term:"48 mo",  ait:"Ft. Sam Houston",       ait_len:"7 Weeks",    opat:3, pulhes:"222222", vision:"None",   acasp:false, notes:"No felony. No drug conviction. Ref: UM 24-029.", civilian:"Medical supply chain, healthcare logistics" },
+{ code:"68K",  title:"Medical Laboratory Specialist",          cmf:"Medical",            reqs:{ST:106}, combo:null,  clearance:"none", term:"60 mo",  ait:"Ft. Sam Houston",       ait_len:"53 Weeks",   opat:3, pulhes:"323222", vision:"Normal", acasp:true,  notes:"1yr Chemistry, Algebra AND Biology (C/75%+ in all three). Official transcripts required. Finger dexterity. No felony. ACASP: RA/USAR proponent ETP required.", civilian:"Medical lab tech — civilian cert available, MLT, hospital lab" },
+{ code:"68L",  title:"Occupational Therapy Specialist",        cmf:"Medical",            reqs:{ST:101}, combo:null,  clearance:"none", term:"48 mo",  ait:"Ft. Sam Houston",       ait_len:"35 Weeks (+ 4wk IBAM)", opat:3, pulhes:"222221", vision:"Normal", acasp:true,  notes:"12 semester hours college (C/74%+): English Comp 1, Speech, Humanities, College Math. No felony. PRIOR TO FLOORING: Education Evaluation ETP must go to EEPD/68 Proponent. Includes IBAM.", civilian:"OT assistant, occupational therapy path" },
+{ code:"68M",  title:"Nutrition Care Specialist",              cmf:"Medical",            reqs:{OF:95},  combo:null,  clearance:"none", term:"48 mo",  ait:"Ft. Lee 7wk + Ft. Sam Houston 8wk", ait_len:"15 Weeks", opat:3, pulhes:"222332", vision:"Normal", acasp:true,  notes:"Must attend 92G AIT first. No felony. ACASP: RA/USAR proponent ETP required.", civilian:"Dietitian assistant, nutrition specialist, food service management" },
+{ code:"68P",  title:"Radiologist Specialist",                 cmf:"Medical",            reqs:{ST:101}, combo:null,  clearance:"none", term:"60 mo",  ait:"Ft. Sam Houston",       ait_len:"49 Weeks",   opat:3, pulhes:"222221", vision:"None",   acasp:true,  notes:"1yr HS or college algebra (C/74%+). Normal vision. Finger dexterity. No pregnancy for females. No felony. ACASP: RA/USAR proponent ETP required.", civilian:"Radiologic tech — ARRT cert available, high civilian demand" },
+{ code:"68Q",  title:"Pharmacy Specialist",                    cmf:"Medical",            reqs:{ST:95},  combo:null,  clearance:"none", term:"60 mo",  ait:"Ft. Sam Houston",       ait_len:"23 Weeks",   opat:3, pulhes:"222221", vision:"Normal", acasp:true,  notes:"1yr HS or college algebra AND chemistry/biology (C/74%+). Finger dexterity. No felony. ACASP: RA/USAR proponent ETP required.", civilian:"Pharmacy tech — CPhT certification available" },
+{ code:"68R",  title:"Veterinary Food Inspection Specialist",  cmf:"Medical",            reqs:{ST:95},  combo:null,  clearance:"secret",term:"48 mo", ait:"Ft. Sam Houston",       ait_len:"8 Weeks",    opat:3, pulhes:"222221", vision:"Normal", acasp:false, notes:"Secret/US citizen. Good near vision. HS diploma with general science/math credit. Valid driver's license to ship. Normal olfactory senses. No felony.", civilian:"Veterinary tech, food inspector, USDA" },
+{ code:"68S",  title:"Preventive Medicine Specialist",         cmf:"Medical",            reqs:{ST:98},  combo:null,  clearance:"none", term:"48 mo",  ait:"Ft. Sam Houston",       ait_len:"17 Weeks",   opat:3, pulhes:"222221", vision:"Normal", acasp:false, notes:"Valid driver's license to ship. 1yr HS or college Algebra AND Chemistry (C/74%+). No felony.", civilian:"Public health tech, environmental health, CDC pipeline" },
+{ code:"68T",  title:"Animal Care Specialist",                 cmf:"Medical",            reqs:{ST:91},  combo:null,  clearance:"secret",term:"48 mo", ait:"Ft. Sam Houston",       ait_len:"12 Weeks",   opat:3, pulhes:"222221", vision:"Normal", acasp:false, notes:"Secret/US citizen. 1yr General Sciences AND 1yr Algebra (C/74%+ both). Official transcripts required. HS diploma/GED. No felony.", civilian:"Veterinary technician, military working dog program" },
+{ code:"68V",  title:"Respiratory Specialist",                 cmf:"Medical",            reqs:{ST:102}, combo:null,  clearance:"none", term:"60 mo",  ait:"Ft. Sam Houston",       ait_len:"38 Weeks",   opat:3, pulhes:"222221", vision:"None",   acasp:true,  notes:"IN-SERVICE FOR RA. USAR ONLY ACASP. 12 semester hours college (C/74%+): English Comp, Speech, Humanities, College Math. No felony.", civilian:"Respiratory therapist, RRT path" },
+{ code:"68W",  title:"Combat Medic Specialist",                cmf:"Medical",            reqs:{ST:101}, combo:null,  clearance:"none", term:"48 mo",  ait:"Ft. Sam Houston",       ait_len:"17 Weeks",   opat:2, pulhes:"111121", vision:"None",   acasp:true,  notes:"No aversion to blood. HS diploma/GED. Finger dexterity. No felony. No drug/alcohol history. PS 68W must have valid National Registry EMT cert. National Registry EMT cert included. ACASP: 9 week AIT.", civilian:"National Registry EMT cert included, paramedic path, nursing school credit" },
+{ code:"68X",  title:"Behavioral Health Specialist",           cmf:"Medical",            reqs:{ST:101}, combo:null,  clearance:"none", term:"48 mo",  ait:"Ft. Sam Houston",       ait_len:"18 Weeks",   opat:3, pulhes:"111121", vision:"None",   acasp:false, notes:"No felony. No drug conviction. Ref: UM 24-029.", civilian:"BH tech, social work path, mental health counselor" },
+{ code:"68Y",  title:"Eye Specialist",                         cmf:"Medical",            reqs:{ST:101}, combo:null,  clearance:"none", term:"48 mo",  ait:"Ft. Sam Houston",       ait_len:"14 Weeks (+ 4wk IBAM)", opat:3, pulhes:"222221", vision:"R/G",    acasp:true,  notes:"No aversion to blood. HS diploma/GED. Pre-algebra minimum. Finger dexterity. No felony. No alcohol/drug history. Includes IBAM. ACASP: RA/USAR proponent ETP required.", civilian:"Ophthalmic tech, eye care specialist" },
+// CBRN
+{ code:"74D",  title:"CBRN Specialist",                        cmf:"Chemical",           reqs:{ST:100}, combo:null,  clearance:"none", term:"36 mo",  ait:"Ft. Leonard Wood",      ait_len:"10 Weeks",   opat:3, pulhes:"122221", vision:"Normal", acasp:false, notes:"USAR: MOS 74D with ASI L4/L5 requires valid driver's license. Very employable post-Army.", civilian:"Hazmat tech, emergency management, FEMA, first responder" },
+// TRANSPORTATION
+{ code:"88H",  title:"Cargo Specialist",                       cmf:"Transportation",     reqs:{GM:88},  combo:null,  clearance:"none", term:"36 mo",  ait:"Ft. Eustis",            ait_len:"8 Weeks",    opat:1, pulhes:"211222", vision:"R/G",    acasp:true,  notes:"ACASP: USAR and RA, 8 week AIT, follow-on assignment.", civilian:"Logistics coordinator, freight broker, supply chain" },
+{ code:"88K",  title:"Watercraft Operator",                    cmf:"Transportation",     reqs:{MM:99},  combo:null,  clearance:"none", term:"48 mo",  ait:"Ft. Eustis",            ait_len:"6 Weeks",    opat:1, pulhes:"222221", vision:"Normal", acasp:true,  notes:"Uncorrected vision no worse than 20/200 each eye, corrects to 20/20 / 20/40. ACASP: USAR and RA, 6 week AIT.", civilian:"Marine operator, merchant marine, TWIC card, USCG" },
+{ code:"88L",  title:"Watercraft Engineer",                    cmf:"Transportation",     reqs:{MM:99},  combo:null,  clearance:"none", term:"48 mo",  ait:"Ft. Eustis",            ait_len:"10 Weeks",   opat:2, pulhes:"222221", vision:"Normal", acasp:true,  notes:"Uncorrected vision no worse than 20/200 each eye, corrects to 20/20 / 20/40. ACASP: USAR and RA, 9 week AIT.", civilian:"Marine engineer, USCG engineer license" },
+{ code:"88M",  title:"Motor Transport Operator",               cmf:"Transportation",     reqs:{OF:85},  combo:null,  clearance:"none", term:"36 mo",  ait:"Ft. Leonard Wood",      ait_len:"7 Weeks",    opat:1, pulhes:"222222", vision:"R/G",    acasp:true,  notes:"Valid driver's license must NOT expire prior to AIT completion. Corrected vision 20/20 / 20/40. ACASP: USAR and RA, 4 week AIT with proponent approval. CDL acquired during AIT.", civilian:"CDL Class A driver, logistics, trucking, OTR" },
+{ code:"88N",  title:"Transportation Management Coordinator",  cmf:"Transportation",     reqs:{CL:95},  combo:null,  clearance:"secret",term:"48 mo", ait:"Ft. Lee",               ait_len:"7 Weeks",    opat:2, pulhes:"222222", vision:"Normal", acasp:false, notes:"Secret/US citizen.", civilian:"Transportation coordinator, logistics manager, supply chain" },
+{ code:"88U",  title:"Railway Operations Crewmember",          cmf:"Transportation",     reqs:{MM:92},  combo:null,  clearance:"secret",term:"",      ait:"Ft. Eustis",            ait_len:"6 Weeks",    opat:3, pulhes:"222232", vision:"Normal", acasp:true,  notes:"USAR ONLY MOS. Secret/US citizen. ACASP: USAR only, 6 week AIT.", civilian:"Railway operations, transportation logistics" },
+// ORDNANCE
+{ code:"89A",  title:"Ammunition Stock Control & Accounting",  cmf:"Ordnance",           reqs:{ST:91},  combo:null,  clearance:"none", term:"48 mo",  ait:"Ft. Lee",               ait_len:"8 Weeks",    opat:3, pulhes:"222221", vision:"Normal", acasp:false, notes:"US citizen. Cannot be allergic to explosive components. Non-claustrophobic. NAC/ENTNAC removed as of 4/1/25.", civilian:"Inventory management, supply chain, DOD contractor" },
+{ code:"89B",  title:"Ammunition Specialist",                  cmf:"Ordnance",           reqs:{ST:91},  combo:[[{s:"ST",v:86},{s:"GT",v:85}]], clearance:"none", term:"48 mo", ait:"Ft. Lee", ait_len:"9 Weeks", opat:2, pulhes:"222221", vision:"Normal", acasp:false, notes:"US citizen. Cannot be allergic to explosive components. Non-claustrophobic. Combination: 86 ST AND 85 GT. NAC/ENTNAC removed as of 4/1/25.", civilian:"Explosive ordnance tech, demolitions contractor, ATF path" },
+{ code:"89D",  title:"Explosive Ordnance Disposal Specialist", cmf:"Ordnance",           reqs:{GM:105}, combo:null,  clearance:"ts",   term:"48 mo",  ait:"Ph1 Ft. Lee / Ph2 Eglin AFB", ait_len:"37 Weeks", opat:1, pulhes:"111121", vision:"Normal", acasp:false, notes:"Top Secret/US citizen. Hear voice at 25 feet. Valid driver's license to ship. High bonus potential. Highly selective.", civilian:"Federal EOD tech, bomb squad, ATF, FBI" },
+// MAINTENANCE (91 series)
+{ code:"91A",  title:"M1 Abrams Tank System Maintainer",       cmf:"Ordnance",           reqs:{MM:90},  combo:[[{s:"MM",v:88},{s:"GT",v:90}]], clearance:"none", term:"36 mo",  ait:"Ft. Benning",     ait_len:"17 Weeks",  opat:3, pulhes:"222222", vision:"Normal", acasp:true,  notes:"Finger dexterity both hands. Not allergic to petroleum products. ACASP: Proponent ETP required. Must complete Army maintenance modules.", civilian:"Heavy equipment mechanic, tank systems tech, defense contractor" },
+{ code:"91B",  title:"Wheeled Vehicle Mechanic",               cmf:"Ordnance",           reqs:{MM:92},  combo:[[{s:"MM",v:87},{s:"GT",v:85}]], clearance:"none", term:"36 mo",  ait:"Ft. Lee",         ait_len:"15 Weeks",  opat:3, pulhes:"222222", vision:"Normal", acasp:true,  notes:"Finger dexterity. Not allergic to refrigerant/petroleum. ACASP: Proponent ETP required. Combination: 87 MM AND 85 GT.", civilian:"Automotive mechanic, fleet manager, diesel tech, ASE cert path" },
+{ code:"91C",  title:"Utilities Equipment Repairer",           cmf:"Ordnance",           reqs:{GM:93},  combo:[[{s:"GM",v:88},{s:"GT",v:85}]], clearance:"none", term:"36 mo",  ait:"Ft. Lee",         ait_len:"13 Weeks",  opat:3, pulhes:"222222", vision:"Normal", acasp:true,  notes:"Finger dexterity. Not allergic to refrigerant/petroleum. Combination: 88 GM AND 85 GT.", civilian:"Equipment mechanic, HVAC tech, facilities maintenance" },
+{ code:"91D",  title:"Tactical Power Generation Specialist",   cmf:"Ordnance",           reqs:{GM:93},  combo:[[{s:"GM",v:88},{s:"GT",v:85}]], clearance:"none", term:"36 mo",  ait:"Ft. Lee",         ait_len:"10 Weeks",  opat:3, pulhes:"222222", vision:"Normal", acasp:true,  notes:"Finger dexterity. Not allergic to petroleum. Combination: 88 GM AND 85 GT.", civilian:"Generator tech, power systems, electrician" },
+{ code:"91E",  title:"Allied Trade Specialist",                cmf:"Ordnance",           reqs:{GM:98},  combo:[[{s:"GM",v:88},{s:"GT",v:95}]], clearance:"none", term:"60 mo",  ait:"Ft. Lee",         ait_len:"20 Weeks",  opat:3, pulhes:"222222", vision:"Normal", acasp:true,  notes:"Near and distant vision correctable to 20/30 each eye. Finger dexterity. Combination: 88 GM AND 95 GT.", civilian:"Machinist, metalworker, manufacturing, welding" },
+{ code:"91F",  title:"Small Arms/Artillery Repairer",          cmf:"Ordnance",           reqs:{GM:93},  combo:[[{s:"GM",v:87},{s:"GT",v:85}]], clearance:"none", term:"36 mo",  ait:"Ft. Lee",         ait_len:"16 Weeks",  opat:3, pulhes:"222221", vision:"Normal", acasp:true,  notes:"Finger dexterity. Not allergic to petroleum. Combination: 87 GM AND 85 GT.", civilian:"Gunsmith, armorer, ATF path, firearm tech" },
+{ code:"91H",  title:"Track Vehicle Repairer",                 cmf:"Ordnance",           reqs:{MM:90},  combo:[[{s:"MM",v:85},{s:"GT",v:85}]], clearance:"none", term:"36 mo",  ait:"Ft. Lee",         ait_len:"11 Weeks",  opat:3, pulhes:"222232", vision:"Normal", acasp:true,  notes:"Finger dexterity. Not allergic to petroleum. Combination: 85 MM AND 85 GT.", civilian:"Tracked vehicle mechanic, heavy equipment tech" },
+{ code:"91J",  title:"Quartermaster & Chemical Equipment Repairer",cmf:"Ordnance",       reqs:{MM:87},  combo:[[{s:"MM",v:82},{s:"GT",v:85}]], clearance:"none", term:"36 mo",  ait:"Ft. Lee",         ait_len:"11 Weeks",  opat:3, pulhes:"222222", vision:"Normal", acasp:true,  notes:"Finger dexterity. Not allergic to petroleum. Combination: 82 MM AND 85 GT.", civilian:"Equipment repair tech, field maintenance" },
+{ code:"91L",  title:"Construction Equipment Repairer",        cmf:"Ordnance",           reqs:{MM:87},  combo:[[{s:"MM",v:82},{s:"GT",v:85}]], clearance:"none", term:"36 mo",  ait:"Ft. Leonard Wood", ait_len:"9 Weeks",   opat:3, pulhes:"222222", vision:"Normal", acasp:true,  notes:"Finger dexterity. Not allergic to refrigerant/petroleum. Combination: 82 MM AND 85 GT.", civilian:"Heavy equipment mechanic, construction" },
+{ code:"91M",  title:"Bradley Fighting Vehicle System Maintainer",cmf:"Ordnance",        reqs:{MM:99},  combo:[[{s:"MM",v:88},{s:"GT",v:90}]], clearance:"none", term:"36 mo",  ait:"Ft. Benning",     ait_len:"13 Weeks",  opat:3, pulhes:"222222", vision:"Normal", acasp:true,  notes:"Finger dexterity. Not allergic to petroleum. Combination: 88 MM AND 90 GT.", civilian:"Tracked vehicle technician, armored vehicle mechanic" },
+{ code:"91P",  title:"Self-Propelled Artillery Systems Maintainer",cmf:"Ordnance",       reqs:{MM:99},  combo:[[{s:"MM",v:88},{s:"GT",v:90}]], clearance:"none", term:"36 mo",  ait:"Ft. Lee",         ait_len:"15 Weeks",  opat:3, pulhes:"222222", vision:"Normal", acasp:true,  notes:"Finger dexterity. Not allergic to petroleum. Combination: 88 MM AND 90 GT.", civilian:"Artillery systems tech, tracked vehicle mechanic" },
+{ code:"91S",  title:"Stryker Systems Maintainer",             cmf:"Ordnance",           reqs:{MM:92},  combo:[[{s:"MM",v:87},{s:"GT",v:85}]], clearance:"none", term:"36 mo",  ait:"Ft. Lee",         ait_len:"18 Weeks",  opat:3, pulhes:"222222", vision:"Normal", acasp:true,  notes:"Finger dexterity. Not allergic to refrigerant/petroleum. Combination: 87 MM AND 85 GT.", civilian:"Armored vehicle mechanic, Stryker specialist" },
+// QUARTERMASTER
+{ code:"92A",  title:"Automated Logistical Specialist",        cmf:"Quartermaster",      reqs:{CL:90},  combo:null,  clearance:"none", term:"48 mo",  ait:"Ft. Lee",               ait_len:"10 Weeks",   opat:2, pulhes:"222222", vision:"None",   acasp:true,  notes:"ACASP: Proponent ETP required. 6 weeks B Module Plant Maint, C Module Warehouse.", civilian:"Inventory/supply chain specialist, warehouse manager, purchasing" },
+{ code:"92F",  title:"Petroleum Supply Specialist",            cmf:"Quartermaster",      reqs:{CL:86,OF:85}, combo:null, clearance:"none", term:"36 mo", ait:"Ft. Lee",             ait_len:"11 Weeks",   opat:2, pulhes:"211221", vision:"Normal", acasp:true,  notes:"Valid driver's license to ship. ACASP: Proponent ETP required, 3 weeks tactical equipment training.", civilian:"Petroleum tech, logistics, fuel distribution, pipeline" },
+{ code:"92G",  title:"Culinary Specialist",                    cmf:"Quartermaster",      reqs:{OF:85},  combo:null,  clearance:"none", term:"36 mo",  ait:"Ft. Lee",               ait_len:"9 Weeks",    opat:2, pulhes:"222332", vision:"Normal", acasp:true,  notes:"Color vision ETP for R/G must go to proponent. ACASP: RA only, 92G Phase 2 AIT. Proponent ETP required.", civilian:"Chef, culinary arts, food service management" },
+{ code:"92L",  title:"Petroleum Laboratory Specialist",        cmf:"Quartermaster",      reqs:{ST:91},  combo:null,  clearance:"none", term:"48 mo",  ait:"Ft. Lee",               ait_len:"8 Weeks",    opat:3, pulhes:"211221", vision:"Normal", acasp:true,  notes:"ACASP: RA only, 1 week PQAS-E equipment training, Phase II AIT. Proponent ETP required.", civilian:"Lab technician, quality control, petroleum analyst" },
+{ code:"92M",  title:"Fatality Management Specialist",          cmf:"Quartermaster",      reqs:{GM:84},  combo:null,  clearance:"none", term:"48 mo",  ait:"Ft. Lee",               ait_len:"8 Weeks",    opat:1, pulhes:"222221", vision:"Normal", acasp:false, notes:"No aversion to handling needles, human tissues, blood, skeletal or decomposed remains.", civilian:"Funeral director path, mortician licensing credit possible" },
+{ code:"92R",  title:"Parachute Rigger",                       cmf:"Quartermaster",      reqs:{GM:78,CO:77}, combo:null, clearance:"none", term:"36 mo", ait:"Ft. Jackson 3wk + Ft. Benning 2wk + Ft. Lee 14wk", ait_len:"19 Weeks", opat:2, pulhes:"111121", vision:"R/G", acasp:false, notes:"Must meet airborne physical requirements. Must complete basic airborne course. Min weight 110 lbs. Must complete 5-mile run in 44-45 min prior to airborne training.", civilian:"FAA Senior Rigger cert available, parachute rigger, skydiving industry" },
+{ code:"92S",  title:"Shower & Laundry Specialist",            cmf:"Quartermaster",      reqs:{GM:84},  combo:null,  clearance:"none", term:"36 mo",  ait:"Ft. Lee",               ait_len:"7 Weeks",    opat:2, pulhes:"222222", vision:"None",   acasp:false, notes:"USAR ONLY.", civilian:"Laundry/textile tech, field logistics" },
+{ code:"92W",  title:"Water Treatment Specialist",             cmf:"Quartermaster",      reqs:{GM:88},  combo:null,  clearance:"none", term:"36 mo",  ait:"Ft. Lee",               ait_len:"13 Weeks",   opat:2, pulhes:"211221", vision:"Normal", acasp:true,  notes:"ACASP: 3 weeks tactical equipment training. State water treatment license path.", civilian:"Water treatment operator — state license available, utilities" },
+{ code:"92Y",  title:"Unit Supply Specialist",                 cmf:"Quartermaster",      reqs:{CL:90},  combo:null,  clearance:"none", term:"36 mo",  ait:"Ft. Lee",               ait_len:"9 Weeks",    opat:3, pulhes:"222222", vision:"Normal", acasp:true,  notes:"No instances of conduct reflecting adversely on integrity within 5 yrs. No federal/state conviction. No court-martial. This disqualification NOT waiverable.", civilian:"Supply chain, logistics coordinator, purchasing agent" },
+// ELECTRONICS (94 series)
+{ code:"94A",  title:"Land Combat Electronic Missile System Repairer",cmf:"Ordnance",   reqs:{EL:102}, combo:[[{s:"EL",v:97},{s:"ST",v:90}]], clearance:"secret",term:"36 mo", ait:"Ft. Lee",          ait_len:"12 Weeks",  opat:3, pulhes:"222221", vision:"Normal", acasp:true,  notes:"Secret/US citizen. Finger dexterity both hands. ACASP: Proponent ETP required.", civilian:"Missile systems tech, electronics tech, defense contractor" },
+{ code:"94D",  title:"Air Traffic Control Equipment Repairer", cmf:"Ordnance",           reqs:{EL:102}, combo:[[{s:"EL",v:97},{s:"ST",v:90}]], clearance:"secret",term:"48 mo", ait:"Ft. Gordon",       ait_len:"27 Weeks",  opat:3, pulhes:"211221", vision:"None",   acasp:true,  notes:"Secret/US citizen. No alcohol or drug abuse. Combination: 97 EL AND 90 ST. ACASP: Proponent ETP required.", civilian:"ATC equipment tech, electronics technician" },
+{ code:"94E",  title:"Radio Equipment Repairer",               cmf:"Ordnance",           reqs:{EL:102}, combo:[[{s:"EL",v:97},{s:"ST",v:90}]], clearance:"secret",term:"48 mo", ait:"Ft. Gordon",       ait_len:"21 Weeks",  opat:3, pulhes:"222221", vision:"Normal", acasp:true,  notes:"Secret/US citizen. ACASP: Proponent ETP required.", civilian:"Radio/communications technician, defense contractor" },
+{ code:"94F",  title:"Computer Detection Systems Repairer",    cmf:"Ordnance",           reqs:{EL:102}, combo:[[{s:"EL",v:97},{s:"ST",v:90}]], clearance:"secret",term:"48 mo", ait:"Ft. Gordon",       ait_len:"20 Weeks",  opat:3, pulhes:"222221", vision:"Normal", acasp:true,  notes:"Secret/US citizen. ACASP: Proponent ETP required.", civilian:"IT systems tech, computer systems repairer" },
+{ code:"94H",  title:"TMDE Maintenance Support Specialist",    cmf:"Ordnance",           reqs:{EL:107}, combo:[[{s:"EL",v:102},{s:"ST",v:90}]], clearance:"none", term:"60 mo",  ait:"Ft. Lee",         ait_len:"33 Weeks",  opat:3, pulhes:"222221", vision:"Normal", acasp:true,  notes:"1yr HS algebra and general science. ACASP: Proponent ETP required.", civilian:"Test & measurement tech, electronics calibration, defense contractor" },
+{ code:"94M",  title:"Radar Repairer",                         cmf:"Ordnance",           reqs:{EL:107}, combo:[[{s:"EL",v:102},{s:"ST",v:90}]], clearance:"secret",term:"60 mo", ait:"Ft. Sill",        ait_len:"37 Weeks",  opat:3, pulhes:"222221", vision:"Normal", acasp:true,  notes:"Secret/US citizen. HS grad. ACASP: Proponent ETP required.", civilian:"Radar technician, defense contractor, aviation" },
+{ code:"94P",  title:"MLRS Repairer",                          cmf:"Ordnance",           reqs:{EL:93},  combo:[[{s:"EL",v:88},{s:"ST",v:85}]], clearance:"secret",term:"48 mo", ait:"Ft. Lee",          ait_len:"20 Weeks",  opat:3, pulhes:"222221", vision:"Normal", acasp:true,  notes:"Secret/US citizen. No alcohol or drug abuse. Combination: 88 EL AND 85 ST. ACASP: Proponent ETP required.", civilian:"Rocket systems tech, electronics maintainer" },
+{ code:"94R",  title:"Avionic & Survivability Equipment Repairer",cmf:"Ordnance",        reqs:{EL:98},  combo:null,  clearance:"secret",term:"48 mo", ait:"Ft. Gordon",            ait_len:"17 Weeks",   opat:3, pulhes:"222221", vision:"Normal", acasp:true,  notes:"Secret. No alcohol or drug abuse. ACASP: Proponent ETP required.", civilian:"Avionics tech, survivability systems, defense contractor" },
+{ code:"94S",  title:"Patriot System Repairer",                cmf:"Ordnance",           reqs:{EL:107}, combo:[[{s:"EL",v:102},{s:"ST",v:90}]], clearance:"secret",term:"60 mo", ait:"Ft. Sill",        ait_len:"45 Weeks",  opat:3, pulhes:"222221", vision:"Normal", acasp:true,  notes:"Secret/US citizen. ACASP: Proponent ETP required.", civilian:"Patriot missile systems tech, defense contractor" },
+{ code:"94T",  title:"Short Range Air Defense System Repairer", cmf:"Ordnance",          reqs:{EL:98},  combo:[[{s:"EL",v:93},{s:"ST",v:85}]], clearance:"none", term:"48 mo",  ait:"Ft. Lee",          ait_len:"17 Weeks",  opat:3, pulhes:"222221", vision:"Normal", acasp:true,  notes:"CONFIDENTIAL security eligibility. US citizen. Finger dexterity both hands. Combination: 93 EL AND 85 ST. ACASP: Proponent ETP required.", civilian:"Air defense systems tech, electronics maintainer" },
+{ code:"94Y",  title:"Automatic Test Systems Operator & Maintainer",cmf:"Ordnance",      reqs:{EL:107}, combo:[[{s:"EL",v:102},{s:"ST",v:90}]], clearance:"secret",term:"36 mo", ait:"Ft. Lee",         ait_len:"30 Weeks",  opat:3, pulhes:"222221", vision:"Normal", acasp:true,  notes:"Secret/US citizen. ACASP: Proponent ETP required.", civilian:"Automated test systems tech, quality assurance, defense contractor" },
+// MILITARY INTELLIGENCE
+{ code:"35F",  title:"Intelligence Analyst",                   cmf:"Intelligence",       reqs:{ST:101}, combo:null,  clearance:"ts",   term:"36 mo",  ait:"Ft. Huachuca",          ait_len:"17 Weeks",   opat:3, pulhes:"222221", vision:"Normal", acasp:false, notes:"Top Secret/SCI. US citizen. Never Peace Corps member. Non color/R/G ETP must go to proponent.", civilian:"Intelligence analyst, DIA, CIA, NSA, defense contractor" },
+{ code:"35G",  title:"Geospatial Intelligence Imagery Analyst", cmf:"Intelligence",      reqs:{ST:101}, combo:null,  clearance:"ts",   term:"36 mo",  ait:"Ft. Huachuca",          ait_len:"25 Weeks",   opat:3, pulhes:"222211", vision:"Normal", acasp:false, notes:"TS/SCI. US citizen. Never Peace Corps. HS grad. MCST and ARC Visual Stereoscopic Acuity test required. Normal stereoscopic acuity.", civilian:"GEOINT analyst, NGA, NRO, defense contractor" },
+{ code:"35L",  title:"Counter Intelligence Agent",             cmf:"Intelligence",       reqs:{ST:101}, combo:null,  clearance:"ts",   term:"72 mo",  ait:"Ft. Huachuca",          ait_len:"19 Weeks 4 Days", opat:3, pulhes:"222221", vision:"Normal", acasp:false, notes:"Top Secret. US citizen. Min age 20. Never Peace Corps. No court-martial or civil conviction. Valid driver's license to ship.", civilian:"FBI, CIA, DIA, federal law enforcement, polygraph examiner" },
+{ code:"35M",  title:"Human Intelligence Collector",           cmf:"Intelligence",       reqs:{ST:101}, combo:null,  clearance:"ts",   term:"60 mo",  ait:"Ft. Huachuca",          ait_len:"53 Weeks",   opat:3, pulhes:"222221", vision:"Normal", acasp:true,  notes:"USAR ONLY unless ACASP or Prior Service 35M. TS/US citizen. HS grad. DLAB 102 required (RA) — ST 124+ allows proponent ETP. Non-native speakers need ECLT 80+.", civilian:"Intelligence officer, DIA, CIA, FBI, language specialist" },
+{ code:"35N",  title:"Signals Intelligence Analyst",           cmf:"Intelligence",       reqs:{ST:112}, combo:null,  clearance:"ts",   term:"36 mo",  ait:"Ft. Goodfellow AFB",    ait_len:"28 Weeks",   opat:3, pulhes:"222221", vision:"Normal", acasp:false, notes:"TS/US citizen. Never Peace Corps. Tiered Country List screening applies. Spouse/family in foreign country may prevent TS clearance.", civilian:"NSA, SIGINT analyst, defense contractor, intelligence community" },
+{ code:"35P",  title:"SIGINT Voice Interceptor",               cmf:"Intelligence",       reqs:{ST:101}, combo:null,  clearance:"ts",   term:"60 mo",  ait:"DLI + Ft. Goodfellow",  ait_len:"53 Weeks",   opat:3, pulhes:"222121", vision:"Normal", acasp:true,  notes:"USAR ONLY unless ACASP or PS 35P. TS/US citizen. DLAB 105 required — ST 115+ allows proponent ETP. Non-native speakers need ECLT 80+.", civilian:"NSA, DLI linguist, federal interpreter, defense" },
+{ code:"35S",  title:"Signals Collector/Analyst",              cmf:"Intelligence",       reqs:{ST:101}, combo:null,  clearance:"ts",   term:"36 mo",  ait:"Ft. Goodfellow AFB",    ait_len:"14 Weeks",   opat:3, pulhes:"222121", vision:"Normal", acasp:false, notes:"TS/US citizen. Never Peace Corps. Tiered Country List screening applies. Non color/R/G ETP must go to proponent.", civilian:"SIGINT tech, defense contractor, intelligence community" },
+{ code:"35T",  title:"Military Intelligence Systems Maintainer/Integrator",cmf:"Intelligence",reqs:{ST:112},combo:null,clearance:"ts",term:"60 mo",ait:"Ft. Huachuca",           ait_len:"43 Weeks",   opat:3, pulhes:"222221", vision:"Normal", acasp:false, notes:"Top Secret/US citizen. Never Peace Corps.", civilian:"Systems integrator, IT engineer, defense contractor" },
+{ code:"35W",  title:"Military Intelligence Linguist (RA Only)",cmf:"Intelligence",      reqs:{ST:101}, combo:null,  clearance:"ts",   term:"60 mo",  ait:"DLI + Ft. Goodfellow",  ait_len:"62+ Weeks",  opat:3, pulhes:"222121", vision:"Normal", acasp:false, notes:"RA ONLY (35M/35P now enlist as 35W). TS/US citizen. DLAB 105 required (Cat 3-4 languages) — ST 115+ allows ETP. Clear English enunciation required. Non-native speakers need ECLT 80+.", civilian:"NSA, DIA linguist, federal interpreter, DLI faculty path" },
+// ── CMF 31: MILITARY POLICE ──────────────────────────────────
+{ code:"31B",  title:"Military Police",                         cmf:"Military Police",  reqs:{ST:91},  combo:null,  clearance:"secret",  term:"60 mo", ait:"OSUT Ft. Leonard Wood", ait_len:"18 Weeks", opat:2, pulhes:"222221", vision:"R/G", acasp:false, notes:"US citizen. PRP. Unexpired valid driver's license to ship. Min age 18 at AIT start. No pre-trial/civil court conviction. No diagnosed alcoholism/psychotic disorders/antisocial behavior. No objection to bearing arms. Color vision ETP for Non Color vision must go to proponent. No possession/use of narcotics per Article 134, UCMJ and AR 600-50. PERMIT AT TIME OF DEP REQUIRES ETP FROM POLICY. MUST HAVE FULL UNEXPIRED DVR LICENSE TO SHIP. USAR 31B may enlist at 17 with Split Training Option if otherwise qualified.",  civilian:"Law enforcement officer, federal agent, corrections officer, security specialist" },
+{ code:"31E",  title:"Corrections and Detention Specialist",    cmf:"Military Police",  reqs:{ST:91},  combo:null,  clearance:"secret",  term:"36 mo", ait:"Ft. Leonard Wood", ait_len:"7 Weeks", opat:3, pulhes:"222221", vision:"R/G", acasp:false, notes:"US citizen. Valid driver's license (unexpired) to ship. Min age 18 at AIT start. No possession/use of narcotics or non-narcotic drugs. Color vision ETP for Non Color vision must go to proponent. NPS applicants may enlist at 17 with Split Training Option (STO). All STO enlistees must reach 18th birthday prior to AIT. PERMIT AT TIME OF DEP REQUIRES ETP FROM POLICY. MUST HAVE FULL UNEXPIRED DVR LICENSE TO SHIP.",  civilian:"Corrections officer, detention specialist, probation officer" },
+{ code:"31K",  title:"Military Working Dog Handler",            cmf:"Military Police",  reqs:{ST:91},  combo:null,  clearance:"secret",  term:"60 mo", ait:"Ft. Leonard Wood", ait_len:"18 Weeks", opat:2, pulhes:"222221", vision:"R/G", acasp:false, notes:"US citizen. PRP. Unexpired valid driver's license to ship. Min age 18 at AIT start. No pre-trial/civil court conviction. No diagnosed alcoholism/psychotic disorders. No drug convictions. Color vision ETP for Non Color vision must go to proponent. No possession/use of narcotics per Article 134, UCMJ and AR 600-50. PERMIT AT TIME OF DEP REQUIRES ETP FROM POLICY. MUST HAVE FULL UNEXPIRED DVR LICENSE TO SHIP.",  civilian:"K-9 handler, police dog trainer, animal behavior specialist, law enforcement" },
+
+// ── CMF 25: SIGNAL (ADDITIONAL) ──────────────────────────────
+{ code:"25C",  title:"Radio Operator-Maintainer",               cmf:"Signal",  reqs:{SC:98},  combo:null,  clearance:"secret",  term:"36 mo", ait:"Ft. Gordon", ait_len:"19 Weeks", opat:1, pulhes:"112221", vision:"Normal", acasp:false, notes:"Secret clearance. Normal color vision. US citizen.",  civilian:"Radio communications technician, federal communications, satellite operations" },{ code:"25M",  title:"Multimedia Illustrator",                  cmf:"Signal",  reqs:{ST:89},  combo:null,  clearance:"none",    term:"36 mo", ait:"Ft. Meade",       ait_len:"20 Weeks", opat:1, pulhes:"222222", vision:"Normal", acasp:false, notes:"Normal color vision required. Artistic aptitude desired.",  civilian:"Graphic designer, multimedia specialist, visual artist, illustrator" },
+// ── CMF 79: RECRUITING & RETENTION ───────────────────────────
+{ code:"79R",  title:"Recruiter (Career Recruiter)",            cmf:"Recruiting",  reqs:{GT:90},  combo:null,  clearance:"secret",  term:"36 mo", ait:"Ft. Knox", ait_len:"9 Weeks", opat:1, pulhes:"222222", vision:"Normal", acasp:false, notes:"In-service reclassification only — NPS/PS applicants cannot enlist as 79R. Must be SGT-SSG. Secret clearance. Worldwide deployable. Must hold current MOS.",  civilian:"Sales professional, talent acquisition, human resources recruiter" },
+{ code:"79S",  title:"Career Counselor",                        cmf:"Recruiting",  reqs:{GT:95},  combo:null,  clearance:"secret",  term:"36 mo", ait:"Ft. Knox", ait_len:"9 Weeks", opat:1, pulhes:"222222", vision:"Normal", acasp:false, notes:"In-service reclassification only. Must be SGT-SFC. Secret clearance. Must complete ALC.",  civilian:"Human resources specialist, career development counselor, veteran services" },
+
+// ── CMF 46: PUBLIC AFFAIRS (ADDITIONAL) ──────────────────────
+{ code:"46R",  title:"Public Affairs Broadcast Specialist",     cmf:"Public Affairs", reqs:{ST:101}, combo:null, clearance:"secret", term:"36 mo", ait:"Ft. Meade", ait_len:"16 Weeks", opat:1, pulhes:"222222", vision:"Normal", acasp:false, notes:"Secret clearance. No AIT start age restriction noted in pam. HS grad or GED.",  civilian:"Broadcast journalist, video producer, reporter, media specialist" },
+
+];
+
+const _CLR={none:'None',secret:'Secret',ts:'TS/SCI'};
+const _PD={1:'Heavy',2:'Moderate',3:'Light'};
+const _ICO={
+  Infantry:'helmet',Armor:'helmet',
+  Engineer:'tools',Ordnance:'tools',Chemical:'tools',
+  'Field Artillery':'insignia','Air Defense':'insignia',
+  Aviation:'helicopter',
+  Cyber:'radio',Signal:'radio',
+  'Special Forces':'star','Special Operations':'star',Special:'star','Enlistment Option':'star',
+  'Military Police':'insignia',
+  Intelligence:'document','Public Affairs':'document',Legal:'document',
+  Finance:'pay',Contracting:'pay',
+  'Adjutant General':'soldier',Chaplain:'soldier',Recruiting:'soldier','Officer Accessions':'soldier',
+  Medical:'healthcare',
+  Transportation:'vehicle',Quartermaster:'vehicle',
+};
+
+const MOS_CATALOG=_RAW.map(m=>{
+  const wk=(m.ait_len||'').match(/\d+/);
+  return {
+    code:m.code,title:m.title,field:m.cmf,
+    icon:_ICO[m.cmf]||'star',
+    reqs:m.reqs||null,combo:m.combo||null,
+    weeks:wk?parseInt(wk[0]):null,
+    ait_len:m.ait_len||'',train:m.ait||'—',
+    term:m.term||'',acasp:m.acasp,vision:m.vision,
+    clearance:_CLR[m.clearance]||'None',
+    physicalDemand:_PD[m.opat]||'Moderate',
+    longDesc:m.notes||'',duties:[],
+    advancement:'',civilianCareers:m.civilian||'',
+  };
+});
+
+function evalMos(mos,scores){
+  if(!mos.reqs&&!mos.combo) return{...mos,reqs:[],met:false,gap:0,margin:0,unknown:true,verify:true};
+  function trySet(obj){
+    const reqs=Object.entries(obj||{}).map(([key,min])=>{
+      const have=scores[key];
+      const entered=have!==null&&have!==undefined;
+      return{key,min,have:have??0,delta:entered?have-min:null,met:entered&&have>=min,entered};
+    });
+    return{reqs,allMet:reqs.every(r=>r.met),anyUnknown:reqs.some(r=>!r.entered)};
+  }
+  const pri=trySet(mos.reqs);
+  if(pri.allMet) return{...mos,reqs:pri.reqs,met:true,gap:0,margin:Math.min(...pri.reqs.map(r=>r.delta??0)),unknown:false,verify:false};
+  if(mos.combo){
+    for(const c of mos.combo){
+      const r=trySet(Object.fromEntries(c.map(({s,v})=>[s,v])));
+      if(r.allMet) return{...mos,reqs:pri.reqs,met:true,gap:0,margin:Math.min(...r.reqs.map(x=>x.delta??0)),unknown:false,verify:false};
+    }
+  }
+  const fails=pri.reqs.filter(r=>r.entered&&!r.met);
+  const gap=fails.length>0?Math.max(...fails.map(r=>r.min-r.have)):0;
+  return{...mos,reqs:pri.reqs,met:false,gap,margin:-gap,unknown:pri.anyUnknown,verify:false};
+}
+
+function summarize(scores){
+  const evals=MOS_CATALOG.map(m=>evalMos(m,scores));
+  const qualified=evals.filter(e=>e.met);
+  const near=evals.filter(e=>!e.met&&!e.unknown&&!e.verify&&e.gap>0&&e.gap<=5).sort((a,b)=>a.gap-b.gap);
+  const fields=[...new Set(qualified.map(e=>e.field))];
+  return{evals,qualified,near,fields,total:MOS_CATALOG.length};
+}
+Object.assign(window,{LINE_SCORES,MOS_CATALOG,evalMos,summarize});
+</script>
+
+<!-- ── ATOMS ── -->
+<script type="text/babel">
+const GI={
+  display:'"GI","Arial Black",system-ui,sans-serif',
+  body:'"GI",Arial,system-ui,sans-serif',
+  mono:'"JetBrains Mono","IBM Plex Mono",ui-monospace,monospace',
+};
+const R={
+  ink:'#221F20',gold:'#FFCC01',tan:'#F1E4C7',
+  white:'#FFFFFF',green:'#2F372F',
+  g1:'#565557',g2:'#A0A0A0',tanDark:'#D9CAA8',
+  ok:'#2DAA27',amber:'#F16521',red:'#CF0000',
+  lineDark:'rgba(34,31,32,0.14)',
+};
+const CLR_COLORS={
+  None:null,
+  Secret:{color:'#4DA6FF',border:'#4DA6FF'},
+  'TS/SCI':{color:'#CF0000',border:'#CF0000'},
+};
+const PHYS_BG={Light:'#2DAA27',Moderate:'#4DA6FF',Heavy:'#F16521'};
+
+const _SVG={
+  helmet:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M4 11a8 8 0 0116 0v5H4zm0 7h16v2H4z"/></svg>`,
+  tools:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M2 2l4 1 1 4-2 2L1 5zm6 6l11 11 3-3L11 5zm10-6l4 4-3 3-4-4zM1 20l8-8 3 3-8 8z"/></svg>`,
+  insignia:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1l3 5 5-1-2 5 5 3-5 3 2 5-5-1-3 5-3-5-5 1 2-5-5-3 5-3-2-5 5 1z"/></svg>`,
+  helicopter:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M1 5h22v1H1zm10 2h1v2h7l3 5v3H8l-4-3-2-1V9h3V7h4zm-7 13h18v1H4z"/></svg>`,
+  star:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1.5l2.9 7.2 7.8.4-6 5 2 7.6L12 17.5 5.3 21.7l2-7.6-6-5 7.8-.4z"/></svg>`,
+  radio:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M4 8h16v14H4zm2 2v3h12v-3zm2 5a2 2 0 104 0 2 2 0 00-4 0zm7 0h3v1h-3zm0 2h3v1h-3zm-5-16h2v6h-2zM8 3l1-1 3 3-1 1zm7 0l-1-1-3 3 1 1z"/></svg>`,
+  soldier:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1a5 5 0 00-5 5v3h10V6a5 5 0 00-5-5zM6 11h12v3l-2 2v7h-8v-7l-2-2z"/></svg>`,
+  document:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M4 1h11l5 5v17H4zm10 1v5h5zM7 11h10v1H7zm0 3h10v1H7zm0 3h7v1H7z"/></svg>`,
+  pay:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M2 5h20v14H2zm2 2v2h16V7zm0 4v6h16v-6zm8 1a2 2 0 100 4 2 2 0 000-4z"/></svg>`,
+  healthcare:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M9 1h6v8h8v6h-8v8H9v-8H1V9h8z"/></svg>`,
+  vehicle:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M2 11l3-5h14l3 5v6h-3a2 2 0 10-4 0H9a2 2 0 10-4 0H2z"/></svg>`,
+};
+const Icon=({name,size=24,color='currentColor',style={}})=>{
+  const svg=(_SVG[name]||_SVG.star).replace('<svg ',`<svg width="${size}" height="${size}" style="display:block" `);
+  return <span aria-hidden="true" style={{display:'inline-block',width:size,height:size,flex:'0 0 auto',color,lineHeight:0,...style}} dangerouslySetInnerHTML={{__html:svg}}/>;
+};
+Object.assign(window,{GI,R,CLR_COLORS,PHYS_BG,Icon});
+</script>
+
+<!-- ── COMPONENTS + APP ── -->
+<script type="text/babel">
+
+const R_MiniBar=({have,need,met,delay=0,animated=false})=>{
+  const max=Math.max(need+25,140);
+  const pct=Math.min(100,(have/max)*100);
+  return(
+    <div style={{height:3,background:'rgba(34,31,32,0.18)',position:'relative',overflow:'hidden'}}>
+      <div style={{position:'absolute',left:0,top:0,bottom:0,width:`${pct}%`,
+        background:met?R.ok:R.amber,transformOrigin:'left center',
+        animation:animated?`r4BarGrow .5s cubic-bezier(.2,.6,0,1) ${delay}s both`:'none',
+        transition:animated?'none':'width 300ms cubic-bezier(.2,.6,0,1)'}}/>
+    </div>
+  );
+};
+
+const R_ReqsCell=({reqs})=>(
+  <div style={{display:'flex',gap:10,flexWrap:'wrap'}}>
+    {(reqs||[]).map(r=>(
+      <div key={r.key} style={{minWidth:68}}>
+        <div style={{display:'flex',justifyContent:'space-between',marginBottom:2}}>
+          <span style={{fontFamily:GI.mono,fontSize:10.5,fontWeight:700,color:r.met?R.ok:R.amber}}>{r.key}</span>
+          <span style={{fontFamily:GI.mono,fontSize:10,color:R.g1}}>{r.entered?r.have:'—'}/{r.min}</span>
+        </div>
+        <R_MiniBar have={r.have} need={r.min} met={r.met}/>
+      </div>
+    ))}
+  </div>
+);
+
+const R_ScoreInput=({ls,value,onChange})=>(
+  <div style={{padding:'8px 16px',borderBottom:`1px solid rgba(255,204,1,0.12)`}}>
+    <div style={{display:'flex',alignItems:'center',gap:8}}>
+      <span style={{width:26,fontFamily:GI.mono,fontWeight:700,fontSize:12,color:R.gold}}>{ls.key}</span>
+      <span style={{flex:1,fontFamily:GI.display,fontWeight:500,fontSize:9,
+        color:'rgba(241,228,199,0.6)',textTransform:'uppercase',letterSpacing:'0.04em',
+        whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{ls.name}</span>
+      <input type="number" value={value===null?'':value} min={0} max={150} placeholder="—"
+        onChange={e=>onChange(ls.key,e.target.value)}
+        style={{width:48,textAlign:'center',fontFamily:GI.mono,fontWeight:700,fontSize:14,
+          background:'transparent',color:R.gold,border:'none',
+          borderBottom:`1.5px solid rgba(255,204,1,0.35)`,padding:'3px 2px',outline:'none'}}
+        onFocus={e=>{e.target.style.borderBottom=`2px solid ${R.gold}`}}
+        onBlur={e=>{e.target.style.borderBottom=`1.5px solid rgba(255,204,1,0.35)`}}/>
+    </div>
+    <div style={{marginTop:5,height:2.5,background:'rgba(255,204,1,0.12)',position:'relative',overflow:'hidden'}}>
+      <div style={{position:'absolute',left:0,top:0,bottom:0,
+        width:`${Math.min(100,((value??0)/140)*100)}%`,
+        background:R.gold,transition:'width 250ms cubic-bezier(.2,.6,0,1)'}}/>
+    </div>
+  </div>
+);
+
+const R_Row=React.memo(({e,onClick,flash})=>{
+  const clrClr=CLR_COLORS[e.clearance];
+  const physBg=PHYS_BG[e.physicalDemand]||R.g1;
+  const dim=!e.met&&!e.unknown&&!e.verify;
+  const flashAnim=flash==='qual'?{animation:'r4QualFlash .7s ease-out both'}
+                 :flash==='lock'?{animation:'r4LockFlash .7s ease-out both'}:{};
+  return(
+    <button className="r4row" onClick={onClick} style={{
+      display:'grid',gridTemplateColumns:'20px 62px 1fr 76px 192px 78px 44px',
+      alignItems:'center',gap:0,width:'100%',textAlign:'left',cursor:'pointer',
+      padding:'0 12px',height:48,background:'transparent',border:'none',
+      borderBottom:`1px solid ${R.lineDark}`,
+      borderLeft:`3px solid ${e.met?R.gold:'transparent'}`,
+      opacity:dim?.5:1,...flashAnim,
+    }}>
+      <span style={{display:'flex',alignItems:'center'}}>
+        {e.met
+          ?<span style={{width:7,height:7,borderRadius:'50%',background:R.ok,display:'block'}}/>
+          :e.unknown||e.verify
+          ?<span style={{width:7,height:7,borderRadius:1,background:'rgba(255,204,1,0.35)',display:'block'}}/>
+          :<span style={{width:7,height:7,borderRadius:'50%',background:'transparent',border:`1.5px solid ${R.amber}`,display:'block'}}/>
+        }
+      </span>
+      <span style={{fontFamily:GI.display,fontWeight:700,fontSize:19,lineHeight:1,
+        color:e.met?R.ink:R.g1,letterSpacing:'-0.01em',paddingRight:8}}>{e.code}</span>
+      <div style={{minWidth:0,paddingRight:12}}>
+        <div style={{fontFamily:GI.display,fontWeight:700,fontSize:12,lineHeight:1,
+          color:e.met?R.ink:R.g1,textTransform:'uppercase',
+          whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{e.title}</div>
+        <div style={{fontFamily:GI.display,fontWeight:700,fontSize:9,
+          color:e.met?R.g1:'rgba(34,31,32,0.35)',letterSpacing:'0.05em',marginTop:3}}>{e.field.toUpperCase()}</div>
+      </div>
+      <div style={{paddingRight:12}}>
+        {e.clearance!=='None'&&clrClr&&(
+          <span style={{fontFamily:GI.display,fontWeight:700,fontSize:8,
+            letterSpacing:'0.04em',padding:'3px 5px',
+            border:`1px solid ${dim?R.lineDark:clrClr.border}`,
+            color:dim?'rgba(34,31,32,0.35)':clrClr.color,
+            whiteSpace:'nowrap',display:'inline-block'}}>{e.clearance}</span>
+        )}
+      </div>
+      <div style={{paddingRight:14}}>
+        {e.verify
+          ?<span style={{fontFamily:GI.display,fontWeight:700,fontSize:9,
+              color:'rgba(34,31,32,0.5)',letterSpacing:'0.04em'}}>VERIFY IN REQUEST</span>
+          :<R_ReqsCell reqs={e.reqs}/>
+        }
+      </div>
+      <div style={{paddingRight:8}}>
+        <span style={{fontFamily:GI.display,fontWeight:700,fontSize:8,
+          letterSpacing:'0.04em',padding:'3px 5px',
+          background:dim?'transparent':physBg,
+          color:dim?'rgba(34,31,32,0.35)':(physBg===R.amber?R.white:R.ink),
+          border:dim?`1px solid ${R.lineDark}`:'none',
+          whiteSpace:'nowrap',display:'inline-block',textTransform:'uppercase'}}>
+          {e.physicalDemand}
+        </span>
+      </div>
+      <div style={{textAlign:'right'}}>
+        {e.weeks
+          ?<><span style={{fontFamily:GI.mono,fontWeight:700,fontSize:13,color:dim?'rgba(34,31,32,0.35)':R.ink}}>{e.weeks}</span><span style={{fontFamily:GI.display,fontWeight:700,fontSize:8,color:'rgba(34,31,32,0.35)',marginLeft:2}}>WK</span></>
+          :<span style={{fontFamily:GI.display,fontWeight:700,fontSize:9,color:'rgba(34,31,32,0.25)'}}>—</span>
+        }
+      </div>
+    </button>
+  );
+});
+
+const R_Detail=React.memo(({e,onClose,visible})=>{
+  const[show,setShow]=React.useState(false);
+  React.useEffect(()=>{
+    if(visible)setShow(true);
+    else{const t=setTimeout(()=>setShow(false),260);return()=>clearTimeout(t);}
+  },[visible]);
+  if(!show||!e)return null;
+  const clrClr=CLR_COLORS[e.clearance];
+  const physBg=PHYS_BG[e.physicalDemand]||R.g1;
+  return(
+    <div onClick={onClose} style={{position:'absolute',inset:0,zIndex:60,
+      background:'rgba(34,31,32,0.72)',
+      animation:visible?'r4FadeIn 220ms ease both':'none',
+      opacity:visible?undefined:0,transition:visible?'none':'opacity 220ms ease'}}>
+      <div onClick={ev=>ev.stopPropagation()} style={{position:'absolute',left:0,right:0,bottom:0,
+        height:'90%',background:R.ink,display:'flex',flexDirection:'column',
+        animation:visible?'r4FadeUp 260ms cubic-bezier(.2,.6,0,1) both':'none'}}>
+        {/* header bar */}
+        <div style={{display:'flex',alignItems:'center',gap:14,padding:'0 32px',
+          height:56,borderBottom:`2px solid ${R.gold}`,flex:'0 0 auto'}}>
+          <button onClick={onClose} style={{fontFamily:GI.display,fontWeight:700,fontSize:11,
+            color:R.ink,background:R.gold,border:'none',padding:'8px 16px',
+            cursor:'pointer',letterSpacing:'0.05em',lineHeight:1}}>← ALL SPECIALTIES</button>
+          <span style={{fontFamily:GI.display,fontWeight:700,fontSize:11,letterSpacing:'0.08em',
+            color:e.met?R.ok:e.unknown||e.verify?R.gold:R.amber}}>
+            {e.met?'✪ QUALIFIED':e.verify?'VERIFY IN REQUEST':e.unknown?'SCORES NEEDED':`${e.gap} PTS SHORT`}
+          </span>
+          <div style={{marginLeft:'auto',display:'flex',gap:10,alignItems:'center'}}>
+            {e.clearance!=='None'&&clrClr&&(
+              <span style={{fontFamily:GI.display,fontWeight:700,fontSize:10,
+                letterSpacing:'0.06em',padding:'6px 12px',
+                border:`1.5px solid ${clrClr.border}`,color:clrClr.color}}>{e.clearance} CLEARANCE</span>
+            )}
+            <span style={{fontFamily:GI.display,fontWeight:700,fontSize:10,
+              letterSpacing:'0.06em',padding:'6px 12px',
+              background:physBg,color:physBg===R.amber?R.white:R.ink}}>
+              {(e.physicalDemand||'').toUpperCase()} DEMAND
+            </span>
+            {e.acasp&&<span style={{fontFamily:GI.display,fontWeight:700,fontSize:10,
+              letterSpacing:'0.06em',padding:'6px 12px',
+              border:`1.5px solid rgba(255,204,1,0.5)`,color:R.gold}}>ACASP</span>}
+          </div>
+        </div>
+        {/* 3-col body */}
+        <div style={{flex:1,display:'grid',gridTemplateColumns:'420px 1fr 300px',minHeight:0,overflow:'hidden'}}>
+          {/* col 1 — identity + desc */}
+          <div style={{padding:'24px 28px',borderRight:`1px solid rgba(255,204,1,0.2)`,overflow:'auto',display:'flex',flexDirection:'column',gap:18}}>
+            <div style={{display:'flex',gap:16,alignItems:'flex-start',animation:'r4FadeUp .4s cubic-bezier(.2,.6,0,1) both'}}>
+              <Icon name={e.icon||'star'} size={48} color={R.gold} style={{flex:'0 0 auto',marginTop:6}}/>
+              <div>
+                <div style={{fontFamily:GI.display,fontWeight:700,fontSize:88,lineHeight:.82,color:R.gold}}>{e.code}</div>
+                <div style={{fontFamily:GI.display,fontWeight:400,fontSize:26,lineHeight:1,textTransform:'uppercase',color:R.white,marginTop:4}}>{e.title}.</div>
+                <div style={{fontFamily:GI.display,fontWeight:700,fontSize:10,color:R.g1,letterSpacing:'0.06em',marginTop:6}}>
+                  {e.field.toUpperCase()} · {e.weeks?`${e.weeks} WEEKS`:'—'} · {e.train}
+                </div>
+              </div>
+            </div>
+            <p style={{fontFamily:GI.display,fontWeight:500,fontSize:14,lineHeight:1.65,
+              color:'rgba(241,228,199,.85)',margin:0,
+              animation:'r4FadeUp .4s cubic-bezier(.2,.6,0,1) .05s both'}}>{e.longDesc}</p>
+            {e.vision&&e.vision!=='Normal'&&e.vision!=='None'&&(
+              <div style={{padding:'12px 14px',background:'rgba(255,204,1,0.06)',
+                border:`1px solid rgba(255,204,1,0.15)`,
+                animation:'r4FadeUp .4s cubic-bezier(.2,.6,0,1) .1s both'}}>
+                <div style={{fontFamily:GI.display,fontWeight:700,fontSize:9,color:R.gold,
+                  letterSpacing:'0.08em',marginBottom:4}}>VISION REQUIREMENT</div>
+                <p style={{fontFamily:GI.display,fontWeight:500,fontSize:12.5,lineHeight:1.5,
+                  color:'rgba(241,228,199,.85)',margin:0}}>{e.vision}</p>
+              </div>
+            )}
+          </div>
+          {/* col 2 — career + training + recruiter note */}
+          <div style={{padding:'24px 28px',borderRight:`1px solid rgba(255,204,1,0.2)`,overflow:'auto',display:'flex',flexDirection:'column',gap:18}}>
+            {e.civilianCareers&&(
+              <div style={{animation:'r4FadeUp .4s cubic-bezier(.2,.6,0,1) .1s both'}}>
+                <div style={{fontFamily:GI.display,fontWeight:700,fontSize:9.5,color:R.gold,
+                  letterSpacing:'0.08em',borderBottom:`1px solid rgba(255,204,1,0.2)`,
+                  paddingBottom:8,marginBottom:10}}>CIVILIAN CAREER PATHS</div>
+                <p style={{fontFamily:GI.display,fontWeight:500,fontSize:13.5,lineHeight:1.6,
+                  color:'rgba(241,228,199,.85)',margin:0}}>{e.civilianCareers}</p>
+              </div>
+            )}
+            <div style={{animation:'r4FadeUp .4s cubic-bezier(.2,.6,0,1) .15s both'}}>
+              <div style={{fontFamily:GI.display,fontWeight:700,fontSize:9.5,color:R.gold,
+                letterSpacing:'0.08em',borderBottom:`1px solid rgba(255,204,1,0.2)`,
+                paddingBottom:8,marginBottom:12}}>TRAINING & ASSIGNMENT</div>
+              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',border:`2px solid ${R.gold}`}}>
+                {[['Duration',e.weeks?`${e.weeks} wks`:'Varies'],['Enlist Term',e.term||'—'],
+                  ['Location',e.train||'—'],['Clearance',e.clearance]].map(([k,v],i)=>(
+                  <div key={i} style={{padding:'12px 14px',
+                    borderRight:i%2===0?`2px solid ${R.gold}`:'none',
+                    borderTop:i>1?`2px solid ${R.gold}`:'none'}}>
+                    <div style={{fontFamily:GI.display,fontWeight:700,fontSize:8.5,
+                      color:'rgba(241,228,199,.5)',letterSpacing:'0.08em',textTransform:'uppercase'}}>{k}</div>
+                    <div style={{fontFamily:GI.display,fontWeight:500,fontSize:15,
+                      color:R.gold,textTransform:'uppercase',marginTop:4}}>{v}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div style={{marginTop:'auto',padding:16,background:R.green,
+              border:`1px solid rgba(255,204,1,0.2)`,
+              animation:'r4FadeUp .4s cubic-bezier(.2,.6,0,1) .2s both'}}>
+              <div style={{fontFamily:GI.display,fontWeight:700,fontSize:9,color:R.gold,
+                letterSpacing:'0.08em',marginBottom:6}}>RECRUITER NOTE</div>
+              <p style={{fontFamily:GI.display,fontWeight:500,fontSize:12.5,lineHeight:1.5,
+                color:'rgba(241,228,199,.85)',margin:0}}>
+                {e.met?`Qualifies — ${e.margin??0} pts of margin on binding composite.`
+                  :e.verify||e.unknown?`Score verification needed — check composites in REQUEST.`
+                  :`Needs ${e.gap??0} more pts on binding composite. Discuss ASVAB prep or alternatives.`}
+              </p>
+            </div>
+          </div>
+          {/* col 3 — ASVAB bars */}
+          <div style={{padding:'24px 24px',overflow:'auto'}}>
+            <div style={{fontFamily:GI.display,fontWeight:700,fontSize:9.5,color:R.gold,
+              letterSpacing:'0.08em',borderBottom:`1px solid rgba(255,204,1,0.2)`,
+              paddingBottom:8,marginBottom:16}}>ASVAB LINE SCORE REQUIREMENTS</div>
+            {(e.reqs||[]).length===0&&(
+              <p style={{fontFamily:GI.display,fontWeight:500,fontSize:13,color:R.g1}}>
+                {e.verify?'No standard score requirements — see notes above.':'No line score data.'}
+              </p>
+            )}
+            {(e.reqs||[]).map((r,i)=>(
+              <div key={r.key} style={{marginBottom:16,
+                animation:`r4FadeUp .4s cubic-bezier(.2,.6,0,1) ${.05+i*.07}s both`}}>
+                <div style={{display:'flex',justifyContent:'space-between',marginBottom:6}}>
+                  <div>
+                    <span style={{fontFamily:GI.display,fontWeight:700,fontSize:15,color:R.gold,letterSpacing:'0.02em'}}>{r.key}</span>
+                    <span style={{fontFamily:GI.display,fontWeight:700,fontSize:9,color:R.g1,letterSpacing:'0.06em',marginLeft:8}}>
+                      {(LINE_SCORES.find(l=>l.key===r.key)||{}).name?.toUpperCase()||''}
+                    </span>
+                  </div>
+                  {r.entered&&<span style={{fontFamily:GI.mono,fontWeight:700,fontSize:13,color:r.met?R.ok:R.amber}}>{r.delta>=0?'+':''}{r.delta}</span>}
+                </div>
+                <div style={{display:'flex',justifyContent:'space-between',fontFamily:GI.mono,fontSize:12,color:R.g2,marginBottom:6}}>
+                  <span>Required: <b style={{color:R.white}}>{r.min}</b></span>
+                  <span>{r.entered?<>Score: <b style={{color:r.met?R.ok:R.amber}}>{r.have}</b></>:'Not entered'}</span>
+                </div>
+                <div style={{height:5,background:'rgba(255,255,255,.1)',position:'relative',overflow:'hidden'}}>
+                  <div style={{position:'absolute',left:0,top:0,bottom:0,
+                    width:`${Math.min(100,(r.have/Math.max(r.min+25,140))*100)}%`,
+                    background:r.met?R.ok:R.amber,transformOrigin:'left center',
+                    animation:`r4BarGrow .55s cubic-bezier(.2,.6,0,1) ${.1+i*.08}s both`}}/>
+                </div>
+              </div>
+            ))}
+            {e.combo&&e.combo.length>0&&(
+              <div style={{marginTop:12,padding:'10px 12px',
+                background:'rgba(255,204,1,0.06)',border:`1px solid rgba(255,204,1,0.15)`}}>
+                <div style={{fontFamily:GI.display,fontWeight:700,fontSize:9,color:R.gold,
+                  letterSpacing:'0.07em',marginBottom:4}}>⚡ COMBO SCORE OPTION</div>
+                <p style={{fontFamily:GI.display,fontWeight:500,fontSize:11.5,
+                  color:'rgba(241,228,199,.7)',margin:0,lineHeight:1.4}}>
+                  Alternative score combination may qualify — verify in REQUEST.
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+},(p,n)=>p.visible===n.visible&&p.e?.code===n.e?.code);
+
+const R_HeadCell=({id,label,sort,setSort,style={}})=>{
+  const active=sort.key===id;
+  return(
+    <button onClick={()=>setSort(s=>({key:id,dir:s.key===id?-s.dir:1}))}
+      style={{background:'transparent',border:'none',cursor:'pointer',padding:0,textAlign:'left',
+        fontFamily:GI.display,fontWeight:700,fontSize:9,letterSpacing:'0.07em',
+        textTransform:'uppercase',color:active?R.ink:R.g1,whiteSpace:'nowrap',...style}}>
+      {label}{active?(sort.dir>0?' ↑':' ↓'):''}
+    </button>
+  );
+};
+
+const RecruiterTool=()=>{
+  const initScores=Object.fromEntries(LINE_SCORES.map(ls=>[ls.key,null]));
+  const[scores,setScores]=React.useState(initScores);
+  const[clearFilter,setClearFilter]=React.useState('All');
+  const[branchFilter,setBranchFilter]=React.useState('');
+  const[search,setSearch]=React.useState('');
+  const[sort,setSort]=React.useState({key:'status',dir:1});
+  const[selCode,setSelCode]=React.useState(null);
+  const[detailVisible,setDetailVisible]=React.useState(false);
+  const[displayCount,setDisplayCount]=React.useState(0);
+  const[flashes,setFlashes]=React.useState({});
+  const prevQual=React.useRef(new Set());
+  const countRef=React.useRef(null);
+
+  const setScore=(key,val)=>{
+    if(val===''||val===null){setScores(s=>({...s,[key]:null}));return;}
+    const n=parseInt(val,10);
+    if(isNaN(n))return;
+    setScores(s=>({...s,[key]:Math.max(0,Math.min(150,n))}));
+  };
+
+  const s=React.useMemo(()=>summarize(scores),[JSON.stringify(scores)]);
+
+  React.useEffect(()=>{
+    const target=s.qualified.length;
+    if(displayCount===target)return;
+    const dir=target>displayCount?1:-1;
+    let cur=displayCount;
+    const step=()=>{cur+=dir;setDisplayCount(cur);if(cur!==target)countRef.current=setTimeout(step,50);};
+    clearTimeout(countRef.current);
+    countRef.current=setTimeout(step,30);
+    return()=>clearTimeout(countRef.current);
+  },[s.qualified.length]);
+
+  React.useEffect(()=>{
+    const curr=new Set(s.qualified.map(e=>e.code));
+    const nf={};
+    curr.forEach(c=>{if(!prevQual.current.has(c))nf[c]='qual';});
+    prevQual.current.forEach(c=>{if(!curr.has(c))nf[c]='lock';});
+    if(Object.keys(nf).length){setFlashes(nf);setTimeout(()=>setFlashes({}),750);}
+    prevQual.current=curr;
+  },[s.qualified.length,scores]);
+
+  React.useEffect(()=>{
+    const k=ev=>{if(ev.key==='Escape'&&detailVisible)closeDetail();};
+    document.addEventListener('keydown',k);
+    return()=>document.removeEventListener('keydown',k);
+  },[detailVisible]);
+
+  const openDetail=React.useCallback(code=>{setSelCode(code);setDetailVisible(true);},[]);
+  const closeDetail=React.useCallback(()=>setDetailVisible(false),[]);
+
+  const CLR_OPTIONS=['All','None','Secret','TS/SCI'];
+  const branches=React.useMemo(()=>
+    [''].concat([...new Set(MOS_CATALOG.map(m=>m.field))].sort()),[]);
+
+  const evals=[...s.evals].sort((a,b)=>{
+    const d=sort.dir;
+    if(sort.key==='status'){
+      const rk=e=>e.met?0:e.unknown||e.verify?2:1;
+      return d*((rk(a)-rk(b))||a.code.localeCompare(b.code));
+    }
+    if(sort.key==='code')  return d*a.code.localeCompare(b.code);
+    if(sort.key==='title') return d*a.title.localeCompare(b.title);
+    if(sort.key==='field') return d*a.field.localeCompare(b.field);
+    if(sort.key==='weeks') return d*((a.weeks||0)-(b.weeks||0));
+    return 0;
+  });
+
+  const rows=evals
+    .filter(e=>clearFilter==='All'||e.clearance===clearFilter)
+    .filter(e=>!branchFilter||e.field===branchFilter)
+    .filter(e=>{
+      if(!search.trim())return true;
+      const q=search.trim().toLowerCase();
+      return e.code.toLowerCase().includes(q)||e.title.toLowerCase().includes(q)||e.field.toLowerCase().includes(q);
+    });
+
+  const selected=selCode?s.evals.find(e=>e.code===selCode):null;
+  const unlockPct=Math.round((s.qualified.length/s.total)*100);
+
+  return(
+    <div style={{width:'100vw',height:'100vh',overflow:'hidden',display:'flex',
+      flexDirection:'column',background:R.tan,fontFamily:GI.display,position:'relative'}}>
+
+      {/* HEADER */}
+      <div style={{flex:'0 0 auto',height:56,display:'flex',alignItems:'center',
+        gap:16,padding:'0 20px',background:R.ink,borderBottom:`2px solid ${R.gold}`}}>
+        <img src="../assets/logos/army-logo-reverse.svg" alt="U.S. Army" style={{height:26}}
+          onError={e=>{e.target.style.display='none';}}/>
+        <div style={{width:1,height:26,background:'rgba(255,204,1,.3)'}}/>
+        <div>
+          <div style={{fontFamily:GI.display,fontWeight:700,fontSize:13,color:R.white,
+            textTransform:'uppercase',letterSpacing:'0.06em',lineHeight:1}}>ASVAB MOS QUALIFIER</div>
+          <div style={{fontFamily:GI.display,fontWeight:700,fontSize:8,color:R.g1,
+            letterSpacing:'0.08em',marginTop:2}}>RECRUITER EDITION · DA PAM 611-21 · 4/28/2026</div>
+        </div>
+        {/* stat chips */}
+        <div style={{display:'flex',gap:8,marginLeft:16}}>
+          {[['QUALIFIED',displayCount,`/${s.total}`],['FIELDS',s.fields.length,''],['NEAR MISS',s.near.length,'']].map(([k,v,suf])=>(
+            <div key={k} style={{display:'flex',alignItems:'center',gap:5,
+              padding:'4px 10px',border:`1px solid rgba(255,204,1,.3)`}}>
+              <span style={{fontFamily:GI.display,fontWeight:700,fontSize:8,color:R.g2,letterSpacing:'0.07em'}}>{k}</span>
+              <span key={`${k}-${v}`} style={{fontFamily:GI.mono,fontWeight:700,fontSize:17,
+                color:R.gold,lineHeight:1,animation:'r4Counter .25s ease both'}}>{v}</span>
+              {suf&&<span style={{fontFamily:GI.mono,fontSize:13,color:R.g2}}>{suf}</span>}
+            </div>
+          ))}
+        </div>
+        {/* branch dropdown */}
+        <div style={{display:'flex',alignItems:'center',gap:6,marginLeft:'auto'}}>
+          <span style={{fontFamily:GI.display,fontWeight:700,fontSize:8.5,color:R.g1,
+            letterSpacing:'0.05em',whiteSpace:'nowrap'}}>BRANCH</span>
+          <select value={branchFilter} onChange={e=>setBranchFilter(e.target.value)}
+            style={{fontFamily:GI.display,fontWeight:700,fontSize:9.5,
+              background:R.ink,color:branchFilter?R.gold:R.g2,
+              border:`1.5px solid ${branchFilter?R.gold:'rgba(255,204,1,.25)'}`,
+              padding:'5px 8px',outline:'none',cursor:'pointer',letterSpacing:'0.04em',maxWidth:160}}>
+            <option value="">ALL</option>
+            {branches.filter(b=>b).map(b=>(
+              <option key={b} value={b}>{b.toUpperCase()}</option>
+            ))}
+          </select>
+        </div>
+        {/* clearance tabs */}
+        <div style={{display:'flex',gap:4}}>
+          <span style={{fontFamily:GI.display,fontWeight:700,fontSize:8.5,color:R.g1,
+            letterSpacing:'0.05em',alignSelf:'center',marginRight:4}}>CLEARANCE</span>
+          {CLR_OPTIONS.map(opt=>{
+            const active=clearFilter===opt;
+            const cc=CLR_COLORS[opt];
+            return(
+              <button key={opt} onClick={()=>setClearFilter(opt)} style={{
+                fontFamily:GI.display,fontWeight:700,fontSize:9.5,letterSpacing:'0.04em',
+                textTransform:'uppercase',cursor:'pointer',padding:'5px 10px',
+                border:`1.5px solid ${active?(cc?.border||R.gold):'rgba(255,204,1,.25)'}`,
+                background:active?(cc?.border||R.gold):'transparent',
+                color:active?(opt==='TS/SCI'?R.white:R.ink):R.g2,
+                transition:'all 160ms cubic-bezier(.2,.6,0,1)'}}>
+                {opt}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* BODY */}
+      <div style={{flex:1,display:'grid',gridTemplateColumns:'274px 1fr',minHeight:0}}>
+
+        {/* score rail */}
+        <div style={{background:R.ink,display:'flex',flexDirection:'column',
+          overflow:'hidden',borderRight:`2px solid ${R.gold}`}}>
+          <div style={{padding:'12px 16px 8px',borderBottom:`1px solid rgba(255,204,1,.12)`}}>
+            <div style={{fontFamily:GI.display,fontWeight:700,fontSize:9.5,color:R.gold,
+              letterSpacing:'0.08em'}}>LINE SCORES — PASTE TO EXPLORE</div>
+            <div style={{fontFamily:GI.display,fontWeight:500,fontSize:9,color:R.g1,marginTop:3}}>
+              Qualifying specialties update live.
+            </div>
+          </div>
+          <div style={{flex:1,overflowY:'auto'}}>
+            {LINE_SCORES.map(ls=>(
+              <R_ScoreInput key={ls.key} ls={ls} value={scores[ls.key]} onChange={setScore}/>
+            ))}
+          </div>
+          <div style={{padding:'14px 16px',borderTop:`1px solid rgba(255,204,1,.15)`,
+            background:R.green,flex:'0 0 auto'}}>
+            <div style={{fontFamily:GI.display,fontWeight:700,fontSize:8.5,color:R.tan,
+              letterSpacing:'0.07em',marginBottom:4}}>UNLOCK RATE</div>
+            <div style={{display:'flex',alignItems:'baseline',gap:6}}>
+              <span style={{fontFamily:GI.mono,fontWeight:700,fontSize:30,color:R.gold}}>{unlockPct}%</span>
+              <span style={{fontFamily:GI.display,fontSize:11,color:'rgba(241,228,199,.7)'}}>
+                {s.qualified.length} of {s.total} MOS
+              </span>
+            </div>
+            <div style={{marginTop:6,height:4,background:'rgba(255,255,255,.12)',position:'relative',overflow:'hidden'}}>
+              <div style={{position:'absolute',left:0,top:0,bottom:0,
+                width:`${(s.qualified.length/s.total)*100}%`,
+                background:R.gold,transition:'width 400ms cubic-bezier(.2,.6,0,1)'}}/>
+            </div>
+          </div>
+        </div>
+
+        {/* catalog */}
+        <div style={{display:'flex',flexDirection:'column',minHeight:0,overflow:'hidden'}}>
+          {/* search */}
+          <div style={{padding:'7px 12px',borderBottom:`1px solid ${R.lineDark}`,
+            background:R.tanDark,flex:'0 0 auto',display:'flex',alignItems:'center',gap:8}}>
+            <span style={{fontFamily:GI.mono,fontSize:14,color:R.g1,flex:'0 0 auto'}}>⌕</span>
+            <input type="text" placeholder="Search by code, title, or branch…"
+              value={search} onChange={e=>setSearch(e.target.value)}
+              style={{flex:1,fontFamily:GI.display,fontWeight:500,fontSize:12.5,
+                background:'transparent',border:'none',outline:'none',
+                color:R.ink,letterSpacing:'0.01em',padding:'2px 0'}}/>
+            {search&&<>
+              <button onClick={()=>setSearch('')} style={{fontFamily:GI.mono,fontSize:12,
+                background:'transparent',border:'none',cursor:'pointer',color:R.g1,padding:'0 4px',lineHeight:1}}>✕</button>
+              <span style={{fontFamily:GI.display,fontWeight:700,fontSize:9,
+                color:R.g1,letterSpacing:'0.05em',whiteSpace:'nowrap'}}>
+                {rows.length} RESULT{rows.length!==1?'S':''}
+              </span>
+            </>}
+          </div>
+          {/* col headers */}
+          <div style={{display:'grid',gridTemplateColumns:'20px 62px 1fr 76px 192px 78px 44px',
+            alignItems:'center',gap:0,padding:'0 12px',height:34,background:R.tanDark,
+            borderBottom:`1.5px solid rgba(34,31,32,.25)`,flex:'0 0 auto'}}>
+            <div/>
+            <R_HeadCell id="code"   label="Code"     sort={sort} setSort={setSort}/>
+            <R_HeadCell id="title"  label="Specialty" sort={sort} setSort={setSort}/>
+            <div style={{fontFamily:GI.display,fontWeight:700,fontSize:9,
+              letterSpacing:'0.07em',textTransform:'uppercase',color:R.g1}}>Clearance</div>
+            <div style={{fontFamily:GI.display,fontWeight:700,fontSize:9,
+              letterSpacing:'0.07em',textTransform:'uppercase',color:R.g1}}>Score Req.</div>
+            <R_HeadCell id="status" label="Demand" sort={sort} setSort={setSort}/>
+            <R_HeadCell id="weeks"  label="Wks" sort={sort} setSort={setSort} style={{textAlign:'right'}}/>
+          </div>
+          {/* rows */}
+          <div key={`${clearFilter}-${branchFilter}`} style={{flex:1,overflowY:'auto'}}>
+            {rows.map(e=>(
+              <R_Row key={e.code} e={e} flash={flashes[e.code]||null} onClick={()=>openDetail(e.code)}/>
+            ))}
+            {rows.length===0&&(
+              <div style={{padding:'48px 24px',textAlign:'center',fontFamily:GI.display,
+                fontWeight:700,fontSize:18,color:'rgba(34,31,32,.4)',
+                textTransform:'uppercase',letterSpacing:'0.06em'}}>
+                No specialties match this filter.
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <R_Detail e={selected} onClose={closeDetail} visible={detailVisible}/>
+    </div>
+  );
+};
+
+ReactDOM.createRoot(document.getElementById('root')).render(<RecruiterTool/>);
+</script>
+</body>
+</html>
