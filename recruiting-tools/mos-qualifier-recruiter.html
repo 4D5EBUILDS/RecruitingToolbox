@@ -35,6 +35,56 @@ input[type=number]::-webkit-outer-spin-button{opacity:.3}
 @keyframes r4FadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 @keyframes r4FadeIn{from{opacity:0}to{opacity:1}}
 @keyframes r4Counter{from{opacity:.3;transform:scale(.88)}to{opacity:1;transform:scale(1)}}
+/* ── intro glitch ── */
+@keyframes r4GlitchMain{
+  0%{clip-path:inset(0 0 100% 0);opacity:0;transform:translateX(0)}
+  3%{clip-path:none;opacity:1;transform:translateX(-5px)}
+  5%{clip-path:inset(18% 0 58% 0);transform:translateX(5px)}
+  7%{clip-path:inset(60% 0 18% 0);transform:translateX(-3px)}
+  10%{clip-path:none;transform:translateX(0)}
+  19%{transform:translateX(0);clip-path:none}
+  20%{transform:translateX(-8px) skewX(-2deg);clip-path:inset(28% 0 48% 0)}
+  22%{transform:translateX(8px) skewX(2deg);clip-path:inset(68% 0 8% 0)}
+  24%{transform:translateX(0) skewX(0);clip-path:none}
+  44%{transform:translateX(0);clip-path:none}
+  45%{transform:translateX(-4px);clip-path:inset(42% 0 33% 0)}
+  47%{transform:translateX(4px);clip-path:inset(78% 0 3% 0)}
+  50%,100%{transform:translateX(0);clip-path:none;opacity:1}
+}
+@keyframes r4GlitchRed{
+  0%,9%{opacity:0;transform:translateX(0)}
+  10%{opacity:.6;transform:translateX(-14px)}
+  13%{opacity:.45;transform:translateX(-10px)}
+  17%{opacity:0;transform:translateX(0)}
+  20%{opacity:.55;transform:translateX(-18px)}
+  23%{opacity:0;transform:translateX(0)}
+  44%{opacity:0}
+  45%{opacity:.5;transform:translateX(-12px)}
+  48%{opacity:0;transform:translateX(0)}
+  100%{opacity:0}
+}
+@keyframes r4GlitchBlue{
+  0%,9%{opacity:0;transform:translateX(0)}
+  10%{opacity:.6;transform:translateX(14px)}
+  13%{opacity:.45;transform:translateX(10px)}
+  17%{opacity:0;transform:translateX(0)}
+  20%{opacity:.55;transform:translateX(18px)}
+  23%{opacity:0;transform:translateX(0)}
+  44%{opacity:0}
+  45%{opacity:.5;transform:translateX(12px)}
+  48%{opacity:0;transform:translateX(0)}
+  100%{opacity:0}
+}
+@keyframes r4ScanSweep{from{top:-4px;opacity:.9}to{top:100%;opacity:.1}}
+@keyframes r4NoiseAnim{
+  0%{background-position:0 0}11%{background-position:-15px -8px}
+  22%{background-position:8px -15px}33%{background-position:-22px 8px}
+  44%{background-position:15px 22px}55%{background-position:-8px 15px}
+  66%{background-position:22px -22px}77%{background-position:-15px 15px}
+  88%{background-position:8px -8px}100%{background-position:-22px -15px}
+}
+@keyframes r4TextGlitch{0%,100%{transform:translateX(0)}30%{transform:translateX(-4px)}70%{transform:translateX(4px)}}
+@keyframes r4IntroFlash{0%{opacity:0}2%{opacity:.2}5%{opacity:0}100%{opacity:0}}
 .r4row{transition:background 180ms ease}
 .r4row:hover{background:rgba(255,204,1,.08)!important}
 .r4row:active{background:rgba(255,204,1,.15)!important}
@@ -692,6 +742,150 @@ const R_HeadCell=({id,label,sort,setSort,style={}})=>{
   );
 };
 
+/* ─────────────────────────────────────────────────────────────────
+   INTRO SPLASH
+   ───────────────────────────────────────────────────────────────── */
+const R_Intro=({onDone})=>{
+  const[exiting,setExiting]=React.useState(false);
+  const[textPhase,setTextPhase]=React.useState(0); // 0=hidden 1=scrambling 2=settled
+  const[displayText,setDisplayText]=React.useState('');
+  const FINAL='U.S. ARMY';
+  const GLYPHS='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#%&';
+
+  // generate noise texture once
+  const noiseUrl=React.useMemo(()=>{
+    try{
+      const c=document.createElement('canvas');c.width=c.height=96;
+      const ctx=c.getContext('2d'),id=ctx.createImageData(96,96);
+      for(let i=0;i<id.data.length;i+=4){
+        const v=Math.random()*255|0;
+        id.data[i]=id.data[i+1]=id.data[i+2]=v;id.data[i+3]=255;
+      }
+      ctx.putImageData(id,0,0);return c.toDataURL();
+    }catch{return '';}
+  },[]);
+
+  const exit=React.useCallback(()=>setExiting(true),[]);
+
+  // when exiting, wait for CSS transition then call onDone
+  React.useEffect(()=>{
+    if(!exiting) return;
+    const t=setTimeout(onDone,470);
+    return()=>clearTimeout(t);
+  },[exiting,onDone]);
+
+  // main timeline
+  React.useEffect(()=>{
+    let scramble=null;
+    // text scramble starts at 1.3s
+    const t1=setTimeout(()=>{
+      setTextPhase(1);
+      let frame=0,total=22;
+      scramble=setInterval(()=>{
+        frame++;
+        if(frame>=total){setDisplayText(FINAL);setTextPhase(2);clearInterval(scramble);}
+        else{
+          const lock=Math.floor((frame/total)*FINAL.length);
+          setDisplayText(FINAL.split('').map((ch,i)=>
+            (ch===' '||ch==='.')?ch:(i<lock?ch:GLYPHS[Math.random()*GLYPHS.length|0])
+          ).join(''));
+        }
+      },42);
+    },1300);
+    // auto-exit at 3.1s
+    const t2=setTimeout(()=>setExiting(true),3100);
+    return()=>{clearTimeout(t1);clearTimeout(t2);if(scramble)clearInterval(scramble);};
+  },[]);
+
+  const dur='2.2s';
+  return(
+    <div onClick={exit} style={{
+      position:'fixed',inset:0,zIndex:9999,background:'#000',
+      display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',
+      cursor:'pointer',overflow:'hidden',userSelect:'none',
+      opacity:exiting?0:1,transition:exiting?'opacity 0.45s ease-in':'none'
+    }}>
+
+      {/* animated noise */}
+      {noiseUrl&&(
+        <div style={{position:'absolute',inset:0,
+          backgroundImage:`url(${noiseUrl})`,backgroundRepeat:'repeat',
+          opacity:.04,animation:'r4NoiseAnim 0.45s steps(9) infinite',
+          pointerEvents:'none',zIndex:1}}/>
+      )}
+
+      {/* CRT scanlines */}
+      <div style={{position:'absolute',inset:0,
+        background:'repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.2) 2px,rgba(0,0,0,.2) 4px)',
+        pointerEvents:'none',zIndex:2}}/>
+
+      {/* vignette */}
+      <div style={{position:'absolute',inset:0,
+        background:'radial-gradient(ellipse at 50% 50%,transparent 35%,rgba(0,0,0,.8) 100%)',
+        pointerEvents:'none',zIndex:2}}/>
+
+      {/* horizontal scan-sweep */}
+      <div style={{position:'absolute',left:0,right:0,height:3,
+        background:'linear-gradient(90deg,transparent,rgba(255,204,1,.45) 25%,rgba(255,204,1,.85) 50%,rgba(255,204,1,.45) 75%,transparent)',
+        animation:`r4ScanSweep 1.55s linear forwards`,
+        pointerEvents:'none',zIndex:3}}/>
+
+      {/* white flash burst on logo slam */}
+      <div style={{position:'absolute',inset:0,background:'#fff',
+        animation:`r4IntroFlash ${dur} linear forwards`,
+        pointerEvents:'none',zIndex:3}}/>
+
+      {/* ── logo cluster ── */}
+      <div style={{position:'relative',width:220,height:220,zIndex:4}}>
+
+        {/* red chromatic ghost */}
+        <img src="../assets/logos/army-logo-reverse.svg"
+          onError={e=>e.currentTarget.style.display='none'}
+          style={{position:'absolute',inset:0,width:'100%',height:'100%',
+            filter:'sepia(1) saturate(14) hue-rotate(300deg) brightness(2)',
+            mixBlendMode:'screen',opacity:0,
+            animation:`r4GlitchRed ${dur} linear forwards`}}/>
+
+        {/* blue chromatic ghost */}
+        <img src="../assets/logos/army-logo-reverse.svg"
+          onError={e=>e.currentTarget.style.display='none'}
+          style={{position:'absolute',inset:0,width:'100%',height:'100%',
+            filter:'sepia(1) saturate(14) hue-rotate(158deg) brightness(2)',
+            mixBlendMode:'screen',opacity:0,
+            animation:`r4GlitchBlue ${dur} linear forwards`}}/>
+
+        {/* main logo — white, clip-path glitch */}
+        <img src="../assets/logos/army-logo-reverse.svg"
+          onError={e=>e.currentTarget.style.display='none'}
+          style={{position:'absolute',inset:0,width:'100%',height:'100%',
+            filter:'brightness(20) saturate(0)',
+            animation:`r4GlitchMain ${dur} linear forwards`}}/>
+      </div>
+
+      {/* U.S. ARMY heading */}
+      <div style={{
+        fontFamily:'"GI",monospace',fontWeight:750,fontSize:48,
+        letterSpacing:'0.22em',marginTop:20,zIndex:4,
+        minWidth:340,textAlign:'center',
+        color:textPhase===2?'#FFCC01':'rgba(255,255,255,.92)',
+        textShadow:textPhase===2?'0 0 40px rgba(255,204,1,.4)':'none',
+        transition:textPhase===2?'color .35s ease,text-shadow .35s ease':'none',
+        animation:textPhase===1?'r4TextGlitch .28s linear infinite':'none',
+        opacity:textPhase>0?1:0
+      }}>{displayText||' '}</div>
+
+      {/* click-to-skip hint */}
+      <div style={{
+        position:'absolute',bottom:28,zIndex:4,
+        fontFamily:'"GI",monospace',fontWeight:530,fontSize:9.5,
+        color:'rgba(255,255,255,.2)',letterSpacing:'0.14em',
+        animation:'r4FadeIn .5s ease .4s both'
+      }}>CLICK TO SKIP</div>
+
+    </div>
+  );
+};
+
 const RecruiterTool=()=>{
   const initScores=Object.fromEntries(LINE_SCORES.map(ls=>[ls.key,null]));
   const[scores,setScores]=React.useState(initScores);
@@ -929,7 +1123,12 @@ const RecruiterTool=()=>{
   );
 };
 
-ReactDOM.createRoot(document.getElementById('root')).render(<RecruiterTool/>);
+const App=()=>{
+  const[intro,setIntro]=React.useState(true);
+  if(intro) return <R_Intro onDone={()=>setIntro(false)}/>;
+  return <RecruiterTool/>;
+};
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
 </script>
 </body>
 </html>
