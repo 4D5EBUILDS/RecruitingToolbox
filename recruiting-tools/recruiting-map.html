@@ -2119,63 +2119,96 @@ const ZIP_PRI={'68503':'hot','68504':'hot','68507':'hot','68521':'hot',
                '68502':'warm','68505':'warm','68506':'warm','68510':'warm',
                '68516':'warm','68517':'warm','68462':'warm'};
 
+const GEOCODING_KEY = 'YOUR_KEY_HERE';
+
+async function geocodeAddress(address) {
+  const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${GEOCODING_KEY}`;
+  const res = await fetch(url);
+  const data = await res.json();
+  if (data.status === 'OK') {
+    return { lat: data.results[0].geometry.location.lat, lng: data.results[0].geometry.location.lng };
+  }
+  return null;
+}
+
+async function geocodeAll(onProgress) {
+  const all = [...SCHOOLS, ...UNIS, ...POLICE, ...COURTS, ...TACOBELL];
+  let done = 0;
+  for (const item of all) {
+    const cacheKey = `geocache_${item.address}`;
+    const cached = localStorage.getItem(cacheKey);
+    if (cached) {
+      const c = JSON.parse(cached);
+      item.lat = c.lat; item.lng = c.lng;
+    } else if (GEOCODING_KEY !== 'YOUR_KEY_HERE') {
+      const coords = await geocodeAddress(item.address);
+      if (coords) {
+        item.lat = coords.lat; item.lng = coords.lng;
+        localStorage.setItem(cacheKey, JSON.stringify(coords));
+      }
+    }
+    done++;
+    if (onProgress) onProgress(done, all.length);
+  }
+}
+
 /* ── LOCATION DATA ── */
 const STATION={id:"stn",name:"USAREC Recruiting Station Lincoln",address:"505 N 27th St, Lincoln, NE 68503",lat:40.8145,lng:-96.6835,rsid:"4D5E",commander:"SFC David Merrick"};
 
 const SCHOOLS=[
-  {id:"s1", name:"Lincoln High School",           address:"2229 J St",          city:"Lincoln",zip:"68510",lat:40.8067,lng:-96.6886,enrollment:2150,gradeRange:"9-12",
+  {id:"s1", name:"Lincoln High School",           address:"2229 J St, Lincoln, NE 68510",          city:"Lincoln",zip:"68510",enrollment:2150,gradeRange:"9-12",
    principal:"Mark Larson",counselor:"Renee McClure",counselorPhone:"402-436-1301",counselorEmail:"rmcclure@lps.org",recruitingContact:""},
-  {id:"s2", name:"Lincoln Northeast High School", address:"2635 N 63rd St",     city:"Lincoln",zip:"68507",lat:40.8391,lng:-96.6353,enrollment:1850,gradeRange:"9-12",
+  {id:"s2", name:"Lincoln Northeast High School", address:"2635 N 63rd St, Lincoln, NE 68507",     city:"Lincoln",zip:"68507",enrollment:1850,gradeRange:"9-12",
    principal:"Liz Miller",counselor:"Kelsey Dady",counselorPhone:"402-436-1303",counselorEmail:"kdady@lps.org",recruitingContact:""},
-  {id:"s3", name:"Lincoln East High School",      address:"1000 S 70th St",     city:"Lincoln",zip:"68510",lat:40.8036,lng:-96.6222,enrollment:2050,gradeRange:"9-12",
+  {id:"s3", name:"Lincoln East High School",      address:"1000 S 70th St, Lincoln, NE 68510",     city:"Lincoln",zip:"68510",enrollment:2050,gradeRange:"9-12",
    principal:"Casey Fries",counselor:"Guidance Dept",counselorPhone:"402-436-1302",counselorEmail:"lehs-counseling@lps.org",recruitingContact:""},
-  {id:"s4", name:"Lincoln Southeast High School", address:"2930 S 37th St",     city:"Lincoln",zip:"68506",lat:40.7828,lng:-96.6669,enrollment:2200,gradeRange:"9-12",
+  {id:"s4", name:"Lincoln Southeast High School", address:"2930 S 37th St, Lincoln, NE 68506",     city:"Lincoln",zip:"68506",enrollment:2200,gradeRange:"9-12",
    principal:"Tanner Penrod",counselor:"Kendra Parson",counselorPhone:"402-436-1304",counselorEmail:"kparson@lps.org",recruitingContact:""},
-  {id:"s5", name:"Lincoln Southwest High School", address:"7001 S 14th St",     city:"Lincoln",zip:"68512",lat:40.7397,lng:-96.7042,enrollment:2000,gradeRange:"9-12",
+  {id:"s5", name:"Lincoln Southwest High School", address:"7001 S 14th St, Lincoln, NE 68512",     city:"Lincoln",zip:"68512",enrollment:2000,gradeRange:"9-12",
    principal:"John Matzen",counselor:"Tim Ernst",counselorPhone:"402-436-1306",counselorEmail:"ternst@lps.org",recruitingContact:""},
-  {id:"s6", name:"Lincoln North Star High School",address:"5801 N 33rd St",     city:"Lincoln",zip:"68504",lat:40.8694,lng:-96.6761,enrollment:2100,gradeRange:"9-12",
+  {id:"s6", name:"Lincoln North Star High School",address:"5801 N 33rd St, Lincoln, NE 68504",     city:"Lincoln",zip:"68504",enrollment:2100,gradeRange:"9-12",
    principal:"Megan Kroll",counselor:"Guidance Dept",counselorPhone:"402-436-1305",counselorEmail:"lnscounseling@lps.org",recruitingContact:""},
-  {id:"s7", name:"Pius X High School",            address:"6000 A St",          city:"Lincoln",zip:"68510",lat:40.7994,lng:-96.6389,enrollment:900, gradeRange:"9-12",
+  {id:"s7", name:"Pius X High School",            address:"6000 A St, Lincoln, NE 68510",          city:"Lincoln",zip:"68510",enrollment:900, gradeRange:"9-12",
    principal:"Jennifer Tran",counselor:"Jess Psota",counselorPhone:"402-488-0931",counselorEmail:"jess.psota@piusx.net",recruitingContact:""},
-  {id:"s8", name:"Lincoln Christian School",      address:"5801 S 84th St",     city:"Lincoln",zip:"68516",lat:40.7542,lng:-96.6092,enrollment:480, gradeRange:"K-12",
+  {id:"s8", name:"Lincoln Christian School",      address:"5801 S 84th St, Lincoln, NE 68516",     city:"Lincoln",zip:"68516",enrollment:480, gradeRange:"K-12",
    principal:"Brent Ailes",counselor:"Anita Ford",counselorPhone:"402-488-8888",counselorEmail:"aford@lincolnchristian.org",recruitingContact:""},
-  {id:"s9", name:"Parkview Christian School",     address:"4400 N 1st St",      city:"Lincoln",zip:"68521",lat:40.8544,lng:-96.7191,enrollment:320, gradeRange:"K-12",
+  {id:"s9", name:"Parkview Christian School",     address:"4400 N 1st St, Lincoln, NE 68521",      city:"Lincoln",zip:"68521",enrollment:320, gradeRange:"K-12",
    principal:"Tracey Hagan",counselor:"Mrs. Niehus",counselorPhone:"402-474-5820",counselorEmail:"office@parkviewchristianschool.org",recruitingContact:""},
-  {id:"s10",name:"Waverly High School",           address:"13401 Amberly Rd",   city:"Waverly",zip:"68462",lat:40.9053,lng:-96.5376,enrollment:600, gradeRange:"9-12",
+  {id:"s10",name:"Waverly High School",           address:"13401 Amberly Rd, Waverly, NE 68462",   city:"Waverly",zip:"68462",enrollment:600, gradeRange:"9-12",
    principal:"Jordan Cudney",counselor:"Jason Boitnott",counselorPhone:"402-786-2765",counselorEmail:"jason.boitnott@district145.org",recruitingContact:""},
-  {id:"s11",name:"Raymond Central High School",   address:"1800 W Agnew Rd",    city:"Raymond",zip:"68428",lat:40.9380,lng:-96.7910,enrollment:280, gradeRange:"9-12",
+  {id:"s11",name:"Raymond Central High School",   address:"1800 W Agnew Rd, Raymond, NE 68428",    city:"Raymond",zip:"68428",enrollment:280, gradeRange:"9-12",
    principal:"Troy Lurz",counselor:"Celia Newman",counselorPhone:"402-785-2685",counselorEmail:"cnewman@rcentral.org",recruitingContact:""},
-  {id:"s12",name:"Palmyra Jr-Sr High School",     address:"425 F St",           city:"Palmyra", zip:"68418",lat:40.7039,lng:-96.3938,enrollment:120, gradeRange:"9-12",
+  {id:"s12",name:"Palmyra Jr-Sr High School",     address:"425 F St, Palmyra, NE 68418",           city:"Palmyra", zip:"68418",enrollment:120, gradeRange:"9-12",
    principal:"Heath Johnson",counselor:"Kori Vodicka",counselorPhone:"402-780-5327",counselorEmail:"vodicka.kor@districtor1.net",recruitingContact:""},
-  {id:"s13",name:"Crete High School",             address:"1750 Iris Ave",      city:"Crete",  zip:"68333",lat:40.6305,lng:-96.9535,enrollment:350, gradeRange:"9-12",
+  {id:"s13",name:"Crete High School",             address:"1750 Iris Ave, Crete, NE 68333",        city:"Crete",  zip:"68333",enrollment:350, gradeRange:"9-12",
    principal:"Cory Bohling",counselor:"Dawn Draeger",counselorPhone:"402-826-5811",counselorEmail:"dawn.draeger@creteschools.org",recruitingContact:""},
 ];
 
 const UNIS=[
-  {id:"u1",name:"University of Nebraska–Lincoln",       address:"1400 R St",          city:"Lincoln",zip:"68588",lat:40.8175,lng:-96.7035,type:"Public University",  enrollment:25000,rotcProgram:true,rotcContact:"Steven McCoy (402-472-5885, smccoy18@nebraska.edu)",recruitingContact:"Admissions: Landon Ellison (402-472-2023, lellison5@unl.edu)"},
-  {id:"u2",name:"Nebraska Wesleyan University",         address:"5000 Saint Paul Ave", city:"Lincoln",zip:"68504",lat:40.8388,lng:-96.6509,type:"Private University", enrollment:2100, rotcProgram:false,rotcContact:"N/A",recruitingContact:"Admissions: Drew Carr (402-465-2143, admissions@nebrwesleyan.edu)"},
-  {id:"u3",name:"Southeast Community College–Lincoln",  address:"8800 O St",           city:"Lincoln",zip:"68520",lat:40.8155,lng:-96.6025,type:"Community College",  enrollment:12000,rotcProgram:false,rotcContact:"N/A",recruitingContact:"Admissions: Kat Kreikemeier (402-437-2600, admissions@southeast.edu)"},
-  {id:"u4",name:"Union Adventist University",           address:"3800 S 48th St",       city:"Lincoln",zip:"68506",lat:40.7732,lng:-96.6537,type:"Private College",    enrollment:850,  rotcProgram:false,rotcContact:"N/A",recruitingContact:"VP Enrollment: Ryan Teller (402-486-2504, enroll@uau.edu)"},
+  {id:"u1",name:"University of Nebraska–Lincoln",       address:"1400 R St, Lincoln, NE 68588",          city:"Lincoln",zip:"68588",type:"Public University",  enrollment:25000,rotcProgram:true,rotcContact:"Steven McCoy (402-472-5885, smccoy18@nebraska.edu)",recruitingContact:"Admissions: Landon Ellison (402-472-2023, lellison5@unl.edu)"},
+  {id:"u2",name:"Nebraska Wesleyan University",         address:"5000 Saint Paul Ave, Lincoln, NE 68504", city:"Lincoln",zip:"68504",type:"Private University", enrollment:2100, rotcProgram:false,rotcContact:"N/A",recruitingContact:"Admissions: Drew Carr (402-465-2143, admissions@nebrwesleyan.edu)"},
+  {id:"u3",name:"Southeast Community College–Lincoln",  address:"8800 O St, Lincoln, NE 68520",           city:"Lincoln",zip:"68520",type:"Community College",  enrollment:12000,rotcProgram:false,rotcContact:"N/A",recruitingContact:"Admissions: Kat Kreikemeier (402-437-2600, admissions@southeast.edu)"},
+  {id:"u4",name:"Union Adventist University",           address:"3800 S 48th St, Lincoln, NE 68506",       city:"Lincoln",zip:"68506",type:"Private College",    enrollment:850,  rotcProgram:false,rotcContact:"N/A",recruitingContact:"VP Enrollment: Ryan Teller (402-486-2504, enroll@uau.edu)"},
 ];
 
 const POLICE=[
-  {id:"p1",name:"Lincoln Police Department HQ",      address:"575 S 10th St, Lincoln, NE 68508",     zip:"68508",lat:40.8081,lng:-96.7078,jurisdiction:"City of Lincoln",   chief:"Chief Michon Morrow",recruitingContact:"LPD Records / (402) 441-7210"},
-  {id:"p2",name:"Lancaster County Sheriff's Office", address:"575 S 10th St, Lincoln, NE 68508",     zip:"68508",lat:40.8081,lng:-96.7074,jurisdiction:"Lancaster County",  chief:"Sheriff Terry Wagner",recruitingContact:"LSO Records / (402) 441-6500"},
-  {id:"p3",name:"UNL Police Department",             address:"300 N 17th St, Lincoln, NE 68588",     zip:"68588",lat:40.8167,lng:-96.6964,jurisdiction:"Univ. of Nebraska",chief:"Interim Chief Marty Fehringer",recruitingContact:"UNLPD Command / (402) 472-2222"},
+  {id:"p1",name:"Lincoln Police Department HQ",      address:"575 S 10th St, Lincoln, NE 68508",     zip:"68508",jurisdiction:"City of Lincoln",   chief:"Chief Michon Morrow",recruitingContact:"LPD Records / (402) 441-7210"},
+  {id:"p2",name:"Lancaster County Sheriff's Office", address:"575 S 10th St, Lincoln, NE 68508",     zip:"68508",jurisdiction:"Lancaster County",  chief:"Sheriff Terry Wagner",recruitingContact:"LSO Records / (402) 441-6500"},
+  {id:"p3",name:"UNL Police Department",             address:"300 N 17th St, Lincoln, NE 68588",     zip:"68588",jurisdiction:"Univ. of Nebraska",chief:"Interim Chief Marty Fehringer",recruitingContact:"UNLPD Command / (402) 472-2222"},
 ];
 
 const COURTS=[
-  {id:"c1",name:"Lancaster County Courthouse",           address:"555 S 10th St, Lincoln, NE 68508",        zip:"68508",lat:40.8080,lng:-96.7074,type:"County Courthouse",judge:"Hon. Michael L. Long",recruitingContact:"Simon Rezac (District Court Clerk) / (402) 441-7328"},
-  {id:"c2",name:"U.S. District Court–Nebraska (Lincoln)",address:"100 Centennial Mall N, Lincoln, NE 68508",zip:"68508",lat:40.8139,lng:-96.6993,type:"Federal Courthouse",judge:"Hon. Susan M. Bazis",recruitingContact:"Denise Lucks (Clerk of Court) / (402) 437-1900"},
+  {id:"c1",name:"Lancaster County Courthouse",           address:"555 S 10th St, Lincoln, NE 68508",        zip:"68508",type:"County Courthouse",judge:"Hon. Michael L. Long",recruitingContact:"Simon Rezac (District Court Clerk) / (402) 441-7328"},
+  {id:"c2",name:"U.S. District Court–Nebraska (Lincoln)",address:"100 Centennial Mall N, Lincoln, NE 68508",zip:"68508",type:"Federal Courthouse",judge:"Hon. Susan M. Bazis",recruitingContact:"Denise Lucks (Clerk of Court) / (402) 437-1900"},
 ];
 
 const TACOBELL=[
-  {id:"t1",name:"Taco Bell",address:"3310 N 27th St, Lincoln, NE 68521",     zip:"68521",lat:40.8452,lng:-96.6815},
-  {id:"t2",name:"Taco Bell",address:"2760 N 83rd St, Lincoln, NE 68507",     zip:"68507",lat:40.8407,lng:-96.6062},
-  {id:"t3",name:"Taco Bell",address:"4502 O St, Lincoln, NE 68510",          zip:"68510",lat:40.8143,lng:-96.6713},
-  {id:"t4",name:"Taco Bell",address:"1440 W O St, Lincoln, NE 68528",        zip:"68528",lat:40.8142,lng:-96.7431},
-  {id:"t5",name:"Taco Bell",address:"6700 S 27th St, Lincoln, NE 68512",     zip:"68512",lat:40.7680,lng:-96.6710},
-  {id:"t6",name:"Taco Bell",address:"7355 Willowbrook Ln, Lincoln, NE 68516",zip:"68516",lat:40.7337,lng:-96.6575},
+  {id:"t1",name:"Taco Bell",address:"3310 N 27th St, Lincoln, NE 68521",     zip:"68521"},
+  {id:"t2",name:"Taco Bell",address:"2760 N 83rd St, Lincoln, NE 68507",     zip:"68507"},
+  {id:"t3",name:"Taco Bell",address:"4502 O St, Lincoln, NE 68510",          zip:"68510"},
+  {id:"t4",name:"Taco Bell",address:"1440 W O St, Lincoln, NE 68528",        zip:"68528"},
+  {id:"t5",name:"Taco Bell",address:"6700 S 27th St, Lincoln, NE 68512",     zip:"68512"},
+  {id:"t6",name:"Taco Bell",address:"7355 Willowbrook Ln, Lincoln, NE 68516",zip:"68516"},
 ];
 
 const SVGS={
@@ -2418,7 +2451,7 @@ function setHighlight(marker) {
 
 function buildPts(key,cfg,items){
   if(LYR[key]) MAP.removeLayer(LYR[key]);
-  LYR[key]=L.layerGroup(items.map(item=>{
+  LYR[key]=L.layerGroup(items.filter(item=>item.lat!=null&&item.lng!=null).map(item=>{
     const badge=key==='sch'?visitBadge(item.id):'';
     const m=L.marker([item.lat,item.lng],{icon:mkIcon(key,badge)});
     m.on("click",()=>{
@@ -3321,13 +3354,16 @@ function tLyr(key){
 }
 
 /* ── SEARCH ── */
-const ALL=[
-  ...SCHOOLS.map(l=>({...l,type:"sch",label:"High School"})),
-  ...UNIS.map(l=>({...l,type:"uni",label:"University"})),
-  ...POLICE.map(l=>({...l,type:"pd",label:"Police Dept"})),
-  ...COURTS.map(l=>({...l,type:"ct",label:"Courthouse"})),
-  ...TACOBELL.map(l=>({...l,type:"tb",label:"Taco Bell"})),
-];
+let ALL=[];
+function rebuildAll(){
+  ALL=[
+    ...SCHOOLS.map(l=>({...l,type:"sch",label:"High School"})),
+    ...UNIS.map(l=>({...l,type:"uni",label:"University"})),
+    ...POLICE.map(l=>({...l,type:"pd",label:"Police Dept"})),
+    ...COURTS.map(l=>({...l,type:"ct",label:"Courthouse"})),
+    ...TACOBELL.map(l=>({...l,type:"tb",label:"Taco Bell"})),
+  ];
+}
 
 document.getElementById("sb-in").addEventListener("input",function(){
   const q=this.value.toLowerCase().trim(), drop=document.getElementById("sd");
@@ -3569,7 +3605,13 @@ function loadFromLocalStorage(){
   
   if(gj?.features?.length){buildZip(gj);}
   else addLog("Warning: Boundary services offline. Loaded map coordinates directly.");
-  
+
+  ltxt.textContent="GEOCODING LOCATION COORDINATES (0/28)...";
+  await geocodeAll((done,total)=>{
+    ltxt.textContent=`GEOCODING LOCATION COORDINATES (${done}/${total})...`;
+  });
+  rebuildAll();
+
   buildPts("sch","sch",SCHOOLS);
   buildPts("uni","uni",UNIS);
   buildPts("pd","pd",POLICE);
