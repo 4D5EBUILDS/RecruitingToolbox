@@ -8,3 +8,6 @@ packet-qc-autopsy-edition*.html
 packetqcfinal.zip
 humanizer-main.zip
 index_backup.html
+
+# Local scratch / dev test artifacts (not part of the published site)
+scratch/
