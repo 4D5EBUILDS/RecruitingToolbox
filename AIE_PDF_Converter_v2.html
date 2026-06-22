@@ -307,52 +307,76 @@ async function processFile(file) {
 }
 
 // ── PARSE AIE TEXT ───────────────────────────────────────
+// AIE Printable-View PDFs extract (via pdf.js) as ONE field per line:
+//
+//   "Last,"            (or "Last, First" on one line for short names)
+//   "First"
+//   "23"               age
+//   "6/6/2026"         created date
+//   "6/8/2026"         last contact date   (sometimes absent)
+//   "name@email.com"   personal email
+//   "9139017107"       home phone          (sometimes absent)
+//   "Active"           lead status
+//
+// The number of fields between the first name and the email varies, so we
+// can't rely on fixed line offsets. Instead we anchor on the "Last,name"
+// marker that begins each record, then scan forward (up to the next marker)
+// for the email belonging to that person.
 function parseAIE(text) {
   const EMAIL_RE = /[a-zA-Z0-9_.+\-]+@[a-zA-Z0-9\-]+\.[a-zA-Z0-9.\-]+/;
   const SKIP = ['Printable View','Number of records','Displaying records',
-                'Name Age Created','https://','Copyright','Unlimited Edition',
-                'ADHQ LIST','salesforce','reserved'];
+                'Personal Email','Last Contact','Created Date','Lead Status',
+                'Contact Method','Home Phone','https://','Copyright',
+                'Unlimited Edition','ADHQ LIST','salesforce','reserved'];
+
+  // Name characters: letters (incl. accents), spaces, hyphen, apostrophe, period (Jr.)
+  const NAME = "A-Za-zÀ-ÿ'’.\\- ";
+  // A record begins with "Last," or "Last, First" alone on a line
+  const START_RE = new RegExp(`^[${NAME}]{1,40},(\\s+[${NAME}]{1,40})?$`);
+  const ALPHA_RE = new RegExp(`^[${NAME}]+$`);
 
   const lines = text.split('\n').map(l => l.trim()).filter(l => l);
+
+  // Find every line that starts a new contact record
+  const starts = [];
+  for (let i = 0; i < lines.length; i++) {
+    const l = lines[i];
+    if (SKIP.some(s => l.includes(s))) continue;
+    if (START_RE.test(l)) starts.push(i);
+  }
+
   const records = [];
-  let i = 0;
+  for (let s = 0; s < starts.length; s++) {
+    const i   = starts[s];
+    const end = (s + 1 < starts.length) ? starts[s + 1] : lines.length;
+    const head  = lines[i];
+    const comma = head.indexOf(',');
+    const last  = head.slice(0, comma).trim();
+    let   first = head.slice(comma + 1).trim();
 
-  while (i < lines.length) {
-    const line = lines[i];
-    if (SKIP.some(s => line.includes(s))) { i++; continue; }
-
-    // Pattern 1: "LastName," on its own line
-    if (/^[A-Za-záéíóúñÁÉÍÓÚÑüÜ\-\']+,$/.test(line) && line.length < 35) {
-      const lastName  = line.replace(/,$/, '').trim();
-      const dataLine  = lines[i+1] || '';
-      const nextLine  = (lines[i+2] || '').trim();
-      const firstName = /^\d/.test(nextLine) || !nextLine ? '' : nextLine;
-      const em = dataLine.match(EMAIL_RE);
-      const email = em ? em[0].toLowerCase() : '';
-      if (lastName) {
-        records.push({ first: toTitle(firstName), last: toTitle(lastName), email });
-        i += firstName ? 3 : 2; continue;
-      }
+    // First name on its own line (the common multi-line layout)
+    if (!first) {
+      const nx = lines[i + 1] || '';
+      if (nx && !/^\d/.test(nx) && !EMAIL_RE.test(nx) && ALPHA_RE.test(nx)) first = nx;
     }
 
-    // Pattern 2: "Last, First AGE DATE..." on one line
-    const m = line.match(/^([A-Za-záéíóúñÁÉÍÓÚÑüÜ\-\']+),\s+([A-Za-záéíóúñÁÉÍÓÚÑüÜ]+)\s+\d+\s+/);
-    if (m) {
-      const em = line.match(EMAIL_RE);
-      const email = em ? em[0].toLowerCase() : '';
-      records.push({ first: toTitle(m[2]), last: toTitle(m[1]), email });
-      i++; continue;
+    // Email = first email-looking token belonging to this record
+    let email = '';
+    for (let k = i; k < end; k++) {
+      const m = lines[k].match(EMAIL_RE);
+      if (m) { email = m[0].toLowerCase(); break; }
     }
 
-    i++;
+    if (last) records.push({ first: toTitle(first), last: toTitle(last), email });
   }
 
   return records;
 }
 
+// Capitalize each word/segment: "mary jane" → "Mary Jane", "o'brien" → "O'Brien"
 function toTitle(s) {
   if (!s) return '';
-  return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+  return s.toLowerCase().replace(/(^|[\s\-'’])([a-zà-ÿ])/g, (m, p, c) => p + c.toUpperCase());
 }
 
 // ── RENDER RESULTS ────────────────────────────────────────
