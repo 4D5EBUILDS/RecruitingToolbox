@@ -3771,7 +3771,10 @@ async function ensureRsidDataLoaded(){
 
 function showRsidGate(){
   document.getElementById('rsid-gate').classList.add('visible');
-  document.getElementById('rsid-input').focus();
+  const input=document.getElementById('rsid-input');
+  input.value=currentRsid||'';
+  input.focus();
+  input.select();
 }
 function hideRsidGate(){ document.getElementById('rsid-gate').classList.remove('visible'); }
 function openChangeRsid(){ document.getElementById('rsid-error').textContent=''; showRsidGate(); }
