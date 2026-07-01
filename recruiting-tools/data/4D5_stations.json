@@ -1,0 +1,82 @@
+[
+  {
+    "rsid": "4D5",
+    "battalion": "4D",
+    "name": "RCTG DET GRAND ISLAN",
+    "city": "GRAND ISLAND",
+    "street1": "3341 W STATE",
+    "street2": "STE B1",
+    "state": "NE",
+    "zip": "68803"
+  },
+  {
+    "rsid": "4D5C",
+    "battalion": "4D",
+    "name": "NORFOLK",
+    "city": "NORFOLK",
+    "street1": "710 S 13TH ST",
+    "street2": "STE 300/400",
+    "state": "NE",
+    "zip": "68701"
+  },
+  {
+    "rsid": "4D5E",
+    "battalion": "4D",
+    "name": "LINCOLN NORTH",
+    "city": "LINCOLN",
+    "street1": "505 N 27th St",
+    "street2": "STE 10",
+    "state": "NE",
+    "zip": "68503"
+  },
+  {
+    "rsid": "4D5G",
+    "battalion": "4D",
+    "name": "GRAND ISLAND",
+    "city": "GRAND ISLAND",
+    "street1": "3337 W STATE STREET",
+    "street2": "STE C",
+    "state": "NE",
+    "zip": "68803"
+  },
+  {
+    "rsid": "4D5H",
+    "battalion": "4D",
+    "name": "KEARNEY",
+    "city": "KEARNEY",
+    "street1": "4105 2nd Ave",
+    "street2": "STE 5B",
+    "state": "NE",
+    "zip": "68847"
+  },
+  {
+    "rsid": "4D5N",
+    "battalion": "4D",
+    "name": "NORTH PLATTE",
+    "city": "NORTH PLATTE",
+    "street1": "1105 South Dewey Street",
+    "street2": "Suite 2",
+    "state": "NE",
+    "zip": "69101"
+  },
+  {
+    "rsid": "4D5S",
+    "battalion": "4D",
+    "name": "LINCOLN SOUTH",
+    "city": "LINCOLN",
+    "street1": "1501 PINE LAKE RD",
+    "street2": "STE 22",
+    "state": "NE",
+    "zip": "68512"
+  },
+  {
+    "rsid": "4D5V3",
+    "battalion": "4D",
+    "name": "",
+    "city": "UNIVERSITY OF NEBRAS",
+    "street1": "MILITARY SCIENCE BLD",
+    "street2": "RM 205, 14TH & VINE",
+    "state": "NE",
+    "zip": "68588"
+  }
+]

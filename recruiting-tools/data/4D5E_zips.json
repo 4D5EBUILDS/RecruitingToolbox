@@ -1,0 +1,746 @@
+[
+  {
+    "zip": "68001",
+    "city": "ABIE",
+    "county": "BUTLER",
+    "state": "NE"
+  },
+  {
+    "zip": "68624",
+    "city": "BELLWOOD",
+    "county": "BUTLER",
+    "state": "NE"
+  },
+  {
+    "zip": "68626",
+    "city": "BRAINARD",
+    "county": "BUTLER",
+    "state": "NE"
+  },
+  {
+    "zip": "68014",
+    "city": "BRUNO",
+    "county": "BUTLER",
+    "state": "NE"
+  },
+  {
+    "zip": "68632",
+    "city": "DAVID CITY",
+    "county": "BUTLER",
+    "state": "NE"
+  },
+  {
+    "zip": "68635",
+    "city": "DWIGHT",
+    "county": "BUTLER",
+    "state": "NE"
+  },
+  {
+    "zip": "68036",
+    "city": "LINWOOD",
+    "county": "BUTLER",
+    "state": "NE"
+  },
+  {
+    "zip": "68658",
+    "city": "RISING CITY",
+    "county": "BUTLER",
+    "state": "NE"
+  },
+  {
+    "zip": "68667",
+    "city": "SURPRISE",
+    "county": "BUTLER",
+    "state": "NE"
+  },
+  {
+    "zip": "68669",
+    "city": "ULYSSES",
+    "county": "BUTLER",
+    "state": "NE"
+  },
+  {
+    "zip": "68304",
+    "city": "ALVO",
+    "county": "CASS",
+    "state": "NE"
+  },
+  {
+    "zip": "68307",
+    "city": "AVOCA",
+    "county": "CASS",
+    "state": "NE"
+  },
+  {
+    "zip": "68016",
+    "city": "CEDAR CREEK",
+    "county": "CASS",
+    "state": "NE"
+  },
+  {
+    "zip": "68347",
+    "city": "EAGLE",
+    "county": "CASS",
+    "state": "NE"
+  },
+  {
+    "zip": "68349",
+    "city": "ELMWOOD",
+    "county": "CASS",
+    "state": "NE"
+  },
+  {
+    "zip": "68037",
+    "city": "LOUISVILLE",
+    "county": "CASS",
+    "state": "NE"
+  },
+  {
+    "zip": "68403",
+    "city": "MANLEY",
+    "county": "CASS",
+    "state": "NE"
+  },
+  {
+    "zip": "68407",
+    "city": "MURDOCK",
+    "county": "CASS",
+    "state": "NE"
+  },
+  {
+    "zip": "68413",
+    "city": "NEHAWKA",
+    "county": "CASS",
+    "state": "NE"
+  },
+  {
+    "zip": "68455",
+    "city": "UNION",
+    "county": "CASS",
+    "state": "NE"
+  },
+  {
+    "zip": "68463",
+    "city": "WEEPING WATER",
+    "county": "CASS",
+    "state": "NE"
+  },
+  {
+    "zip": "68336",
+    "city": "DAVEY",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68501",
+    "city": "LINCOLN",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68503",
+    "city": "LINCOLN",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68504",
+    "city": "LINCOLN",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68505",
+    "city": "LINCOLN",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68506",
+    "city": "LINCOLN",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68507",
+    "city": "LINCOLN",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68508",
+    "city": "LINCOLN",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68509",
+    "city": "LINCOLN",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68510",
+    "city": "LINCOLN",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68514",
+    "city": "LINCOLN",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68517",
+    "city": "LINCOLN",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68520",
+    "city": "LINCOLN",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68521",
+    "city": "LINCOLN",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68522",
+    "city": "LINCOLN",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68524",
+    "city": "LINCOLN",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68527",
+    "city": "LINCOLN",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68528",
+    "city": "LINCOLN",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68529",
+    "city": "LINCOLN",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68531",
+    "city": "LINCOLN",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68532",
+    "city": "LINCOLN",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68583",
+    "city": "LINCOLN",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68588",
+    "city": "LINCOLN",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68402",
+    "city": "MALCOLM",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68428",
+    "city": "RAYMOND",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68462",
+    "city": "WAVERLY",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68017",
+    "city": "CERESCO",
+    "county": "SAUNDERS",
+    "state": "NE"
+  },
+  {
+    "zip": "68018",
+    "city": "COLON",
+    "county": "SAUNDERS",
+    "state": "NE"
+  },
+  {
+    "zip": "68040",
+    "city": "MALMO",
+    "county": "SAUNDERS",
+    "state": "NE"
+  },
+  {
+    "zip": "68050",
+    "city": "PRAGUE",
+    "county": "SAUNDERS",
+    "state": "NE"
+  },
+  {
+    "zip": "68065",
+    "city": "VALPARAISO",
+    "county": "SAUNDERS",
+    "state": "NE"
+  },
+  {
+    "zip": "68066",
+    "city": "WAHOO",
+    "county": "SAUNDERS",
+    "state": "NE"
+  },
+  {
+    "zip": "68070",
+    "city": "WESTON",
+    "county": "SAUNDERS",
+    "state": "NE"
+  },
+  {
+    "zip": "68314",
+    "city": "BEE",
+    "county": "SEWARD",
+    "state": "NE"
+  },
+  {
+    "zip": "68360",
+    "city": "GARLAND",
+    "county": "SEWARD",
+    "state": "NE"
+  },
+  {
+    "zip": "68364",
+    "city": "GOEHNER",
+    "county": "SEWARD",
+    "state": "NE"
+  },
+  {
+    "zip": "68423",
+    "city": "PLEASANT DALE",
+    "county": "SEWARD",
+    "state": "NE"
+  },
+  {
+    "zip": "68434",
+    "city": "SEWARD",
+    "county": "SEWARD",
+    "state": "NE"
+  },
+  {
+    "zip": "68439",
+    "city": "STAPLEHURST",
+    "county": "SEWARD",
+    "state": "NE"
+  },
+  {
+    "zip": "68456",
+    "city": "UTICA",
+    "county": "SEWARD",
+    "state": "NE"
+  },
+  {
+    "zip": "68367",
+    "city": "GRESHAM",
+    "county": "YORK",
+    "state": "NE"
+  },
+  {
+    "zip": "68001",
+    "city": "ABIE",
+    "county": "BUTLER",
+    "state": "NE"
+  },
+  {
+    "zip": "68624",
+    "city": "BELLWOOD",
+    "county": "BUTLER",
+    "state": "NE"
+  },
+  {
+    "zip": "68626",
+    "city": "BRAINARD",
+    "county": "BUTLER",
+    "state": "NE"
+  },
+  {
+    "zip": "68014",
+    "city": "BRUNO",
+    "county": "BUTLER",
+    "state": "NE"
+  },
+  {
+    "zip": "68632",
+    "city": "DAVID CITY",
+    "county": "BUTLER",
+    "state": "NE"
+  },
+  {
+    "zip": "68635",
+    "city": "DWIGHT",
+    "county": "BUTLER",
+    "state": "NE"
+  },
+  {
+    "zip": "68036",
+    "city": "LINWOOD",
+    "county": "BUTLER",
+    "state": "NE"
+  },
+  {
+    "zip": "68658",
+    "city": "RISING CITY",
+    "county": "BUTLER",
+    "state": "NE"
+  },
+  {
+    "zip": "68667",
+    "city": "SURPRISE",
+    "county": "BUTLER",
+    "state": "NE"
+  },
+  {
+    "zip": "68669",
+    "city": "ULYSSES",
+    "county": "BUTLER",
+    "state": "NE"
+  },
+  {
+    "zip": "68304",
+    "city": "ALVO",
+    "county": "CASS",
+    "state": "NE"
+  },
+  {
+    "zip": "68307",
+    "city": "AVOCA",
+    "county": "CASS",
+    "state": "NE"
+  },
+  {
+    "zip": "68016",
+    "city": "CEDAR CREEK",
+    "county": "CASS",
+    "state": "NE"
+  },
+  {
+    "zip": "68347",
+    "city": "EAGLE",
+    "county": "CASS",
+    "state": "NE"
+  },
+  {
+    "zip": "68349",
+    "city": "ELMWOOD",
+    "county": "CASS",
+    "state": "NE"
+  },
+  {
+    "zip": "68037",
+    "city": "LOUISVILLE",
+    "county": "CASS",
+    "state": "NE"
+  },
+  {
+    "zip": "68403",
+    "city": "MANLEY",
+    "county": "CASS",
+    "state": "NE"
+  },
+  {
+    "zip": "68407",
+    "city": "MURDOCK",
+    "county": "CASS",
+    "state": "NE"
+  },
+  {
+    "zip": "68413",
+    "city": "NEHAWKA",
+    "county": "CASS",
+    "state": "NE"
+  },
+  {
+    "zip": "68455",
+    "city": "UNION",
+    "county": "CASS",
+    "state": "NE"
+  },
+  {
+    "zip": "68463",
+    "city": "WEEPING WATER",
+    "county": "CASS",
+    "state": "NE"
+  },
+  {
+    "zip": "68336",
+    "city": "DAVEY",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68501",
+    "city": "LINCOLN",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68503",
+    "city": "LINCOLN",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68504",
+    "city": "LINCOLN",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68505",
+    "city": "LINCOLN",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68506",
+    "city": "LINCOLN",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68507",
+    "city": "LINCOLN",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68508",
+    "city": "LINCOLN",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68509",
+    "city": "LINCOLN",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68510",
+    "city": "LINCOLN",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68514",
+    "city": "LINCOLN",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68517",
+    "city": "LINCOLN",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68520",
+    "city": "LINCOLN",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68521",
+    "city": "LINCOLN",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68522",
+    "city": "LINCOLN",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68524",
+    "city": "LINCOLN",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68527",
+    "city": "LINCOLN",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68528",
+    "city": "LINCOLN",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68529",
+    "city": "LINCOLN",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68531",
+    "city": "LINCOLN",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68532",
+    "city": "LINCOLN",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68583",
+    "city": "LINCOLN",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68588",
+    "city": "LINCOLN",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68402",
+    "city": "MALCOLM",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68428",
+    "city": "RAYMOND",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68462",
+    "city": "WAVERLY",
+    "county": "LANCASTER",
+    "state": "NE"
+  },
+  {
+    "zip": "68017",
+    "city": "CERESCO",
+    "county": "SAUNDERS",
+    "state": "NE"
+  },
+  {
+    "zip": "68018",
+    "city": "COLON",
+    "county": "SAUNDERS",
+    "state": "NE"
+  },
+  {
+    "zip": "68040",
+    "city": "MALMO",
+    "county": "SAUNDERS",
+    "state": "NE"
+  },
+  {
+    "zip": "68050",
+    "city": "PRAGUE",
+    "county": "SAUNDERS",
+    "state": "NE"
+  },
+  {
+    "zip": "68065",
+    "city": "VALPARAISO",
+    "county": "SAUNDERS",
+    "state": "NE"
+  },
+  {
+    "zip": "68066",
+    "city": "WAHOO",
+    "county": "SAUNDERS",
+    "state": "NE"
+  },
+  {
+    "zip": "68070",
+    "city": "WESTON",
+    "county": "SAUNDERS",
+    "state": "NE"
+  },
+  {
+    "zip": "68314",
+    "city": "BEE",
+    "county": "SEWARD",
+    "state": "NE"
+  },
+  {
+    "zip": "68360",
+    "city": "GARLAND",
+    "county": "SEWARD",
+    "state": "NE"
+  },
+  {
+    "zip": "68364",
+    "city": "GOEHNER",
+    "county": "SEWARD",
+    "state": "NE"
+  },
+  {
+    "zip": "68423",
+    "city": "PLEASANT DALE",
+    "county": "SEWARD",
+    "state": "NE"
+  },
+  {
+    "zip": "68434",
+    "city": "SEWARD",
+    "county": "SEWARD",
+    "state": "NE"
+  },
+  {
+    "zip": "68439",
+    "city": "STAPLEHURST",
+    "county": "SEWARD",
+    "state": "NE"
+  },
+  {
+    "zip": "68456",
+    "city": "UTICA",
+    "county": "SEWARD",
+    "state": "NE"
+  },
+  {
+    "zip": "68367",
+    "city": "GRESHAM",
+    "county": "YORK",
+    "state": "NE"
+  }
+]

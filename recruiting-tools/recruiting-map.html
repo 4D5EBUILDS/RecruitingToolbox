@@ -1588,7 +1588,138 @@ svg.leaflet-image-layer.leaflet-interactive path {
       max-width: 380px;
       line-height: 1.6;
     }
-    
+
+    /* ── RSID LOOKUP GATE ── */
+    #rsid-gate {
+      position: absolute;
+      inset: 0;
+      background: var(--bg);
+      z-index: 8990;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease-in-out;
+    }
+    #rsid-gate.visible { opacity: 1; pointer-events: auto; }
+    .rsid-card {
+      width: 360px;
+      max-width: 88vw;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 32px 30px 26px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 40px var(--accent-glow);
+      text-align: center;
+    }
+    .rsid-card h1 {
+      font-family: 'Chakra Petch', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--txt);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .rsid-sub {
+      font-size: 11px;
+      color: var(--txt3);
+      line-height: 1.5;
+      margin-bottom: 22px;
+    }
+    .rsid-card label {
+      display: block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--accent);
+      text-align: left;
+      margin-bottom: 6px;
+    }
+    #rsid-input {
+      width: 100%;
+      background: rgba(0,0,0,0.4);
+      border: 1px solid var(--border2);
+      padding: 10px 14px;
+      color: var(--txt);
+      font-size: 15px;
+      font-family: 'Chakra Petch', sans-serif;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-align: center;
+      text-transform: uppercase;
+      outline: none;
+      transition: all 0.25s ease;
+      margin-bottom: 6px;
+    }
+    #rsid-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 10px var(--accent-glow);
+    }
+    #rsid-input::placeholder { color: var(--txt3); opacity: 0.6; }
+    .rsid-helper {
+      font-size: 10px;
+      color: var(--txt3);
+      text-align: left;
+      margin-bottom: 18px;
+    }
+    #rsid-error {
+      font-size: 11px;
+      color: var(--red);
+      min-height: 14px;
+      margin-bottom: 12px;
+      text-align: left;
+    }
+    .rsid-load-btn {
+      display: block;
+      width: 100%;
+      background: var(--accent);
+      color: var(--army-black);
+      border: none;
+      padding: 11px;
+      font-family: 'Chakra Petch', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .rsid-load-btn:hover {
+      box-shadow: 0 0 16px var(--accent-glow);
+      filter: brightness(1.08);
+    }
+
+    /* RSID sidebar panel */
+    .rsid-cov-bar {
+      height: 6px;
+      background: rgba(255,255,255,0.06);
+      margin-top: 8px;
+      overflow: hidden;
+    }
+    .rsid-cov-fill {
+      height: 100%;
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent-glow);
+      transition: width 0.5s ease;
+      width: 0%;
+    }
+    .rsid-needsgeo-list {
+      max-height: 140px;
+      overflow-y: auto;
+      margin-top: 8px;
+      border: 1px solid var(--border2);
+      background: rgba(0,0,0,0.2);
+    }
+    .rsid-needsgeo-item {
+      font-size: 10.5px;
+      color: var(--txt2);
+      padding: 5px 8px;
+      border-bottom: 1px solid var(--border2);
+    }
+    .rsid-needsgeo-item:last-child { border-bottom: none; }
+
     /* CHECKLIST Styling */
     .chk-item {
       display: flex;
@@ -1806,7 +1937,48 @@ svg.leaflet-image-layer.leaflet-interactive path {
     <div id="ltxt">BOOTING SECURE CLIENT OVERLAY...</div>
   </div>
 
+  <div id="rsid-gate">
+    <div class="rsid-card">
+      <div style="font-size:32px;line-height:1;color:var(--accent);margin-bottom:10px;text-shadow:0 0 12px var(--accent-glow);">⬡</div>
+      <h1>Enter Your RSID</h1>
+      <div class="rsid-sub">Load your Area of Operations — station, schools, and AO ZIP boundaries. Proof of concept scoped to 4D5 Grand Island Detachment.</div>
+      <label for="rsid-input">RSID</label>
+      <input type="text" id="rsid-input" placeholder="e.g. 4D5E" autocomplete="off" maxlength="8" onkeydown="if(event.key==='Enter'){AudioSys.play('click');submitRsid();}" />
+      <div class="rsid-helper">Example: 4D5E</div>
+      <div id="rsid-error"></div>
+      <button class="rsid-load-btn" onclick="AudioSys.play('click'); submitRsid();">Load My AO</button>
+    </div>
+  </div>
+
   <nav id="sb">
+    <!-- RSID AO LOOKUP -->
+    <div class="ss" id="rsid-panel" style="background: rgba(255,204,1,0.04);">
+      <div class="st">RSID AO Lookup</div>
+      <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:2px;">
+        <div id="rsid-station-name" style="font-size:13px;font-weight:700;color:var(--txt);">—</div>
+        <div id="rsid-label" style="font-family:'Chakra Petch',sans-serif;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:1px;">—</div>
+      </div>
+      <div id="rsid-station-addr" style="font-size:10.5px;color:var(--txt3);line-height:1.4;margin-bottom:4px;"></div>
+      <div id="rsid-station-geostatus" style="font-size:10px;color:var(--red);margin-bottom:6px;"></div>
+
+      <div id="rsid-schools-msg" class="zn" style="display:none;"></div>
+
+      <div id="rsid-coverage-wrap" style="display:none;margin-top:10px;">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;">
+          <span style="font-size:9px;color:var(--txt3);letter-spacing:0.8px;text-transform:uppercase;font-weight:700;">Geocoded Coverage</span>
+          <span id="rsid-coverage" style="font-family:'Chakra Petch',sans-serif;font-size:12px;font-weight:700;color:var(--accent);">0 / 0</span>
+        </div>
+        <div class="rsid-cov-bar"><div class="rsid-cov-fill" id="rsid-cov-fill"></div></div>
+      </div>
+
+      <div id="rsid-needsgeo-wrap" style="display:none;margin-top:12px;">
+        <div style="font-size:9px;color:var(--txt3);letter-spacing:0.8px;text-transform:uppercase;font-weight:700;margin-bottom:4px;">Needs Geocoding (<span id="rsid-needsgeo-count">0</span>)</div>
+        <div class="rsid-needsgeo-list" id="rsid-needsgeo-list"></div>
+      </div>
+
+      <button class="db" style="margin-top:14px;" onclick="AudioSys.play('click'); openChangeRsid();">Change RSID</button>
+    </div>
+
     <!-- STATS GAUGE (MISSION READINESS) -->
     <div class="ss" style="background: rgba(0,0,0,0.15);">
       <div class="st">STATION MISSION READINESS</div>
@@ -3558,6 +3730,172 @@ function loadFromLocalStorage(){
 
 
 
+/* ── RSID AO LOOKUP (4D5 Grand Island Detachment — proof of concept) ── */
+let STATIONS_DATA=[], RSID_SCHOOLS_DATA=[], RSID_ZIPS_DATA=[];
+let rsidDataLoaded=false, currentRsid=null;
+
+function rsidNormKey(s){ return (s||'').toUpperCase().replace(/[^A-Z0-9]/g,''); }
+
+const LEGACY_SCHOOL_COORDS={};
+[...SCHOOLS,...UNIS].forEach(l=>{ LEGACY_SCHOOL_COORDS[rsidNormKey(l.name)]={name:l.name,lat:l.lat,lng:l.lng}; });
+
+const LEGACY_STATION_COORDS={};
+LEGACY_STATION_COORDS[rsidNormKey(STATION.address.split(',')[0])]={lat:STATION.lat,lng:STATION.lng};
+
+function matchLegacyCoords(name,table){
+  const n=rsidNormKey(name);
+  if(!n) return null;
+  if(table[n]) return table[n];
+  for(const key in table){
+    if(key && (n.includes(key)||key.includes(n))) return table[key];
+  }
+  return null;
+}
+
+async function loadRsidJSON(path){
+  const res=await fetch(path);
+  if(!res.ok) throw new Error('HTTP '+res.status+' loading '+path);
+  return res.json();
+}
+
+async function ensureRsidDataLoaded(){
+  if(rsidDataLoaded) return;
+  const [stations,schools,zips]=await Promise.all([
+    loadRsidJSON('data/4D5_stations.json'),
+    loadRsidJSON('data/4D5E_schools.json'),
+    loadRsidJSON('data/4D5E_zips.json'),
+  ]);
+  STATIONS_DATA=stations; RSID_SCHOOLS_DATA=schools; RSID_ZIPS_DATA=zips;
+  rsidDataLoaded=true;
+}
+
+function showRsidGate(){
+  document.getElementById('rsid-gate').classList.add('visible');
+  document.getElementById('rsid-input').focus();
+}
+function hideRsidGate(){ document.getElementById('rsid-gate').classList.remove('visible'); }
+function openChangeRsid(){ document.getElementById('rsid-error').textContent=''; showRsidGate(); }
+
+function clearRsidLayers(){
+  ['rsidStn','rsidSch','rsidZip'].forEach(k=>{ if(LYR[k]){ MAP.removeLayer(LYR[k]); LYR[k]=null; } });
+}
+
+async function submitRsid(){
+  const input=document.getElementById('rsid-input');
+  const err=document.getElementById('rsid-error');
+  const rsidRaw=input.value.trim().toUpperCase();
+  err.textContent='';
+  if(!rsidRaw){ err.textContent='Enter an RSID to continue.'; return; }
+
+  try{ await ensureRsidDataLoaded(); }
+  catch(e){ err.textContent='Could not load RSID data files.'; console.error(e); return; }
+
+  const station=STATIONS_DATA.find(s=>s.rsid.toUpperCase()===rsidRaw);
+  if(!station){ err.textContent=`RSID "${rsidRaw}" not found. Try 4D5E.`; return; }
+
+  currentRsid=station.rsid;
+  loadRsidAO(station);
+  hideRsidGate();
+}
+
+function renderRsidStation(station){
+  document.getElementById('rsid-station-name').textContent=station.name||station.city;
+  document.getElementById('rsid-label').textContent=station.rsid;
+  document.getElementById('rsid-station-addr').textContent=
+    `${station.street1}${station.street2?', '+station.street2:''}, ${station.city}, ${station.state} ${station.zip}`;
+
+  const coord=matchLegacyCoords(station.street1,LEGACY_STATION_COORDS);
+  const geo=document.getElementById('rsid-station-geostatus');
+  if(coord){
+    const m=L.marker([coord.lat,coord.lng],{icon:stnIcon(),zIndexOffset:1200});
+    m.bindPopup(`<div style="min-width:180px;"><div style="font-family:'Chakra Petch',sans-serif;font-size:15px;font-weight:700;color:var(--accent);letter-spacing:1px;margin-bottom:2px;">RSID ${station.rsid}</div><div style="font-size:12px;font-weight:600;margin-bottom:4px;color:#FFF;">${station.name||station.city}</div><div style="font-size:11px;color:var(--txt2);line-height:1.3;">${station.street1}, ${station.city}, ${station.state} ${station.zip}</div></div>`);
+    LYR.rsidStn=L.layerGroup([m]).addTo(MAP);
+    MAP.setView([coord.lat,coord.lng],12);
+    geo.textContent='';
+  }else{
+    LYR.rsidStn=null;
+    geo.textContent='⚠ Station coordinates not yet geocoded.';
+  }
+}
+
+function renderRsidSchools(matched){
+  const markers=matched.map(s=>{
+    const cfg=s.type==='5-COL'?'uni':'sch';
+    const m=L.marker([s.lat,s.lng],{icon:mkIcon(cfg)});
+    m.bindPopup(`<div style="min-width:190px;">
+      <div style="font-family:'Chakra Petch',sans-serif;font-size:13px;font-weight:700;color:var(--accent);margin-bottom:4px;">${s.name}</div>
+      <div style="font-size:11px;color:var(--txt2);line-height:1.4;margin-bottom:4px;">${s.street}, ${s.city}, ${s.state} ${s.zip}</div>
+      <div style="font-size:10px;color:var(--txt3);">Priority: ${s.priority||'—'} · ROTC: ${s.rotc?'Yes':'No'}</div>
+      ${s.phone?`<div style="font-size:10px;color:var(--txt3);margin-top:2px;">${s.phone}</div>`:''}
+    </div>`);
+    return m;
+  });
+  LYR.rsidSch=L.layerGroup(markers).addTo(MAP);
+}
+
+function renderNeedsGeocoding(unmatched){
+  const wrap=document.getElementById('rsid-needsgeo-wrap');
+  const list=document.getElementById('rsid-needsgeo-list');
+  document.getElementById('rsid-needsgeo-count').textContent=unmatched.length;
+  if(!unmatched.length){ wrap.style.display='none'; list.innerHTML=''; return; }
+  wrap.style.display='block';
+  list.innerHTML=unmatched.map(s=>`<div class="rsid-needsgeo-item">${s.name}<div style="color:var(--txt3);font-size:9.5px;margin-top:1px;">${s.city}, ${s.state} ${s.zip}</div></div>`).join('');
+}
+
+function updateGeocodedCoverage(pinned,total){
+  const wrap=document.getElementById('rsid-coverage-wrap');
+  wrap.style.display='block';
+  document.getElementById('rsid-coverage').textContent=`${pinned} / ${total}`;
+  const pct=total>0?Math.round((pinned/total)*100):0;
+  document.getElementById('rsid-cov-fill').style.width=pct+'%';
+}
+
+function renderRsidZipHighlight(zipSet){
+  if(LYR.rsidZip){ MAP.removeLayer(LYR.rsidZip); LYR.rsidZip=null; }
+  if(!zipGJ||!zipSet.size) return;
+  const feats=zipGJ.features.filter(f=>zipSet.has(f.properties.ZCTA5CE));
+  if(!feats.length) return;
+  LYR.rsidZip=L.geoJSON({type:'FeatureCollection',features:feats},{
+    style:{color:'#FFCC01',weight:3,fillColor:'#FFCC01',fillOpacity:.08,dashArray:'6,4'},
+    interactive:false
+  }).addTo(MAP);
+}
+
+function loadRsidAO(station){
+  clearRsidLayers();
+  renderRsidStation(station);
+
+  const msg=document.getElementById('rsid-schools-msg');
+  const isLoaded=station.rsid.toUpperCase()==='4D5E';
+
+  if(!isLoaded){
+    msg.style.display='block';
+    msg.textContent='No school data loaded for this RSID yet.';
+    document.getElementById('rsid-coverage-wrap').style.display='none';
+    document.getElementById('rsid-needsgeo-wrap').style.display='none';
+    addLog(`RSID ${station.rsid} loaded — station only, no school/ZIP data available yet.`);
+    return;
+  }
+
+  msg.style.display='none';
+
+  const matched=[], unmatched=[];
+  RSID_SCHOOLS_DATA.forEach(s=>{
+    const coord=matchLegacyCoords(s.name,LEGACY_SCHOOL_COORDS);
+    if(coord){ matched.push({...s,lat:coord.lat,lng:coord.lng}); }
+    else{ unmatched.push(s); }
+  });
+
+  renderRsidSchools(matched);
+  renderNeedsGeocoding(unmatched);
+  updateGeocodedCoverage(matched.length,RSID_SCHOOLS_DATA.length);
+
+  const zipSet=new Set(RSID_ZIPS_DATA.map(z=>z.zip));
+  renderRsidZipHighlight(zipSet);
+
+  addLog(`RSID ${station.rsid} AO loaded — ${matched.length}/${RSID_SCHOOLS_DATA.length} schools pinned, ${zipSet.size} AO ZIPs referenced.`);
+}
+
 /* ── BOOT RUNTIME ── */
 (async()=>{
   const ldr=document.getElementById("ldr"),ltxt=document.getElementById("ltxt");
@@ -3587,6 +3925,7 @@ function loadFromLocalStorage(){
   ldr.classList.add("done");
   addLog("Secure interface overlay booted and online.");
   AudioSys.play('boot');
+  showRsidGate();
 })();
 </script>
 
