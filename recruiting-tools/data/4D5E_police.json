@@ -1,0 +1,62 @@
+[
+  {
+    "id": "r1",
+    "name": "LINCOLN POLICE DEPARTMENT",
+    "address": "575 S 10th St",
+    "city": "Lincoln",
+    "state": "NE",
+    "zip": "68508",
+    "lat": 40.8079787,
+    "lng": -96.7080936
+  },
+  {
+    "id": "r2",
+    "name": "LANCASTER COUNTY SHERIFF",
+    "address": "575 S 10th St",
+    "city": "Lincoln",
+    "state": "NE",
+    "zip": "68508",
+    "lat": 40.8079787,
+    "lng": -96.7080936
+  },
+  {
+    "id": "r3",
+    "name": "SEWARD COUNTY SHERIFF",
+    "address": "261 S 8th St Suite 245",
+    "city": "Seward",
+    "state": "NE",
+    "zip": "68434",
+    "lat": 40.9063381,
+    "lng": -97.1018367
+  },
+  {
+    "id": "r4",
+    "name": "SAUNDERS COUNTY SHERIFF",
+    "address": "387 N Chestnut St Suite 3",
+    "city": "Wahoo",
+    "state": "NE",
+    "zip": "68066",
+    "lat": 41.2095934,
+    "lng": -96.6232126
+  },
+  {
+    "id": "r5",
+    "name": "CASS COUNTY SHERIFF",
+    "address": "336 Main St",
+    "city": "Plattsmouth",
+    "state": "NE",
+    "zip": "68048",
+    "lat": 41.0117281,
+    "lng": -95.8829576
+  },
+  {
+    "id": "r6",
+    "name": "BUTLER COUNTY SHERIFF",
+    "address": "451 N 5th St",
+    "city": "David City",
+    "state": "NE",
+    "zip": "68632",
+    "lat": 41.2535095,
+    "lng": -97.1293629
+  }
+]

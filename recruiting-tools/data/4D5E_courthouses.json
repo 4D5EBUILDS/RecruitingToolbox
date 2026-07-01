@@ -1,0 +1,62 @@
+[
+  {
+    "id": "r7",
+    "name": "LANCASTER COUNTY COURT HALL OF JUSTICE",
+    "address": "575 S 10th St",
+    "city": "Lincoln",
+    "state": "NE",
+    "zip": "68508",
+    "lat": 40.8079787,
+    "lng": -96.7080936
+  },
+  {
+    "id": "r8",
+    "name": "SEWARD COUNTY COURTHOUSE",
+    "address": "529 Seward St",
+    "city": "Seward",
+    "state": "NE",
+    "zip": "68434",
+    "lat": 40.9073654,
+    "lng": -97.0985037
+  },
+  {
+    "id": "r9",
+    "name": "SAUNDERS COUNTY COURTHOUSE",
+    "address": "433 N Chestnut St",
+    "city": "Wahoo",
+    "state": "NE",
+    "zip": "68066",
+    "lat": 41.2095678,
+    "lng": -96.6232468
+  },
+  {
+    "id": "r10",
+    "name": "CASS COUNTY COURTHOUSE",
+    "address": "346 Main St",
+    "city": "Plattsmouth",
+    "state": "NE",
+    "zip": "68048",
+    "lat": 41.0117093,
+    "lng": -95.8835228
+  },
+  {
+    "id": "r11",
+    "name": "BUTLER COUNTY COURTHOUSE",
+    "address": "451 N 5th St",
+    "city": "David City",
+    "state": "NE",
+    "zip": "68632",
+    "lat": 41.2535095,
+    "lng": -97.1293629
+  },
+  {
+    "id": "r12",
+    "name": "YORK COUNTY COURTHOUSE",
+    "address": "510 N Lincoln Ave",
+    "city": "York",
+    "state": "NE",
+    "zip": "68467",
+    "lat": 40.8665054,
+    "lng": -97.5914417
+  }
+]
