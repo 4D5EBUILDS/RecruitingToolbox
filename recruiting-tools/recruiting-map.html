@@ -3791,7 +3791,7 @@ async function submitRsid(){
   if(!rsidRaw){ err.textContent='Enter an RSID to continue.'; return; }
 
   try{ await ensureRsidDataLoaded(); }
-  catch(e){ err.textContent='Could not load RSID data files.'; console.error(e); return; }
+  catch(e){ err.textContent='Could not load RSID data files: '+e.message; console.error(e); return; }
 
   const station=STATIONS_DATA.find(s=>s.rsid.toUpperCase()===rsidRaw);
   if(!station){ err.textContent=`RSID "${rsidRaw}" not found. Try 4D5E.`; return; }
