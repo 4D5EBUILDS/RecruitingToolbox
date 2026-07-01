@@ -267,6 +267,22 @@
       border-radius:20px; padding:2px 8px; vertical-align:middle;
     }
 
+    /* Under-construction banner (caution/amber, full-bleed at card top) */
+    .tool-card-construction {
+      display:flex; align-items:center; gap:7px;
+      font-size:9px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase;
+      color:#221F20;
+      background:repeating-linear-gradient(135deg, #FFB020, #FFB020 10px, #221F20 10px, #221F20 20px);
+      padding:7px 22px;
+      margin:-20px -22px 14px;
+      border-bottom:1px solid rgba(0,0,0,.4);
+      position:relative; z-index:2;
+    }
+    .tool-card-construction span {
+      background:#FFB020; padding:2px 6px; border-radius:2px;
+      box-shadow:0 1px 3px rgba(0,0,0,.3);
+    }
+
     /* FOOTER */
     footer {
       background:var(--army-black); border-top:1px solid rgba(255,255,255,0.06);
@@ -397,6 +413,7 @@
       <span class="tool-card-arrow">Open Tool →</span>
     </a>
     <a href="recruiting-tools/recruiting-map.html" class="tool-card">
+      <div class="tool-card-construction"><span>⚠</span> Under Construction — Full brigade AO map coming soon.</div>
       <div class="tool-card-tag">Territory // Prospecting</div>
       <div class="tool-card-title">Recruiting Map</div>
       <p class="tool-card-desc">Visualize your territory, track prospect locations, and plan canvassing routes across your recruiting zone.</p>
