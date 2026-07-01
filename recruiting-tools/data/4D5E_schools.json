@@ -9,7 +9,9 @@
     "level": "7-4YR",
     "priority": "PR-3",
     "rotc": null,
-    "phone": "(402) 643-3651"
+    "phone": "(402) 643-3651",
+    "lat": 40.9149665,
+    "lng": -97.0905455
   },
   {
     "name": "NEBRASKA WESLEYAN UNIVERSITY",
@@ -21,7 +23,9 @@
     "level": "7-4YR",
     "priority": "PR-3",
     "rotc": null,
-    "phone": "(402) 466-2371"
+    "phone": "(402) 466-2371",
+    "lat": 40.838846,
+    "lng": -96.6497544
   },
   {
     "name": "UNIVERSITY OF NEBRASKA LINCOLN",
@@ -33,7 +37,9 @@
     "level": "7-4YR",
     "priority": "PR-1",
     "rotc": "A",
-    "phone": "(402) 472-7211"
+    "phone": "(402) 472-7211",
+    "lat": 40.8186577,
+    "lng": -96.7024525
   },
   {
     "name": "SOUTHEAST COMMUNITY COLLEGE LINCOLN",
@@ -45,7 +51,9 @@
     "level": "6-2YR",
     "priority": "PR-1",
     "rotc": null,
-    "phone": "(402) 471-3333"
+    "phone": "(402) 471-3333",
+    "lat": 40.8169082,
+    "lng": -96.5983612
   },
   {
     "name": "UNION ADVENTIST UNIVERSITY",
@@ -57,7 +65,9 @@
     "level": "7-4YR",
     "priority": "PR-3",
     "rotc": null,
-    "phone": "(402) 488-2331"
+    "phone": "(402) 488-2331",
+    "lat": 40.7744664,
+    "lng": -96.6522636
   },
   {
     "name": "EAST BUTLER HIGH SCHOOL",
@@ -69,7 +79,9 @@
     "level": "3-HS",
     "priority": "PR-1",
     "rotc": null,
-    "phone": "(402) 545-2081"
+    "phone": "(402) 545-2081",
+    "lat": 41.1816819,
+    "lng": -97.0022697
   },
   {
     "name": "DAVID CITY SECONDARY SCHOOL",
@@ -81,7 +93,9 @@
     "level": "3-HS",
     "priority": "PR-1",
     "rotc": null,
-    "phone": "(402) 367-3187"
+    "phone": "(402) 367-3187",
+    "lat": 41.2531327,
+    "lng": -97.1249596
   },
   {
     "name": "WAVERLY HIGH SCHOOL",
@@ -93,7 +107,9 @@
     "level": "3-HS",
     "priority": "PR-1",
     "rotc": null,
-    "phone": "(402) 786-2765"
+    "phone": "(402) 786-2765",
+    "lat": 40.9140858,
+    "lng": -96.5246799
   },
   {
     "name": "CENTENNIAL HIGH SCHOOL",
@@ -105,7 +121,9 @@
     "level": "3-HS",
     "priority": "PR-1",
     "rotc": null,
-    "phone": "(402) 534-2321"
+    "phone": "(402) 534-2321",
+    "lat": 40.8900752,
+    "lng": -97.349644
   },
   {
     "name": "ELMWOOD MURDOCK HIGH SCHOOL",
@@ -117,7 +135,9 @@
     "level": "3-HS",
     "priority": "PR-1",
     "rotc": null,
-    "phone": "(402) 867-2341"
+    "phone": "(402) 867-2341",
+    "lat": 40.9263349,
+    "lng": -96.2843243
   },
   {
     "name": "RAYMOND HIGH SCHOOL",
@@ -129,7 +149,9 @@
     "level": "3-HS",
     "priority": "PR-1",
     "rotc": null,
-    "phone": "(402) 785-2685"
+    "phone": "(402) 785-2685",
+    "lat": 41.0226744,
+    "lng": -96.747392
   },
   {
     "name": "LINCOLN EAST HIGH SCHOOL",
@@ -141,7 +163,9 @@
     "level": "3-HS",
     "priority": "PR-1",
     "rotc": null,
-    "phone": "(402) 436-1302"
+    "phone": "(402) 436-1302",
+    "lat": 40.8034494,
+    "lng": -96.6221947
   },
   {
     "name": "LINCOLN HIGH SCHOOL",
@@ -153,7 +177,9 @@
     "level": "3-HS",
     "priority": "PR-2",
     "rotc": null,
-    "phone": "(402) 436-1301"
+    "phone": "(402) 436-1301",
+    "lat": 40.8075987,
+    "lng": -96.6885383
   },
   {
     "name": "LINCOLN NORTHEAST HIGH SCHOOL",
@@ -165,7 +191,9 @@
     "level": "3-HS",
     "priority": "PR-1",
     "rotc": "AF",
-    "phone": "(402) 436-1303"
+    "phone": "(402) 436-1303",
+    "lat": 40.8405446,
+    "lng": -96.6364214
   },
   {
     "name": "LINCOLN SOUTHEAST HIGH SCHOOL",
@@ -177,7 +205,9 @@
     "level": "3-HS",
     "priority": "PR-3",
     "rotc": null,
-    "phone": "(402) 436-1304"
+    "phone": "(402) 436-1304",
+    "lat": 40.7821547,
+    "lng": -96.6658167
   },
   {
     "name": "LOUISVILLE HIGH SCHOOL",
@@ -189,7 +219,9 @@
     "level": "3-HS",
     "priority": "PR-1",
     "rotc": null,
-    "phone": "(402) 234-3585"
+    "phone": "(402) 234-3585",
+    "lat": 41.0000757,
+    "lng": -96.1640301
   },
   {
     "name": "MALCOLM HIGH SCHOOL",
@@ -201,7 +233,9 @@
     "level": "3-HS",
     "priority": "PR-1",
     "rotc": null,
-    "phone": "(402) 796-2152"
+    "phone": "(402) 796-2152",
+    "lat": 40.9148047,
+    "lng": -96.8708698
   },
   {
     "name": "SEWARD HIGH SCHOOL",
@@ -213,7 +247,9 @@
     "level": "3-HS",
     "priority": "PR-1",
     "rotc": null,
-    "phone": "(402) 643-2988"
+    "phone": "(402) 643-2988",
+    "lat": 40.9220258,
+    "lng": -97.098645
   },
   {
     "name": "WAHOO HIGH SCHOOL",
@@ -225,7 +261,9 @@
     "level": "3-HS",
     "priority": "PR-2",
     "rotc": null,
-    "phone": "(402) 443-4332"
+    "phone": "(402) 443-4332",
+    "lat": 41.2257947,
+    "lng": -96.6267949
   },
   {
     "name": "WEEPING WATER HIGH SCHOOL",
@@ -237,7 +275,9 @@
     "level": "3-HS",
     "priority": "PR-1",
     "rotc": null,
-    "phone": "(402) 267-4265"
+    "phone": "(402) 267-4265",
+    "lat": 40.8656668,
+    "lng": -96.1411513
   },
   {
     "name": "NORTH STAR HIGH SCHOOL",
@@ -249,7 +289,9 @@
     "level": "3-HS",
     "priority": "PR-1",
     "rotc": null,
-    "phone": "(402) 436-1305"
+    "phone": "(402) 436-1305",
+    "lat": 40.8694652,
+    "lng": -96.6762327
   },
   {
     "name": "NORTHWEST HIGH SCHOOL",
@@ -261,7 +303,9 @@
     "level": "3-HS",
     "priority": "PR-1",
     "rotc": null,
-    "phone": "(402) 436-1314"
+    "phone": "(402) 436-1314",
+    "lat": 40.8267895,
+    "lng": -96.7894651
   },
   {
     "name": "AQUINAS HIGH SCHOOL",
@@ -273,7 +317,9 @@
     "level": "3-HS",
     "priority": "PR-3",
     "rotc": null,
-    "phone": "(402) 367-3175"
+    "phone": "(402) 367-3175",
+    "lat": 41.2411919,
+    "lng": -97.1277678
   },
   {
     "name": "BISHOP NEUMANN HIGH SCHOOL",
@@ -285,7 +331,9 @@
     "level": "3-HS",
     "priority": "PR-2",
     "rotc": null,
-    "phone": "(402) 443-4151"
+    "phone": "(402) 443-4151",
+    "lat": 41.2047219,
+    "lng": -96.6173885
   },
   {
     "name": "PIUS X HIGH SCHOOL",
@@ -297,6 +345,8 @@
     "level": "3-HS",
     "priority": "PR-1",
     "rotc": null,
-    "phone": "(402) 488-0931"
+    "phone": "(402) 488-0931",
+    "lat": 40.7997392,
+    "lng": -96.6389415
   }
 ]
