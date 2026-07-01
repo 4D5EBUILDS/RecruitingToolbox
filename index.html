@@ -270,17 +270,25 @@
     /* Under-construction banner (caution/amber, full-bleed at card top) */
     .tool-card-construction {
       display:flex; align-items:center; gap:7px;
-      font-size:9px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase;
-      color:#221F20;
-      background:repeating-linear-gradient(135deg, #FFB020, #FFB020 10px, #221F20 10px, #221F20 20px);
-      padding:7px 22px;
+      font-size:10px; font-weight:800; letter-spacing:0.04em; text-transform:uppercase;
+      color:#1A1710;
+      background:#FFB020;
+      padding:9px 22px;
       margin:-20px -22px 14px;
-      border-bottom:1px solid rgba(0,0,0,.4);
       position:relative; z-index:2;
+      box-shadow:0 4px 6px -3px rgba(0,0,0,.4);
     }
+    .tool-card-construction::before,
+    .tool-card-construction::after {
+      content:''; position:absolute; left:0; right:0; height:5px;
+      background:repeating-linear-gradient(135deg, #1A1710, #1A1710 8px, #FFB020 8px, #FFB020 16px);
+    }
+    .tool-card-construction::before { top:0; }
+    .tool-card-construction::after  { bottom:0; }
     .tool-card-construction span {
-      background:#FFB020; padding:2px 6px; border-radius:2px;
-      box-shadow:0 1px 3px rgba(0,0,0,.3);
+      display:inline-flex; align-items:center; justify-content:center;
+      background:#1A1710; color:#FFB020; padding:2px 7px; border-radius:2px;
+      font-weight:800; flex-shrink:0;
     }
 
     /* FOOTER */
