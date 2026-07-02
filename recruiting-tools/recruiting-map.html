@@ -2011,7 +2011,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
         <span class="ll">ZIP Labels</span></label>
       <label class="lr"><input type="checkbox" id="l-demo" onchange="AudioSys.play('click'); toggleDemo()">
         <div class="li" style="background:linear-gradient(135deg,#2E382E,#FFCC01);border-color:#FFCC01;"><svg viewBox="0 0 16 16" width="12" height="12" fill="white"><rect x="1" y="10" width="3" height="5"/><rect x="6" y="6" width="3" height="9"/><rect x="11" y="2" width="3" height="13"/></svg></div>
-        <span class="ll">17–24 Population</span></label>
+        <span class="ll">15–24 Population</span></label>
       <label class="lr"><input type="checkbox" id="l-sch" checked onchange="AudioSys.play('click'); tLyr('sch')">
         <div class="li" style="background:#080809;border-color:#FFCC01;"><svg viewBox="0 0 16 16" width="12" height="12" fill="#FFCC01"><polygon points="8,2 15,6 8,10 1,6"/></svg></div>
         <span class="ll">High Schools</span><span class="lc" id="c-sch">—</span></label>
@@ -2225,38 +2225,73 @@ const AO_ZIPS=[
   '68317','68333','68336','68347','68366','68428','68462'
 ];
 
+/* Source: US Census ACS 5-Year 2023, Table B01001. pop1517_24_approx =
+   15-17 bracket + 18-24 brackets (closest ACS approximation of the
+   recruiting-age cohort). null = Census publishes no population for the
+   ZCTA (PO-box or campus ZIPs). */
 const ZIP_DEMO={
-  '68501':{pop1724:285, popTotal:2100},
-  '68502':{pop1724:1980,popTotal:14200},
-  '68503':{pop1724:3150,popTotal:20800},
-  '68504':{pop1724:2640,popTotal:19500},
-  '68505':{pop1724:2020,popTotal:15800},
-  '68506':{pop1724:1820,popTotal:14600},
-  '68507':{pop1724:2380,popTotal:17200},
-  '68508':{pop1724:2880,popTotal:18900},
-  '68510':{pop1724:2240,popTotal:17800},
-  '68512':{pop1724:1580,popTotal:13200},
-  '68514':{pop1724:380, popTotal:2800},
-  '68516':{pop1724:1360,popTotal:11400},
-  '68517':{pop1724:1080,popTotal:9200},
-  '68520':{pop1724:1480,popTotal:13600},
-  '68521':{pop1724:2060,popTotal:16400},
-  '68522':{pop1724:1280,popTotal:10800},
-  '68523':{pop1724:860, popTotal:7200},
-  '68524':{pop1724:1180,popTotal:10400},
-  '68526':{pop1724:1540,popTotal:13800},
-  '68527':{pop1724:680, popTotal:5800},
-  '68528':{pop1724:1380,popTotal:12200},
-  '68529':{pop1724:760, popTotal:6400},
-  '68532':{pop1724:580, popTotal:5200},
-  '68588':{pop1724:7840,popTotal:10200},
-  '68317':{pop1724:195, popTotal:1600},
-  '68333':{pop1724:480, popTotal:4200},
-  '68336':{pop1724:142, popTotal:1100},
-  '68347':{pop1724:285, popTotal:2400},
-  '68366':{pop1724:238, popTotal:1900},
-  '68428':{pop1724:192, popTotal:1600},
-  '68462':{pop1724:592, popTotal:5200},
+  '68001':{pop1517_24_approx:5,popTotal:61},
+  '68014':{pop1517_24_approx:14,popTotal:313},
+  '68016':{pop1517_24_approx:48,popTotal:415},
+  '68017':{pop1517_24_approx:219,popTotal:2239},
+  '68018':{pop1517_24_approx:49,popTotal:620},
+  '68036':{pop1517_24_approx:3,popTotal:480},
+  '68037':{pop1517_24_approx:344,popTotal:2471},
+  '68040':{pop1517_24_approx:50,popTotal:366},
+  '68050':{pop1517_24_approx:93,popTotal:618},
+  '68065':{pop1517_24_approx:196,popTotal:1292},
+  '68066':{pop1517_24_approx:724,popTotal:5725},
+  '68070':{pop1517_24_approx:27,popTotal:963},
+  '68304':{pop1517_24_approx:67,popTotal:412},
+  '68307':{pop1517_24_approx:75,popTotal:391},
+  '68314':{pop1517_24_approx:31,popTotal:451},
+  '68336':{pop1517_24_approx:58,popTotal:631},
+  '68347':{pop1517_24_approx:358,popTotal:2209},
+  '68349':{pop1517_24_approx:145,popTotal:1247},
+  '68360':{pop1517_24_approx:38,popTotal:394},
+  '68364':{pop1517_24_approx:15,popTotal:250},
+  '68367':{pop1517_24_approx:54,popTotal:335},
+  '68402':{pop1517_24_approx:141,popTotal:1282},
+  '68403':{pop1517_24_approx:11,popTotal:209},
+  '68407':{pop1517_24_approx:83,popTotal:863},
+  '68413':{pop1517_24_approx:55,popTotal:477},
+  '68423':{pop1517_24_approx:48,popTotal:739},
+  '68428':{pop1517_24_approx:142,popTotal:1370},
+  '68434':{pop1517_24_approx:2041,popTotal:9032},
+  '68439':{pop1517_24_approx:19,popTotal:700},
+  '68455':{pop1517_24_approx:134,popTotal:844},
+  '68456':{pop1517_24_approx:126,popTotal:1392},
+  '68462':{pop1517_24_approx:398,popTotal:4864},
+  '68463':{pop1517_24_approx:242,popTotal:1667},
+  '68501':{pop1517_24_approx:null,popTotal:null},
+  '68503':{pop1517_24_approx:4166,popTotal:15625},
+  '68504':{pop1517_24_approx:4710,popTotal:17396},
+  '68505':{pop1517_24_approx:3239,popTotal:18185},
+  '68506':{pop1517_24_approx:4171,popTotal:27909},
+  '68507':{pop1517_24_approx:2154,popTotal:16481},
+  '68508':{pop1517_24_approx:11218,popTotal:17444},
+  '68509':{pop1517_24_approx:null,popTotal:null},
+  '68510':{pop1517_24_approx:2677,popTotal:19534},
+  '68514':{pop1517_24_approx:20,popTotal:265},
+  '68517':{pop1517_24_approx:40,popTotal:462},
+  '68520':{pop1517_24_approx:288,popTotal:2491},
+  '68521':{pop1517_24_approx:7992,popTotal:38386},
+  '68522':{pop1517_24_approx:2139,popTotal:14330},
+  '68524':{pop1517_24_approx:1030,popTotal:6049},
+  '68527':{pop1517_24_approx:313,popTotal:2238},
+  '68528':{pop1517_24_approx:1360,popTotal:6955},
+  '68529':{pop1517_24_approx:null,popTotal:null},
+  '68531':{pop1517_24_approx:40,popTotal:202},
+  '68532':{pop1517_24_approx:68,popTotal:728},
+  '68583':{pop1517_24_approx:null,popTotal:null},
+  '68588':{pop1517_24_approx:0,popTotal:0},
+  '68624':{pop1517_24_approx:108,popTotal:971},
+  '68626':{pop1517_24_approx:38,popTotal:511},
+  '68632':{pop1517_24_approx:575,popTotal:3877},
+  '68635':{pop1517_24_approx:87,popTotal:449},
+  '68658':{pop1517_24_approx:60,popTotal:628},
+  '68667':{pop1517_24_approx:8,popTotal:136},
+  '68669':{pop1517_24_approx:11,popTotal:480},
 };
 
 function haversine(lat1,lng1,lat2,lng2){
@@ -2265,16 +2300,18 @@ function haversine(lat1,lng1,lat2,lng2){
   return(R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a))).toFixed(1);
 }
 
+const DEMO_NODATA_COLOR='#45454a';
 let _demoMin=null,_demoMax=null;
 function demoMinMax(){
   if(_demoMin!==null)return;
-  const vals=Object.values(ZIP_DEMO).map(d=>d.pop1724);
+  const vals=Object.values(ZIP_DEMO).map(d=>d.pop1517_24_approx).filter(v=>v!=null);
   _demoMin=Math.min(...vals);_demoMax=Math.max(...vals);
 }
 function demoColor(zip){
   demoMinMax();
-  const d=ZIP_DEMO[zip]; if(!d)return'#253325';
-  const t=Math.max(0,Math.min(1,(d.pop1724-_demoMin)/(_demoMax-_demoMin)));
+  const d=ZIP_DEMO[zip];
+  if(!d||d.pop1517_24_approx==null)return DEMO_NODATA_COLOR;
+  const t=Math.max(0,Math.min(1,(d.pop1517_24_approx-_demoMin)/(_demoMax-_demoMin)));
   const r=Math.round(0x25+t*(0xFF-0x25));
   const g=Math.round(0x33+t*(0xCC-0x33));
   const b=Math.round(0x25+t*(0x01-0x25));
@@ -2285,7 +2322,7 @@ let showDemo=false;
 function toggleDemo(){
   showDemo=document.getElementById('l-demo').checked;
   if(zipGJ)buildZip(zipGJ);
-  addLog(`17–24 population heatmap overlay ${showDemo ? 'activated' : 'deactivated'}.`);
+  addLog(`15–24 recruiting-age population heatmap overlay ${showDemo ? 'activated' : 'deactivated'}.`);
 }
 
 const ZIP_PRI={'68503':'hot','68504':'hot','68507':'hot','68521':'hot',
@@ -2732,11 +2769,12 @@ const LegCtrl=L.Control.extend({options:{position:"bottomright"},onAdd(){
     <div class="legr"><div class="legd" style="background:#F16521;border-color:#F16521;"></div>WARM ZIP</div>
     <div class="legr"><div class="legd" style="background:#727365;border-color:#727365;"></div>COLD ZIP</div>
 <hr style="border:none;border-top:1px solid var(--border2);margin:6px 0;"/>
-<div class="legt">17–24 COHORT POP</div>
+<div class="legt">15–24 RECRUITING-AGE POP</div>
 <div style="height:10px;background:linear-gradient(to right,#253325,#FFCC01);margin-bottom:4px;border:1px solid var(--border2);"></div>
 <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--txt3);font-family:'Chakra Petch',sans-serif;text-transform:uppercase;letter-spacing:.5px;">
   <span>LOW</span><span>HIGH</span>
-</div>`;
+</div>
+<div class="legr" style="margin-top:4px;"><div class="legd" style="background:#45454a;border-color:#45454a;"></div>NO CENSUS DATA</div>`;
   return d;
 }});
 new LegCtrl().addTo(MAP);
@@ -2892,7 +2930,7 @@ function renderActiveTab(){
       const zip=item.zip;
       const demo=ZIP_DEMO[zip];
       const pri=n.priority||ZIP_PRI[zip]||'none';
-      let dist='—', rank='—', popVal=0, popTotal=0, densityPct=0, maxPop1724=0;
+      let dist='—', rank='—', popVal=0, popTotal=0, densityPct=0, maxCohortPop=0;
       
       if(zipGJ){
         const feature=zipGJ.features.find(x=>x.properties.ZCTA5CE===zip);
@@ -2902,39 +2940,46 @@ function renderActiveTab(){
         }
       }
       
-      if(demo){
-        const ranked=Object.entries(ZIP_DEMO).filter(([z])=>AO_ZIPS.includes(z))
-          .sort((a,b)=>b[1].pop1724-a[1].pop1724);
+      const hasDemoData=!!(demo&&demo.pop1517_24_approx!=null&&demo.popTotal!=null);
+      if(hasDemoData){
+        const ranked=Object.entries(ZIP_DEMO)
+          .filter(([z,d])=>AO_ZIPS.includes(z)&&d.pop1517_24_approx!=null)
+          .sort((a,b)=>b[1].pop1517_24_approx-a[1].pop1517_24_approx);
         rank=ranked.findIndex(([z])=>z===zip)+1;
         rank=`#${rank} of ${ranked.length}`;
-        popVal=demo.pop1724;
+        popVal=demo.pop1517_24_approx;
         popTotal=demo.popTotal;
-        const pops=Object.entries(ZIP_DEMO).filter(([z])=>AO_ZIPS.includes(z)).map(([z,d])=>d.pop1724);
-        maxPop1724=Math.max(...pops);
-        densityPct=maxPop1724>0?(popVal/maxPop1724)*100:0;
+        const pops=Object.entries(ZIP_DEMO)
+          .filter(([z,d])=>AO_ZIPS.includes(z)&&d.pop1517_24_approx!=null)
+          .map(([z,d])=>d.pop1517_24_approx);
+        maxCohortPop=Math.max(...pops);
+        densityPct=maxCohortPop>0?(popVal/maxCohortPop)*100:0;
       }
-      
+
       html=`
         <div style="display:flex;flex-direction:column;gap:12px;">
           <div class="df"><label>ZCTA Code</label><div class="v" style="font-size:18px;font-weight:700;letter-spacing:2px;color:var(--accent);">${zip}</div></div>
           <div class="df"><label>Centroid Distance</label><div class="v">~${dist} (straight-line to station)</div></div>
-          
-          ${demo?`
+
+          ${hasDemoData?`
             <hr class="ddiv"/>
-            <div class="dsec">17–24 COHORT DEMOGRAPHICS</div>
-            <div class="df"><label>17–24 Population</label><div class="v" style="font-size:22px;font-weight:700;color:var(--accent);text-shadow:0 0 6px var(--accent-glow);">${popVal.toLocaleString()}</div></div>
+            <div class="dsec">15–24 RECRUITING-AGE DEMOGRAPHICS</div>
+            <div class="df"><label>15–24 Population</label><div class="v" style="font-size:22px;font-weight:700;color:var(--accent);text-shadow:0 0 6px var(--accent-glow);">${popVal.toLocaleString()}</div></div>
             <div class="df"><label>% of Total Population</label><div class="v">${((popVal/popTotal)*100).toFixed(1)}%</div></div>
             <div class="df"><label>Lincoln AO Cohort Rank</label><div class="v">${rank}</div></div>
-            
+
             <div style="margin:12px 0 6px 0;">
               <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--txt3);margin-bottom:5px;font-family:'Chakra Petch',sans-serif;font-weight:600;letter-spacing:0.5px;">
                 <span>AO POPULATION COHORT STRENGTH</span>
-                <span>${popVal.toLocaleString()} / ${maxPop1724.toLocaleString()} MAX</span>
+                <span>${popVal.toLocaleString()} / ${maxCohortPop.toLocaleString()} MAX</span>
               </div>
               <div style="height:10px;background:rgba(255,255,255,0.05);border:1px solid var(--border2);position:relative;">
                 <div style="height:100%;width:${densityPct}%;background:linear-gradient(to right, var(--army-green), var(--accent));box-shadow:0 0 8px var(--accent-glow);transition: width 0.5s ease;"></div>
               </div>
-            </div>`:''}
+            </div>`:demo?`
+            <hr class="ddiv"/>
+            <div class="dsec">15–24 RECRUITING-AGE DEMOGRAPHICS</div>
+            <div class="df"><label>Census Data</label><div class="v" style="color:var(--txt3);">No data — Census publishes no population for this ZCTA (PO-box or campus ZIP).</div></div>`:''}
           
           <hr class="ddiv"/>
           <div class="dsec">ZIP SECTOR PRIORITY</div>
@@ -3179,7 +3224,7 @@ const DEFAULT_CHECKLISTS={
     "Deliver station pamphlets and contact details"
   ],
   zip:[
-    "Analyze 17-24 cohort density statistics",
+    "Analyze 15-24 recruiting-age density statistics",
     "Identify storefronts and key locations",
     "Distribute information kits to libraries/centers",
     "Schedule outreach activity within sector"
@@ -3736,7 +3781,7 @@ function loadFromLocalStorage(){
    previews, and any static host without a live-fetch dependency. */
 const STATIONS_DATA=[{"rsid":"4D5","battalion":"4D","name":"RCTG DET GRAND ISLAN","city":"GRAND ISLAND","street1":"3341 W STATE","street2":"STE B1","state":"NE","zip":"68803","lat":40.9371606,"lng":-98.3802502},{"rsid":"4D5C","battalion":"4D","name":"NORFOLK","city":"NORFOLK","street1":"710 S 13TH ST","street2":"STE 300/400","state":"NE","zip":"68701","lat":42.0254178,"lng":-97.4278687},{"rsid":"4D5E","battalion":"4D","name":"LINCOLN NORTH","city":"LINCOLN","street1":"505 N 27th St","street2":"STE 10","state":"NE","zip":"68503","lat":40.8187445,"lng":-96.6827242},{"rsid":"4D5G","battalion":"4D","name":"GRAND ISLAND","city":"GRAND ISLAND","street1":"3337 W STATE STREET","street2":"STE C","state":"NE","zip":"68803","lat":40.9375108,"lng":-98.3801473},{"rsid":"4D5H","battalion":"4D","name":"KEARNEY","city":"KEARNEY","street1":"4105 2nd Ave","street2":"STE 5B","state":"NE","zip":"68847","lat":40.715949,"lng":-99.083328},{"rsid":"4D5N","battalion":"4D","name":"NORTH PLATTE","city":"NORTH PLATTE","street1":"1105 South Dewey Street","street2":"Suite 2","state":"NE","zip":"69101","lat":41.1235412,"lng":-100.7625064},{"rsid":"4D5S","battalion":"4D","name":"LINCOLN SOUTH","city":"LINCOLN","street1":"1501 PINE LAKE RD","street2":"STE 22","state":"NE","zip":"68512","lat":40.7376674,"lng":-96.7004903},{"rsid":"4D5V3","battalion":"4D","name":"","city":"UNIVERSITY OF NEBRAS","street1":"MILITARY SCIENCE BLD","street2":"RM 205, 14TH & VINE","state":"NE","zip":"68588","lat":40.82085,"lng":-96.701252}];
 const RSID_SCHOOLS_DATA=[{"name":"CONCORDIA UNIVERSITY","street":"800 N COLUMBIA AVE STE 1","city":"SEWARD","state":"NE","zip":"68434","type":"5-COL","level":"7-4YR","priority":"PR-3","rotc":null,"phone":"(402) 643-3651","lat":40.9149665,"lng":-97.0905455},{"name":"NEBRASKA WESLEYAN UNIVERSITY","street":"5000 SAINT PAUL AVE","city":"LINCOLN","state":"NE","zip":"68504","type":"5-COL","level":"7-4YR","priority":"PR-3","rotc":null,"phone":"(402) 466-2371","lat":40.838846,"lng":-96.6497544},{"name":"UNIVERSITY OF NEBRASKA LINCOLN","street":"1400 R ST","city":"LINCOLN","state":"NE","zip":"68588","type":"5-COL","level":"7-4YR","priority":"PR-1","rotc":"A","phone":"(402) 472-7211","lat":40.8186577,"lng":-96.7024525},{"name":"SOUTHEAST COMMUNITY COLLEGE LINCOLN","street":"8800 O ST","city":"LINCOLN","state":"NE","zip":"68520","type":"5-COL","level":"6-2YR","priority":"PR-1","rotc":null,"phone":"(402) 471-3333","lat":40.8169082,"lng":-96.5983612},{"name":"UNION ADVENTIST UNIVERSITY","street":"3800 S 48TH ST BLDG A","city":"LINCOLN","state":"NE","zip":"68506","type":"5-COL","level":"7-4YR","priority":"PR-3","rotc":null,"phone":"(402) 488-2331","lat":40.7744664,"lng":-96.6522636},{"name":"EAST BUTLER HIGH SCHOOL","street":"212 SOUTH MADISON STREET","city":"BRAINARD","state":"NE","zip":"68626","type":"1-HS","level":"3-HS","priority":"PR-1","rotc":null,"phone":"(402) 545-2081","lat":41.1816819,"lng":-97.0022697},{"name":"DAVID CITY SECONDARY SCHOOL","street":"750 D ST","city":"DAVID CITY","state":"NE","zip":"68632","type":"1-HS","level":"3-HS","priority":"PR-1","rotc":null,"phone":"(402) 367-3187","lat":41.2531327,"lng":-97.1249596},{"name":"WAVERLY HIGH SCHOOL","street":"14511 HEYWOOD ST","city":"WAVERLY","state":"NE","zip":"68462","type":"1-HS","level":"3-HS","priority":"PR-1","rotc":null,"phone":"(402) 786-2765","lat":40.9140858,"lng":-96.5246799},{"name":"CENTENNIAL HIGH SCHOOL","street":"1400 CENTENNIAL AVE","city":"UTICA","state":"NE","zip":"68456","type":"1-HS","level":"3-HS","priority":"PR-1","rotc":null,"phone":"(402) 534-2321","lat":40.8900752,"lng":-97.349644},{"name":"ELMWOOD MURDOCK HIGH SCHOOL","street":"300 WYOMING ST","city":"MURDOCK","state":"NE","zip":"68407","type":"1-HS","level":"3-HS","priority":"PR-1","rotc":null,"phone":"(402) 867-2341","lat":40.9263349,"lng":-96.2843243},{"name":"RAYMOND HIGH SCHOOL","street":"1800 W AGNEW RD","city":"RAYMOND","state":"NE","zip":"68428","type":"1-HS","level":"3-HS","priority":"PR-1","rotc":null,"phone":"(402) 785-2685","lat":41.0226744,"lng":-96.747392},{"name":"LINCOLN EAST HIGH SCHOOL","street":"1000 S 70TH ST","city":"LINCOLN","state":"NE","zip":"68510","type":"1-HS","level":"3-HS","priority":"PR-1","rotc":null,"phone":"(402) 436-1302","lat":40.8034494,"lng":-96.6221947},{"name":"LINCOLN HIGH SCHOOL","street":"2229 J ST","city":"LINCOLN","state":"NE","zip":"68510","type":"1-HS","level":"3-HS","priority":"PR-2","rotc":null,"phone":"(402) 436-1301","lat":40.8075987,"lng":-96.6885383},{"name":"LINCOLN NORTHEAST HIGH SCHOOL","street":"2635 N 63RD ST","city":"LINCOLN","state":"NE","zip":"68507","type":"1-HS","level":"3-HS","priority":"PR-1","rotc":"AF","phone":"(402) 436-1303","lat":40.8405446,"lng":-96.6364214},{"name":"LINCOLN SOUTHEAST HIGH SCHOOL","street":"2930 S 37TH ST","city":"LINCOLN","state":"NE","zip":"68506","type":"1-HS","level":"3-HS","priority":"PR-3","rotc":null,"phone":"(402) 436-1304","lat":40.7821547,"lng":-96.6658167},{"name":"LOUISVILLE HIGH SCHOOL","street":"202 W 3RD ST","city":"LOUISVILLE","state":"NE","zip":"68037","type":"1-HS","level":"3-HS","priority":"PR-1","rotc":null,"phone":"(402) 234-3585","lat":41.0000757,"lng":-96.1640301},{"name":"MALCOLM HIGH SCHOOL","street":"10002 NW 112TH ST","city":"MALCOLM","state":"NE","zip":"68402","type":"1-HS","level":"3-HS","priority":"PR-1","rotc":null,"phone":"(402) 796-2152","lat":40.9148047,"lng":-96.8708698},{"name":"SEWARD HIGH SCHOOL","street":"532 NORTHERN HEIGHTS DR","city":"SEWARD","state":"NE","zip":"68434","type":"1-HS","level":"3-HS","priority":"PR-1","rotc":null,"phone":"(402) 643-2988","lat":40.9220258,"lng":-97.098645},{"name":"WAHOO HIGH SCHOOL","street":"2201 N LOCUST ST","city":"WAHOO","state":"NE","zip":"68066","type":"1-HS","level":"3-HS","priority":"PR-2","rotc":null,"phone":"(402) 443-4332","lat":41.2257947,"lng":-96.6267949},{"name":"WEEPING WATER HIGH SCHOOL","street":"204 W O ST","city":"WEEPING WATER","state":"NE","zip":"68463","type":"1-HS","level":"3-HS","priority":"PR-1","rotc":null,"phone":"(402) 267-4265","lat":40.8656668,"lng":-96.1411513},{"name":"NORTH STAR HIGH SCHOOL","street":"5801 N 33RD ST","city":"LINCOLN","state":"NE","zip":"68504","type":"1-HS","level":"3-HS","priority":"PR-1","rotc":null,"phone":"(402) 436-1305","lat":40.8694652,"lng":-96.6762327},{"name":"NORTHWEST HIGH SCHOOL","street":"4901 WEST HOLDREGE STREET","city":"LINCOLN","state":"NE","zip":"68524","type":"1-HS","level":"3-HS","priority":"PR-1","rotc":null,"phone":"(402) 436-1314","lat":40.8267895,"lng":-96.7894651},{"name":"AQUINAS HIGH SCHOOL","street":"3420 MN RD","city":"DAVID CITY","state":"NE","zip":"68632","type":"1-HS","level":"3-HS","priority":"PR-3","rotc":null,"phone":"(402) 367-3175","lat":41.2411919,"lng":-97.1277678},{"name":"BISHOP NEUMANN HIGH SCHOOL","street":"202 S LINDEN ST","city":"WAHOO","state":"NE","zip":"68066","type":"1-HS","level":"3-HS","priority":"PR-2","rotc":null,"phone":"(402) 443-4151","lat":41.2047219,"lng":-96.6173885},{"name":"PIUS X HIGH SCHOOL","street":"6000 A STREET","city":"LINCOLN","state":"NE","zip":"68510","type":"1-HS","level":"3-HS","priority":"PR-1","rotc":null,"phone":"(402) 488-0931","lat":40.7997392,"lng":-96.6389415}];
-const RSID_ZIPS_DATA=[{"zip":"68001","city":"ABIE","county":"BUTLER","state":"NE"},{"zip":"68624","city":"BELLWOOD","county":"BUTLER","state":"NE"},{"zip":"68626","city":"BRAINARD","county":"BUTLER","state":"NE"},{"zip":"68014","city":"BRUNO","county":"BUTLER","state":"NE"},{"zip":"68632","city":"DAVID CITY","county":"BUTLER","state":"NE"},{"zip":"68635","city":"DWIGHT","county":"BUTLER","state":"NE"},{"zip":"68036","city":"LINWOOD","county":"BUTLER","state":"NE"},{"zip":"68658","city":"RISING CITY","county":"BUTLER","state":"NE"},{"zip":"68667","city":"SURPRISE","county":"BUTLER","state":"NE"},{"zip":"68669","city":"ULYSSES","county":"BUTLER","state":"NE"},{"zip":"68304","city":"ALVO","county":"CASS","state":"NE"},{"zip":"68307","city":"AVOCA","county":"CASS","state":"NE"},{"zip":"68016","city":"CEDAR CREEK","county":"CASS","state":"NE"},{"zip":"68347","city":"EAGLE","county":"CASS","state":"NE"},{"zip":"68349","city":"ELMWOOD","county":"CASS","state":"NE"},{"zip":"68037","city":"LOUISVILLE","county":"CASS","state":"NE"},{"zip":"68403","city":"MANLEY","county":"CASS","state":"NE"},{"zip":"68407","city":"MURDOCK","county":"CASS","state":"NE"},{"zip":"68413","city":"NEHAWKA","county":"CASS","state":"NE"},{"zip":"68455","city":"UNION","county":"CASS","state":"NE"},{"zip":"68463","city":"WEEPING WATER","county":"CASS","state":"NE"},{"zip":"68336","city":"DAVEY","county":"LANCASTER","state":"NE"},{"zip":"68501","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68503","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68504","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68505","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68506","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68507","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68508","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68509","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68510","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68514","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68517","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68520","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68521","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68522","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68524","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68527","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68528","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68529","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68531","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68532","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68583","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68588","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68402","city":"MALCOLM","county":"LANCASTER","state":"NE"},{"zip":"68428","city":"RAYMOND","county":"LANCASTER","state":"NE"},{"zip":"68462","city":"WAVERLY","county":"LANCASTER","state":"NE"},{"zip":"68017","city":"CERESCO","county":"SAUNDERS","state":"NE"},{"zip":"68018","city":"COLON","county":"SAUNDERS","state":"NE"},{"zip":"68040","city":"MALMO","county":"SAUNDERS","state":"NE"},{"zip":"68050","city":"PRAGUE","county":"SAUNDERS","state":"NE"},{"zip":"68065","city":"VALPARAISO","county":"SAUNDERS","state":"NE"},{"zip":"68066","city":"WAHOO","county":"SAUNDERS","state":"NE"},{"zip":"68070","city":"WESTON","county":"SAUNDERS","state":"NE"},{"zip":"68314","city":"BEE","county":"SEWARD","state":"NE"},{"zip":"68360","city":"GARLAND","county":"SEWARD","state":"NE"},{"zip":"68364","city":"GOEHNER","county":"SEWARD","state":"NE"},{"zip":"68423","city":"PLEASANT DALE","county":"SEWARD","state":"NE"},{"zip":"68434","city":"SEWARD","county":"SEWARD","state":"NE"},{"zip":"68439","city":"STAPLEHURST","county":"SEWARD","state":"NE"},{"zip":"68456","city":"UTICA","county":"SEWARD","state":"NE"},{"zip":"68367","city":"GRESHAM","county":"YORK","state":"NE"},{"zip":"68001","city":"ABIE","county":"BUTLER","state":"NE"},{"zip":"68624","city":"BELLWOOD","county":"BUTLER","state":"NE"},{"zip":"68626","city":"BRAINARD","county":"BUTLER","state":"NE"},{"zip":"68014","city":"BRUNO","county":"BUTLER","state":"NE"},{"zip":"68632","city":"DAVID CITY","county":"BUTLER","state":"NE"},{"zip":"68635","city":"DWIGHT","county":"BUTLER","state":"NE"},{"zip":"68036","city":"LINWOOD","county":"BUTLER","state":"NE"},{"zip":"68658","city":"RISING CITY","county":"BUTLER","state":"NE"},{"zip":"68667","city":"SURPRISE","county":"BUTLER","state":"NE"},{"zip":"68669","city":"ULYSSES","county":"BUTLER","state":"NE"},{"zip":"68304","city":"ALVO","county":"CASS","state":"NE"},{"zip":"68307","city":"AVOCA","county":"CASS","state":"NE"},{"zip":"68016","city":"CEDAR CREEK","county":"CASS","state":"NE"},{"zip":"68347","city":"EAGLE","county":"CASS","state":"NE"},{"zip":"68349","city":"ELMWOOD","county":"CASS","state":"NE"},{"zip":"68037","city":"LOUISVILLE","county":"CASS","state":"NE"},{"zip":"68403","city":"MANLEY","county":"CASS","state":"NE"},{"zip":"68407","city":"MURDOCK","county":"CASS","state":"NE"},{"zip":"68413","city":"NEHAWKA","county":"CASS","state":"NE"},{"zip":"68455","city":"UNION","county":"CASS","state":"NE"},{"zip":"68463","city":"WEEPING WATER","county":"CASS","state":"NE"},{"zip":"68336","city":"DAVEY","county":"LANCASTER","state":"NE"},{"zip":"68501","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68503","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68504","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68505","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68506","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68507","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68508","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68509","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68510","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68514","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68517","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68520","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68521","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68522","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68524","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68527","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68528","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68529","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68531","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68532","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68583","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68588","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68402","city":"MALCOLM","county":"LANCASTER","state":"NE"},{"zip":"68428","city":"RAYMOND","county":"LANCASTER","state":"NE"},{"zip":"68462","city":"WAVERLY","county":"LANCASTER","state":"NE"},{"zip":"68017","city":"CERESCO","county":"SAUNDERS","state":"NE"},{"zip":"68018","city":"COLON","county":"SAUNDERS","state":"NE"},{"zip":"68040","city":"MALMO","county":"SAUNDERS","state":"NE"},{"zip":"68050","city":"PRAGUE","county":"SAUNDERS","state":"NE"},{"zip":"68065","city":"VALPARAISO","county":"SAUNDERS","state":"NE"},{"zip":"68066","city":"WAHOO","county":"SAUNDERS","state":"NE"},{"zip":"68070","city":"WESTON","county":"SAUNDERS","state":"NE"},{"zip":"68314","city":"BEE","county":"SEWARD","state":"NE"},{"zip":"68360","city":"GARLAND","county":"SEWARD","state":"NE"},{"zip":"68364","city":"GOEHNER","county":"SEWARD","state":"NE"},{"zip":"68423","city":"PLEASANT DALE","county":"SEWARD","state":"NE"},{"zip":"68434","city":"SEWARD","county":"SEWARD","state":"NE"},{"zip":"68439","city":"STAPLEHURST","county":"SEWARD","state":"NE"},{"zip":"68456","city":"UTICA","county":"SEWARD","state":"NE"},{"zip":"68367","city":"GRESHAM","county":"YORK","state":"NE"}];
+const RSID_ZIPS_DATA=[{"zip":"68001","city":"ABIE","county":"BUTLER","state":"NE"},{"zip":"68624","city":"BELLWOOD","county":"BUTLER","state":"NE"},{"zip":"68626","city":"BRAINARD","county":"BUTLER","state":"NE"},{"zip":"68014","city":"BRUNO","county":"BUTLER","state":"NE"},{"zip":"68632","city":"DAVID CITY","county":"BUTLER","state":"NE"},{"zip":"68635","city":"DWIGHT","county":"BUTLER","state":"NE"},{"zip":"68036","city":"LINWOOD","county":"BUTLER","state":"NE"},{"zip":"68658","city":"RISING CITY","county":"BUTLER","state":"NE"},{"zip":"68667","city":"SURPRISE","county":"BUTLER","state":"NE"},{"zip":"68669","city":"ULYSSES","county":"BUTLER","state":"NE"},{"zip":"68304","city":"ALVO","county":"CASS","state":"NE"},{"zip":"68307","city":"AVOCA","county":"CASS","state":"NE"},{"zip":"68016","city":"CEDAR CREEK","county":"CASS","state":"NE"},{"zip":"68347","city":"EAGLE","county":"CASS","state":"NE"},{"zip":"68349","city":"ELMWOOD","county":"CASS","state":"NE"},{"zip":"68037","city":"LOUISVILLE","county":"CASS","state":"NE"},{"zip":"68403","city":"MANLEY","county":"CASS","state":"NE"},{"zip":"68407","city":"MURDOCK","county":"CASS","state":"NE"},{"zip":"68413","city":"NEHAWKA","county":"CASS","state":"NE"},{"zip":"68455","city":"UNION","county":"CASS","state":"NE"},{"zip":"68463","city":"WEEPING WATER","county":"CASS","state":"NE"},{"zip":"68336","city":"DAVEY","county":"LANCASTER","state":"NE"},{"zip":"68501","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68503","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68504","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68505","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68506","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68507","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68508","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68509","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68510","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68514","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68517","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68520","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68521","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68522","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68524","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68527","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68528","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68529","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68531","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68532","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68583","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68588","city":"LINCOLN","county":"LANCASTER","state":"NE"},{"zip":"68402","city":"MALCOLM","county":"LANCASTER","state":"NE"},{"zip":"68428","city":"RAYMOND","county":"LANCASTER","state":"NE"},{"zip":"68462","city":"WAVERLY","county":"LANCASTER","state":"NE"},{"zip":"68017","city":"CERESCO","county":"SAUNDERS","state":"NE"},{"zip":"68018","city":"COLON","county":"SAUNDERS","state":"NE"},{"zip":"68040","city":"MALMO","county":"SAUNDERS","state":"NE"},{"zip":"68050","city":"PRAGUE","county":"SAUNDERS","state":"NE"},{"zip":"68065","city":"VALPARAISO","county":"SAUNDERS","state":"NE"},{"zip":"68066","city":"WAHOO","county":"SAUNDERS","state":"NE"},{"zip":"68070","city":"WESTON","county":"SAUNDERS","state":"NE"},{"zip":"68314","city":"BEE","county":"SEWARD","state":"NE"},{"zip":"68360","city":"GARLAND","county":"SEWARD","state":"NE"},{"zip":"68364","city":"GOEHNER","county":"SEWARD","state":"NE"},{"zip":"68423","city":"PLEASANT DALE","county":"SEWARD","state":"NE"},{"zip":"68434","city":"SEWARD","county":"SEWARD","state":"NE"},{"zip":"68439","city":"STAPLEHURST","county":"SEWARD","state":"NE"},{"zip":"68456","city":"UTICA","county":"SEWARD","state":"NE"},{"zip":"68367","city":"GRESHAM","county":"YORK","state":"NE"}];
 const RSID_POLICE_DATA=[{"id":"r1","name":"LINCOLN POLICE DEPARTMENT","address":"575 S 10th St","city":"Lincoln","state":"NE","zip":"68508","lat":40.8079787,"lng":-96.7080936},{"id":"r2","name":"LANCASTER COUNTY SHERIFF","address":"575 S 10th St","city":"Lincoln","state":"NE","zip":"68508","lat":40.8079787,"lng":-96.7080936},{"id":"r3","name":"SEWARD COUNTY SHERIFF","address":"261 S 8th St Suite 245","city":"Seward","state":"NE","zip":"68434","lat":40.9063381,"lng":-97.1018367},{"id":"r4","name":"SAUNDERS COUNTY SHERIFF","address":"387 N Chestnut St Suite 3","city":"Wahoo","state":"NE","zip":"68066","lat":41.2095934,"lng":-96.6232126},{"id":"r5","name":"CASS COUNTY SHERIFF","address":"336 Main St","city":"Plattsmouth","state":"NE","zip":"68048","lat":41.0117281,"lng":-95.8829576},{"id":"r6","name":"BUTLER COUNTY SHERIFF","address":"451 N 5th St","city":"David City","state":"NE","zip":"68632","lat":41.2535095,"lng":-97.1293629}];
 const RSID_COURTS_DATA=[{"id":"r7","name":"LANCASTER COUNTY COURT HALL OF JUSTICE","address":"575 S 10th St","city":"Lincoln","state":"NE","zip":"68508","lat":40.8079787,"lng":-96.7080936},{"id":"r8","name":"SEWARD COUNTY COURTHOUSE","address":"529 Seward St","city":"Seward","state":"NE","zip":"68434","lat":40.9073654,"lng":-97.0985037},{"id":"r9","name":"SAUNDERS COUNTY COURTHOUSE","address":"433 N Chestnut St","city":"Wahoo","state":"NE","zip":"68066","lat":41.2095678,"lng":-96.6232468},{"id":"r10","name":"CASS COUNTY COURTHOUSE","address":"346 Main St","city":"Plattsmouth","state":"NE","zip":"68048","lat":41.0117093,"lng":-95.8835228},{"id":"r11","name":"BUTLER COUNTY COURTHOUSE","address":"451 N 5th St","city":"David City","state":"NE","zip":"68632","lat":41.2535095,"lng":-97.1293629},{"id":"r12","name":"YORK COUNTY COURTHOUSE","address":"510 N Lincoln Ave","city":"York","state":"NE","zip":"68467","lat":40.8665054,"lng":-97.5914417}];
 let currentRsid=null;
