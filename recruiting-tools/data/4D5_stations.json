@@ -7,7 +7,9 @@
     "street1": "3341 W STATE",
     "street2": "STE B1",
     "state": "NE",
-    "zip": "68803"
+    "zip": "68803",
+    "lat": 40.9371606,
+    "lng": -98.3802502
   },
   {
     "rsid": "4D5C",
@@ -17,7 +19,9 @@
     "street1": "710 S 13TH ST",
     "street2": "STE 300/400",
     "state": "NE",
-    "zip": "68701"
+    "zip": "68701",
+    "lat": 42.0254178,
+    "lng": -97.4278687
   },
   {
     "rsid": "4D5E",
@@ -27,7 +31,9 @@
     "street1": "505 N 27th St",
     "street2": "STE 10",
     "state": "NE",
-    "zip": "68503"
+    "zip": "68503",
+    "lat": 40.8187445,
+    "lng": -96.6827242
   },
   {
     "rsid": "4D5G",
@@ -37,7 +43,9 @@
     "street1": "3337 W STATE STREET",
     "street2": "STE C",
     "state": "NE",
-    "zip": "68803"
+    "zip": "68803",
+    "lat": 40.9375108,
+    "lng": -98.3801473
   },
   {
     "rsid": "4D5H",
@@ -47,7 +55,9 @@
     "street1": "4105 2nd Ave",
     "street2": "STE 5B",
     "state": "NE",
-    "zip": "68847"
+    "zip": "68847",
+    "lat": 40.715949,
+    "lng": -99.083328
   },
   {
     "rsid": "4D5N",
@@ -57,7 +67,9 @@
     "street1": "1105 South Dewey Street",
     "street2": "Suite 2",
     "state": "NE",
-    "zip": "69101"
+    "zip": "69101",
+    "lat": 41.1235412,
+    "lng": -100.7625064
   },
   {
     "rsid": "4D5S",
@@ -67,7 +79,9 @@
     "street1": "1501 PINE LAKE RD",
     "street2": "STE 22",
     "state": "NE",
-    "zip": "68512"
+    "zip": "68512",
+    "lat": 40.7376674,
+    "lng": -96.7004903
   },
   {
     "rsid": "4D5V3",
@@ -77,6 +91,8 @@
     "street1": "MILITARY SCIENCE BLD",
     "street2": "RM 205, 14TH & VINE",
     "state": "NE",
-    "zip": "68588"
+    "zip": "68588",
+    "lat": 40.82085,
+    "lng": -96.701252
   }
 ]
