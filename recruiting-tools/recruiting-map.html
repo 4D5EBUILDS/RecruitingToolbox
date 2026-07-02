@@ -2012,21 +2012,6 @@ svg.leaflet-image-layer.leaflet-interactive path {
       <label class="lr"><input type="checkbox" id="l-demo" onchange="AudioSys.play('click'); toggleDemo()">
         <div class="li" style="background:linear-gradient(135deg,#2E382E,#FFCC01);border-color:#FFCC01;"><svg viewBox="0 0 16 16" width="12" height="12" fill="white"><rect x="1" y="10" width="3" height="5"/><rect x="6" y="6" width="3" height="9"/><rect x="11" y="2" width="3" height="13"/></svg></div>
         <span class="ll">15–24 Population</span></label>
-      <label class="lr"><input type="checkbox" id="l-sch" checked onchange="AudioSys.play('click'); tLyr('sch')">
-        <div class="li" style="background:#080809;border-color:#FFCC01;"><svg viewBox="0 0 16 16" width="12" height="12" fill="#FFCC01"><polygon points="8,2 15,6 8,10 1,6"/></svg></div>
-        <span class="ll">High Schools</span><span class="lc" id="c-sch">—</span></label>
-      <label class="lr"><input type="checkbox" id="l-uni" checked onchange="AudioSys.play('click'); tLyr('uni')">
-        <div class="li" style="background:#2E382E;border-color:#FFCC01;"><svg viewBox="0 0 16 16" width="12" height="12" fill="#FFCC01"><rect x="1" y="11" width="14" height="2"/><rect x="2.5" y="5" width="2" height="6"/><rect x="7" y="5" width="2" height="6"/><rect x="11.5" y="5" width="2" height="6"/></svg></div>
-        <span class="ll">Universities</span><span class="lc" id="c-uni">—</span></label>
-      <label class="lr"><input type="checkbox" id="l-pd" checked onchange="AudioSys.play('click'); tLyr('pd')">
-        <div class="li" style="background:#1a2a4a;border-color:#FFFFFF;"><svg viewBox="0 0 16 16" width="12" height="12" fill="white"><path d="M8,1 L15,4 L15,9 Q15,14 8,15 Q1,14 1,9 L1,4 Z"/></svg></div>
-        <span class="ll">Police Depts</span><span class="lc" id="c-pd">—</span></label>
-      <label class="lr"><input type="checkbox" id="l-ct" checked onchange="AudioSys.play('click'); tLyr('ct')">
-        <div class="li" style="background:#2E382E;border-color:#FFFFFF;"><svg viewBox="0 0 16 16" width="12" height="12" stroke="white" stroke-width="1.5" fill="none"><line x1="8" y1="2" x2="8" y2="14"/><line x1="2" y1="5" x2="14" y2="5"/></svg></div>
-        <span class="ll">Courthouses</span><span class="lc" id="c-ct">—</span></label>
-      <label class="lr"><input type="checkbox" id="l-tb" checked onchange="AudioSys.play('click'); tLyr('tb')">
-        <div class="li" style="background:#CF0000;border-color:#FFFFFF;"><svg viewBox="0 0 16 16" width="12" height="12" fill="white"><path d="M8,2 Q13,2 13,8 L13,12 L3,12 L3,8 Q3,2 8,2 Z"/></svg></div>
-        <span class="ll">Taco Bell</span><span class="lc" id="c-tb">—</span></label>
       <label class="lr"><input type="checkbox" id="l-stn" checked onchange="AudioSys.play('click'); tLyr('stn')">
         <div class="li" style="background:#FFCC01;border-color:#080809;"><svg viewBox="0 0 16 16" width="12" height="12" fill="#080809"><polygon points="8,1 9.9,6.2 15.5,6.5 11.2,9.9 12.6,15.4 8,12.3 3.4,15.4 4.8,9.9 0.5,6.5 6.1,6.2"/></svg></div>
         <span class="ll">Recruiting Station</span><span class="lc">1</span></label>
@@ -2332,62 +2317,6 @@ const ZIP_PRI={'68503':'hot','68504':'hot','68507':'hot','68521':'hot',
 /* ── LOCATION DATA ── */
 const STATION={id:"stn",name:"USAREC Recruiting Station Lincoln",address:"505 N 27th St, Lincoln, NE 68503",lat:40.8145,lng:-96.6835,rsid:"4D5E",commander:"SFC David Merrick"};
 
-const SCHOOLS=[
-  {id:"s1", name:"Lincoln High School",           address:"2229 J St",          city:"Lincoln",zip:"68510",lat:40.8067,lng:-96.6886,enrollment:2150,gradeRange:"9-12",
-   principal:"Mark Larson",counselor:"Renee McClure",counselorPhone:"402-436-1301",counselorEmail:"rmcclure@lps.org",recruitingContact:""},
-  {id:"s2", name:"Lincoln Northeast High School", address:"2635 N 63rd St",     city:"Lincoln",zip:"68507",lat:40.8391,lng:-96.6353,enrollment:1850,gradeRange:"9-12",
-   principal:"Liz Miller",counselor:"Kelsey Dady",counselorPhone:"402-436-1303",counselorEmail:"kdady@lps.org",recruitingContact:""},
-  {id:"s3", name:"Lincoln East High School",      address:"1000 S 70th St",     city:"Lincoln",zip:"68510",lat:40.8036,lng:-96.6222,enrollment:2050,gradeRange:"9-12",
-   principal:"Casey Fries",counselor:"Guidance Dept",counselorPhone:"402-436-1302",counselorEmail:"lehs-counseling@lps.org",recruitingContact:""},
-  {id:"s4", name:"Lincoln Southeast High School", address:"2930 S 37th St",     city:"Lincoln",zip:"68506",lat:40.7828,lng:-96.6669,enrollment:2200,gradeRange:"9-12",
-   principal:"Tanner Penrod",counselor:"Kendra Parson",counselorPhone:"402-436-1304",counselorEmail:"kparson@lps.org",recruitingContact:""},
-  {id:"s5", name:"Lincoln Southwest High School", address:"7001 S 14th St",     city:"Lincoln",zip:"68512",lat:40.7397,lng:-96.7042,enrollment:2000,gradeRange:"9-12",
-   principal:"John Matzen",counselor:"Tim Ernst",counselorPhone:"402-436-1306",counselorEmail:"ternst@lps.org",recruitingContact:""},
-  {id:"s6", name:"Lincoln North Star High School",address:"5801 N 33rd St",     city:"Lincoln",zip:"68504",lat:40.8694,lng:-96.6761,enrollment:2100,gradeRange:"9-12",
-   principal:"Megan Kroll",counselor:"Guidance Dept",counselorPhone:"402-436-1305",counselorEmail:"lnscounseling@lps.org",recruitingContact:""},
-  {id:"s7", name:"Pius X High School",            address:"6000 A St",          city:"Lincoln",zip:"68510",lat:40.7994,lng:-96.6389,enrollment:900, gradeRange:"9-12",
-   principal:"Jennifer Tran",counselor:"Jess Psota",counselorPhone:"402-488-0931",counselorEmail:"jess.psota@piusx.net",recruitingContact:""},
-  {id:"s8", name:"Lincoln Christian School",      address:"5801 S 84th St",     city:"Lincoln",zip:"68516",lat:40.7542,lng:-96.6092,enrollment:480, gradeRange:"K-12",
-   principal:"Brent Ailes",counselor:"Anita Ford",counselorPhone:"402-488-8888",counselorEmail:"aford@lincolnchristian.org",recruitingContact:""},
-  {id:"s9", name:"Parkview Christian School",     address:"4400 N 1st St",      city:"Lincoln",zip:"68521",lat:40.8544,lng:-96.7191,enrollment:320, gradeRange:"K-12",
-   principal:"Tracey Hagan",counselor:"Mrs. Niehus",counselorPhone:"402-474-5820",counselorEmail:"office@parkviewchristianschool.org",recruitingContact:""},
-  {id:"s10",name:"Waverly High School",           address:"13401 Amberly Rd",   city:"Waverly",zip:"68462",lat:40.9053,lng:-96.5376,enrollment:600, gradeRange:"9-12",
-   principal:"Jordan Cudney",counselor:"Jason Boitnott",counselorPhone:"402-786-2765",counselorEmail:"jason.boitnott@district145.org",recruitingContact:""},
-  {id:"s11",name:"Raymond Central High School",   address:"1800 W Agnew Rd",    city:"Raymond",zip:"68428",lat:40.9380,lng:-96.7910,enrollment:280, gradeRange:"9-12",
-   principal:"Troy Lurz",counselor:"Celia Newman",counselorPhone:"402-785-2685",counselorEmail:"cnewman@rcentral.org",recruitingContact:""},
-  {id:"s12",name:"Palmyra Jr-Sr High School",     address:"425 F St",           city:"Palmyra", zip:"68418",lat:40.7039,lng:-96.3938,enrollment:120, gradeRange:"9-12",
-   principal:"Heath Johnson",counselor:"Kori Vodicka",counselorPhone:"402-780-5327",counselorEmail:"vodicka.kor@districtor1.net",recruitingContact:""},
-  {id:"s13",name:"Crete High School",             address:"1750 Iris Ave",      city:"Crete",  zip:"68333",lat:40.6305,lng:-96.9535,enrollment:350, gradeRange:"9-12",
-   principal:"Cory Bohling",counselor:"Dawn Draeger",counselorPhone:"402-826-5811",counselorEmail:"dawn.draeger@creteschools.org",recruitingContact:""},
-];
-
-const UNIS=[
-  {id:"u1",name:"University of Nebraska–Lincoln",       address:"1400 R St",          city:"Lincoln",zip:"68588",lat:40.8175,lng:-96.7035,type:"Public University",  enrollment:25000,rotcProgram:true,rotcContact:"Steven McCoy (402-472-5885, smccoy18@nebraska.edu)",recruitingContact:"Admissions: Landon Ellison (402-472-2023, lellison5@unl.edu)"},
-  {id:"u2",name:"Nebraska Wesleyan University",         address:"5000 Saint Paul Ave", city:"Lincoln",zip:"68504",lat:40.8388,lng:-96.6509,type:"Private University", enrollment:2100, rotcProgram:false,rotcContact:"N/A",recruitingContact:"Admissions: Drew Carr (402-465-2143, admissions@nebrwesleyan.edu)"},
-  {id:"u3",name:"Southeast Community College–Lincoln",  address:"8800 O St",           city:"Lincoln",zip:"68520",lat:40.8155,lng:-96.6025,type:"Community College",  enrollment:12000,rotcProgram:false,rotcContact:"N/A",recruitingContact:"Admissions: Kat Kreikemeier (402-437-2600, admissions@southeast.edu)"},
-  {id:"u4",name:"Union Adventist University",           address:"3800 S 48th St",       city:"Lincoln",zip:"68506",lat:40.7732,lng:-96.6537,type:"Private College",    enrollment:850,  rotcProgram:false,rotcContact:"N/A",recruitingContact:"VP Enrollment: Ryan Teller (402-486-2504, enroll@uau.edu)"},
-];
-
-const POLICE=[
-  {id:"p1",name:"Lincoln Police Department HQ",      address:"575 S 10th St, Lincoln, NE 68508",     zip:"68508",lat:40.8081,lng:-96.7078,jurisdiction:"City of Lincoln",   chief:"Chief Michon Morrow",recruitingContact:"LPD Records / (402) 441-7210"},
-  {id:"p2",name:"Lancaster County Sheriff's Office", address:"575 S 10th St, Lincoln, NE 68508",     zip:"68508",lat:40.8081,lng:-96.7074,jurisdiction:"Lancaster County",  chief:"Sheriff Terry Wagner",recruitingContact:"LSO Records / (402) 441-6500"},
-  {id:"p3",name:"UNL Police Department",             address:"300 N 17th St, Lincoln, NE 68588",     zip:"68588",lat:40.8167,lng:-96.6964,jurisdiction:"Univ. of Nebraska",chief:"Interim Chief Marty Fehringer",recruitingContact:"UNLPD Command / (402) 472-2222"},
-];
-
-const COURTS=[
-  {id:"c1",name:"Lancaster County Courthouse",           address:"555 S 10th St, Lincoln, NE 68508",        zip:"68508",lat:40.8080,lng:-96.7074,type:"County Courthouse",judge:"Hon. Michael L. Long",recruitingContact:"Simon Rezac (District Court Clerk) / (402) 441-7328"},
-  {id:"c2",name:"U.S. District Court–Nebraska (Lincoln)",address:"100 Centennial Mall N, Lincoln, NE 68508",zip:"68508",lat:40.8139,lng:-96.6993,type:"Federal Courthouse",judge:"Hon. Susan M. Bazis",recruitingContact:"Denise Lucks (Clerk of Court) / (402) 437-1900"},
-];
-
-const TACOBELL=[
-  {id:"t1",name:"Taco Bell",address:"3310 N 27th St, Lincoln, NE 68521",     zip:"68521",lat:40.8452,lng:-96.6815},
-  {id:"t2",name:"Taco Bell",address:"2760 N 83rd St, Lincoln, NE 68507",     zip:"68507",lat:40.8407,lng:-96.6062},
-  {id:"t3",name:"Taco Bell",address:"4502 O St, Lincoln, NE 68510",          zip:"68510",lat:40.8143,lng:-96.6713},
-  {id:"t4",name:"Taco Bell",address:"1440 W O St, Lincoln, NE 68528",        zip:"68528",lat:40.8142,lng:-96.7431},
-  {id:"t5",name:"Taco Bell",address:"6700 S 27th St, Lincoln, NE 68512",     zip:"68512",lat:40.7680,lng:-96.6710},
-  {id:"t6",name:"Taco Bell",address:"7355 Willowbrook Ln, Lincoln, NE 68516",zip:"68516",lat:40.7337,lng:-96.6575},
-];
-
 const SVGS={
   sch:`<svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor"><polygon points="8,2 15,6 8,10 1,6"/><path d="M4,7.5 L4,12 Q8,14.5 12,12 L12,7.5" fill="currentColor"/><rect x="12.5" y="6" width="1" height="3.5" fill="currentColor"/><circle cx="13" cy="10" r="1" fill="currentColor"/></svg>`,
   uni:`<svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor"><rect x="1" y="11" width="14" height="2"/><rect x="1" y="3" width="14" height="2"/><rect x="2.5" y="5" width="2" height="6"/><rect x="7" y="5" width="2" height="6"/><rect x="11.5" y="5" width="2" height="6"/></svg>`,
@@ -2605,14 +2534,6 @@ function stnIcon(){
 }
 
 /* ── POINT LAYERS ── */
-function visitBadge(id){
-  const n=noteStore[id]; if(!n||!n.lastVisit)return'';
-  const days=Math.floor((Date.now()-new Date(n.lastVisit))/(1000*60*60*24));
-  const col=days<=30?'#00E676':days<=90?'#FFCC01':'#FF4444';
-  const glow=days<=30?'rgba(0,230,118,0.5)':days<=90?'rgba(255,204,1,0.5)':'rgba(255,68,68,0.5)';
-  return `<div style="position:absolute;top:0;right:0;width:9px;height:9px;background:${col};border:1.5px solid #080809;border-radius:50%;box-shadow: 0 0 6px ${glow};z-index:10;animation: beaconPulse 1.5s infinite;"></div>`;
-}
-
 // Global active target tracking
 function setHighlight(marker) {
   if (activeMarker) {
@@ -2624,24 +2545,6 @@ function setHighlight(marker) {
     const el = marker.getElement();
     if (el) el.querySelector('.marker-container')?.classList.add('active-target');
   }
-}
-
-function buildPts(key,cfg,items){
-  if(LYR[key]) MAP.removeLayer(LYR[key]);
-  LYR[key]=L.layerGroup(items.map(item=>{
-    const badge=key==='sch'?visitBadge(item.id):'';
-    const m=L.marker([item.lat,item.lng],{icon:mkIcon(key,badge)});
-    m.on("click",()=>{
-      setHighlight(m);
-      openLocDP(cfg,item);
-    });
-    m.on("mouseover",()=>{
-      AudioSys.play('hover');
-    });
-    return m;
-  }));
-  if(document.getElementById("l-"+key)?.checked) LYR[key].addTo(MAP);
-  const el=document.getElementById("c-"+key); if(el) el.textContent=items.length;
 }
 
 function buildStation(){
@@ -2812,8 +2715,7 @@ function getActiveItem(){
     const n=noteStore[activeId]||{};
     return {id:activeId,type:'custom',name:n.pinName||'Custom Pin',lat:p?p.lat:0,lng:p?p.lng:0};
   }
-  const item=ALL.find(x=>x.id===activeId);
-  return item||null;
+  return null;
 }
 
 function renderActiveTab(){
@@ -3333,14 +3235,6 @@ function rebuildMapLayers(id){
         dpc.textContent=(cat.toUpperCase() + " MARKER" + (n.zip?` · ${n.zip}`:""));
       }
     }
-  }else if(id.startsWith('s')){
-    buildPts('sch','sch',SCHOOLS);
-  }else if(id.startsWith('u')){
-    buildPts('uni','uni',UNIS);
-  }else if(id.startsWith('p')){
-    buildPts('pd','pd',POLICE);
-  }else if(id.startsWith('c')){
-    buildPts('ct','ct',COURTS);
   }
 }
 
@@ -3495,10 +3389,9 @@ function saveDP(){
 
 /* ── STATS ── */
 function updateStats(){
-  const total=SCHOOLS.length + UNIS.length;
+  const total=RSID_SCHOOLS_DATA.length;
   const visits=Object.keys(noteStore).filter(k=>(k.startsWith("s")||k.startsWith("u"))&&noteStore[k].lastVisit).length;
-  
-  const totalLocations=SCHOOLS.length + UNIS.length + POLICE.length + COURTS.length + customPins.length;
+
   const visitCounter=Object.keys(noteStore).filter(k=>!k.startsWith("zip-")&&noteStore[k].lastVisit).length;
   document.getElementById("s-v").textContent=visitCounter;
   
@@ -3539,20 +3432,12 @@ function tLyr(key){
 }
 
 /* ── SEARCH ── */
-const ALL=[
-  ...SCHOOLS.map(l=>({...l,type:"sch",label:"High School"})),
-  ...UNIS.map(l=>({...l,type:"uni",label:"University"})),
-  ...POLICE.map(l=>({...l,type:"pd",label:"Police Dept"})),
-  ...COURTS.map(l=>({...l,type:"ct",label:"Courthouse"})),
-  ...TACOBELL.map(l=>({...l,type:"tb",label:"Taco Bell"})),
-];
 
 document.getElementById("sb-in").addEventListener("input",function(){
   const q=this.value.toLowerCase().trim(), drop=document.getElementById("sd");
   if(!q){drop.style.display="none";return;}
   const zm=AO_ZIPS.filter(z=>z.includes(q)).slice(0,3).map(z=>({id:"zip-"+z,name:"ZIP "+z,type:"zip",label:"ZCTA",address:"Lincoln AO",lat:0,lng:0}));
-  const lm=ALL.filter(i=>i.name.toLowerCase().includes(q)||i.address?.toLowerCase().includes(q)||i.zip?.includes(q)).slice(0,6);
-  
+
   const customMatches=customPins.map(p=>{
     const n=noteStore[p.id]||{};
     return {
@@ -3566,7 +3451,7 @@ document.getElementById("sb-in").addEventListener("input",function(){
     };
   }).filter(p=>p.name.toLowerCase().includes(q)||p.address.toLowerCase().includes(q));
   
-  const m=[...zm,...lm,...customMatches].slice(0,8);
+  const m=[...zm,...customMatches].slice(0,8);
   if(!m.length){drop.style.display="none";return;}
   drop.style.display="block";
   drop.innerHTML=m.map(x=>`<div class="sd-i" onclick="AudioSys.play('click'); doSearch('${x.id}','${x.type}',${x.lat||0},${x.lng||0})">● ${x.name}<div class="sd-t">${x.label} · ${x.address||""}</div></div>`).join("");
@@ -3596,19 +3481,6 @@ function doSearch(id,type,lat,lng){
         setHighlight(pin.marker);
         openLocDP('custom',{id,name:n.pinName||'Custom Pin',lat:pin.lat,lng:pin.lng});
       }
-    }else{
-      const item=ALL.find(i=>i.id===id);
-      if(item) {
-        // Find Leaflet marker from layer group
-        let foundMarker = null;
-        if(LYR[type]) {
-          LYR[type].eachLayer(m => {
-            if(m.getLatLng().lat === item.lat && m.getLatLng().lng === item.lng) foundMarker = m;
-          });
-        }
-        if(foundMarker) setHighlight(foundMarker);
-        openLocDP(type,item);
-      }
     }
   },750);
 }
@@ -3632,11 +3504,6 @@ function importData(ev){
     saveToLocalStorage();
     loadFromLocalStorage();
     if(zipGJ)buildZip(zipGJ);
-    buildPts("sch","sch",SCHOOLS);
-    buildPts("uni","uni",UNIS);
-    buildPts("pd","pd",POLICE);
-    buildPts("ct","ct",COURTS);
-    buildPts("tb","tb",TACOBELL);
     buildStation();
     updateStats();
     addLog(`Imported AAR Package. Synced ${Object.keys(raw.notes||raw).length} target folders.`);
@@ -3700,11 +3567,6 @@ function resetAllData(){
     noteStore={};
     clearCustomPins();
     if(zipGJ)buildZip(zipGJ);
-    buildPts("sch","sch",SCHOOLS);
-    buildPts("uni","uni",UNIS);
-    buildPts("pd","pd",POLICE);
-    buildPts("ct","ct",COURTS);
-    buildPts("tb","tb",TACOBELL);
     buildStation();
     updateStats();
     closeDP();
@@ -3789,9 +3651,6 @@ let rsidNeedsGeocoding=[];
 
 function rsidNormKey(s){ return (s||'').toUpperCase().replace(/[^A-Z0-9]/g,''); }
 
-const LEGACY_SCHOOL_COORDS={};
-[...SCHOOLS,...UNIS].forEach(l=>{ LEGACY_SCHOOL_COORDS[rsidNormKey(l.name)]={name:l.name,lat:l.lat,lng:l.lng}; });
-
 const LEGACY_STATION_COORDS={};
 LEGACY_STATION_COORDS[rsidNormKey(STATION.address.split(',')[0])]={lat:STATION.lat,lng:STATION.lng};
 
@@ -3820,7 +3679,7 @@ function clearRsidLayers(){
 }
 
 function hideLegacyLayers(){
-  ['sch','uni','pd','ct','stn'].forEach(k=>{
+  ['stn'].forEach(k=>{
     if(LYR[k]) MAP.removeLayer(LYR[k]);
     const cb=document.getElementById('l-'+k);
     if(cb) cb.checked=false;
@@ -3961,9 +3820,7 @@ function loadRsidAO(station){
 
   const matched=[], unmatched=[];
   RSID_SCHOOLS_DATA.forEach(s=>{
-    if(s.lat!=null&&s.lng!=null){ matched.push(s); return; }
-    const coord=matchLegacyCoords(s.name,LEGACY_SCHOOL_COORDS);
-    if(coord){ matched.push({...s,lat:coord.lat,lng:coord.lng}); }
+    if(s.lat!=null&&s.lng!=null){ matched.push(s); }
     else{ unmatched.push(s); }
   });
 
@@ -3992,11 +3849,6 @@ function loadRsidAO(station){
   if(gj?.features?.length){buildZip(gj);}
   else addLog("Warning: Boundary services offline. Loaded map coordinates directly.");
 
-  buildPts("sch","sch",SCHOOLS);
-  buildPts("uni","uni",UNIS);
-  buildPts("pd","pd",POLICE);
-  buildPts("ct","ct",COURTS);
-  buildPts("tb","tb",TACOBELL);
   buildStation();
   updateStats();
   
