@@ -3774,6 +3774,14 @@ function clearRsidLayers(){
   ['rsidStn','rsidSch','rsidPd','rsidCt','rsidZip'].forEach(k=>{ if(LYR[k]){ MAP.removeLayer(LYR[k]); LYR[k]=null; } });
 }
 
+function hideLegacyLayers(){
+  ['sch','uni','pd','ct','stn'].forEach(k=>{
+    if(LYR[k]) MAP.removeLayer(LYR[k]);
+    const cb=document.getElementById('l-'+k);
+    if(cb) cb.checked=false;
+  });
+}
+
 async function submitRsid(){
   const input=document.getElementById('rsid-input');
   const err=document.getElementById('rsid-error');
@@ -3888,6 +3896,7 @@ function renderRsidZipHighlight(zipSet){
 
 function loadRsidAO(station){
   clearRsidLayers();
+  hideLegacyLayers();
   renderRsidStation(station);
 
   const msg=document.getElementById('rsid-schools-msg');
