@@ -2333,9 +2333,23 @@ function toggleDemo(){
   addLog(`15–24 recruiting-age population heatmap overlay ${showDemo ? 'activated' : 'deactivated'}.`);
 }
 
-const ZIP_PRI={'68503':'hot','68504':'hot','68507':'hot','68521':'hot',
-               '68502':'warm','68505':'warm','68506':'warm','68510':'warm',
-               '68516':'warm','68517':'warm','68462':'warm'};
+/* Hot/Warm/Cold computed from real 15-24 recruiting-age population (ZIP_DEMO),
+   split into tertiles among ZIPs with Census data. ZIPs with no Census data
+   (PO-box ZCTAs) are left unclassified ("none") rather than forced into a tier. */
+let _zipPriComputed=null;
+function computeZipPriorities(){
+  if(_zipPriComputed) return _zipPriComputed;
+  const sorted=Object.entries(ZIP_DEMO)
+    .filter(([z,d])=>d.pop1517_24_approx!=null)
+    .sort((a,b)=>b[1].pop1517_24_approx-a[1].pop1517_24_approx);
+  const n=sorted.length;
+  const hotCut=Math.ceil(n/3);
+  const warmCut=Math.ceil(n*2/3);
+  const result={};
+  sorted.forEach(([z],i)=>{ result[z]=i<hotCut?'hot':i<warmCut?'warm':'cold'; });
+  _zipPriComputed=result;
+  return result;
+}
 
 /* ── LOCATION DATA ── */
 const STATION={id:"stn",name:"USAREC Recruiting Station Lincoln",address:"505 N 27th St, Lincoln, NE 68503",lat:40.8145,lng:-96.6835,rsid:"4D5E",commander:"SFC David Merrick"};
@@ -2464,7 +2478,7 @@ async function fetchZCTAs(){
 }
 
 /* ── ZIP PRIORITY & STYLE ── */
-function zPri(zip){return(noteStore["zip-"+zip]||{}).priority||ZIP_PRI[zip]||"none";}
+function zPri(zip){return(noteStore["zip-"+zip]||{}).priority||computeZipPriorities()[zip]||"none";}
 function zStyle(zip){
   if(showDemo){
     const col=demoColor(zip);
@@ -2854,7 +2868,7 @@ function renderActiveTab(){
     }else if(type==='zip'){
       const zip=item.zip;
       const demo=ZIP_DEMO[zip];
-      const pri=n.priority||ZIP_PRI[zip]||'none';
+      const pri=n.priority||computeZipPriorities()[zip]||'none';
       let dist='—', rank='—', popVal=0, popTotal=0, densityPct=0, maxCohortPop=0;
       
       if(zipGJ){
@@ -3738,7 +3752,7 @@ function hideRsidGate(){ document.getElementById('rsid-gate').classList.remove('
 function openChangeRsid(){ document.getElementById('rsid-error').textContent=''; showRsidGate(); }
 
 function clearRsidLayers(){
-  ['rsidStn','rsidSch','rsidUni','rsidPd','rsidCt','rsidZip'].forEach(k=>{ if(LYR[k]){ MAP.removeLayer(LYR[k]); LYR[k]=null; } });
+  ['rsidStn','rsidSch','rsidUni','rsidPd','rsidCt'].forEach(k=>{ if(LYR[k]){ MAP.removeLayer(LYR[k]); LYR[k]=null; } });
 }
 
 function hideLegacyLayers(){
@@ -3862,17 +3876,6 @@ function renderRsidZipBoundaries(zipSet){
   buildZip(filtered);
 }
 
-function renderRsidZipHighlight(zipSet){
-  if(LYR.rsidZip){ MAP.removeLayer(LYR.rsidZip); LYR.rsidZip=null; }
-  if(!zipGJ||!zipSet.size) return;
-  const feats=zipGJ.features.filter(f=>zipSet.has(f.properties.ZCTA5CE));
-  if(!feats.length) return;
-  LYR.rsidZip=L.geoJSON({type:'FeatureCollection',features:feats},{
-    style:{color:'#FFCC01',weight:3,fillColor:'#FFCC01',fillOpacity:.08,dashArray:'6,4'},
-    interactive:false
-  }).addTo(MAP);
-}
-
 function loadRsidAO(station){
   clearRsidLayers();
   hideLegacyLayers();
@@ -3910,7 +3913,6 @@ function loadRsidAO(station){
 
   const zipSet=new Set(RSID_ZIPS_DATA.map(z=>z.zip));
   renderRsidZipBoundaries(zipSet);
-  renderRsidZipHighlight(zipSet);
 
   updateLegendVisualState();
   addLog(`RSID ${station.rsid} AO loaded — ${matched.length}/${RSID_SCHOOLS_DATA.length} schools, ${RSID_POLICE_DATA.length} police, ${RSID_COURTS_DATA.length} courthouses pinned, ${zipSet.size} AO ZIPs referenced.`);
