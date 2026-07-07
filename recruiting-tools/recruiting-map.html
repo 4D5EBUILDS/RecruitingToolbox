@@ -1263,7 +1263,26 @@ svg.leaflet-image-layer.leaflet-interactive path {
       flex-shrink: 0;
       border: 1px solid rgba(255,255,255,0.2);
     }
-    
+
+    .legr.leg-click {
+      cursor: pointer;
+      padding: 2px 4px;
+      margin: -2px -4px 4px -4px;
+      transition: background 0.15s ease, opacity 0.15s ease, color 0.15s ease;
+    }
+    .legr.leg-click:hover {
+      background: rgba(255,255,255,0.06);
+      color: var(--txt);
+    }
+    .legr.leg-off {
+      opacity: 0.35;
+    }
+    .legr.leg-active {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+
     /* DETAIL PANEL */
     #dp {
       position: absolute;
@@ -2665,16 +2684,15 @@ MAP.on('click',function(e){
 const LegCtrl=L.Control.extend({options:{position:"bottomright"},onAdd(){
   const d=L.DomUtil.create("div","leaflet-control legc");
   d.innerHTML=`<div class="legt">Tactical Legend</div>
-    <div class="legr"><div class="legd" style="background:rgba(255,204,1,0.15);border-color:#FFCC01;"></div>High School</div>
-    <div class="legr"><div class="legd" style="background:rgba(0,229,255,0.15);border-color:#00E5FF;"></div>University</div>
-    <div class="legr"><div class="legd" style="background:rgba(78,163,255,0.15);border-color:#4EA3FF;"></div>Police Dept</div>
-    <div class="legr"><div class="legd" style="background:rgba(224,64,251,0.15);border-color:#E040FB;"></div>Courthouse</div>
-    <div class="legr"><div class="legd" style="background:rgba(255,68,68,0.15);border-color:#FF4444;"></div>Taco Bell</div>
-    <div class="legr"><div class="legd" style="background:#FFCC01;border-color:#080809;"></div>Recruiting Stn</div>
+    <div class="legr leg-click" id="leg-sch" onclick="AudioSys.play('click'); toggleLegendLayer('rsidSch')"><div class="legd" style="background:rgba(255,204,1,0.15);border-color:#FFCC01;"></div>High School</div>
+    <div class="legr leg-click" id="leg-uni" onclick="AudioSys.play('click'); toggleLegendLayer('rsidUni')"><div class="legd" style="background:rgba(0,229,255,0.15);border-color:#00E5FF;"></div>University</div>
+    <div class="legr leg-click" id="leg-pd" onclick="AudioSys.play('click'); toggleLegendLayer('rsidPd')"><div class="legd" style="background:rgba(78,163,255,0.15);border-color:#4EA3FF;"></div>Police Dept</div>
+    <div class="legr leg-click" id="leg-ct" onclick="AudioSys.play('click'); toggleLegendLayer('rsidCt')"><div class="legd" style="background:rgba(224,64,251,0.15);border-color:#E040FB;"></div>Courthouse</div>
+    <div class="legr leg-click" id="leg-stn" onclick="AudioSys.play('click'); toggleLegendLayer(['rsidStn','stn'])"><div class="legd" style="background:#FFCC01;border-color:#080809;"></div>Recruiting Stn</div>
     <hr style="border-color:var(--border2);margin:6px 0;"/>
-    <div class="legr"><div class="legd" style="background:#FFCC01;border-color:#FFCC01;"></div>HOT ZIP</div>
-    <div class="legr"><div class="legd" style="background:#F16521;border-color:#F16521;"></div>WARM ZIP</div>
-    <div class="legr"><div class="legd" style="background:#727365;border-color:#727365;"></div>COLD ZIP</div>
+    <div class="legr leg-click" id="leg-pri-hot" onclick="AudioSys.play('click'); toggleLegendPriority('hot')"><div class="legd" style="background:#FFCC01;border-color:#FFCC01;"></div>HOT ZIP</div>
+    <div class="legr leg-click" id="leg-pri-warm" onclick="AudioSys.play('click'); toggleLegendPriority('warm')"><div class="legd" style="background:#F16521;border-color:#F16521;"></div>WARM ZIP</div>
+    <div class="legr leg-click" id="leg-pri-cold" onclick="AudioSys.play('click'); toggleLegendPriority('cold')"><div class="legd" style="background:#727365;border-color:#727365;"></div>COLD ZIP</div>
 <hr style="border:none;border-top:1px solid var(--border2);margin:6px 0;"/>
 <div class="legt">15–24 RECRUITING-AGE POP</div>
 <div style="height:10px;background:linear-gradient(to right,#253325,#FFCC01);margin-bottom:4px;border:1px solid var(--border2);"></div>
@@ -2682,6 +2700,7 @@ const LegCtrl=L.Control.extend({options:{position:"bottomright"},onAdd(){
   <span>LOW</span><span>HIGH</span>
 </div>
 <div class="legr" style="margin-top:4px;"><div class="legd" style="background:#45454a;border-color:#45454a;"></div>NO CENSUS DATA</div>`;
+  L.DomEvent.disableClickPropagation(d);
   return d;
 }});
 new LegCtrl().addTo(MAP);
@@ -3435,6 +3454,46 @@ function tLyr(key){
   addLog(`Overlay layer [${key.toUpperCase()}] set to: ${show ? 'VISIBLE' : 'HIDDEN'}`);
 }
 
+/* ── LEGEND CLICK-TO-TOGGLE ── */
+function toggleLegendLayer(keys){
+  if(typeof keys==='string') keys=[keys];
+  const key=keys.find(k=>LYR[k]);
+  if(!key) return;
+  const l=LYR[key];
+  const visible=MAP.hasLayer(l);
+  if(visible){ MAP.removeLayer(l); } else { l.addTo(MAP); }
+  const cb=document.getElementById('l-'+key);
+  if(cb) cb.checked=!visible;
+  addLog(`Overlay layer [${key.toUpperCase()}] set to: ${!visible ? 'VISIBLE' : 'HIDDEN'}`);
+  updateLegendVisualState();
+}
+
+function toggleLegendPriority(pri){
+  const sel=document.getElementById('zpf');
+  if(!sel) return;
+  sel.value=(sel.value===pri)?'all':pri;
+  filterZips();
+  updateLegendVisualState();
+}
+
+function updateLegendVisualState(){
+  const layerRows={'leg-sch':['rsidSch'],'leg-uni':['rsidUni'],'leg-pd':['rsidPd'],'leg-ct':['rsidCt'],'leg-stn':['rsidStn','stn']};
+  Object.entries(layerRows).forEach(([rowId,keys])=>{
+    const row=document.getElementById(rowId);
+    if(!row) return;
+    const key=keys.find(k=>LYR[k]);
+    const visible=key?MAP.hasLayer(LYR[key]):false;
+    row.classList.toggle('leg-off',!visible);
+  });
+  const pri=document.getElementById('zpf')?.value||'all';
+  ['hot','warm','cold'].forEach(p=>{
+    const row=document.getElementById('leg-pri-'+p);
+    if(!row) return;
+    row.classList.toggle('leg-active',pri===p);
+    row.classList.toggle('leg-off',pri!=='all'&&pri!==p);
+  });
+}
+
 /* ── SEARCH ── */
 
 document.getElementById("sb-in").addEventListener("input",function(){
@@ -3679,7 +3738,7 @@ function hideRsidGate(){ document.getElementById('rsid-gate').classList.remove('
 function openChangeRsid(){ document.getElementById('rsid-error').textContent=''; showRsidGate(); }
 
 function clearRsidLayers(){
-  ['rsidStn','rsidSch','rsidPd','rsidCt','rsidZip'].forEach(k=>{ if(LYR[k]){ MAP.removeLayer(LYR[k]); LYR[k]=null; } });
+  ['rsidStn','rsidSch','rsidUni','rsidPd','rsidCt','rsidZip'].forEach(k=>{ if(LYR[k]){ MAP.removeLayer(LYR[k]); LYR[k]=null; } });
 }
 
 function hideLegacyLayers(){
@@ -3726,7 +3785,7 @@ function renderRsidStation(station){
 }
 
 function renderRsidSchools(matched){
-  const markers=matched.map(s=>{
+  const mkMarker=(s)=>{
     const cfg=s.type==='5-COL'?'uni':'sch';
     const m=L.marker([s.lat,s.lng],{icon:mkIcon(cfg)});
     m.bindPopup(`<div style="min-width:190px;">
@@ -3736,8 +3795,11 @@ function renderRsidSchools(matched){
       ${s.phone?`<div style="font-size:10px;color:var(--txt3);margin-top:2px;">${s.phone}</div>`:''}
     </div>`);
     return m;
-  });
-  LYR.rsidSch=L.layerGroup(markers).addTo(MAP);
+  };
+  const schoolItems=matched.filter(s=>s.type!=='5-COL');
+  const uniItems=matched.filter(s=>s.type==='5-COL');
+  LYR.rsidSch=L.layerGroup(schoolItems.map(mkMarker)).addTo(MAP);
+  LYR.rsidUni=L.layerGroup(uniItems.map(mkMarker)).addTo(MAP);
 }
 
 function renderRsidPoints(key,cfg,items){
@@ -3826,6 +3888,7 @@ function loadRsidAO(station){
     document.getElementById('rsid-needsgeo-wrap').style.display='none';
     rsidNeedsGeocoding=[];
     renderRsidZipBoundaries(new Set());
+    updateLegendVisualState();
     addLog(`RSID ${station.rsid} loaded — station only, no school/ZIP data available yet.`);
     return;
   }
@@ -3849,6 +3912,7 @@ function loadRsidAO(station){
   renderRsidZipBoundaries(zipSet);
   renderRsidZipHighlight(zipSet);
 
+  updateLegendVisualState();
   addLog(`RSID ${station.rsid} AO loaded — ${matched.length}/${RSID_SCHOOLS_DATA.length} schools, ${RSID_POLICE_DATA.length} police, ${RSID_COURTS_DATA.length} courthouses pinned, ${zipSet.size} AO ZIPs referenced.`);
 }
 
