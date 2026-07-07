@@ -1343,8 +1343,8 @@ const NPS_F={58:[122,124,126,127],59:[127,128,130,131],60:[132,134,135,136],61:[
 const MIN_WT={58:91,59:94,60:97,61:100,62:104,63:107,64:110,65:114,66:117,67:121,68:125,69:128,70:132,71:136,72:140,73:144,74:148,75:152,76:156,77:160,78:164,79:168,80:173};
 const PS_BF_M={17:20,21:22,28:24,40:26};
 const PS_BF_F={17:30,21:32,28:34,40:36};
-const NPS_BF_M={17:26,21:26,28:28,40:30};
-const NPS_BF_F={17:32,21:32,28:34,40:36};
+const NPS_BF_M={17:24,21:26,28:28,40:30};
+const NPS_BF_F={17:30,21:32,28:34,40:36};
 
 // ── STATE ──────────────────────────────────────────────────────────────────
 let S = {gender:'M', standard:'ps', ht:70, wt:185, age:35, abd:36};
@@ -1365,8 +1365,8 @@ function getMaxWt(ht,age,g,std){
   return w;
 }
 function calcBF(g,wt,abd){
-  if(g==='M') return Math.round(10*(-26.97-0.12*wt+1.99*abd))/10;
-  return Math.round(10*(-9.15-0.015*wt+1.27*abd))/10;
+  if(g==='M') return Math.round(-26.97-0.12*wt+1.99*abd);
+  return Math.round(-9.15-0.015*wt+1.27*abd);
 }
 function htFt(i){return Math.floor(i/12)+"'"+(i%12)+'"';}
 
@@ -1453,14 +1453,14 @@ function render(){
 
   // Tape cards
   if(overWt){
-    document.getElementById('val-bf').textContent = bf > 0 ? bf.toFixed(1)+'%' : '—';
+    document.getElementById('val-bf').textContent = bf > 0 ? bf+'%' : '—';
     const bfPass = bf <= maxBF;
     const bfClose = bf > maxBF - 2;
     setCard('bf', bf > maxBF ? 'fail' : bfClose ? 'warn' : 'pass');
 
     let tapeCls, tapeVal, tapeSub;
-    if(bf<=maxBF){tapeCls='pass';tapeVal='PASS';tapeSub=(maxBF-bf).toFixed(1)+'% below max';}
-    else{tapeCls='fail';tapeVal='FAIL';tapeSub=(bf-maxBF).toFixed(1)+'% over max';}
+    if(bf<=maxBF){tapeCls='pass';tapeVal='PASS';tapeSub=(maxBF-bf)+'% below max';}
+    else{tapeCls='fail';tapeVal='FAIL';tapeSub=(bf-maxBF)+'% over max';}
     document.getElementById('val-tape').textContent = tapeVal;
     document.getElementById('sub-tape').textContent = tapeSub;
     setCard('tape', tapeCls);
@@ -1505,20 +1505,20 @@ function render(){
   // BF bar
   const bfPct = Math.max(0, Math.min(50, bf));
   const limitPct = (maxBF/50)*100;
-  document.getElementById('bf-actual-label').textContent = bf > 0 ? bf.toFixed(1)+'%' : '—';
+  document.getElementById('bf-actual-label').textContent = bf > 0 ? bf+'%' : '—';
   document.getElementById('bf-max-label').textContent = maxBF+'%';
   const bfBar = document.getElementById('bf-bar');
   bfBar.style.width = (bfPct*2)+'%';
   bfBar.style.background = bf>maxBF ? 'var(--fail)' : bf>maxBF-2 ? 'var(--warn)' : 'var(--pass)';
   document.getElementById('bf-limit').style.left = limitPct+'%';
-  document.getElementById('bar-label-mid').textContent = (bf>0?bf.toFixed(1)+'%':'—')+' actual  /  '+maxBF+'% max allowed';
+  document.getElementById('bar-label-mid').textContent = (bf>0?bf+'%':'—')+' actual  /  '+maxBF+'% max allowed';
 
   // Assessment summary cards
   document.getElementById('val-a-hw').textContent = underWt?'UNDER':hwPass?'PASS':'OVER';
   document.getElementById('sub-a-hw').textContent = underWt?'Medical eval':(hwPass?'No tape':'Tape required');
   setCard('a-hw', underWt?'fail':hwPass?'pass':'warn');
 
-  document.getElementById('val-a-bf').textContent = (overWt&&bf>0) ? bf.toFixed(1)+'%' : '—';
+  document.getElementById('val-a-bf').textContent = (overWt&&bf>0) ? bf+'%' : '—';
   document.getElementById('sub-a-bf').textContent = 'max '+maxBF+'%';
   if(!overWt){ setCard('a-bf','neutral'); }
   else { setCard('a-bf', bf>maxBF?'fail':bf>maxBF-2?'warn':'pass'); }
@@ -1544,12 +1544,12 @@ function render(){
     const overBy = bf - maxBF;
     const armsAmMax = maxBF + 2;
     const armsA6Max = maxBF + 6;
-    document.getElementById('arms-val-actual').textContent = bf.toFixed(1) + '%';
+    document.getElementById('arms-val-actual').textContent = bf + '%';
     document.getElementById('arms-val-max').textContent = maxBF + '%';
     document.getElementById('arms-am-max').textContent = 'up to ' + armsAmMax + '%';
     document.getElementById('arms-a6-max').textContent = 'up to ' + armsA6Max + '%';
     const overEl = document.getElementById('arms-val-over');
-    overEl.textContent = '+' + overBy.toFixed(1) + '%';
+    overEl.textContent = '+' + overBy + '%';
     const amCard = document.getElementById('arms-cat-am');
     const a6Card = document.getElementById('arms-cat-a6');
     let verdict = '';
@@ -1622,12 +1622,12 @@ function update5500Panel(){
   const fieldA = document.getElementById('f-remarks-a');
   const fieldB = document.getElementById('f-remarks-b');
   if(fieldA) fieldA.value = bfStd+'%';
-  if(fieldB) fieldB.value = bf>0 ? bf.toFixed(1)+'%' : '';
+  if(fieldB) fieldB.value = bf>0 ? bf+'%' : '';
 
   const passColor = pass ? '#6fbf5e' : '#e05c5c';
   document.getElementById('form-summary').innerHTML =
     `<strong>Will pre-fill:</strong> Height ${ht}", Weight ${wt} lbs, Age ${age}, ` +
-    `Abdomen avg ${abdAvg.toFixed(1)}", BF% ${bf>0?bf.toFixed(1):'—'} ` +
+    `Abdomen avg ${abdAvg.toFixed(1)}", BF% ${bf>0?bf:'—'} ` +
     `(standard: ${bfStd}%)<br>` +
     `<strong style="color:${passColor}">${pass?'IN COMPLIANCE':'NOT IN COMPLIANCE'}</strong>`;
 
@@ -1713,7 +1713,7 @@ async function generateForm(){
     setTF('form1[0].Page1[0].Abdomen_Average[0]',         abdVal);
     setTF('form1[0].Page1[0].Abdominal_Circumference[0]', abdVal);
     setTF('form1[0].Page1[0].Weight2[0]',                 String(wt));
-    setTF('form1[0].Page1[0].Item_4_Percentage_Body_Fat[0]', bf>0?bf.toFixed(1):'');
+    setTF('form1[0].Page1[0].Item_4_Percentage_Body_Fat[0]', bf>0?String(bf):'');
     if(prepName) setTF('form1[0].Page1[0].Name_Prepared_By[0]',  prepName);
     if(prepRank) setTF('form1[0].Page1[0].Rank_Prepared_By[0]',  prepRank);
     if(apprName) setTF('form1[0].Page1[0].Name_Approved_By[0]',  apprName);
