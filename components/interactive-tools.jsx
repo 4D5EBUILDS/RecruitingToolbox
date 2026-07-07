@@ -855,7 +855,7 @@ const MfrGenerator = ({ profile }) => {
                   <React.Fragment>
                     {/* Letterhead (AR 25-50 ¶1-16) */}
                     <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 4 }}>
-                      <img src="../../assets/logos/dod-seal.svg" alt="DoD Seal" style={{ height: 74, width: 74, flexShrink: 0 }}/>
+                      <img src="../../assets/logos/dod-seal.png" alt="DoD Seal" style={{ height: 74, width: 74, flexShrink: 0 }}/>
                       <div style={{ flex: 1, textAlign: "center", lineHeight: 1.25 }}>
                         <div style={{ fontWeight: "bold", fontSize: 11 }}>DEPARTMENT OF THE ARMY</div>
                         <div style={{ fontWeight: "bold", fontSize: 8.5 }}>{lh("unitName")}</div>
