@@ -80,8 +80,7 @@ button,select,textarea,input{font-family:inherit}
 /* Authority Badge */
 .auth-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;font-weight:700;font-size:11px;letter-spacing:.04em;text-transform:uppercase;flex-shrink:0}
 .auth-BN{background:rgba(26,95,168,.2);border:1px solid rgba(26,95,168,.4);color:#5b9fd4}
-.auth-USAREC{background:rgba(255,204,1,.12);border:1px solid rgba(255,204,1,.3);color:var(--gold)}
-.auth-DMPM{background:rgba(207,0,0,.15);border:1px solid rgba(207,0,0,.3);color:#ff6b6b}
+.auth-USARD{background:rgba(255,204,1,.12);border:1px solid rgba(255,204,1,.3);color:var(--gold)}
 .auth-NONE{background:rgba(255,255,255,.06);border:1px solid var(--bd-m);color:var(--fg-m)}
 
 /* ── SIDEBAR ───────────────────────────────────────────────── */
@@ -213,16 +212,8 @@ button,select,textarea,input{font-family:inherit}
 .q-prog-dot.done{background:var(--gold)}
 .q-prog-dot.active{background:rgba(255,204,1,.5)}
 
-/* ── EXPERT MODE ───────────────────────────────────────────── */
-.expert-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.expert-field{display:flex;flex-direction:column;gap:4px}
-.expert-label{font-size:10px;color:var(--fg-m);text-transform:uppercase;letter-spacing:.06em}
-.expert-select{background:var(--in-bg);border:1px solid var(--in-bd);color:var(--fg2);padding:7px 9px;font-family:inherit;font-size:12px;outline:none;cursor:pointer;transition:border-color .15s;width:100%}
-.expert-select:focus{border-color:var(--gold)}
-
 /* ── VERDICT ───────────────────────────────────────────────── */
 .verdict-card{padding:24px;animation:stampIn .35s ease both}
-.verdict-WAIVABLE{box-shadow:0 0 0 1px #050507, 0 0 25px rgba(255,204,1,.4) !important}
 .verdict-WAIVABLE{background:#111113;border:3px solid #FFCC01;box-shadow:0 0 0 1px #050507, 0 0 18px rgba(255,204,1,.35)}
 .verdict-NO_WAIVER_REQUIRED{background:rgba(26,95,168,.1);border:2px solid rgba(26,95,168,.45)}
 .verdict-NOT_WAIVABLE{background:rgba(207,0,0,.1);border:2px solid rgba(207,0,0,.45)}
@@ -334,16 +325,6 @@ select.form-input{cursor:pointer}
 .mos-restriction{font-size:11px;color:var(--fg2);padding:4px 0;display:flex;align-items:flex-start;gap:7px;border-bottom:1px solid var(--bd)}
 .mos-restriction:last-child{border-bottom:none}
 
-/* ── KANBAN / TRACKER ──────────────────────────────────────── */
-.kanban-cols{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.kanban-col{border:1px solid var(--bd);padding:10px}
-.kanban-col-hdr{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--fg-m);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--bd)}
-.kanban-card{background:var(--bg-s);border:1px solid var(--bd);padding:10px;margin-bottom:6px;cursor:pointer;transition:all .15s}
-.kanban-card:hover{border-color:var(--bd-s)}
-.kanban-card-name{font-size:12px;font-weight:700;color:var(--fg2);margin-bottom:4px}
-.kanban-card-meta{font-size:10px;color:var(--fg-m)}
-.kanban-move{display:flex;gap:4px;margin-top:7px}
-
 /* ── MODAL ─────────────────────────────────────────────────── */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:100;display:flex;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto;animation:fadeIn .15s ease}
 .modal{background:var(--bg-s);border:1px solid var(--bd-m);width:100%;max-width:680px;animation:fadeUp .2s ease}
@@ -400,10 +381,6 @@ select.form-input{cursor:pointer}
 @keyframes refPulse{0%{box-shadow:0 0 0 0 rgba(255,204,1,.5)}70%{box-shadow:0 0 0 6px rgba(255,204,1,0)}100%{box-shadow:0 0 0 0 rgba(255,204,1,0)}}
 .ref-entry.pulse{animation:refPulse .6s ease}
 
-/* ── WAIVER BOT ─────────────────────────────────────────────── */
-.bot-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--fg);flex:1}
-.bot-sub{font-size:10px;color:var(--fg-m);margin-top:1px}
-
 /* ══════════════════════════════════════════════════════════════
    TACTICAL OVERRIDE LAYER — "Bold Tactical" aggressive redesign
    Loaded last so it overrides the base styles above.
@@ -421,7 +398,7 @@ select.form-input{cursor:pointer}
 .card-title{letter-spacing:.09em}
 .tab-btn,.btn{letter-spacing:.09em}
 .offense-group-label,.form-section,.label-sm,.sidebar-title,
-.ref-panel-title,.kanban-col-hdr,.verdict-tag{letter-spacing:.13em}
+.ref-panel-title,.verdict-tag{letter-spacing:.13em}
 
 /* Top command accent rail on the header */
 .topbar{border-bottom:2px solid var(--bd-m);box-shadow:0 2px 0 rgba(0,0,0,.55)}
@@ -477,10 +454,44 @@ select.form-input{cursor:pointer}
   clip-path:polygon(4px 0,100% 0,100% calc(100% - 4px),calc(100% - 4px) 100%,0 100%,0 4px)}
 
 /* Inputs — sharper tactical focus ring */
-.form-input:focus,.expert-select:focus{box-shadow:0 0 0 1px rgba(255,204,1,.32)}
+.form-input:focus{box-shadow:0 0 0 1px rgba(255,204,1,.32)}
 
 /* Readiness ring glow */
 .readiness-ring .ring-fill{filter:drop-shadow(0 0 3px rgba(255,204,1,.5))}
+
+
+/* ── CASE SCREENING (Step 1) ───────────────────────────────── */
+.case-q{padding:12px 4px;border-bottom:1px solid var(--bd)}
+.case-q:last-child{border-bottom:none}
+.case-q-text{font-size:13px;font-weight:700;color:var(--fg2);margin-bottom:8px;line-height:1.4}
+.case-q-opts{display:flex;flex-wrap:wrap;gap:6px}
+.case-opt{padding:7px 12px;font-size:11px;font-weight:600;border:1px solid var(--bd-m);background:var(--bg-s);color:var(--fg2);cursor:pointer;transition:all .15s;font-family:inherit;text-align:left}
+.case-opt:hover{border-color:var(--bd-s)}
+.case-opt.selected{border-color:var(--gold);background:rgba(255,204,1,.1);color:var(--gold)}
+.case-opt.selected.danger{border-color:#ff5555;background:rgba(207,0,0,.12);color:#ff7070}
+
+/* ── RESPONSIVE (phone / narrow) ───────────────────────────── */
+@media (max-width: 900px){
+  html,body{overflow:auto}
+  .app-shell{flex-direction:column;overflow:visible}
+  .sidebar{position:fixed;top:52px;left:0;bottom:0;z-index:60;width:min(280px,85vw);box-shadow:4px 0 20px rgba(0,0,0,.5)}
+  .sidebar.collapsed{width:0;box-shadow:none}
+  .ref-panel{width:100%;border-left:none;border-top:1px solid var(--bd);max-height:40vh}
+  .main-panel{overflow:visible}
+  .main-scroll{overflow:visible;padding:12px}
+  .topbar{height:auto;flex-wrap:wrap;padding:8px 10px;gap:8px}
+  .topbar-center{order:3;flex-basis:100%;justify-content:flex-start}
+  .tab-btn{padding:9px 8px;font-size:10px;letter-spacing:.04em}
+  .form-grid,.form-grid-3,.form-grid-4{grid-template-columns:1fr 1fr}
+  .offense-grid{grid-template-columns:1fr}
+  .output-grid{grid-template-columns:1fr}
+  .case-q-opts{flex-direction:column}
+  .case-opt{width:100%}
+}
+@media (max-width: 540px){
+  .form-grid,.form-grid-3,.form-grid-4{grid-template-columns:1fr}
+  .exp-item{grid-template-columns:1fr;gap:6px}
+}
 
 /* ── PRINT ─────────────────────────────────────────────────── */
 @media print{
@@ -493,7 +504,7 @@ select.form-input{cursor:pointer}
 </head>
 <body>
 <div id="root"></div>
-<script src="waiver-data.js?v=2"></script>
+<script src="waiver-data.js?v=4"></script>
 <script src="https://unpkg.com/pako@2.1.0/dist/pako.min.js" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
@@ -501,10 +512,11 @@ select.form-input{cursor:pointer}
 <script type="text/babel">
 const { useState, useEffect, useCallback, useRef, useMemo } = React;
 const {
-  OFFENSE_CATEGORIES, QUALIFYING_QUESTIONS, CHECKLIST_ITEMS,
+  OFFENSE_CATEGORIES, CASE_QUESTIONS, CHECKLIST_ITEMS,
+  DISPOSITION_OPTIONS, CONFINEMENT_OPTIONS, PROBATION_OPTIONS,
   SAMPLE_SCENARIOS, PARA_TEXT, ED_LEVELS, US_STATES,
   MOS_RESTRICTIONS, APPROVABILITY_FACTORS,
-  CAT_PARA_MAP, Q_PARA_MAP
+  CAT_PARA_MAP, Q_PARA_MAP, REG_VERSION
 } = window;
 
 /* ── Icons ─────────────────────────────────────────────── */
@@ -523,26 +535,25 @@ const IcoGauge  = () => <svg width="13" height="13" viewBox="0 0 14 14" fill="no
 const IcoMOS    = () => <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><rect x="1.5" y="3" width="11" height="8" rx="1" stroke="currentColor" strokeWidth="1.3"/><path d="M5 3V2h4v1M4 7h6M4 9.5h4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>;
 
 /* ── Storage ────────────────────────────────────────────── */
-const STORAGE_KEY = 'moral-waiver-v3';
+const STORAGE_KEY = 'moral-waiver-v4';
 
 const loadRoster = () => { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)||'null'); } catch { return null; } };
 const saveRoster = (roster) => { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(roster)); } catch {} };
 
 const blankApplicant = () => ({
-  id: `a${Date.now()}`,
+  id: `a${Date.now()}${Math.floor(Math.random()*1e4)}`,
   savedAt: new Date().toISOString(),
-  // Applicant Info
+  // Applicant Info (SSN stored as last-4 only — full SSN is never persisted)
   lastName:'', firstName:'', mi:'', ssn:'', dob:'', rsid:'',
   educationLevel:'', educationCode:'', afqt:'', psNps:'', maritalStatus:'',
   numDependents:'', dependentAges:'',
   // Recruiter Info
   recruiterUnit:'', recruiterAddress:'', recruiterOfficeSym:'', recruiterName:'', recruiterRank:'',
-  // Screening
-  offenses: [],       // { id, categoryId, verdict, answers, ...offense log data }
+  // Screening — case-level answers (asked once) + offense record
+  caseAnswers:{},
+  offenses: [],   // { id, categoryId, offenseDate, convictionDate, disposition, confinement, releaseDate, probation, description, city, county, state, dispositionText, courtDocs, incidentRpt }
   // Packet
   checklistStatus:{}, checklistNotes:{}, expDates:{},
-  // Tracker
-  trackerStatus:'building', trackerNotes:'', submittedDate:'', approvedDate:'',
   // MOS
   mosCode:'',
 });
@@ -565,297 +576,288 @@ const getExpiryStatus = (days) => {
   return 'ok';
 };
 
-/* ── Core Logic ─────────────────────────────────────────── */
-const computeVerdictFromAnswers = (offenseId, answers) => {
-  const cat = OFFENSE_CATEGORIES.find(c => c.id === offenseId);
-  if (!cat) return null;
-
-  // No-waiver-required categories
-  if (cat.noWaiverRequired) return { type:'NO_WAIVER_REQUIRED', reason: cat.noWaiverText || 'No waiver required for this offense type.', cite:'AR 601-210, para 4-35' };
-  if (cat.bar) return { type:'NOT_WAIVABLE', reason: cat.barText, cite:`AR 601-210, ${cat.barPara}` };
-
-  const { disposition, pending_charges, civil_restraint, major_count, lautenberg, sex_offender, confinement_days } = answers;
-
-  if (disposition === 'dismissed') return { type:'NO_WAIVER_REQUIRED', reason:'No adverse court disposition — waiver is not required. Document in GENESIS remarks.', cite:'AR 601-210, para 4-30' };
-  if (disposition === 'self_admit') return { type:'ETP_REQUIRED', reason:'Self-admittal with no court record. An Exception to Policy (ETP) may be required before submission. Verify with battalion S1 before building the packet.', cite:'AR 601-210, para 4-30' };
-  if (pending_charges === 'yes') return { type:'NOT_WAIVABLE', reason:'Applicant has pending criminal or juvenile charges. Cannot process until ALL charges are fully resolved.', cite:'AR 601-210, para 4-22g' };
-  if (civil_restraint === 'yes') return { type:'NOT_WAIVABLE', reason:'Applicant is currently under civil restraint (confinement, parole, or supervised probation). Cannot process.', cite:'AR 601-210, para 4-22h' };
-  if (major_count === '2plus') return { type:'NOT_WAIVABLE', reason:'Two or more major misconduct (felony-level) convictions — permanently disqualified. No waiver authority exists at any level.', cite:'AR 601-210, para 4-22i' };
-  if (lautenberg === 'yes') return { type:'NOT_WAIVABLE', reason:'Lautenberg Amendment conviction — absolute bar to enlistment at every level.', cite:'AR 601-210, Table 4-4, Code 414' };
-  if (sex_offender === 'yes') return { type:'NOT_WAIVABLE', reason:'Sex offense or sex offender registration requirement — absolute bar.', cite:'AR 601-210, para 4-22j' };
-
-  if (confinement_days === '15plus') return { type:'WAITING_PERIOD', waitMonths:6, reason:'6-month waiting period required after release from confinement (15+ days). BN CO may waive up to 3 months of this waiting period.', cite:'AR 601-210, para 4-31' };
-  if (confinement_days === 'under15') return { type:'WAITING_PERIOD', waitMonths:3, reason:'3-month waiting period required after release from confinement (under 15 days). BN CO may waive up to 45 days of this waiting period.', cite:'AR 601-210, para 4-31' };
-
-  const authority = cat.authority || 'BN';
-  return { type:'WAIVABLE', authority, cite:'AR 601-210, Chapter 4' };
+/* ── Core Logic — whole-case verdict engine (AR 601-210, 20 Mar 2026) ───── */
+const ADVERSE_DISPS = ['convicted','adverse'];
+const isAdverse = o => ADVERSE_DISPS.includes(o.disposition);
+const catOf = id => OFFENSE_CATEGORIES.find(c => c.id === id);
+// Parse YYYY-MM-DD as LOCAL midnight — bare new Date(iso) parses as UTC and
+// shifts clock math by up to a day (or 4 days across month boundaries).
+const localDate = iso => new Date(`${iso}T00:00:00`);
+const yearsSince = iso => (Date.now() - localDate(iso).getTime()) / (365.25*24*3600*1000);
+const addMonthsIso = (iso, m) => { const d = localDate(iso); d.setMonth(d.getMonth() + m); return d; };
+const sortNewest = arr => [...arr].sort((a,b) => (b.offenseDate||'').localeCompare(a.offenseDate||''));
+const isJuvenileOffense = (applicant, o) => {
+  if (!applicant.dob || !o.offenseDate) return false;
+  const cut = localDate(applicant.dob); cut.setFullYear(cut.getFullYear() + 18);
+  return localDate(o.offenseDate) < cut;
 };
 
-// Determine the governing (highest) authority across all screened offenses
-const computeGoverningAuthority = (screenedOffenses) => {
-  const order = ['NONE','BN','USAREC','DMPM'];
-  let highest = 'BN';
-  for (const so of screenedOffenses) {
-    if (so.verdict?.type === 'NOT_WAIVABLE') return 'NONE';
-    if (so.verdict?.type === 'WAIVABLE') {
-      const auth = so.verdict.authority;
-      if (order.indexOf(auth) > order.indexOf(highest)) highest = auth;
+// The regulation decides waivers by counting offenses across the WHOLE record
+// (paras 4-6 / 4-7), so eligibility is computed from the full case, not per offense.
+const computeCaseVerdict = (applicant) => {
+  const ca = applicant.caseAnswers || {};
+  const offenses = applicant.offenses || [];
+  const answered = Object.values(ca).some(v => v);
+  if (!offenses.length && !answered) return null;
+
+  const bars = [], waivers = [], waits = [], suitability = [], notes = [];
+  const waivedIds = [];
+  let etp = false;
+  const isPS = applicant.psNps === 'PS';
+
+  /* ── Case-level bars (asked once) ── */
+  if (ca.pending_charges === 'yes') bars.push({ perm:false, title:'Pending Charges', cite:'AR 601-210, 4-22g / 4-33', text:'Criminal or juvenile charges are pending — this includes UNPAID traffic tickets. No processing (including waiver submission) until all charges are fully resolved.' });
+  if (ca.civil_restraint === 'active') bars.push({ perm:false, title:'Under Civil Restraint', cite:'AR 601-210, 4-22h', text:'Applicant is currently confined, on parole, or on supervised probation. Cannot process. Exception: unsupervised probation for para 4-35 minor offenses only.' });
+  if (ca.dependence === 'yes') bars.push({ perm:false, title:'Alcohol / Drug Dependence Not in Remission', cite:'AR 601-210, 4-22b / 4-22c', text:'Not eligible until in sustained remission for 12 consecutive months.' });
+  if (ca.lautenberg === 'yes') bars.push({ perm:true, title:'Lautenberg DV Conviction', cite:'AR 601-210, 4-7b · Table 4-4, Code 414', text:'Qualifying misdemeanor domestic violence conviction — enlistment prohibited. No waivers will be approved at any level.' });
+  if (ca.sex_offender === 'yes') bars.push({ perm:true, title:'Sex Offense / Registry Listing', cite:'AR 601-210, 4-22j / 4-7d', text:'Sex offense conviction or sex offender registry listing — permanently disqualified. No waiver authorized.' });
+  if (ca.civil_restraint === 'unsupervised') notes.push({ label:'Unsupervised probation for a para 4-35 minor offense — may process, provided all fines are paid, all conditions complete, and no further court action is pending.', cite:'4-35' });
+  if (ca.dependence === 'remission') notes.push({ label:'Prior dependence in sustained remission 12+ consecutive months — eligible. Document treatment history on DD 2807-2.', cite:'4-22b/c' });
+
+  /* ── Classify each offense ── */
+  const majors=[], miscs=[], minors=[], traffics=[], dats=[];
+  let duiLast3 = 0, drugPossLast3 = 0;
+  const suitSeen = new Set();
+  const addSuit = (label, level, cite) => { const k = level + cite; if (!suitSeen.has(k)) { suitSeen.add(k); suitability.push({ label, level, cite }); } };
+
+  offenses.forEach(o => {
+    const cat = catOf(o.categoryId); if (!cat) return;
+
+    // Suitability reviews apply REGARDLESS of disposition (4-2f(2)(a))
+    if (cat.suitability) addSuit(cat.label, cat.suitability.level, cat.suitability.cite);
+    if (cat.class === 'major') addSuit('Major misconduct charge (required regardless of disposition)', 'USARD', '4-2f(2)(a)3');
+
+    // DAT results and PS military discipline are not court cases — handle before disposition
+    if (cat.group === 'dat') {
+      if (cat.class === 'bar') bars.push({ perm:true, title:cat.label, cite:`AR 601-210, ${cat.barPara}`, text:cat.barText });
+      else dats.push(o);
+      return;
+    }
+    if (cat.class === 'ps') {
+      notes.push({ label:`${cat.label} — military discipline history is handled through suitability review / RE-code rules, not a civil conduct waiver. Consult S1/EEPD.`, cite:'4-12c' });
+      return;
+    }
+
+    if (o.disposition === 'dismissed') {
+      notes.push({ label:`${cat.label}: dismissed with no adverse disposition — no waiver required. Still list on SF 86 and UF 601-210.08.`, cite:'4-30a' });
+      return;
+    }
+    if (o.disposition === 'self_admit') {
+      if (cat.class === 'major' || cat.class === 'misc') {
+        etp = true;
+        notes.push({ label:`${cat.label}: self-admitted, no court record — run a court check first (UF 601-210.02 if court will not furnish), then coordinate with BN S1. An Exception to Policy may be required before waiver processing.`, cite:'4-30a / QC Checklist' });
+      } else {
+        notes.push({ label:`${cat.label}: self-admitted with no record — no waiver required. Document on SF 86.`, cite:'4-30a' });
+      }
+      return;
+    }
+    if (!isAdverse(o)) return; // disposition not yet selected
+
+    if (cat.class === 'bar') { bars.push({ perm:true, title:cat.label, cite:`AR 601-210, ${cat.barPara}`, text:cat.barText }); waivedIds.push(o.id); return; }
+    if (cat.class === 'major') majors.push(o);
+    else if (cat.class === 'misc') miscs.push(o);
+    else if (cat.class === 'minor') minors.push(o);
+    else if (cat.class === 'traffic') traffics.push(o);
+
+    if (cat.dui && o.offenseDate && yearsSince(o.offenseDate) <= 3) duiLast3++;
+    if (cat.drugPossession && o.offenseDate && yearsSince(o.offenseDate) <= 3) drugPossLast3++;
+  });
+
+  const nMaj = majors.length, nMisc = miscs.length, nMinor = minors.length;
+
+  /* ── Count-based bars ── */
+  if (nMaj >= 2) bars.push({ perm:true, title:'Two or More Major Misconduct Convictions', cite:'AR 601-210, 4-22i', text:'Conviction or adverse disposition for more than one major misconduct (felony-level) offense — cannot be waived at any level.' });
+  if (nMisc >= 6) bars.push({ perm:true, title:'Six or More Misconduct Offenses', cite:'AR 601-210, 4-6c', text:'Six or more misconduct convictions/adverse dispositions prior to application — a waiver may not be considered.' });
+  if (nMaj >= 1) {
+    const nonTraffic = nMaj + nMisc + nMinor;
+    if (nonTraffic >= 3) bars.push({ perm:true, title:'Major Misconduct + 3 or More Non-Traffic Offenses', cite:'AR 601-210, 4-7c(1)', text:`Major misconduct conviction combined with ${nonTraffic} total non-traffic offenses — a waiver may not be considered.` });
+    if (duiLast3 >= 2) bars.push({ perm:true, title:'Major Misconduct + 2 DUIs Within 3 Years', cite:'AR 601-210, 4-7c(4)', text:'Major misconduct conviction combined with two or more DUI convictions/adverse dispositions within 3 years of application — a waiver may not be considered.' });
+    if (drugPossLast3 >= 2) bars.push({ perm:true, title:'Major Misconduct + 2 Drug Possession Charges Within 3 Years', cite:'AR 601-210, 4-7c(6)', text:'Major misconduct conviction combined with two or more separate drug/paraphernalia possession charges within 3 years of application — a waiver may not be considered.' });
+    if (isPS) bars.push({ perm:true, title:'Prior Service + Major Misconduct', cite:'AR 601-210, 4-7c(5)', text:'PS applicant with a major misconduct conviction incurred DURING or AFTER military service — a waiver may not be considered. Verify offense timing against service dates: if the offense occurred entirely before service, this bar does not apply — confirm with S1.' });
+  }
+
+  /* ── Waiver requirements ── */
+  if (nMaj >= 1) {
+    waivers.push({ label:`Major misconduct (felony-level) — ${nMaj === 1 ? 'single offense' : nMaj + ' offenses'}`, authority:'USARD', cite:'4-7a' });
+    majors.forEach(o => {
+      waivedIds.push(o.id);
+      const cat = catOf(o.categoryId);
+      const clock = o.convictionDate || o.offenseDate;
+      if (clock) {
+        const earliest = addMonthsIso(clock, 24);
+        const daysLeft = Math.ceil((earliest - new Date()) / 86400000);
+        if (daysLeft > 0) waits.push({ id:`w24_${o.id}`, label:`${cat?.label} — 24-month wait from conviction date`, from:clock, earliest, daysLeft, cite:'4-7a', note: o.convictionDate ? null : 'Estimated from OFFENSE date — enter the conviction date for the correct clock.' });
+      } else {
+        waits.push({ id:`w24_${o.id}`, label:`${cat?.label} — 24-month wait from conviction date`, needDate:true, cite:'4-7a' });
+      }
+      if (isJuvenileOffense(applicant, o)) notes.push({ label:`${cat?.label}: committed as a juvenile — if no offenses within 5 years of application, may be considered in meritorious cases.`, cite:'4-7c(2)' });
+    });
+  }
+
+  if (nMisc >= 2) {
+    waivers.push({ label:`${nMisc} misconduct offenses (two to five require a waiver)`, authority:'BN', cite:'4-6a(2)' });
+    miscs.forEach(o => waivedIds.push(o.id));
+  } else if (nMisc === 1) {
+    const o = miscs[0], cat = catOf(o.categoryId);
+    if (cat.noWaiverSingle) {
+      notes.push({ label:`${cat.label}: single conviction — NO waiver required (20 Mar 2026 change). Must still be listed on UF 601-210.08, SF 86, and RZ. A negative MEPS drug test is still required.`, cite:'4-6a (2026)' });
+    } else if (cat.singleWaiver) {
+      waivers.push({ label:`${cat.label} — a single conviction requires a waiver`, authority:'BN', cite:'4-6a(4)' });
+      waivedIds.push(o.id);
+    } else {
+      notes.push({ label:`${cat.label}: single misconduct conviction — no waiver required unless combined with other offenses (2–5 misconduct = waiver). List on UF 601-210.08 and SF 86.`, cite:'4-6a(2)' });
     }
   }
-  return highest;
+
+  if (nMinor >= 5) {
+    waivers.push({ label:`${nMinor} minor nontraffic offenses (five or more require a waiver)`, authority:'BN', cite:'4-6a(1)' });
+    minors.forEach(o => waivedIds.push(o.id));
+  } else if (nMisc >= 1 && (nMisc + nMinor) >= 5) {
+    waivers.push({ label:`Combination of ${nMisc + nMinor} misconduct + minor nontraffic offenses`, authority:'BN', cite:'4-6a(3)' });
+    [...miscs, ...minors].forEach(o => { if (!waivedIds.includes(o.id)) waivedIds.push(o.id); });
+  } else if (nMinor > 0) {
+    notes.push({ label:`${nMinor} minor nontraffic offense(s) — under the five-offense threshold, no waiver required. List on UF 601-210.08 and SF 86.`, cite:'4-6a(1)' });
+  }
+
+  if (traffics.length > 0) notes.push({ label:'Minor traffic violations — no waiver required. Verify no UNPAID tickets (unpaid = pending charges, 4-22g). List on UF 601-210.08.', cite:'4-8 / 4-22g' });
+
+  /* ── DAT waivers ── */
+  dats.forEach(o => {
+    const cat = catOf(o.categoryId);
+    waivers.push({ label: cat.label, authority:'BN', cite:'4-18' });
+    waivedIds.push(o.id);
+    if (isPS) bars.push({ perm:true, title:'Prior Service + Positive DAT', cite:'AR 601-210, 4-18d', text:'A waiver may not be considered for a PS applicant who tested positive at MEPS for any drug use.' });
+    if (o.offenseDate && cat.datRetestDays) {
+      const earliest = localDate(o.offenseDate); earliest.setDate(earliest.getDate() + cat.datRetestDays);
+      const daysLeft = Math.ceil((earliest - new Date()) / 86400000);
+      if (daysLeft > 0) waits.push({ id:`wdat_${o.id}`, label:`${cat.label} — ${cat.datRetestDays === 90 ? '90-day' : '1-year'} retest wait from test date`, from:o.offenseDate, earliest, daysLeft, cite:'4-18b' });
+    }
+  });
+
+  /* ── 4-31 confinement waiting periods (run from RELEASE date) ── */
+  if (waivers.length) {
+    offenses.filter(isAdverse).forEach(o => {
+      if (!waivedIds.includes(o.id)) return;
+      const cat = catOf(o.categoryId);
+      const wm = o.confinement === '15plus' ? 6 : o.confinement === '1to14' ? 3 : 0;
+      if (wm) {
+        if (o.releaseDate) {
+          const earliest = addMonthsIso(o.releaseDate, wm);
+          const daysLeft = Math.ceil((earliest - new Date()) / 86400000);
+          if (daysLeft > 0) waits.push({ id:`wc_${o.id}`, label:`${cat?.label} — ${wm}-month wait after release from confinement`, from:o.releaseDate, earliest, daysLeft, cite:`4-31b(${wm === 3 ? '2' : '3'})`, note:`BN CO may waive up to ${wm === 3 ? '45 days' : '3 months'} if sentenced only to a fine and elected confinement instead (court verification required).` });
+        } else {
+          waits.push({ id:`wc_${o.id}`, label:`${cat?.label} — ${wm}-month wait after RELEASE from confinement`, needDate:true, cite:'4-31b' });
+        }
+      }
+      if (o.probation === 'completed') notes.push({ label:`${cat?.label}: probation/parole completed — obtain probation officer completion documents before submission.`, cite:'4-31b(1) / 4-28e(2)' });
+      if (o.probation === 'active') bars.push({ perm:false, title:'Probation / Parole Still Active', cite:'AR 601-210, 4-22h', text:`${cat?.label}: probation or parole is still active — applicant is under civil restraint and cannot process (unless unsupervised probation for a para 4-35 minor offense).` });
+    });
+  }
+
+  /* ── Count-based suitability reviews (4-2f) ── */
+  if (nMisc >= 2) addSuit(`${nMisc} misconduct offenses`, 'BN', '4-2f(2)(a)1');
+  if (nMisc + nMinor >= 4) addSuit(`${nMisc + nMinor} combined nontraffic/misconduct offenses`, 'BN', '4-2f(2)(a)2');
+
+  /* ── Overall status ── */
+  const authority = waivers.some(w => w.authority === 'USARD') ? 'USARD' : (waivers.length ? 'BN' : null);
+  let status;
+  if (bars.length) status = 'NOT_WAIVABLE';
+  else if (waivers.length) status = waits.some(w => w.needDate || w.daysLeft > 0) ? 'WAITING_PERIOD' : 'WAIVABLE';
+  else if (etp) status = 'ETP_REQUIRED';
+  else if (offenses.length) status = 'NO_WAIVER_REQUIRED';
+  else status = 'PENDING';
+
+  return { status, authority, bars, waivers, waits, suitability, notes, etp,
+           permBar: bars.some(b => b.perm), waivedIds,
+           counts:{ major:nMaj, misc:nMisc, minor:nMinor, traffic:traffics.length, dat:dats.length } };
 };
 
-// Determine overall case verdict
-const computeOverallVerdict = (screenedOffenses) => {
-  if (!screenedOffenses || screenedOffenses.length === 0) return null;
-  // Any absolute bar → NOT_WAIVABLE
-  for (const so of screenedOffenses) {
-    if (so.verdict?.type === 'NOT_WAIVABLE') return 'NOT_WAIVABLE';
-  }
-  // Any waiting period
-  for (const so of screenedOffenses) {
-    if (so.verdict?.type === 'WAITING_PERIOD') return 'WAITING_PERIOD';
-  }
-  // Any ETP
-  for (const so of screenedOffenses) {
-    if (so.verdict?.type === 'ETP_REQUIRED') return 'ETP_REQUIRED';
-  }
-  // If any waivable, overall is waivable
-  if (screenedOffenses.some(so => so.verdict?.type === 'WAIVABLE')) return 'WAIVABLE';
-  // All no-waiver or dismissed
-  return 'NO_WAIVER_REQUIRED';
-};
-
-const computeApprovabilityScore = (screenedOffenses, applicant) => {
-  if (!screenedOffenses?.length) return null;
-  const ov = computeOverallVerdict(screenedOffenses);
-  if (ov === 'NOT_WAIVABLE') return null;
-
-  let score = 60; // baseline
+// UNOFFICIAL approval-odds estimate — weights are heuristic, not regulatory.
+const computeApprovabilityScore = (applicant, verdict) => {
+  if (!verdict || !verdict.waivers.length || verdict.bars.length) return null;
+  let score = 60;
   const factors = [];
 
-  // Authority mod
-  const auth = computeGoverningAuthority(screenedOffenses);
-  const authMod = APPROVABILITY_FACTORS.authorityMods[auth] || 0;
-  if (authMod !== 0) factors.push({ label:`${auth} level authority`, mod:authMod });
-  score += authMod;
+  const authMod = APPROVABILITY_FACTORS.authorityMods[verdict.authority] || 0;
+  if (authMod) { factors.push({ label:`${verdict.authority} level authority`, mod:authMod }); score += authMod; }
 
-  // Offense count
-  const cnt = screenedOffenses.filter(so => so.verdict?.type === 'WAIVABLE' || so.verdict?.type === 'ETP_REQUIRED').length;
-  const cntMod = cnt === 1 ? 15 : cnt === 2 ? -10 : cnt === 3 ? -20 : -35;
-  if (cntMod !== 0) factors.push({ label:`${cnt} waiver offense(s)`, mod:cntMod });
-  score += cntMod;
+  const cnt = verdict.waivedIds.length;
+  const cntMod = cnt <= 1 ? 15 : cnt === 2 ? -10 : cnt === 3 ? -20 : -35;
+  factors.push({ label:`${cnt} offense(s) in waiver`, mod:cntMod }); score += cntMod;
 
-  // Time since most recent offense (from offense log)
-  const offenseDates = screenedOffenses.flatMap(so => so.offenseDate ? [new Date(so.offenseDate)] : []).sort((a,b)=>b-a);
-  if (offenseDates.length > 0) {
-    const yearsAgo = (Date.now() - offenseDates[0].getTime()) / (365.25*24*3600*1000);
-    const tf = APPROVABILITY_FACTORS.timeFactors.slice().reverse().find(t => yearsAgo <= t.yearsAgo) || APPROVABILITY_FACTORS.timeFactors[APPROVABILITY_FACTORS.timeFactors.length-1];
-    if (tf.mod !== 0) factors.push({ label:tf.label, mod:tf.mod });
-    score += tf.mod;
+  const waivedDates = (applicant.offenses||[]).filter(o => o.offenseDate && verdict.waivedIds.includes(o.id)).map(o => o.offenseDate).sort().reverse();
+  if (waivedDates[0]) {
+    const y = yearsSince(waivedDates[0]);
+    const tf = APPROVABILITY_FACTORS.timeFactors.find(t => y <= t.yearsAgo) || APPROVABILITY_FACTORS.timeFactors[APPROVABILITY_FACTORS.timeFactors.length-1];
+    if (tf.mod) { factors.push({ label:tf.label, mod:tf.mod }); score += tf.mod; }
   }
 
-  // AFQT
   const afqt = parseInt(applicant.afqt);
   if (!isNaN(afqt)) {
     const am = APPROVABILITY_FACTORS.afqtMods.find(a => afqt >= a.min);
-    if (am && am.mod !== 0) { factors.push({ label:am.label, mod:am.mod }); score += am.mod; }
+    if (am && am.mod) { factors.push({ label:am.label, mod:am.mod }); score += am.mod; }
   }
 
-  // Education
   const eduMod = APPROVABILITY_FACTORS.educationMods[applicant.educationLevel] ?? 0;
-  if (eduMod !== 0) factors.push({ label:applicant.educationLevel, mod:eduMod });
-  score += eduMod;
+  if (eduMod) { factors.push({ label:applicant.educationLevel, mod:eduMod }); score += eduMod; }
 
-  // Juvenile bonus
-  if (screenedOffenses.some(so => so.answers?.is_adult === 'no')) {
-    factors.push({ label:'Juvenile offense (more sympathetic)', mod:APPROVABILITY_FACTORS.juvenileMod });
-    score += APPROVABILITY_FACTORS.juvenileMod;
+  if ((applicant.offenses||[]).some(o => verdict.waivedIds.includes(o.id) && isJuvenileOffense(applicant, o))) {
+    factors.push({ label:'Juvenile offense', mod:APPROVABILITY_FACTORS.juvenileMod }); score += APPROVABILITY_FACTORS.juvenileMod;
+  }
+  if (verdict.counts.major === 0) {
+    factors.push({ label:'No major misconduct', mod:APPROVABILITY_FACTORS.firstOffenseMod }); score += APPROVABILITY_FACTORS.firstOffenseMod;
   }
 
-  // First offense bonus
-  if (screenedOffenses.every(so => so.answers?.major_count === '0' || so.answers?.major_count === undefined)) {
-    factors.push({ label:'No prior major misconduct', mod:APPROVABILITY_FACTORS.firstOffenseMod });
-    score += APPROVABILITY_FACTORS.firstOffenseMod;
-  }
-
-  score = Math.max(5, Math.min(95, score));
-  return { score: Math.round(score), factors };
+  return { score: Math.max(5, Math.min(95, Math.round(score))), factors };
 };
 
-const getRequiredChecklist = (authority, isTrafficOnly) => {
+// Confinement/probation drive extra checklist items (4-28e(2)/(3), FL 601-210.04)
+const offenseFlags = (offenses) => {
+  const cats = offenses.map(o => catOf(o.categoryId)).filter(Boolean);
+  return {
+    trafficOnly: offenses.length > 0 && cats.every(c => c.class === 'traffic'),
+    anyProbation: offenses.some(o => o.probation === 'completed' || o.probation === 'active'),
+    anyConfined: offenses.some(o => ['under24','1to14','15plus'].includes(o.confinement)),
+    anyConfined24: offenses.some(o => ['1to14','15plus'].includes(o.confinement)),
+  };
+};
+
+const getRequiredChecklist = (authority, flags = {}) => {
   return CHECKLIST_ITEMS.filter(item => {
-    if (item.group === 'all') return true;
-    if (item.group === 'non_traffic' && !isTrafficOnly) return true;
-    if (item.group === 'usarec_dmpm' && (authority === 'USAREC' || authority === 'DMPM')) return true;
-    if (item.group === 'major' && (authority === 'USAREC' || authority === 'DMPM')) return true;
-    if (item.group === 'major_applicable' && (authority === 'USAREC' || authority === 'DMPM')) return true;
-    return false;
+    switch (item.group) {
+      case 'all': return true;
+      case 'non_traffic': return !flags.trafficOnly;
+      case 'usard':
+      case 'major': return authority === 'USARD';
+      case 'probation': return !!flags.anyProbation;
+      case 'confined': return !!flags.anyConfined;
+      case 'confined_24plus': return !!flags.anyConfined24;
+      default: return false;
+    }
   });
 };
 
-const computeReadiness = (applicant, screenedOffenses, clStatus) => {
+const computeReadiness = (applicant, verdict, clStatus) => {
   let score = 0;
   const breakdown = [];
 
-  // Screener complete
-  const overallV = computeOverallVerdict(screenedOffenses);
-  if (overallV) { score += 15; breakdown.push({ label:'Eligibility determined', done:true }); }
-  else breakdown.push({ label:'Eligibility screener', done:false });
+  const caseDone = CASE_QUESTIONS.every(q => (applicant.caseAnswers||{})[q.id]);
+  if (caseDone) { score += 10; breakdown.push({ label:'Case screening complete', done:true }); }
+  else breakdown.push({ label:'Case screening', done:false });
 
-  // Applicant info
-  const infoFields = ['lastName','firstName','dob','rsid'];
-  const infoFilled = infoFields.every(f => applicant[f]);
-  if (infoFilled) { score += 10; breakdown.push({ label:'Applicant info complete', done:true }); }
+  if ((applicant.offenses||[]).length > 0) { score += 10; breakdown.push({ label:'Offenses logged', done:true }); }
+  else breakdown.push({ label:'Offense record', done:false });
+
+  const infoFilled = ['lastName','firstName','dob','rsid'].every(f => applicant[f]);
+  if (infoFilled) { score += 15; breakdown.push({ label:'Applicant info complete', done:true }); }
   else breakdown.push({ label:'Applicant info', done:false });
 
-  // Offenses logged
-  if (screenedOffenses.some(so => so.offenseDate)) { score += 10; breakdown.push({ label:'Offenses logged', done:true }); }
-  else breakdown.push({ label:'Offense log', done:false });
-
-  // Checklist items
-  const auth = computeGoverningAuthority(screenedOffenses) || 'BN';
-  const isTrafficOnly = screenedOffenses.every(so => {
-    const cat = OFFENSE_CATEGORIES.find(c => c.id === so.categoryId);
-    return cat && cat.group === 'traffic';
-  });
-  const required = getRequiredChecklist(auth, isTrafficOnly);
+  const required = getRequiredChecklist(verdict?.authority || 'BN', offenseFlags(applicant.offenses||[]));
   const completedItems = required.filter(i => clStatus[i.id] === 'complete').length;
-  const itemPct = required.length > 0 ? Math.round((completedItems / required.length) * 65) : 0;
-  score += itemPct;
+  score += required.length > 0 ? Math.round((completedItems / required.length) * 65) : 0;
   breakdown.push({ label:`Checklist (${completedItems}/${required.length})`, done: completedItems === required.length && required.length > 0 });
 
   return { score: Math.min(100, score), breakdown };
-};
-
-/* ── Simple relative date parser for smooth input ──────────────────────── */
-const parseRelativeDate = (input) => {
-  if (!input) return null;
-  const s = input.trim().toLowerCase();
-  const now = new Date();
-
-  // Direct ISO date
-  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
-
-  // Common phrases
-  if (s === 'yesterday' || s === 'yest') {
-    const d = new Date(now); d.setDate(d.getDate() - 1); return d.toISOString().split('T')[0];
-  }
-  if (s === 'today') {
-    return now.toISOString().split('T')[0];
-  }
-  if (s === 'last week' || s === 'a week ago') {
-    const d = new Date(now); d.setDate(d.getDate() - 7); return d.toISOString().split('T')[0];
-  }
-
-  // Number + unit: 45d, 3 months ago, 2 years, 90 days ago, etc.
-  const match = s.match(/^(\d+)\s*(d|day|days|m|mo|month|months|y|yr|year|years)\s*(ago)?$/i);
-  if (match) {
-    const num = parseInt(match[1], 10);
-    const unit = match[2].toLowerCase();
-    const d = new Date(now);
-    if (unit.startsWith('d')) d.setDate(d.getDate() - num);
-    else if (unit.startsWith('m')) d.setMonth(d.getMonth() - num);
-    else if (unit.startsWith('y')) d.setFullYear(d.getFullYear() - num);
-    return d.toISOString().split('T')[0];
-  }
-
-  return null;
-};
-
-/* ── Date-Aware Risk Engine (smarter regulatory awareness) ──────────────── */
-const getDateAwareRisks = (screenedOffenses) => {
-  const risks = [];
-  const now = Date.now();
-
-  screenedOffenses.forEach(so => {
-    const cat = OFFENSE_CATEGORIES.find(c => c.id === so.categoryId);
-    if (!cat) return;
-
-    // We can now work with convictionDate even without offenseDate (for regulatory clocks)
-    const hasOffenseDate = !!so.offenseDate;
-    const hasConvictionDate = !!so.convictionDate;
-
-    if (!hasOffenseDate && !hasConvictionDate) return;
-
-    const offenseDate = hasOffenseDate ? new Date(so.offenseDate) : null;
-    const convictionDate = hasConvictionDate ? new Date(so.convictionDate) : null;
-
-    const daysSinceOffense = hasOffenseDate 
-      ? Math.floor((now - offenseDate.getTime()) / (1000*60*60*24)) 
-      : null;
-
-    const isMajor = cat.group === 'major' || cat.level === 'MAJOR';
-    const isSeriousMisc = ['misc_dui', 'misc_dv_non_laut', 'misc_weapons', 'dat_positive'].includes(so.categoryId);
-
-    // === SMART DATE ORDER ANALYSIS (this is the intelligence the user wants) ===
-    if (hasOffenseDate && hasConvictionDate) {
-      if (convictionDate.getTime() < offenseDate.getTime()) {
-        risks.push({
-          id: `date_order_${so.id}`,
-          severity: 'info',
-          title: 'Conviction Date Before Offense Date',
-          message: 'You entered a conviction/disposition date that is earlier than the offense date. This is unusual but can happen with certain pleas or nolo contendere dispositions. The app will correctly use the conviction date for all regulatory waiting periods (AR 601-210 4-7). The offense date is still used for "recency of conduct" evaluation under the whole-person concept.',
-          cite: 'AR 601-210 4-7 (major misconduct waiting period starts at conviction/final disposition)'
-        });
-      }
-    }
-
-    // === Major misconduct 24-month rule (AR 601-210 4-7) — strictly uses conviction date when available ===
-    if (isMajor) {
-      const clockDate = convictionDate || offenseDate; // conviction date is the correct regulatory trigger
-      if (clockDate) {
-        const yearsSinceClock = (now - clockDate.getTime()) / (365.25 * 24 * 3600 * 1000);
-        if (yearsSinceClock < 2) {
-          const monthsNeeded = Math.ceil(24 - (yearsSinceClock * 12));
-          const dateType = convictionDate ? 'conviction' : 'offense (no conviction date entered)';
-          const monthsAgo = Math.floor((now - clockDate.getTime()) / (1000*60*60*24 / 30.44));
-          
-          risks.push({
-            id: `major_24month_${so.id}`,
-            severity: 'block',
-            title: 'Major Misconduct — 24-Month Clock Not Met',
-            message: `Using ${dateType} date (~${monthsAgo} months ago). Per AR 601-210 para 4-7, applicants must generally wait 24 months from the date of conviction (or final adverse disposition) before a major misconduct waiver can be processed. Earliest realistic submission: ~${monthsNeeded} months from now.`,
-            cite: 'AR 601-210, 4-7a'
-          });
-        }
-      }
-    }
-
-    // === Recency of conduct (whole person concept) — always based on when the bad act actually occurred ===
-    if (hasOffenseDate) {
-      const days = daysSinceOffense;
-      const months = Math.floor(days / 30.44);
-
-      if (days < 30) {
-        risks.push({
-          id: `extremely_recent_${so.id}`,
-          severity: 'block',
-          title: 'Extremely Recent Conduct (< 30 days)',
-          message: `The actual offense happened only ${days} days ago. This is viewed as current behavior. Expect near-certain denial or long delays. This is separate from the formal 24-month clock.`,
-          cite: 'AR 601-210 4-2 (whole person concept) + current USAREC practice'
-        });
-      } else if (days < 90 && (isMajor || isSeriousMisc)) {
-        risks.push({
-          id: `very_recent_${so.id}`,
-          severity: 'high',
-          title: 'Very Recent Serious Offense (< 90 days)',
-          message: `Offense occurred only ~${months} months ago. Recent serious misconduct is one of the strongest predictors of waiver denial under the whole-person review.`,
-          cite: 'AR 601-210 4-2f (suitability review triggers)'
-        });
-      } else if (days < 180) {
-        risks.push({
-          id: `recent_${so.id}`,
-          severity: 'medium',
-          title: 'Recent Offense (under 6 months)',
-          message: `Very recent conduct (${months} months ago). This will be a major negative factor. The formal waiting period clock and the "recency" evaluation are two different things.`,
-          cite: 'APPROVABILITY_FACTORS + AR 601-210 4-4'
-        });
-      }
-    }
-  });
-
-  return risks;
 };
 
 /* ── Readiness Ring ─────────────────────────────────────── */
@@ -877,19 +879,18 @@ const ReadinessRing = ({ score }) => {
 
 /* ── Applicant Card (Sidebar) ───────────────────────────── */
 const ApplicantCard = ({ appl, active, onClick, onDelete }) => {
-  const overallV = computeOverallVerdict(appl.offenses||[]);
-  const { score } = computeReadiness(appl, appl.offenses||[], appl.checklistStatus||{});
-  const statusColor = overallV === 'NOT_WAIVABLE' ? 'status-red' :
+  const verdict = computeCaseVerdict(appl);
+  const { score } = computeReadiness(appl, verdict, appl.checklistStatus||{});
+  const statusColor = verdict?.status === 'NOT_WAIVABLE' ? 'status-red' :
     score >= 80 ? 'status-green' : score >= 30 ? 'status-yellow' : 'status-gray';
   const name = [appl.firstName, appl.lastName].filter(Boolean).join(' ') || 'Unnamed Applicant';
-  const auth = computeGoverningAuthority(appl.offenses||[]);
   return (
     <div className={`appl-card${active?' active':''}`} onClick={onClick}>
       <div className={`appl-card-status ${statusColor}`}/>
       <div className="appl-card-name">{name}</div>
       <div className="appl-card-meta">
         {appl.rsid && <span style={{marginRight:6}}>{appl.rsid}</span>}
-        {auth !== 'BN' && auth !== 'NONE' && <span style={{color:'var(--gold)'}}>{auth}</span>}
+        {verdict?.authority === 'USARD' && <span style={{color:'var(--gold)'}}>USARD</span>}
         <span style={{float:'right'}}>{score}% ready</span>
       </div>
       <button className="btn btn-danger btn-sm" style={{marginTop:6,width:'100%',padding:'3px 0',fontSize:10}}
@@ -898,478 +899,320 @@ const ApplicantCard = ({ appl, active, onClick, onDelete }) => {
   );
 };
 
-/* ── Phase 1: Multi-Offense Screener ───────────────────── */
+/* ── Phase 1: Case Screening + Offense Record ───────────── */
+const CLASS_BADGE = {
+  bar:     { cls:'lvl-BAR',       label:'BAR IF CONVICTED' },
+  major:   { cls:'lvl-MAJOR',     label:'MAJOR · TABLE 4-4' },
+  misc:    { cls:'lvl-MISC',      label:'MISCONDUCT · TABLE 4-3' },
+  minor:   { cls:'lvl-NO-WAIVER', label:'MINOR · TABLE 4-2' },
+  traffic: { cls:'lvl-TRAFFIC',   label:'TRAFFIC · TABLE 4-1' },
+  dat:     { cls:'lvl-VARIES',    label:'MEPS DAT' },
+  ps:      { cls:'lvl-VARIES',    label:'PRIOR SERVICE' },
+};
+
+const OFFENSE_GROUPS = [
+  { key:'bars',   label:'⛔ Not Waivable if Convicted', color:'#ff5555' },
+  { key:'major',  label:'🔴 Major Misconduct — Felony Level (Table 4-4)', color:'#ff6b6b' },
+  { key:'misc',   label:'🟡 Misconduct — Misdemeanor Level (Table 4-3)', color:'var(--gold)' },
+  { key:'minor',  label:'🔵 Minor Nontraffic (Table 4-2)', color:'#7eb8ff' },
+  { key:'traffic',label:'⚪ Traffic (Table 4-1)', color:'var(--fg-m)' },
+  { key:'dat',    label:'🧪 MEPS Drug / Alcohol Test (Para 4-18)', color:'#cc99ff' },
+  { key:'ps',     label:'🪖 Prior Service — Military Discipline', color:'#cc99ff' },
+];
+
+/* One editor per offense — dates, disposition, confinement, and packet details
+   all in one place (no repeated question wizard). */
+const OffenseEditor = ({ o, applicant, onChange, onDone }) => {
+  const cat = catOf(o.categoryId) || {};
+  const todayStr = today();
+  const isDat = cat.group === 'dat';
+  const isPs = cat.class === 'ps';
+  const isTraffic = cat.class === 'traffic';
+  const set = (field) => (e) => onChange({ [field]: e.target.type === 'checkbox' ? e.target.checked : e.target.value });
+
+  const warnings = [];
+  if (o.offenseDate && o.offenseDate > todayStr) warnings.push('Offense date is in the future.');
+  if (o.convictionDate && o.convictionDate > todayStr) warnings.push('Conviction date is in the future.');
+  if (applicant.dob && o.offenseDate && o.offenseDate < applicant.dob) warnings.push(`Offense date precedes applicant DOB (${fmtDate(applicant.dob)}).`);
+  if (o.offenseDate && o.convictionDate && o.convictionDate < o.offenseDate) warnings.push(`Conviction date (${fmtDate(o.convictionDate)}) is BEFORE the offense date (${fmtDate(o.offenseDate)}) — almost always a data-entry error. Fix before continuing.`);
+  if (o.releaseDate && o.convictionDate && o.releaseDate < o.convictionDate) warnings.push('Release-from-confinement date is before the conviction date — verify.');
+
+  const juvenile = isJuvenileOffense(applicant, o);
+  const confined = ['1to14','15plus'].includes(o.confinement);
+
+  return (
+    <div style={{border:'1px solid var(--bd-m)',padding:'14px',marginTop:6,marginBottom:8,background:'var(--bg-s)'}} className="fade-in">
+      <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:10}}>
+        <span className={`offense-level-badge ${CLASS_BADGE[cat.class]?.cls||''}`}>{CLASS_BADGE[cat.class]?.label||''}</span>
+        <span style={{fontSize:12,fontWeight:700,color:'var(--fg2)',flex:1}}>{cat.label}</span>
+        {juvenile && <span className="offense-level-badge lvl-VARIES" title="Offense date is before the applicant's 18th birthday (computed from DOB)">JUVENILE</span>}
+      </div>
+
+      <div className="form-grid" style={{marginBottom:8}}>
+        <div className="form-field">
+          <label className="form-label">{isDat ? 'Test Date' : 'Offense Date (when the act happened)'} <span style={{color:'#ff6b6b'}}>*</span></label>
+          <input className="form-input" type="date" max={todayStr} value={o.offenseDate||''} onChange={set('offenseDate')}/>
+        </div>
+        {!isDat && !isPs && (
+          <div className="form-field">
+            <label className="form-label">Conviction / Final Disposition Date</label>
+            <input className="form-input" type="date" max={todayStr} value={o.convictionDate||''} onChange={set('convictionDate')}
+              style={{borderColor:(o.convictionDate && o.offenseDate && o.convictionDate < o.offenseDate)?'#ff5555':undefined}}/>
+            {cat.class==='major' && <div style={{fontSize:9,color:'var(--fg-m)',marginTop:2}}>Starts the 24-month clock (4-7a)</div>}
+          </div>
+        )}
+      </div>
+
+      {!isDat && !isPs && (
+        <div className="form-field" style={{marginBottom:8}}>
+          <label className="form-label">Court Disposition <span style={{color:'#ff6b6b'}}>*</span></label>
+          <select className="form-input" value={o.disposition||''} onChange={set('disposition')}>
+            <option value="">Select disposition...</option>
+            {DISPOSITION_OPTIONS.map(d=><option key={d.v} value={d.v}>{d.l}</option>)}
+          </select>
+          <div style={{fontSize:9,color:'var(--fg-m)',marginTop:2}}>Diversion, deferred adjudication, fines, and probated sentences all count as ADVERSE dispositions (4-30b). Expunged/sealed records still count.</div>
+        </div>
+      )}
+
+      {!isDat && !isPs && !isTraffic && isAdverse(o) && (
+        <div className="form-grid" style={{marginBottom:8}}>
+          <div className="form-field">
+            <label className="form-label">Confinement Served</label>
+            <select className="form-input" value={o.confinement||'no'} onChange={set('confinement')}>
+              {CONFINEMENT_OPTIONS.map(c=><option key={c.v} value={c.v}>{c.l}</option>)}
+            </select>
+          </div>
+          {confined ? (
+            <div className="form-field">
+              <label className="form-label">Release from Confinement Date <span style={{color:'#ff6b6b'}}>*</span></label>
+              <input className="form-input" type="date" max={todayStr} value={o.releaseDate||''} onChange={set('releaseDate')}/>
+              <div style={{fontSize:9,color:'var(--fg-m)',marginTop:2}}>The 4-31 waiting period runs from THIS date</div>
+            </div>
+          ) : (
+            <div className="form-field">
+              <label className="form-label">Probation / Parole</label>
+              <select className="form-input" value={o.probation||'no'} onChange={set('probation')}>
+                {PROBATION_OPTIONS.map(p=><option key={p.v} value={p.v}>{p.l}</option>)}
+              </select>
+            </div>
+          )}
+        </div>
+      )}
+      {!isDat && !isPs && !isTraffic && isAdverse(o) && confined && (
+        <div className="form-field" style={{marginBottom:8}}>
+          <label className="form-label">Probation / Parole</label>
+          <select className="form-input" value={o.probation||'no'} onChange={set('probation')}>
+            {PROBATION_OPTIONS.map(p=><option key={p.v} value={p.v}>{p.l}</option>)}
+          </select>
+        </div>
+      )}
+
+      {warnings.length > 0 && (
+        <div style={{marginBottom:8}}>
+          {warnings.map((w,i)=>(
+            <div key={i} style={{padding:'6px 10px',background:'rgba(207,0,0,.13)',border:'1px solid rgba(207,0,0,.4)',color:'#ff7070',fontSize:11,marginTop:4,display:'flex',gap:6}}>
+              <span>⛔</span><span>{w}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className="form-field" style={{marginBottom:8}}>
+        <label className="form-label">Description (as it will appear on UF 601-210.08)</label>
+        <input className="form-input" value={o.description||''} onChange={set('description')} placeholder={isDat?'e.g. Positive DAT — THC, MEPS Nashville':'Brief factual description of the offense'}/>
+      </div>
+
+      {!isDat && (
+        <>
+          <div className="form-grid-3" style={{marginBottom:8}}>
+            <div className="form-field">
+              <label className="form-label">City / Jurisdiction</label>
+              <input className="form-input" value={o.city||''} onChange={set('city')} placeholder="City"/>
+            </div>
+            <div className="form-field">
+              <label className="form-label">County</label>
+              <input className="form-input" value={o.county||''} onChange={set('county')} placeholder="County"/>
+            </div>
+            <div className="form-field">
+              <label className="form-label">State</label>
+              <select className="form-input" value={o.state||''} onChange={set('state')}>
+                <option value="">State...</option>
+                {US_STATES.map(s=><option key={s} value={s}>{s}</option>)}
+              </select>
+            </div>
+          </div>
+          <div className="form-field" style={{marginBottom:8}}>
+            <label className="form-label">Disposition — Exact Wording for Documents</label>
+            <input className="form-input" value={o.dispositionText||''} onChange={set('dispositionText')} placeholder='e.g. Convicted — Misdemeanor, $500 fine, 12-month probation (completed)'/>
+          </div>
+          <div className="row" style={{gap:16,flexWrap:'wrap'}}>
+            <label style={{display:'flex',alignItems:'center',gap:7,cursor:'pointer',fontSize:12,color:'var(--fg2)'}}>
+              <input type="checkbox" checked={o.courtDocs||false} onChange={set('courtDocs')}/> Court dockets obtained
+            </label>
+            <label style={{display:'flex',alignItems:'center',gap:7,cursor:'pointer',fontSize:12,color:'var(--fg2)'}}>
+              <input type="checkbox" checked={o.incidentRpt||false} onChange={set('incidentRpt')}/> Police incident report obtained
+            </label>
+          </div>
+        </>
+      )}
+
+      <div className="row" style={{marginTop:12,justifyContent:'flex-end'}}>
+        <button className="btn btn-gold btn-sm" onClick={onDone}>Done</button>
+      </div>
+    </div>
+  );
+};
+
 const Phase1 = ({ applicant, setApplicant, onHighlight }) => {
+  const [addOpen, setAddOpen] = useState(false);
+  const [editId, setEditId] = useState(null);
+  const [hoverCat, setHoverCat] = useState(null);
 
-  const [addingOffense, setAddingOffense] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState(null);
-  const [qStep, setQStep] = useState(0);
-  const [tempAnswer, setTempAnswer] = useState(null);
-  const [currentAnswers, setCurrentAnswers] = useState({});
-  const [offenseDate, setOffenseDate] = useState('');
-  const [convictionDate, setConvictionDate] = useState('');
-  const [dateOrderConfirmed, setDateOrderConfirmed] = useState(false);
+  const ca = applicant.caseAnswers || {};
+  const offenses = sortNewest(applicant.offenses || []);
+  const verdict = computeCaseVerdict(applicant);
+  const approv = computeApprovabilityScore(applicant, verdict);
+  const caseDone = CASE_QUESTIONS.every(q => ca[q.id]);
 
-  // Fire ref highlights whenever screener state changes
+  const setCase = (qid, v) => setApplicant(prev => ({ ...prev, caseAnswers:{ ...(prev.caseAnswers||{}), [qid]:v } }));
+  const updateOffenses = (offs) => setApplicant(prev => ({ ...prev, offenses:offs }));
+  const patchOffense = (id, patch) => updateOffenses((applicant.offenses||[]).map(o => o.id === id ? { ...o, ...patch } : o));
+  const removeOffense = (id) => { updateOffenses((applicant.offenses||[]).filter(o => o.id !== id)); if (editId === id) setEditId(null); };
+
+  // Regulation-panel highlights follow what the recruiter is touching
   useEffect(() => {
     if (!onHighlight) return;
-    if (selectedCategory) {
-      const catParas = (CAT_PARA_MAP || {})[selectedCategory] || [];
-      const qParas = QUALIFYING_QUESTIONS[qStep] ? ((Q_PARA_MAP || {})[QUALIFYING_QUESTIONS[qStep].id] || []) : [];
-      onHighlight([...new Set([...catParas, ...qParas])]);
-    } else {
-      onHighlight([]);
-    }
-  }, [selectedCategory, qStep]);
+    const paras = new Set();
+    if (hoverCat) (CAT_PARA_MAP[hoverCat]||[]).forEach(p => paras.add(p));
+    CASE_QUESTIONS.forEach(q => { if (ca[q.id] && ca[q.id] !== 'no') (Q_PARA_MAP[q.id]||[]).forEach(p => paras.add(p)); });
+    (applicant.offenses||[]).forEach(o => (CAT_PARA_MAP[o.categoryId]||[]).forEach(p => paras.add(p)));
+    onHighlight([...paras]);
+  }, [hoverCat, applicant.caseAnswers, applicant.offenses]);
 
-  const screenedOffenses = applicant.offenses || [];
-  const overallV = computeOverallVerdict(screenedOffenses);
-  const auth = computeGoverningAuthority(screenedOffenses);
-  const authorityLabels = { BN:'Battalion Commander', USAREC:'Commanding General, USAREC', DMPM:'Deputy Chief of Staff, G-1 (DMPM)', NONE:'Not Applicable — Case Not Waivable' };
-  const approv = computeApprovabilityScore(screenedOffenses, applicant);
-
-  const updateOffenses = (offenses) => setApplicant(prev => ({...prev, offenses}));
-
-  const startAdd = () => {
-    setSelectedCategory(null); setQStep(0); setCurrentAnswers({}); setTempAnswer(null); setOffenseDate(''); setConvictionDate(''); setDateOrderConfirmed(false);
-    setAddingOffense(true);
+  const addOffense = (catId) => {
+    const cat = catOf(catId);
+    const o = { id:`o${Date.now()}`, categoryId:catId, offenseDate:'', convictionDate:'',
+      disposition: (cat.group === 'dat' || cat.class === 'ps') ? 'convicted' : '',
+      confinement:'no', releaseDate:'', probation:'no',
+      description:'', city:'', county:'', state:'', dispositionText:'', courtDocs:false, incidentRpt:false };
+    updateOffenses([...(applicant.offenses||[]), o]);
+    setAddOpen(false); setEditId(o.id);
   };
 
-  const cancelAdd = () => { setAddingOffense(false); setSelectedCategory(null); };
-
-  const selectCategory = (catId) => {
-    const cat = OFFENSE_CATEGORIES.find(c => c.id === catId);
-    setSelectedCategory(catId);
-    if (cat?.bar || cat?.noWaiverRequired) {
-      // Immediate verdict
-      const verdict = computeVerdictFromAnswers(catId, {});
-      finishScreening(catId, {}, verdict);
-      return;
-    }
-    setQStep(0); setCurrentAnswers({}); setTempAnswer(null);
+  const chipInfo = (o) => {
+    const cat = catOf(o.categoryId) || {};
+    if (!o.disposition && cat.group !== 'dat' && cat.class !== 'ps') return { cls:'', v:'chip-v-unknown', label:'Needs disposition' };
+    if (o.disposition === 'dismissed') return { cls:'no-waiver', v:'chip-v-no-waiver', label:'Dismissed — no waiver' };
+    if (o.disposition === 'self_admit') return { cls:'etp', v:'chip-v-etp', label:'Self-admit — verify' };
+    if (cat.class === 'bar' && isAdverse(o)) return { cls:'bar', v:'chip-v-bar', label:'NOT WAIVABLE' };
+    if (verdict?.waivedIds.includes(o.id)) return { cls:'waivable', v:'chip-v-waivable', label:'★ In waiver' };
+    if (cat.class === 'ps') return { cls:'', v:'chip-v-unknown', label:'See S1 / RE code' };
+    return { cls:'no-waiver', v:'chip-v-no-waiver', label:'Counted — no waiver alone' };
   };
 
-  const submitAnswer = () => {
-    if (!tempAnswer) return;
-    const q = QUALIFYING_QUESTIONS[qStep];
-    const newAnswers = { ...currentAnswers, [q.id]: tempAnswer };
-    setCurrentAnswers(newAnswers);
-    setTempAnswer(null);
-
-    const v = computeVerdictFromAnswers(selectedCategory, newAnswers);
-    const earlyTermIds = ['disposition','pending_charges','civil_restraint','major_count','lautenberg','sex_offender'];
-    const isEarlyTerm = earlyTermIds.includes(q.id) && (v?.type === 'NOT_WAIVABLE' || v?.type === 'NO_WAIVER_REQUIRED' || v?.type === 'ETP_REQUIRED');
-
-    if (isEarlyTerm) { finishScreening(selectedCategory, newAnswers, v); return; }
-
-    const next = qStep + 1;
-    if (next >= QUALIFYING_QUESTIONS.length) {
-      finishScreening(selectedCategory, newAnswers, computeVerdictFromAnswers(selectedCategory, newAnswers));
-    } else {
-      setQStep(next);
-    }
-  };
-
-  const finishScreening = (catId, answers, verdict) => {
-    // Smart guard: block an EXACT duplicate (same category + same offense date).
-    // Duplicates inflate the offense count and can falsely trip the
-    // "2+ major misconduct = permanent DQ" rule (AR 601-210 para 4-22i).
-    const isDup = screenedOffenses.some(so =>
-      so.categoryId === catId && (so.offenseDate || '') === (offenseDate || '')
-    );
-    if (isDup) {
-      const cat = OFFENSE_CATEGORIES.find(c => c.id === catId);
-      alert(`"${cat?.label || catId}"${offenseDate ? ` on ${offenseDate}` : ''} is already on the screened list.\n\nIf this is a separate incident, add it with its own offense date. Otherwise edit the existing entry — duplicates can distort the offense count and authority-level result.`);
-      setAddingOffense(false); setSelectedCategory(null);
-      return;
-    }
-    const newEntry = {
-      id:`so${Date.now()}`, categoryId:catId, answers, verdict,
-      offenseDate,
-      convictionDate,
-      // offense log fields (to be filled later)
-      description:'', city:'', county:'', state:'', disposition:'', courtDocs:false, incidentRpt:false,
-      waivedOffense: verdict?.type === 'WAIVABLE' || verdict?.type === 'ETP_REQUIRED'
-    };
-    updateOffenses([...screenedOffenses, newEntry]);
-    setAddingOffense(false); setSelectedCategory(null);
-  };
-
-  const removeOffense = (id) => updateOffenses(screenedOffenses.filter(so => so.id !== id));
-
-  const updateOffenseField = (id, field, val) => {
-    updateOffenses(screenedOffenses.map(so => so.id === id ? {...so, [field]:val} : so));
-  };
-
-  // Drag‑and‑drop reordering handlers
-  const handleDragStart = (e, id) => {
-    e.dataTransfer.setData('text/plain', id);
-    // Add visual cue
-    e.currentTarget.classList.add('dragging');
-  };
-
-  const handleDrop = (e) => {
-    e.preventDefault();
-    const draggedId = e.dataTransfer.getData('text/plain');
-    const targetElem = e.target.closest('.offense-chip');
-    const targetId = targetElem?.getAttribute('data-id');
-    if (!draggedId || !targetId || draggedId === targetId) return;
-    reorderOffenses(draggedId, targetId);
-    // Clean up visual cue
-    const draggingEl = document.querySelector('.offense-chip.dragging');
-    if (draggingEl) draggingEl.classList.remove('dragging');
-  };
-
-  const reorderOffenses = (fromId, toId) => {
-    const fromIdx = screenedOffenses.findIndex(o => o.id === fromId);
-    const toIdx = screenedOffenses.findIndex(o => o.id === toId);
-    if (fromIdx === -1 || toIdx === -1) return;
-    const newList = [...screenedOffenses];
-    const [moved] = newList.splice(fromIdx, 1);
-    newList.splice(toIdx, 0, moved);
-    updateOffenses(newList);
-  };
-
-  const goBackQ = () => {
-    if (qStep === 0) { setSelectedCategory(null); return; }
-    const prev = qStep - 1;
-    const q = QUALIFYING_QUESTIONS[prev];
-    setTempAnswer(currentAnswers[q.id]||null);
-    const reduced = {...currentAnswers};
-    QUALIFYING_QUESTIONS.slice(prev).forEach(qq => delete reduced[qq.id]);
-    setCurrentAnswers(reduced);
-    setQStep(prev);
-  };
-
-  // Date validation for add-offense flow
-  const todayStr = today();
-  const dobStr = applicant.dob || '';
-  const dateErrors = [];
-  if (offenseDate) {
-    if (offenseDate > todayStr) dateErrors.push('Offense date cannot be in the future.');
-    if (dobStr && offenseDate < dobStr) dateErrors.push(`Offense date (${fmtDate(offenseDate)}) is before the applicant's date of birth (${fmtDate(dobStr)}). Verify entry.`);
-  }
-  if (convictionDate && convictionDate > todayStr) dateErrors.push('Conviction date cannot be in the future.');
-  const convictionBeforeOffense = !!(convictionDate && offenseDate && convictionDate < offenseDate);
-  const datesBlocking = dateErrors.length > 0 || (convictionBeforeOffense && !dateOrderConfirmed);
-
-  // Inline warning helper for the offense log (saved offenses)
-  const getOffenseDateWarnings = (so) => {
-    const w = [];
-    if (so.offenseDate && so.offenseDate > todayStr) w.push('Offense date is in the future.');
-    if (so.convictionDate && so.convictionDate > todayStr) w.push('Conviction date is in the future.');
-    if (dobStr && so.offenseDate && so.offenseDate < dobStr) w.push(`Offense date precedes applicant DOB (${fmtDate(dobStr)}).`);
-    if (so.offenseDate && so.convictionDate && so.convictionDate < so.offenseDate)
-      w.push(`⛔ Likely data entry error: conviction date (${fmtDate(so.convictionDate)}) is before offense date (${fmtDate(so.offenseDate)}).`);
-    return w;
-  };
-
-  // Group offense categories
-  const groups = [
-    { key:'bars',    label:'⛔ Absolute Bars (Not Waivable)', color:'#ff5555' },
-    { key:'major',   label:'🔴 Major Misconduct (Felony-Level)', color:'#ff6b6b' },
-    { key:'misc',    label:'🟡 Misconduct — Miscellaneous', color:'var(--gold)' },
-    { key:'traffic', label:'🔵 Traffic Offenses', color:'#7eb8ff' },
-    { key:'juvenile',label:'⚪ Juvenile Offenses', color:'var(--fg-m)' },
-    { key:'ps',      label:'🪖 Prior Service (PS Applicants)', color:'#cc99ff' },
-  ];
+  const missingDisposition = offenses.some(o => { const c = catOf(o.categoryId)||{}; return !o.disposition && c.group !== 'dat' && c.class !== 'ps'; });
 
   return (
     <div className="main-scroll">
       <div className="fade-up">
-        {/* 2026 Marijuana Update Banner */}
+        {/* 2026 policy banner — verified against AR 601-210, 20 Mar 2026 */}
         <div className="alert alert-success" style={{marginBottom:14}}>
           <span className="alert-icon">📋</span>
           <div>
-            <strong>2026:</strong> A single marijuana possession/paraphernalia conviction no longer needs a waiver (AR 601-210 4-6). Distribution still requires DMPM.
+            <strong>AR 601-210 (20 Mar 2026):</strong> A single conviction for marijuana possession or drug paraphernalia no longer requires a waiver (para 4-6). Sale/distribution/trafficking (incl. intent) is <strong>not waivable</strong> (4-7c(3)). Major misconduct waivers go to <strong>CG, USARD</strong> with a 24-month wait from conviction (4-7a).
           </div>
         </div>
 
-        {/* Overall Determination */}
-        {screenedOffenses.length > 0 && (
+        {/* Overall case determination */}
+        {verdict && verdict.status !== 'PENDING' && (
           <div style={{marginBottom:14}}>
-            <OverallVerdictBanner screenedOffenses={screenedOffenses} auth={auth} authorityLabels={authorityLabels} approv={approv} applicant={applicant}/>
+            <OverallVerdictBanner verdict={verdict} approv={approv} applicant={applicant}/>
+            {missingDisposition && (
+              <div className="alert alert-warn" style={{marginTop:8,marginBottom:0}}>
+                <span className="alert-icon">⚠️</span>
+                <div>One or more offenses have no disposition selected — they are NOT counted yet. The verdict above may change.</div>
+              </div>
+            )}
           </div>
         )}
 
-        {/* Screened Offense Stack */}
-        {screenedOffenses.length > 0 && (
-          <div className="card" style={{marginBottom:14}}>
-            <div className="card-hdr">
-              <div className="section-bar"/>
-              <div style={{flex:1}}>
-                <div className="card-title">Screened Offenses</div>
-                <div className="card-sub">Each offense has been individually analyzed — overall case uses the highest applicable authority</div>
-              </div>
+        {/* STEP 1 — Case screening (asked once) */}
+        <div className="card" style={{marginBottom:14}}>
+          <div className="card-hdr">
+            <div className="section-bar"/>
+            <div style={{flex:1}}>
+              <div className="card-title">Step 1 — Case Screening <span style={{color:caseDone?'#5bc989':'var(--fg-m)',fontSize:10,marginLeft:6}}>{caseDone?'✓ COMPLETE':`${CASE_QUESTIONS.filter(q=>ca[q.id]).length}/${CASE_QUESTIONS.length}`}</span></div>
+              <div className="card-sub">Five applicant-level questions — answered once, they apply to the whole case</div>
             </div>
-            <div className="offense-stack" onDragOver={e=>e.preventDefault()} onDrop={handleDrop} style={{display:'flex',flexDirection:'column',gap:'8px'}}>
-              {screenedOffenses.map(so => {
-                const cat = OFFENSE_CATEGORIES.find(c => c.id === so.categoryId);
-                const vt = so.verdict?.type;
-                const chipClass = vt==='NOT_WAIVABLE'?'bar':vt==='WAIVABLE'?'waivable':vt==='WAITING_PERIOD'?'waiting':vt==='ETP_REQUIRED'?'etp':vt==='NO_WAIVER_REQUIRED'?'no-waiver':'';
-                const cvClass = vt==='NOT_WAIVABLE'?'chip-v-bar':vt==='WAIVABLE'?'chip-v-waivable':vt==='WAITING_PERIOD'?'chip-v-waiting':vt==='ETP_REQUIRED'?'chip-v-etp':vt==='NO_WAIVER_REQUIRED'?'chip-v-no-waiver':'chip-v-unknown';
-                const vLabel = {WAIVABLE:'Waivable',NOT_WAIVABLE:'NOT WAIVABLE',NO_WAIVER_REQUIRED:'No Waiver Needed',ETP_REQUIRED:'ETP Required',WAITING_PERIOD:'Wait Period'}[vt]||'Unknown';
-                const isProblem = vt === 'NOT_WAIVABLE' || vt === 'WAITING_PERIOD' || vt === 'ETP_REQUIRED';
-                return (
-                  <div key={so.id} data-id={so.id} className={`offense-chip ${chipClass}`} draggable onDragStart={e=>handleDragStart(e,so.id)}>
-                    <span className={`chip-verdict ${cvClass}`}>{vLabel}</span>
-                    <div className="chip-label">{cat?.label || so.categoryId}</div>
-                    {so.offenseDate && <span className="chip-auth">{fmtDate(so.offenseDate)}</span>}
-                    {so.verdict?.type==='WAIVABLE' && <span className="chip-auth" style={{marginLeft:4}}>{so.verdict.authority}</span>}
-                    <button className="chip-del" onClick={()=>removeOffense(so.id)} title="Remove this offense"><IcoX s={9}/></button>
-                    {isProblem && so.verdict?.reason && (
-                      <div style={{fontSize:10, color:'#ff9e9e', marginTop:4, gridColumn:'1 / -1', lineHeight:1.3}}>
-                        {so.verdict.reason} <span style={{opacity:0.7}}>({so.verdict.cite || 'AR 601-210 Ch. 4'})</span>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Offense log quick-fill for screened offenses */}
-            {screenedOffenses.some(so => so.verdict?.type === 'WAIVABLE' || so.verdict?.type === 'WAITING_PERIOD') && (
-              <div>
-                <div className="form-section">Offense Log Details (for packet documents)</div>
-                <div className="card-sub" style={{marginBottom:10}}>Enter details for each waivable offense — used to auto-fill UF 601-210.08 and documents</div>
-                {screenedOffenses.map((so,i) => {
-                  const cat = OFFENSE_CATEGORIES.find(c => c.id === so.categoryId);
-                  if (so.verdict?.type !== 'WAIVABLE' && so.verdict?.type !== 'WAITING_PERIOD' && so.verdict?.type !== 'ETP_REQUIRED') return null;
+          </div>
+          {CASE_QUESTIONS.map(q => (
+            <div key={q.id} className="case-q">
+              <div className="case-q-text">{q.q}</div>
+              <div className="case-q-opts">
+                {q.options.map(opt => {
+                  const sel = ca[q.id] === opt.v;
+                  const danger = ['yes','active'].includes(opt.v);
                   return (
-                    <div key={so.id} style={{border:'1px solid var(--bd)',padding:'12px',marginBottom:8,background:'var(--bg-s)'}}>
-                      <div style={{fontSize:11,fontWeight:700,color:'var(--fg-m)',marginBottom:8,textTransform:'uppercase',letterSpacing:'.05em'}}>
-                        {i+1}. {cat?.label}
-                        {so.waivedOffense && <span className="waived-star">★</span>}
-                      </div>
-                      <div className="form-grid" style={{marginBottom:8}}>
-                        <div className="form-field">
-                          <label className="form-label">Offense Date (when the act happened)</label>
-                          <input className="form-input" type="date" value={so.offenseDate||''} onChange={e=>updateOffenseField(so.id,'offenseDate',e.target.value)}/>
-                          <div style={{fontSize:9, color:'var(--fg-m)'}}>Used for recency / whole person evaluation</div>
-                        </div>
-                        <div className="form-field">
-                          <label className="form-label">Conviction / Final Disposition Date</label>
-                          <input className="form-input" type="date" value={so.convictionDate||''} onChange={e=>updateOffenseField(so.id,'convictionDate',e.target.value)}
-                            style={{borderColor: (so.convictionDate && so.offenseDate && so.convictionDate < so.offenseDate) ? '#ff5555' : undefined}}/>
-                          <div style={{fontSize:9, color:'var(--fg-m)'}}>Starts the 24-month clock for major misconduct (AR 601-210 4-7)</div>
-                        </div>
-                        {getOffenseDateWarnings(so).length > 0 && (
-                          <div style={{gridColumn:'1 / -1'}}>
-                            {getOffenseDateWarnings(so).map((w, wi) => (
-                              <div key={wi} style={{padding:'6px 10px', background:'rgba(207,0,0,.13)', border:'1px solid rgba(207,0,0,.4)', color:'#ff7070', fontSize:11, marginTop:4, display:'flex', gap:6}}>
-                                <span>⛔</span><span>{w}</span>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                        <div className="form-field">
-                          <label className="form-label">City / Jurisdiction</label>
-                          <input className="form-input" value={so.city||''} onChange={e=>updateOffenseField(so.id,'city',e.target.value)} placeholder="City"/>
-                        </div>
-                        <div className="form-field">
-                          <label className="form-label">County</label>
-                          <input className="form-input" value={so.county||''} onChange={e=>updateOffenseField(so.id,'county',e.target.value)} placeholder="County"/>
-                        </div>
-                        <div className="form-field">
-                          <label className="form-label">State</label>
-                          <select className="form-input" value={so.state||''} onChange={e=>updateOffenseField(so.id,'state',e.target.value)}>
-                            <option value="">State...</option>
-                            {US_STATES.map(s=><option key={s} value={s}>{s}</option>)}
-                          </select>
-                        </div>
-                      </div>
-                      <div className="form-field" style={{marginBottom:8}}>
-                        <label className="form-label">Nature / Description of Offense</label>
-                        <input className="form-input" value={so.description||''} onChange={e=>updateOffenseField(so.id,'description',e.target.value)} placeholder="Brief description as it would appear on UF 601-210.08"/>
-                      </div>
-                      <div className="form-field" style={{marginBottom:8}}>
-                        <label className="form-label">Court Disposition (exact)</label>
-                        <input className="form-input" value={so.disposition||''} onChange={e=>updateOffenseField(so.id,'disposition',e.target.value)} placeholder="e.g. Convicted — Misdemeanor, $500 fine, 12-month probation"/>
-                      </div>
-                      <div className="row" style={{gap:16}}>
-                        <label style={{display:'flex',alignItems:'center',gap:7,cursor:'pointer',fontSize:12,color:'var(--fg2)'}}>
-                          <input type="checkbox" checked={so.courtDocs||false} onChange={e=>updateOffenseField(so.id,'courtDocs',e.target.checked)}/> Court dockets obtained
-                        </label>
-                        <label style={{display:'flex',alignItems:'center',gap:7,cursor:'pointer',fontSize:12,color:'var(--fg2)'}}>
-                          <input type="checkbox" checked={so.incidentRpt||false} onChange={e=>updateOffenseField(so.id,'incidentRpt',e.target.checked)}/> Police incident report obtained
-                        </label>
-                        <div style={{fontSize:10,color:'var(--fg-m)',marginLeft:'auto',padding:'2px 7px',background:'rgba(255,204,1,.08)',border:'1px solid var(--bd)'}}>
-                          ★ asterisk on UF 601-210.08 = auto from screening result
-                        </div>
-                      </div>
-                    </div>
+                    <button key={opt.v} className={`case-opt${sel?' selected':''}${sel&&danger?' danger':''}`} onClick={()=>setCase(q.id,opt.v)}>
+                      {opt.l}
+                    </button>
                   );
                 })}
               </div>
-            )}
-          </div>
-        )}
-
-        {/* Add Offense Flow */}
-        {!addingOffense ? (
-          <div className="card">
-            <div className="card-hdr">
-              <div className="section-bar"/>
-              <div style={{flex:1}}>
-                <div className="card-title">Add Offense to Screen</div>
-                <div className="card-sub">Add each offense separately — system determines overall authority level automatically</div>
-              </div>
-              <div className="row" style={{gap:8}}>
-                <button className="btn btn-gold btn-sm" onClick={startAdd}><IcoPlus/> Add Offense</button>
-              </div>
+              {ca[q.id] && ca[q.id] !== 'no' && <div className="q-hint" style={{marginTop:6,marginBottom:0}}>{q.hint}</div>}
             </div>
-            {screenedOffenses.length === 0 && (
-              <div className="empty-state">
-                <div style={{fontSize:24,marginBottom:8}}>⚖️</div>
-                <div>No offenses screened yet. Click <strong>Add Offense</strong> to begin.</div>
-                <div style={{fontSize:10,marginTop:6}}>You can add multiple offenses — the system will compute the governing authority level.</div>
-              </div>
-            )}
-          </div>
-        ) : (
-          /* Adding Offense Flow */
-          <div className="card">
-            <div className="card-hdr">
-              <div className="section-bar"/>
-              <div style={{flex:1}}>
-                <div className="card-title">{selectedCategory ? 'Screening Questions' : 'Select Offense Category'}</div>
-              </div>
-              <button className="btn btn-outline btn-sm" onClick={cancelAdd}>Cancel</button>
+          ))}
+        </div>
+
+        {/* STEP 2 — Offense record */}
+        <div className="card">
+          <div className="card-hdr">
+            <div className="section-bar"/>
+            <div style={{flex:1}}>
+              <div className="card-title">Step 2 — Offense Record</div>
+              <div className="card-sub">Add EVERY offense in the applicant's history, including traffic — the regulation counts them (4-6/4-7) and UF 601-210.08 requires all of them. Auto-sorted newest to oldest.</div>
             </div>
+            {!addOpen && <button className="btn btn-gold btn-sm" onClick={()=>setAddOpen(true)}><IcoPlus/> Add Offense</button>}
+            {addOpen && <button className="btn btn-outline btn-sm" onClick={()=>setAddOpen(false)}>Cancel</button>}
+          </div>
 
-            {/* Date Entry — validated before offense selection is allowed */}
-            <div style={{marginBottom:16, padding:'16px 18px', background:'var(--bg-c)', border:`2px solid ${
-              dateErrors.length > 0 ? '#ff5555' :
-              (convictionBeforeOffense && !dateOrderConfirmed) ? '#ff6600' :
-              offenseDate ? '#5bc989' : 'var(--gold)'
-            }`}}>
-              <div style={{marginBottom:10}}>
-                <div style={{fontSize:14, fontWeight:700, color:'var(--fg2)'}}>When did this offense happen?</div>
-                <div style={{fontSize:11, color:'var(--fg-m)', marginTop:2}}>All risk warnings and regulatory clocks depend on these dates.</div>
-              </div>
+          {offenses.length === 0 && !addOpen && (
+            <div className="empty-state">
+              <div style={{fontSize:24,marginBottom:8}}>⚖️</div>
+              <div>No offenses logged yet. Click <strong>Add Offense</strong> to begin.</div>
+              <div style={{fontSize:10,marginTop:6}}>The verdict is computed from the whole record — single minor offenses often need no waiver at all.</div>
+            </div>
+          )}
 
-              {/* Quick-pick shortcuts */}
-              <div style={{marginBottom:12}}>
-                <div style={{fontSize:10, color:'var(--fg-m)', marginBottom:5, textTransform:'uppercase', letterSpacing:'.06em'}}>Quick pick (approximate):</div>
-                <div style={{display:'flex', flexWrap:'wrap', gap:6}}>
-                  {[
-                    {label:'< 30 days ago', days:20},
-                    {label:'3 months ago', days:90},
-                    {label:'6 months ago', days:180},
-                    {label:'1 year ago', days:365},
-                    {label:'2 years ago', days:730},
-                    {label:'3+ years ago', days:1100},
-                  ].map(btn => (
-                    <button key={btn.label} type="button"
-                      onClick={() => {
-                        const d = new Date();
-                        d.setDate(d.getDate() - btn.days);
-                        const iso = d.toISOString().split('T')[0];
-                        setOffenseDate(iso);
-                        if (!convictionDate) setConvictionDate(iso);
-                        setDateOrderConfirmed(false);
-                      }}
-                      style={{padding:'5px 12px', fontSize:11, fontWeight:600, border:'1px solid var(--bd-m)', background:'var(--bg-s)', color:'var(--fg2)', cursor:'pointer'}}
-                    >
-                      {btn.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Date inputs */}
-              <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:12}}>
-                <div className="form-field">
-                  <label className="form-label">Offense Date — when the act happened <span style={{color:'#ff6b6b'}}>*</span></label>
-                  <input type="date" className="form-input"
-                    value={offenseDate}
-                    max={todayStr}
-                    onChange={e => { setOffenseDate(e.target.value); if (!convictionDate) setConvictionDate(e.target.value); setDateOrderConfirmed(false); }}
-                    style={{borderColor: dateErrors.some(e=>e.startsWith('Offense')) ? '#ff5555' : undefined, fontSize:14}}
-                  />
-                  <div style={{fontSize:9, color:'var(--fg-m)', marginTop:2}}>Used for recency / whole-person eval (AR 601-210 4-2)</div>
-                </div>
-                <div className="form-field">
-                  <label className="form-label">Conviction / Final Disposition Date</label>
-                  <input type="date" className="form-input"
-                    value={convictionDate}
-                    max={todayStr}
-                    onChange={e => { setConvictionDate(e.target.value); setDateOrderConfirmed(false); }}
-                    style={{borderColor: (dateErrors.some(e=>e.startsWith('Conviction')) || (convictionBeforeOffense && !dateOrderConfirmed)) ? '#ff5555' : undefined, fontSize:14}}
-                  />
-                  <div style={{fontSize:9, color:'var(--fg-m)', marginTop:2}}>Starts the 24-month clock for major misconduct (AR 601-210 4-7)</div>
-                </div>
-              </div>
-
-              {/* Hard date errors */}
-              {dateErrors.map((err, i) => (
-                <div key={i} style={{marginBottom:8, padding:'8px 12px', background:'rgba(207,0,0,.15)', border:'1px solid rgba(207,0,0,.5)', color:'#ff6b6b', fontSize:12, fontWeight:600, display:'flex', gap:8}}>
-                  <span>⛔</span><span>{err}</span>
-                </div>
-              ))}
-
-              {/* Conviction before offense — BLOCKING error with required override */}
-              {convictionBeforeOffense && (
-                <div style={{marginBottom:8, padding:'14px 16px', background:'rgba(207,0,0,.12)', border:'2px solid rgba(207,0,0,.55)', color:'#ffaaaa'}}>
-                  <div style={{fontWeight:700, fontSize:13, color:'#ff5555', marginBottom:6}}>
-                    ⛔ DATA ENTRY ERROR — Conviction date precedes offense date
+          {/* Offense chips + inline editor */}
+          <div className="offense-stack">
+            {offenses.map(o => {
+              const cat = catOf(o.categoryId) || {};
+              const info = chipInfo(o);
+              const juvenile = isJuvenileOffense(applicant, o);
+              return (
+                <React.Fragment key={o.id}>
+                  <div data-id={o.id} className={`offense-chip ${info.cls}`}>
+                    <span className={`chip-verdict ${info.v}`}>{info.label}</span>
+                    <div className="chip-label">{o.description || cat.label}</div>
+                    {juvenile && <span className="chip-auth" title="Before applicant's 18th birthday">JUV</span>}
+                    {o.offenseDate && <span className="chip-auth">{fmtDate(o.offenseDate)}</span>}
+                    <button className="btn btn-outline btn-sm" style={{padding:'2px 8px',fontSize:10}} onClick={()=>setEditId(editId===o.id?null:o.id)}>{editId===o.id?'Close':'Edit'}</button>
+                    <button className="chip-del" onClick={()=>removeOffense(o.id)} title="Remove this offense"><IcoX s={9}/></button>
                   </div>
-                  <div style={{fontSize:12, marginBottom:8, lineHeight:1.55}}>
-                    Conviction ({fmtDate(convictionDate)}) cannot logically precede the offense ({fmtDate(offenseDate)}).
-                    This is almost always a typo or copy-paste error. Correct the dates before continuing.
-                  </div>
-                  <div style={{fontSize:11, color:'rgba(255,170,170,.7)', marginBottom:10, lineHeight:1.4}}>
-                    Only check the box below if you have independently verified these dates are genuinely correct (extremely rare — certain retroactive legal dispositions only).
-                  </div>
-                  <label style={{display:'flex', alignItems:'center', gap:8, cursor:'pointer', fontSize:12}}>
-                    <input type="checkbox" checked={dateOrderConfirmed} onChange={e => setDateOrderConfirmed(e.target.checked)}/>
-                    I have verified both dates are correct — override this error
-                  </label>
-                </div>
-              )}
-
-              {/* Clean status when dates are valid */}
-              {offenseDate && !datesBlocking && (
-                <div style={{padding:'8px 12px', background:'rgba(255,204,1,.05)', borderLeft:'3px solid var(--gold)', fontSize:12}}>
-                  <div style={{marginBottom:2}}>
-                    <strong>Offense:</strong> {fmtDate(offenseDate)} — <strong>{Math.floor((Date.now()-new Date(offenseDate).getTime())/86400000)} days ago</strong>
-                    <span style={{fontSize:10, color:'var(--fg-m)', marginLeft:6}}>→ recency evaluation</span>
-                  </div>
-                  {convictionDate && convictionDate !== offenseDate && (
-                    <div style={{marginBottom:4}}>
-                      <strong>Conviction:</strong> {fmtDate(convictionDate)} — <strong>{Math.floor((Date.now()-new Date(convictionDate).getTime())/86400000)} days ago</strong>
-                      <span style={{fontSize:10, color:'var(--fg-m)', marginLeft:6}}>→ 24-month clock</span>
-                    </div>
+                  {editId === o.id && (
+                    <OffenseEditor o={o} applicant={applicant} onChange={patch=>patchOffense(o.id,patch)} onDone={()=>setEditId(null)}/>
                   )}
-                  <div style={{marginTop:4, fontSize:11}}>
-                    {(() => {
-                      const days = Math.floor((Date.now()-new Date(offenseDate).getTime())/86400000);
-                      if (days < 30) return <span style={{color:'#ff5555'}}>🔴 Extremely recent — near-certain denial</span>;
-                      if (days < 90) return <span style={{color:'#ff8800'}}>🟠 Very recent — high denial risk</span>;
-                      if (days < 180) return <span style={{color:'var(--gold)'}}>🟡 Recent — notable negative factor</span>;
-                      return <span style={{color:'#5bc989'}}>🟢 Older — better approval outlook</span>;
-                    })()}
-                  </div>
-                </div>
-              )}
-            </div>
+                </React.Fragment>
+              );
+            })}
+          </div>
 
-            {/* Category grid + Q&A — blocked until dates are valid */}
-            {!offenseDate ? (
-              <div style={{textAlign:'center', padding:'18px', color:'var(--fg-m)', fontSize:12, border:'1px dashed var(--bd)', background:'rgba(255,255,255,.02)'}}>
-                Enter the offense date above to continue.
-              </div>
-            ) : datesBlocking ? (
-              <div style={{textAlign:'center', padding:'18px', color:'#ff8888', fontSize:12, border:'1px solid rgba(207,0,0,.3)', background:'rgba(207,0,0,.04)'}}>
-                ↑ Fix the date error above before selecting an offense type.
-              </div>
-            ) : (
-            <>
-            <div style={{marginBottom:8}}>
-              <div style={{fontSize:13, fontWeight:600, marginBottom:8, color:'var(--fg2)'}}>
-                What kind of offense was it?
-              </div>
-              {groups.map(grp => {
+          {/* Category picker */}
+          {addOpen && (
+            <div style={{marginTop:12}}>
+              <div style={{fontSize:13,fontWeight:600,marginBottom:8,color:'var(--fg2)'}}>What kind of offense?</div>
+              {OFFENSE_GROUPS.map(grp => {
                 const cats = OFFENSE_CATEGORIES.filter(c => c.group === grp.key);
                 if (!cats.length) return null;
                 return (
@@ -1378,13 +1221,11 @@ const Phase1 = ({ applicant, setApplicant, onHighlight }) => {
                     <div className="offense-grid">
                       {cats.map(cat => (
                         <button key={cat.id}
-                          className={`offense-card${cat.bar?' bar':''}${cat.noWaiverRequired?' no-waiver':''}`}
-                          onClick={()=>selectCategory(cat.id)}>
+                          className={`offense-card${cat.class==='bar'?' bar':''}${cat.noWaiverSingle?' no-waiver':''}`}
+                          onMouseEnter={()=>setHoverCat(cat.id)} onMouseLeave={()=>setHoverCat(null)}
+                          onClick={()=>addOffense(cat.id)}>
                           <div className="offense-label">{cat.label}</div>
                           <div className="offense-sub">{cat.sub}</div>
-                          <span className={`offense-level-badge lvl-${cat.bar?'BAR':cat.noWaiverRequired?'NO-WAIVER':cat.level}`}>
-                            {cat.bar?'ABSOLUTE BAR':cat.noWaiverRequired?'NO WAIVER REQD':cat.level}
-                          </span>
                         </button>
                       ))}
                     </div>
@@ -1392,221 +1233,161 @@ const Phase1 = ({ applicant, setApplicant, onHighlight }) => {
                 );
               })}
             </div>
-
-            {/* Guided Q&A */}
-            {selectedCategory && (
-              <div className="q-wrap">
-                <div className="row" style={{marginBottom:14}}>
-                  <button className="btn btn-outline btn-sm" onClick={goBackQ}>← Back</button>
-                  <span className="muted" style={{fontSize:11}}>{OFFENSE_CATEGORIES.find(c=>c.id===selectedCategory)?.label}</span>
-                </div>
-                <div className="q-progress">
-                  {QUALIFYING_QUESTIONS.map((q,i) => (
-                    <div key={q.id} className={`q-prog-dot${i<qStep?' done':i===qStep?' active':''}`}/>
-                  ))}
-                </div>
-                <div className="q-card">
-                  <div className="q-num">Question {qStep+1} of {QUALIFYING_QUESTIONS.length}</div>
-                  <div className="q-text">{QUALIFYING_QUESTIONS[qStep].q}</div>
-                  {QUALIFYING_QUESTIONS[qStep].hint && <div className="q-hint">{QUALIFYING_QUESTIONS[qStep].hint}</div>}
-                  <div className="q-options">
-                    {QUALIFYING_QUESTIONS[qStep].options.map(opt => (
-                      <div key={opt.v} className={`q-opt${tempAnswer===opt.v?' selected':''}`} onClick={()=>setTempAnswer(opt.v)}>
-                        <div className="q-opt-dot">{tempAnswer===opt.v&&<div className="q-opt-dot-inner"/>}</div>
-                        <span className="q-opt-label">{opt.l}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="q-actions">
-                    <button className="btn btn-gold" disabled={!tempAnswer} onClick={submitAnswer}>Next →</button>
-                    <button className="btn btn-outline btn-sm" onClick={goBackQ}>Back</button>
-                  </div>
-                </div>
-              </div>
-            )}
-            </>
-            )}
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );
 };
 
-/* ── Big Red Banner + Smart Overall Verdict (date-aware + regulatory depth) ─ */
-const OverallVerdictBanner = ({ screenedOffenses, auth, authorityLabels, approv, applicant }) => {
-  const ov = computeOverallVerdict(screenedOffenses);
-  const dateRisks = getDateAwareRisks(screenedOffenses);
-  const hardBlocks = dateRisks.filter(r => r.severity === 'block');
-  const highRisks = dateRisks.filter(r => r.severity === 'high');
+/* ── Overall Case Verdict Banner ─────────────────────────── */
+const OverallVerdictBanner = ({ verdict, approv, applicant }) => {
+  const [showMeter, setShowMeter] = useState(false);
+  if (!verdict) return null;
+  const AUTH_FULL = { BN:'Battalion Commander', USARD:'CG, U.S. Army Recruiting Division (USARD)' };
+  const st = verdict.status;
+  const fmtD = d => (d && !isNaN(d)) ? d.toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'}) : '—';
 
-  const [showFactors, setShowFactors] = useState(false);
-
-  const isDead = ov === 'NOT_WAIVABLE' || hardBlocks.length > 0;
-  const isHighRisk = highRisks.length > 0 || (approv && approv.score < 35);
-
-  const configs = {
-    WAIVABLE:          { cls:'verdict-WAIVABLE',          tag:'Waivable', title:`Waivable — ${authorityLabels[auth]||auth}`, icon:'✅' },
-    NOT_WAIVABLE:      { cls:'verdict-NOT_WAIVABLE',      tag:'ABSOLUTE BAR', title:'This Case Cannot Be Waived', icon:'⛔' },
-    ETP_REQUIRED:      { cls:'verdict-ETP_REQUIRED',      tag:'ETP Required', title:'Exception to Policy Required', icon:'⚠️' },
-    WAITING_PERIOD:    { cls:'verdict-WAITING_PERIOD',    tag:'Waiting Period', title:'Mandatory Waiting Period', icon:'⏳' },
-    NO_WAIVER_REQUIRED:{ cls:'verdict-NO_WAIVER_REQUIRED',tag:'No Waiver Needed', title:'No Waiver Required', icon:'✔️' },
-  };
-  const cfg = configs[ov] || { cls:'', tag:'', title:'Pending', icon:'•' };
-
-  // BIG RED BANNER for dead or extremely recent high-risk cases
-  if (isDead || isHighRisk) {
+  /* NOT WAIVABLE — full red banner */
+  if (st === 'NOT_WAIVABLE') {
+    const permBars = verdict.bars.filter(b => b.perm);
+    const tempBars = verdict.bars.filter(b => !b.perm);
     return (
-      <div style={{
-        background: 'linear-gradient(135deg, #3a0f0f 0%, #1f0808 100%)',
-        border: '3px solid #ff3b3b',
-        borderRadius: 8,
-        padding: '20px 24px',
-        marginBottom: 16,
-        color: '#ffdddd',
-        boxShadow: '0 0 0 1px #ff3b3b44 inset'
-      }}>
-        <div style={{display:'flex', alignItems:'center', gap:12, marginBottom:10}}>
+      <div style={{background:'linear-gradient(135deg,#3a0f0f 0%,#1f0808 100%)',border:'3px solid #ff3b3b',borderRadius:8,padding:'20px 24px',color:'#ffdddd',boxShadow:'0 0 0 1px #ff3b3b44 inset'}}>
+        <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:10}}>
           <div style={{fontSize:32}}>⛔</div>
           <div>
-            <div style={{fontSize:22, fontWeight:800, color:'#ff5555', letterSpacing:'-0.5px'}}>
-              {isDead ? 'CASE BLOCKED — DO NOT SUBMIT' : 'EXTREMELY HIGH RISK — RECENT SERIOUS CONDUCT'}
+            <div style={{fontSize:22,fontWeight:800,color:'#ff5555'}}>
+              {permBars.length ? 'NOT WAIVABLE — DO NOT SUBMIT' : 'CANNOT PROCESS NOW'}
             </div>
-            <div style={{fontSize:13, color:'#ffaaaa', marginTop:2}}>
-              {isDead ? 'One or more absolute bars or regulatory waiting periods have not been met.' : 'Recent high-severity offenses make approval highly unlikely in the current environment.'}
+            <div style={{fontSize:13,color:'#ffaaaa',marginTop:2}}>
+              {permBars.length ? 'One or more permanent bars — no waiver authority exists at any level.' : 'Temporary block — resolve the items below, then re-screen.'}
             </div>
           </div>
         </div>
-
-        {/* Hard blocks from dates or category */}
-        {(hardBlocks.length > 0 || ov === 'NOT_WAIVABLE') && (
-          <div style={{background:'rgba(0,0,0,0.3)', padding:'12px 16px', borderRadius:6, marginBottom:12}}>
-            <div style={{fontWeight:700, color:'#ff8888', marginBottom:6, fontSize:13}}>REASONS THIS CASE IS DEAD OR DELAYED:</div>
-            {ov === 'NOT_WAIVABLE' && (
-              <div style={{marginBottom:8, fontSize:13}}>• Absolute bar detected in one or more offenses (Lautenberg, sex offense, murder, or 2+ major misconduct). No waiver authority exists at any level per AR 601-210 Chapter 4.</div>
-            )}
-            {hardBlocks.map((r, i) => (
-              <div key={i} style={{marginBottom:6, fontSize:13}}>
-                • <strong>{r.title}</strong>: {r.message} <span style={{opacity:0.6}}>({r.cite})</span>
-              </div>
+        {permBars.length > 0 && (
+          <div style={{background:'rgba(0,0,0,0.3)',padding:'12px 16px',borderRadius:6,marginBottom:10}}>
+            <div style={{fontWeight:700,color:'#ff8888',marginBottom:6,fontSize:12,letterSpacing:'.06em'}}>PERMANENT BARS:</div>
+            {permBars.map((b,i)=>(
+              <div key={i} style={{marginBottom:6,fontSize:13}}>• <strong>{b.title}</strong> — {b.text} <span style={{opacity:.6}}>({b.cite})</span></div>
             ))}
           </div>
         )}
-
-        {highRisks.length > 0 && (
-          <div style={{marginBottom:10}}>
-            {highRisks.map((r,i) => (
-              <div key={i} style={{fontSize:13, marginBottom:4}}>• {r.message}</div>
+        {tempBars.length > 0 && (
+          <div style={{background:'rgba(0,0,0,0.25)',padding:'12px 16px',borderRadius:6}}>
+            <div style={{fontWeight:700,color:'#ffb84d',marginBottom:6,fontSize:12,letterSpacing:'.06em'}}>MUST BE RESOLVED BEFORE PROCESSING:</div>
+            {tempBars.map((b,i)=>(
+              <div key={i} style={{marginBottom:6,fontSize:13}}>• <strong>{b.title}</strong> — {b.text} <span style={{opacity:.6}}>({b.cite})</span></div>
             ))}
           </div>
         )}
-
-        <div style={{fontSize:11, color:'#ffaaaa', borderTop:'1px solid #ff3b3b33', paddingTop:10, marginTop:8}}>
-          Recruiter reality check: Even if technically "waivable" on paper, cases with offenses in the last 90–180 days are routinely denied or returned without action by USAREC. Wait and build rehabilitation evidence.
-        </div>
       </div>
     );
   }
 
-  // Normal (non-dead) banner
+  const configs = {
+    WAIVABLE:           { cls:'verdict-WAIVABLE',           tag:'Waivable',        icon:'✅', title:`Waivable — ${AUTH_FULL[verdict.authority]||''}` },
+    WAITING_PERIOD:     { cls:'verdict-WAITING_PERIOD',     tag:'Waiting Period',  icon:'⏳', title:'Waivable — Mandatory Waiting Period Not Met' },
+    ETP_REQUIRED:       { cls:'verdict-ETP_REQUIRED',       tag:'Verify First',    icon:'⚠️', title:'Self-Admitted Offense — Court Check / ETP Required' },
+    NO_WAIVER_REQUIRED: { cls:'verdict-NO_WAIVER_REQUIRED', tag:'No Waiver Needed',icon:'✔️', title:'No Waiver Required' },
+  };
+  const cfg = configs[st] || { cls:'', tag:'', icon:'•', title:'Pending' };
+
   return (
     <div className={`card verdict-card ${cfg.cls}`} style={{padding:'18px 20px'}}>
       <div className="verdict-tag">{cfg.icon} {cfg.tag}</div>
       <div className="verdict-title" style={{fontSize:18}}>{cfg.title}</div>
 
-      {ov === 'WAIVABLE' && (
-        <div style={{display:'flex',flexWrap:'wrap',gap:10,marginTop:10,alignItems:'center'}}>
-          <div className="authority-badge"><IcoShield/> {authorityLabels[auth]||auth}</div>
-          <div style={{fontSize:11,color:'var(--fg-m)'}}>Waiver valid <strong style={{color:'var(--fg2)'}}>6 months</strong> from approval · AR 601-210, para 4-27</div>
+      {/* Why a waiver is (or isn't) required */}
+      {verdict.waivers.length > 0 && (
+        <div style={{margin:'8px 0'}}>
+          {verdict.waivers.map((w,i)=>(
+            <div key={i} style={{fontSize:12,color:'var(--fg2)',padding:'3px 0'}}>
+              • {w.label} <span style={{color:'var(--fg-m)',fontSize:10}}>(4-{w.cite.replace(/^4-/,'')} · {w.authority === 'USARD' ? 'CG USARD' : 'BN CO'})</span>
+            </div>
+          ))}
         </div>
       )}
 
-      {/* Confinement / disposition waiting-period countdown */}
-      {ov === 'WAITING_PERIOD' && (() => {
-        const waiters = screenedOffenses.filter(so => so.verdict?.type === 'WAITING_PERIOD' && so.verdict?.waitMonths);
-        if (!waiters.length) return null;
-        const now = new Date();
-        const fmt = d => (d && !isNaN(d)) ? d.toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'}) : '—';
-        const rows = waiters.map(so => {
-          const cat = OFFENSE_CATEGORIES.find(c => c.id === so.categoryId);
-          const startStr = so.convictionDate || so.offenseDate || '';
-          const wm = so.verdict.waitMonths;
-          let earliest = null, daysLeft = null;
-          if (startStr) {
-            earliest = new Date(startStr);
-            earliest.setMonth(earliest.getMonth() + wm);
-            daysLeft = Math.ceil((earliest - now) / 86400000);
-          }
-          return { id:so.id, label:cat?.label || so.categoryId, wm, startStr, earliest, daysLeft, cite:so.verdict.cite };
-        });
-        return (
-          <div style={{marginTop:12, border:'1px solid rgba(176,120,0,.4)', background:'rgba(176,120,0,.07)', padding:'14px 16px'}}>
-            <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:8}}>
-              <span style={{fontSize:16}}>⏳</span>
-              <span style={{fontSize:12,fontWeight:700,letterSpacing:'.08em',textTransform:'uppercase',color:'#ffb84d'}}>Waiting Period Countdown</span>
-            </div>
-            {rows.map(r => (
-              <div key={r.id} style={{padding:'8px 0', borderTop:'1px solid rgba(176,120,0,.2)'}}>
-                <div style={{fontSize:12,fontWeight:700,color:'var(--fg2)',marginBottom:3}}>{r.label} · {r.wm}-month wait</div>
-                {!r.startStr ? (
-                  <div style={{fontSize:11,color:'#ffcc66'}}>Enter the conviction / release-from-confinement date on this offense to calculate the earliest submission date.</div>
-                ) : r.daysLeft > 0 ? (
-                  <div style={{fontSize:11,color:'var(--fg2)'}}>
-                    <strong style={{color:'#ffb84d',fontSize:13}}>{r.daysLeft} days remaining</strong> · earliest submission <strong>{fmt(r.earliest)}</strong>
-                    <div style={{fontSize:10,color:'var(--fg-m)',marginTop:2}}>Clock from {fmt(new Date(r.startStr))}. {r.cite || 'AR 601-210 para 4-31'}. BN CO may shorten this window.</div>
-                  </div>
-                ) : (
-                  <div style={{fontSize:11,color:'#5bc989'}}>✔ Waiting period satisfied ({Math.abs(r.daysLeft)} days past) — verify against the actual release-from-confinement date before submitting.</div>
-                )}
-              </div>
-            ))}
+      {(st === 'WAIVABLE' || st === 'WAITING_PERIOD') && verdict.authority && (
+        <div style={{display:'flex',flexWrap:'wrap',gap:10,marginTop:6,alignItems:'center'}}>
+          <div className="authority-badge"><IcoShield/> {AUTH_FULL[verdict.authority]}</div>
+          <div style={{fontSize:11,color:'var(--fg-m)'}}>Waiver valid <strong style={{color:'var(--fg2)'}}>6 months</strong> from approval · AR 601-210, 4-27</div>
+        </div>
+      )}
+
+      {/* Waiting period countdown */}
+      {verdict.waits.length > 0 && (
+        <div style={{marginTop:12,border:'1px solid rgba(176,120,0,.4)',background:'rgba(176,120,0,.07)',padding:'14px 16px'}}>
+          <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:8}}>
+            <span style={{fontSize:16}}>⏳</span>
+            <span style={{fontSize:12,fontWeight:700,letterSpacing:'.08em',textTransform:'uppercase',color:'#ffb84d'}}>Waiting Periods</span>
           </div>
-        );
-      })()}
-
-      {/* Approvability Meter + date risks */}
-      {approv && ov === 'WAIVABLE' && (() => {
-        const tier = approv.score >= 70
-          ? { label:'LOW DENIAL RISK', color:'#5bc989', bg:'rgba(45,122,79,.1)', border:'rgba(45,122,79,.35)', icon:'🟢' }
-          : approv.score >= 50
-          ? { label:'MODERATE DENIAL RISK', color:'var(--gold)', bg:'rgba(176,120,0,.08)', border:'rgba(176,120,0,.35)', icon:'🟡' }
-          : approv.score >= 30
-          ? { label:'HIGH DENIAL RISK', color:'#ff9e5e', bg:'rgba(176,80,0,.1)', border:'rgba(176,80,0,.4)', icon:'🟠' }
-          : { label:'VERY HIGH DENIAL RISK', color:'#ff5555', bg:'rgba(207,0,0,.1)', border:'rgba(207,0,0,.35)', icon:'🔴' };
-        return (
-          <div className="approval-meter">
-            <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:8}}>
-              <div className="approval-label"><IcoGauge/> Denial Risk Assessment</div>
-              <div style={{fontWeight:700, fontSize:13, color:tier.color, padding:'3px 10px', background:tier.bg, border:`1px solid ${tier.border}`}}>
-                {tier.icon} {tier.label}
-              </div>
+          {verdict.waits.map(w => (
+            <div key={w.id} style={{padding:'8px 0',borderTop:'1px solid rgba(176,120,0,.2)'}}>
+              <div style={{fontSize:12,fontWeight:700,color:'var(--fg2)',marginBottom:3}}>{w.label}</div>
+              {w.needDate ? (
+                <div style={{fontSize:11,color:'#ffcc66'}}>Enter the required date on this offense (Edit) to calculate the earliest submission date.</div>
+              ) : (
+                <div style={{fontSize:11,color:'var(--fg2)'}}>
+                  <strong style={{color:'#ffb84d',fontSize:13}}>{w.daysLeft} days remaining</strong> · earliest submission <strong>{fmtD(w.earliest)}</strong>
+                  <div style={{fontSize:10,color:'var(--fg-m)',marginTop:2}}>Clock from {fmtDate(w.from)} · AR 601-210, {w.cite}{w.note ? ` · ${w.note}` : ''}</div>
+                </div>
+              )}
             </div>
+          ))}
+        </div>
+      )}
 
-            {dateRisks.length > 0 && (
-              <div style={{marginBottom:8}}>
-                {dateRisks.slice(0,2).map((r,i) => (
-                  <div key={i} style={{fontSize:11, color:'#ffcc66', marginBottom:3}}>⚠️ {r.title}: {r.message.split('.')[0]}.</div>
-                ))}
+      {/* Suitability reviews required */}
+      {verdict.suitability.length > 0 && (
+        <div style={{marginTop:12,border:'1px solid rgba(26,95,168,.35)',background:'rgba(26,95,168,.06)',padding:'12px 16px'}}>
+          <div style={{fontSize:11,fontWeight:700,letterSpacing:'.08em',textTransform:'uppercase',color:'#5b9fd4',marginBottom:6}}>Suitability Review Required (before MEPS projection — 4-2f)</div>
+          {verdict.suitability.map((s,i)=>(
+            <div key={i} style={{fontSize:11,color:'var(--fg2)',padding:'2px 0'}}>
+              • {s.label} — <strong>{s.level === 'USARD' ? 'CG USARD' : 'BN CO'} review</strong> <span style={{color:'var(--fg-m)',fontSize:10}}>({s.cite})</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Notes */}
+      {verdict.notes.length > 0 && (
+        <div style={{marginTop:12}}>
+          {verdict.notes.map((n,i)=>(
+            <div key={i} style={{fontSize:11,color:'var(--fg-m)',padding:'3px 0',lineHeight:1.5}}>
+              ℹ️ {n.label} <span style={{opacity:.7,fontSize:10}}>({n.cite})</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Unofficial approval-odds estimate — collapsed by default */}
+      {approv && st === 'WAIVABLE' && (
+        <div style={{marginTop:12}}>
+          <button style={{fontSize:10,color:'var(--fg-m)',background:'none',border:'1px solid var(--bd)',cursor:'pointer',padding:'4px 10px'}} onClick={()=>setShowMeter(v=>!v)}>
+            {showMeter ? '▲ Hide' : '▼ Show'} unofficial approval-odds estimate
+          </button>
+          {showMeter && (
+            <div className="approval-meter">
+              <div className="approval-hdr">
+                <div className="approval-label"><IcoGauge/> Unofficial Estimate</div>
+                <div className="approval-score" style={{color: approv.score >= 70 ? '#5bc989' : approv.score >= 45 ? 'var(--gold)' : '#ff7070'}}>{approv.score}</div>
               </div>
-            )}
-
-            <button style={{fontSize:10,color:'var(--fg-m)',background:'none',border:'none',cursor:'pointer',marginBottom:4,padding:0}} onClick={()=>setShowFactors(v=>!v)}>
-              {showFactors?'▲ Hide contributing factors':'▼ Show contributing factors'}
-            </button>
-            {showFactors && (
+              <div className="approval-bar-bg"><div className="approval-bar-fill" style={{width:`${approv.score}%`,background: approv.score >= 70 ? '#5bc989' : approv.score >= 45 ? 'var(--gold)' : '#ff7070'}}/></div>
               <div className="approval-factors">
                 {approv.factors.map((f,i)=>(
                   <div key={i} className="approval-factor">
-                    <span className={f.mod>0?'factor-up':'factor-down'}>{f.mod>0?'+':''}{f.mod}</span>
+                    <span className={f.mod > 0 ? 'factor-up' : 'factor-down'}>{f.mod > 0 ? '+' : ''}{f.mod}</span>
                     <span>{f.label}</span>
                   </div>
                 ))}
               </div>
-            )}
-            <div className="approval-disclaimer">Assessment only — actual outcome depends on CO interview, applicant statement, and command climate. Do not share this rating with the applicant.</div>
-          </div>
-        );
-      })()}
+              <div className="approval-disclaimer">NOT from regulation — heuristic estimate only. Actual outcome depends on the commander interview, applicant statement, and command climate. Do not share with the applicant.</div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
@@ -1631,8 +1412,9 @@ const Phase2 = ({ applicant, setApplicant }) => {
           </div>
           <div className="form-grid-3" style={{marginBottom:10}}>
             <div className="form-field">
-              <label className="form-label">SSN</label>
-              <input className="form-input" value={applicant.ssn||''} onChange={e=>setAppl('ssn',e.target.value)} placeholder="XXX-XX-XXXX" maxLength={11}/>
+              <label className="form-label">SSN — Last 4 Only</label>
+              <input className="form-input" value={applicant.ssn||''} onChange={e=>setAppl('ssn',e.target.value.replace(/\D/g,'').slice(-4))} placeholder="1234" maxLength={4}/>
+              <div style={{fontSize:9,color:'var(--fg-m)',marginTop:2}}>Full SSN is never stored in this tool — documents print last 4 only</div>
             </div>
             <div className="form-field">
               <label className="form-label">Date of Birth</label>
@@ -1689,7 +1471,7 @@ const Phase2 = ({ applicant, setApplicant }) => {
 
         {/* MOS Check */}
         <div className="card" style={{marginTop:14}}>
-          <div className="card-hdr"><div className="section-bar"/><div><div className="card-title"><IcoMOS/> MOS Compatibility Check <span className="new-badge">NEW</span></div><div className="card-sub">Verify the desired MOS has no additional restrictions that conflict with this waiver</div></div></div>
+          <div className="card-hdr"><div className="section-bar"/><div><div className="card-title"><IcoMOS/> MOS Compatibility Check</div><div className="card-sub">ADVISORY ONLY — not sourced from AR 601-210. Always verify with the MOS career manager and DA PAM 611-21</div></div></div>
           <MOSChecker applicant={applicant} setAppl={setAppl}/>
         </div>
 
@@ -1781,13 +1563,11 @@ const Phase3 = ({ applicant, setApplicant }) => {
   const [activeDoc, setActiveDoc] = useState(null);
 
   const screenedOffenses = applicant.offenses || [];
-  const overallV = computeOverallVerdict(screenedOffenses);
-  const authority = computeGoverningAuthority(screenedOffenses);
-  const isTrafficOnly = screenedOffenses.every(so => {
-    const cat = OFFENSE_CATEGORIES.find(c => c.id === so.categoryId);
-    return cat && cat.group === 'traffic';
-  });
-  const requiredItems = getRequiredChecklist(authority, isTrafficOnly);
+  const verdict = computeCaseVerdict(applicant);
+  const authority = verdict?.authority || 'BN';
+  const waivedIds = verdict?.waivedIds || [];
+  const flags = offenseFlags(screenedOffenses);
+  const requiredItems = getRequiredChecklist(authority, flags);
   const expiringItems = requiredItems.filter(i => i.validity);
   const statusCycle = s => s==='pending'?'progress':s==='progress'?'complete':'pending';
 
@@ -1803,19 +1583,20 @@ const Phase3 = ({ applicant, setApplicant }) => {
 
   const fullName = [applicant.firstName, applicant.mi?applicant.mi+'.':'', applicant.lastName].filter(Boolean).join(' ');
   const ssnLast4 = (applicant.ssn||'').slice(-4)||'XXXX';
-  const authorityFull = { BN:'Battalion Commander', USAREC:'Commanding General, USAREC', DMPM:'Deputy Chief of Staff, G-1 (DMPM)' };
-  const authorityMemo = { BN:'Battalion Commander', USAREC:'CG, USAREC', DMPM:'Deputy Chief of Staff, G-1 (DMPM)' };
+  const authorityFull = { BN:'Battalion Commander', USARD:'Commanding General, U.S. Army Recruiting Division (USARD)' };
+  const authorityMemo = { BN:'Battalion Commander', USARD:'CG, USARD' };
   const authorityShort = authorityFull[authority]||authority;
-  const offenseList = [...screenedOffenses].filter(so=>so.offenseDate||so.description).sort((a,b)=>new Date(b.offenseDate)-new Date(a.offenseDate));
+  const offenseList = sortNewest(screenedOffenses.filter(so=>so.offenseDate||so.description));
+  const isWaived = o => waivedIds.includes(o.id);
   const completedCount = requiredItems.filter(i => clStatus[i.id]==='complete').length;
-  const { score: readiness } = computeReadiness(applicant, screenedOffenses, clStatus);
+  const { score: readiness } = computeReadiness(applicant, verdict, clStatus);
 
   // Common rejection warnings
   const warnings = [];
   if (!applicant.afqt) warnings.push('AFQT score not entered — required for UF 601-210.08');
   if (expiringItems.some(i => { const d = daysUntilExpiry(expDates[i.id], i.validity); return d !== null && d < 0; })) warnings.push('One or more documents have EXPIRED — renew before submission');
   if (!applicant.rsid) warnings.push('RSID not entered — required for routing memo');
-  if (screenedOffenses.some(so=>so.verdict?.type==='WAIVABLE') && !offenseList.some(so=>so.description)) warnings.push('Offense descriptions not filled in — needed for document generation');
+  if ((verdict?.waivers?.length > 0) && !offenseList.some(so=>so.description)) warnings.push('Offense descriptions not filled in — needed for document generation');
 
   /* Document generators */
   const genCoverSheet = () => {
@@ -1841,9 +1622,9 @@ const Phase3 = ({ applicant, setApplicant }) => {
     lines.push(`${'─'.repeat(60)}`);
     offenseList.forEach((o,i)=>{
       const cat = OFFENSE_CATEGORIES.find(c=>c.id===o.categoryId);
-      lines.push(`${i+1}. ${o.waivedOffense?'★ ':''}${fmtDate(o.offenseDate)} — ${o.description||cat?.label||'[Description]'}`);
+      lines.push(`${i+1}. ${isWaived(o)?'★ ':''}${fmtDate(o.offenseDate)} — ${o.description||cat?.label||'[Description]'}`);
       if (o.city||o.county||o.state) lines.push(`   Location: ${[o.city,o.county,o.state].filter(Boolean).join(', ')}`);
-      if (o.disposition) lines.push(`   Disposition: ${o.disposition}`);
+      if (o.dispositionText) lines.push(`   Disposition: ${o.dispositionText}`);
     });
     lines.push(``);
     lines.push(`DOCUMENT STATUS`);
@@ -1856,11 +1637,12 @@ const Phase3 = ({ applicant, setApplicant }) => {
     lines.push(``);
     lines.push(`★ = Offense being waived`);
     lines.push(`Waiver valid 6 months from approval date · AR 601-210, para 4-27`);
+    lines.push(`Eligibility basis: ${REG_VERSION}`);
     return lines.join('\n');
   };
 
   const genStatement = () => {
-    const primaryOffense = offenseList.find(so=>so.waivedOffense!==false);
+    const primaryOffense = offenseList.find(isWaived) || offenseList[0];
     const cat = primaryOffense ? OFFENSE_CATEGORIES.find(c=>c.id === primaryOffense.categoryId) : null;
     const isDUI = cat?.id?.includes('dui');
     const isDrug = cat?.id?.includes('marijuana')||cat?.id?.includes('drug');
@@ -1875,11 +1657,11 @@ const Phase3 = ({ applicant, setApplicant }) => {
     lines.push(``);
     lines.push(`1. I, ${fullName||'[APPLICANT NAME]'}, am requesting a moral waiver for the following offense(s):`);
     lines.push(``);
-    offenseList.filter(so=>so.waivedOffense!==false).forEach((o,i)=>{
+    offenseList.filter(isWaived).forEach((o,i)=>{
       const letter = String.fromCharCode(97+i);
       const cat2 = OFFENSE_CATEGORIES.find(c=>c.id===o.categoryId);
       lines.push(`   ${letter}. ${fmtDate(o.offenseDate)} — ${o.description||cat2?.label||'[Offense Description]'}`);
-      if (o.disposition) lines.push(`      Disposition: ${o.disposition}`);
+      if (o.dispositionText) lines.push(`      Disposition: ${o.dispositionText}`);
     });
     lines.push(``);
     lines.push(`2. The circumstances surrounding the offense(s) are as follows:`);
@@ -1911,7 +1693,7 @@ const Phase3 = ({ applicant, setApplicant }) => {
     const offList = offenseList.map((o,i) => {
       const cat = OFFENSE_CATEGORIES.find(c=>c.id===o.categoryId);
       const letter = String.fromCharCode(97+i);
-      return `  <div class="para" style="margin-left:36pt;">${letter}.&nbsp;&nbsp;${fmtDate(o.offenseDate)} &#8211; ${o.description||cat?.label||'[Offense]'}. Disposition: ${o.disposition||'[Disposition]'}.</div>`;
+      return `  <div class="para" style="margin-left:36pt;">${letter}.&nbsp;&nbsp;${fmtDate(o.offenseDate)} &#8211; ${o.description||cat?.label||'[Offense]'}. Disposition: ${o.dispositionText||'[Disposition]'}.</div>`;
     }).join('\n');
     return `<!DOCTYPE html><html><head><title>CO Interview MFR — ${fullName||'Applicant'}</title>
 <style>
@@ -1969,7 +1751,7 @@ ${offList}
     if (applicant.mosCode) lines.push(`   Target MOS: ${applicant.mosCode}`);
     lines.push(``);
     lines.push(`2. Offense(s) being waived:`);
-    offenseList.filter(so=>so.waivedOffense!==false).forEach((o,i)=>{
+    offenseList.filter(isWaived).forEach((o,i)=>{
       const cat = OFFENSE_CATEGORIES.find(c=>c.id===o.categoryId);
       lines.push(`   ${i+1}. ${fmtDate(o.offenseDate)} — ${o.description||cat?.label||'[Offense]'}`);
     });
@@ -1987,7 +1769,7 @@ ${offList}
     lines.push(``);
     lines.push(`6. Point of contact: ${applicant.recruiterName||'[RECRUITER]'}, RSID: ${applicant.rsid||'[RSID]'}`);
     lines.push(``);
-    lines.push(`7. Regulation basis: AR 601-210, Chapter 4`);
+    lines.push(`7. Regulation basis: ${REG_VERSION}, Chapter 4`);
     lines.push(``);
     lines.push(``);
     lines.push(`__________________________________        ____________________`);
@@ -2016,6 +1798,26 @@ ${offList}
   return (
     <div className="main-scroll">
       <div className="fade-up">
+        {/* Hard stop — case is not waivable */}
+        {verdict?.status === 'NOT_WAIVABLE' && (
+          <div className="alert alert-danger" style={{marginBottom:14}}>
+            <span className="alert-icon">⛔</span>
+            <div>
+              <strong>THIS CASE IS NOT WAIVABLE — do not build or submit this packet.</strong>
+              <div style={{fontSize:11,marginTop:4}}>
+                {verdict.bars.map((b,i)=><div key={i}>• {b.title} ({b.cite})</div>)}
+              </div>
+              <div style={{fontSize:11,marginTop:4}}>Return to <strong>Screen Charges</strong> to review. If a temporary block (pending charges, active restraint), resolve it and re-screen.</div>
+            </div>
+          </div>
+        )}
+        {verdict?.status === 'NO_WAIVER_REQUIRED' && (
+          <div className="alert alert-info" style={{marginBottom:14}}>
+            <span className="alert-icon">✔️</span>
+            <div><strong>No waiver is required for this case.</strong> A packet is not needed — just ensure all offenses are on the SF 86, RZ, and UF 601-210.08 (generator below).</div>
+          </div>
+        )}
+
         {/* QC Warnings */}
         {warnings.length > 0 && (
           <div className="alert alert-warn" style={{marginBottom:14}}>
@@ -2110,7 +1912,7 @@ ${offList}
             if (!applicant.rsid) missing.push('RSID (Tab 2)');
             if (!applicant.afqt) missing.push('AFQT score (Tab 2)');
             if (!applicant.recruiterUnit) missing.push('Unit designation (Tab 2)');
-            if (!screenedOffenses.some(so => so.description)) missing.push('Offense description(s) (Tab 1 — Offense Log)');
+            if (!screenedOffenses.some(so => so.description)) missing.push('Offense description(s) (Tab 1 — Offense Record)');
             if (!missing.length) return null;
             return (
               <div className="alert alert-warn" style={{margin:'0 0 12px'}}>
@@ -2140,10 +1942,10 @@ ${offList}
         </div>
 
         {/* PDF Generator */}
-        <UF608Card applicant={applicant} offenses={screenedOffenses}/>
+        <UF608Card applicant={applicant} offenses={screenedOffenses} waivedIds={waivedIds}/>
 
         <div style={{fontSize:10,color:'var(--fg-d)',textAlign:'center',marginTop:20,paddingBottom:16}}>
-          Logic based on AR 601-210. Verify currency before submission. Last updated to reflect 2026 marijuana possession change (para 4-6).
+          Eligibility logic: {REG_VERSION}. Verify currency with your S1 before submission.
         </div>
       </div>
 
@@ -2173,7 +1975,7 @@ ${offList}
 };
 
 /* ── UF 601-210.08 PDF Generator ─────────────────────── */
-function buildDatasetsXML(applicant, screenedOffenses) {
+function buildDatasetsXML(applicant, screenedOffenses, waivedIds = []) {
   const esc = s => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   const fmtD = iso => {
     if (!iso) return '';
@@ -2191,17 +1993,17 @@ function buildDatasetsXML(applicant, screenedOffenses) {
   };
   const name = [applicant.lastName, [applicant.firstName, applicant.mi].filter(Boolean).join(' ')].filter(Boolean).join(', ');
   const currentAge = calcAge(applicant.dob, new Date().toISOString().split('T')[0]);
-  const sorted = [...screenedOffenses].filter(so=>so.offenseDate||so.description).sort((a,b)=>new Date(b.offenseDate)-new Date(a.offenseDate));
+  const sorted = sortNewest(screenedOffenses.filter(so=>so.offenseDate||so.description));
   const get = i => sorted[i] || {};
   const tf = v => v ? `<TextField2>${esc(v)}</TextField2>` : '<TextField2/>';
   const df = v => v ? `<DateField2>${esc(v)}</DateField2>` : '<DateField2/>';
   const nf = v => v ? `<NumericField2>${esc(v)}</NumericField2>` : '<NumericField2/>';
   const rowXML = i => {
     const o = get(i);
-    const age = calcAge(applicant.dob, o.offenseDate||o.date);
-    const star = o.waivedOffense!==false ? '*' : '';
+    const age = calcAge(applicant.dob, o.offenseDate);
+    const star = o.id && waivedIds.includes(o.id) ? '*' : '';
     const desc = o.description || (OFFENSE_CATEGORIES.find(c=>c.id===o.categoryId)?.label) || '';
-    return `${df(fmtD(o.offenseDate||o.date))}\n${nf(age)}\n${tf(star + desc)}\n${tf(o.disposition||'')}\n`;
+    return `${df(fmtD(o.offenseDate))}\n${nf(age)}\n${tf(star + desc)}\n${tf(o.dispositionText||'')}\n`;
   };
   let xml = `<xfa:datasets xmlns:xfa="http://www.xfa.org/schema/xfa-data/1.0/">\n<xfa:data>\n<topmostSubform>\n`;
   xml += tf(applicant.maritalStatus) + '\n';
@@ -2220,7 +2022,7 @@ function buildDatasetsXML(applicant, screenedOffenses) {
   return xml;
 }
 
-async function generateFilledUF608(applicant, offenses, onProgress, templateBytes = null) {
+async function generateFilledUF608(applicant, offenses, waivedIds, onProgress, templateBytes = null) {
   let origBytes = templateBytes;
 
   if (!origBytes) {
@@ -2266,7 +2068,7 @@ async function generateFilledUF608(applicant, offenses, onProgress, templateByte
   }
 
   onProgress('Building XFA datasets...');
-  const xml = buildDatasetsXML(applicant, offenses);
+  const xml = buildDatasetsXML(applicant, offenses, waivedIds);
   const xmlBytes = new TextEncoder().encode(xml);
   onProgress('Compressing...');
   const compressed = pako.deflate(xmlBytes);
@@ -2290,7 +2092,7 @@ async function generateFilledUF608(applicant, offenses, onProgress, templateByte
   return result;
 }
 
-const UF608Card = ({ applicant, offenses }) => {
+const UF608Card = ({ applicant, offenses, waivedIds = [] }) => {
   const [status, setStatus] = useState('idle');
   const [msg, setMsg] = useState('');
   const [selectedTemplate, setSelectedTemplate] = useState(null); // Uint8Array from user-selected file
@@ -2317,7 +2119,7 @@ const UF608Card = ({ applicant, offenses }) => {
   const generatePDF = async () => {
     setStatus('loading'); setMsg('Starting...');
     try {
-      const bytes = await generateFilledUF608(applicant, offenses, m=>setMsg(m), selectedTemplate);
+      const bytes = await generateFilledUF608(applicant, offenses, waivedIds, m=>setMsg(m), selectedTemplate);
       const blob = new Blob([bytes], {type:'application/pdf'});
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -2340,16 +2142,15 @@ const UF608Card = ({ applicant, offenses }) => {
     lines.push('All offenses listed newest to oldest. Waived offenses marked with ★');
     lines.push('');
 
-    const sorted = [...offenses].sort((a,b) => (b.offenseDate || '').localeCompare(a.offenseDate || ''));
-    
+    const sorted = sortNewest(offenses);
+
     sorted.forEach((o, i) => {
       const cat = OFFENSE_CATEGORIES.find(c => c.id === o.categoryId);
-      const isWaived = o.waivedOffense !== false;
       const date = o.offenseDate ? new Date(o.offenseDate).toLocaleDateString() : 'Unknown date';
-      const asterisk = isWaived ? '★ ' : '';
+      const asterisk = waivedIds.includes(o.id) ? '★ ' : '';
       lines.push(`${i+1}. ${asterisk}${date} — ${cat?.label || o.categoryId}`);
       if (o.description) lines.push(`   Description: ${o.description}`);
-      if (o.disposition) lines.push(`   Disposition: ${o.disposition}`);
+      if (o.dispositionText) lines.push(`   Disposition: ${o.dispositionText}`);
       if (o.city || o.state) lines.push(`   Location: ${[o.city, o.state].filter(Boolean).join(', ')}`);
       lines.push('');
     });
@@ -2451,10 +2252,9 @@ const UF608Card = ({ applicant, offenses }) => {
 const RefPanel = ({ collapsed, tab, authority, highlighted }) => {
   const [refExpanded, setRefExpanded] = useState({});
   const relevantParas = {
-    1: ['4-22g','4-22h','4-22i','4-22j','4-22k','4-31','4-30','4-35','4-18','4-8'],
-    2: ['4-28','4-28e4','4-28e5','4-27'],
+    1: ['4-6','4-7','4-7c','4-22g','4-22h','4-22i','4-22j','4-22k','4-30','4-31','4-35','4-18','4-2f'],
+    2: ['4-28','4-28e4','4-28e5','4-27','4-12c'],
     3: ['4-28','4-28e4','4-28e5','4-27','4-31'],
-    4: ['4-27','4-22g','4-22h'],
   };
   const allParas = [...(relevantParas[tab] || Object.keys(PARA_TEXT))];
   // Highlighted paras bubble to top, rest follow
@@ -2463,10 +2263,9 @@ const RefPanel = ({ collapsed, tab, authority, highlighted }) => {
   const ordered = [...hi, ...rest];
 
   const tips = {
-    1: ['If ANY offense is an absolute bar, the overall case is NOT WAIVABLE.', 'Multiple offenses: governing authority = the highest level required across all offenses.'],
-    2: ['AFQT on UF 601-210.08 must match current MIRS score.', 'MOS compatibility check surfaces clearance conflicts before they become late-stage problems.'],
+    1: ['The verdict is computed from the WHOLE record: 2–5 misconduct = BN waiver; a single DUI/prostitution/non-Lautenberg DV = BN waiver; any felony = CG USARD + 24-month wait.', 'Since 20 Mar 2026, a single marijuana possession conviction needs NO waiver.'],
+    2: ['AFQT on UF 601-210.08 must match current MIRS score.', 'MOS compatibility check is advisory — verify with the career manager.'],
     3: ['Click any checklist item to expand step-by-step guidance.', 'DD 369s must cover every location where an offense occurred, regardless of date.', 'Aliases require separate DD 369 forms.'],
-    4: ['Waiver valid 6 months from approval date — track this. Print MIRS 1.1 on submission day.'],
   };
   if (collapsed) return null;
   return (
@@ -2501,9 +2300,9 @@ const RefPanel = ({ collapsed, tab, authority, highlighted }) => {
             </div>
           );
         })}
-        {authority && (authority==='USAREC'||authority==='DMPM') && (
+        {authority === 'USARD' && (
           <div className="ref-tip" style={{marginTop:8,borderLeft:'2px solid var(--gold)',color:'var(--gold)'}}>
-            {authority} level — DD Form 370 (3 references) and DD Form 2808 required.
+            CG USARD level — DD Form 370 references (4-28e(4)) and DD Form 2808 (4-28e(5)) required.
           </div>
         )}
       </div>
@@ -2526,18 +2325,7 @@ const ResumeModal = ({ draft, onResume, onDiscard }) => (
   </div>
 );
 
-/* ──.approval-banner {
-  padding: 10px 15px;
-  margin: 10px 0;
-  border-radius: 6px;
-  font-weight: 600;
-  text-align: center;
-}
-.approval-banner.waivable {background: rgba(45,122,79,.1); color: #2d7a4f; border: 1px solid #2d7a4f;}
-.approval-banner.not_waivable {background: rgba(207,0,0,.1); color: #cf0000; border: 1px solid #cf0000;}
-.approval-banner.etp_required {background: rgba(176,120,0,.1); color: #b07800; border: 1px solid #b07800;}
-.approval-banner.waiting_period {background: rgba(176,120,0,.05); color: #b07800; border: 1px solid #b07800;}
-.approval-banner.no_waiver_required {background: rgba(26,95,168,.1); color: #1a5fa8; border: 1px solid #1a5fa8;}cenarios Dropdown ──────────────────────── */
+/* ── Sample Scenarios Dropdown ──────────────────────── */
 const SampleMenu = ({ onLoad, onClose }) => (
   <div style={{position:'absolute',top:'100%',right:0,background:'var(--bg-s)',border:'1px solid var(--bd-m)',zIndex:50,minWidth:240,marginTop:4}} className="fade-in">
     {SAMPLE_SCENARIOS.map(s => (
@@ -2561,7 +2349,7 @@ const App = () => {
   const [sampleMenuOpen, setSampleMenuOpen] = useState(false);
   const [pendingRestore, setPendingRestore] = useState(null);
   const [highlightedParas, setHighlightedParas] = useState([]);
-  // Roster state
+  // Roster state — supports multiple applicants; add/remove never wipes others
   const [roster, setRoster] = useState([blankApplicant()]);
   const [activeId, setActiveId] = useState(null);
 
@@ -2593,28 +2381,43 @@ const App = () => {
 
   const addApplicant = () => {
     const a = blankApplicant();
-    setRoster([a]); setActiveId(a.id);
+    setRoster(prev => [...prev, a]);
+    setActiveId(a.id);
     setTab(1);
   };
 
   const removeApplicant = (id) => {
+    const appl = roster.find(a => a.id === id);
+    const name = [appl?.firstName, appl?.lastName].filter(Boolean).join(' ') || 'this applicant';
+    if (!window.confirm(`Remove ${name}? This permanently deletes their screening data and checklist progress.`)) return;
+    setRoster(prev => {
+      const next = prev.filter(a => a.id !== id);
+      if (!next.length) {
+        const fresh = blankApplicant();
+        setActiveId(fresh.id);
+        return [fresh];
+      }
+      if (id === activeId) setActiveId(next[0].id);
+      return next;
+    });
+  };
+
+  const clearAllData = () => {
+    if (!window.confirm('Clear ALL saved applicants and start fresh? This cannot be undone.')) return;
+    try { localStorage.removeItem(STORAGE_KEY); } catch {}
     const a = blankApplicant();
-    setRoster([a]); setActiveId(a.id);
+    setRoster([a]); setActiveId(a.id); setTab(1);
   };
 
   const loadSample = (scenario) => {
-    const s = scenario;
     const a = blankApplicant();
-    Object.assign(a, s.applicant);
-    // Convert sample scenarios to new screened offense format
-    a.offenses = s.offenses.map(o => {
-      const v = computeVerdictFromAnswers(s.screening.offenseId, s.screening);
-      return { id:o.id, categoryId:s.screening.offenseId, answers:s.screening, verdict:v,
-        offenseDate:o.date, description:o.description, city:o.city, county:o.county, state:o.state,
-        disposition:o.disposition, courtDocs:o.courtDocs, incidentRpt:o.incidentRpt, waivedOffense:true };
-    });
-    setRoster([a]); setActiveId(a.id);
-    setTab(2);
+    Object.assign(a, JSON.parse(JSON.stringify(scenario.applicant)));
+    a.id = `a${Date.now()}${Math.floor(Math.random()*1e4)}`;
+    a.caseAnswers = { ...scenario.caseAnswers };
+    a.offenses = scenario.offenses.map(o => ({ ...o, id:`${o.id}_${Date.now()}` }));
+    setRoster(prev => [...prev, a]);
+    setActiveId(a.id);
+    setTab(1);
   };
 
   const restoreSession = () => {
@@ -2630,12 +2433,11 @@ const App = () => {
     setPendingRestore(null);
   };
 
-  const authority = computeGoverningAuthority(activeApplicant?.offenses||[]);
-  const overallV = computeOverallVerdict(activeApplicant?.offenses||[]);
-  const { score:readiness, breakdown } = computeReadiness(activeApplicant||{}, activeApplicant?.offenses||[], activeApplicant?.checklistStatus||{});
+  const verdict = activeApplicant ? computeCaseVerdict(activeApplicant) : null;
+  const authority = verdict?.authority || null;
+  const { score:readiness, breakdown } = computeReadiness(activeApplicant||{}, verdict, activeApplicant?.checklistStatus||{});
 
-  const authClass = `auth-${authority||'NONE'}`;
-  const authorityLabels = { BN:'BN CO', USAREC:'USAREC CG', DMPM:'DMPM', NONE:'N/A' };
+  const authorityLabels = { BN:'BN CO', USARD:'CG USARD' };
 
   const tabs = [
     { n:1, label:'Screen Charges' },
@@ -2643,19 +2445,9 @@ const App = () => {
     { n:3, label:'Build Packet' },
   ];
 
-  // Strong overall explanation for the user
-  const getOverallExplanation = (v, a) => {
-    if (v === 'NOT_WAIVABLE') return 'This case has one or more absolute bars (Lautenberg, sex offense, murder, 2+ major misconduct, etc.). Per AR 601-210 Chapter 4, no waiver authority exists at any level. Document the bar and do not submit.';
-    if (v === 'WAITING_PERIOD') return 'All charges are potentially waivable, but at least one requires a waiting period after confinement or conviction. The packet can be built but cannot ship until the period is met (BN CO can sometimes shorten).';
-    if (v === 'ETP_REQUIRED') return 'Self-admittal or other situation that requires an Exception to Policy before normal waiver processing. Coordinate with your battalion S1 early.';
-    if (v === 'WAIVABLE') return `Highest authority required: ${a}. ${a === 'BN' ? 'Battalion Commander can approve most of these.' : a === 'USAREC' ? 'Will need CG, USAREC approval — prepare full packet with DD 370s and strong rehabilitation evidence.' : 'DMPM level — very high scrutiny, strong packet required.'}`;
-    return 'No waiverable offenses detected or all charges resolved with no adverse disposition.';
-  };
-
-  const p1Done = overallV === 'WAIVABLE';
+  const p1Done = verdict && ['WAIVABLE','NO_WAIVER_REQUIRED'].includes(verdict.status);
   const p2Done = p1Done && !!(activeApplicant?.lastName);
   const p3Done = p2Done && readiness >= 80;
-
   const isDone = (n) => n===1?p1Done:n===2?p2Done:n===3?p3Done:false;
 
   return (
@@ -2666,7 +2458,7 @@ const App = () => {
         <span className="topbar-badge">4D5E</span>
         <div>
           <div className="topbar-title">Moral Waiver Builder</div>
-          <div className="topbar-sub">AR 601-210 · Chapter 4</div>
+          <div className="topbar-sub">AR 601-210 (20 Mar 2026) · Chapter 4</div>
         </div>
         <div className="topbar-center">
           {activeApplicant && (
@@ -2678,10 +2470,10 @@ const App = () => {
               </div>
             </div>
           )}
-          {authority && authority !== 'NONE' && (
-            <div className={`auth-badge ${authClass}`}><IcoShield/> {authorityLabels[authority]} Level</div>
+          {verdict?.status !== 'NOT_WAIVABLE' && authority && (
+            <div className={`auth-badge auth-${authority}`}><IcoShield/> {authorityLabels[authority]} Level</div>
           )}
-          {overallV === 'NOT_WAIVABLE' && (
+          {verdict?.status === 'NOT_WAIVABLE' && (
             <div className="auth-badge auth-NONE" style={{background:'rgba(207,0,0,.15)',borderColor:'rgba(207,0,0,.3)',color:'#ff5555'}}>⛔ NOT WAIVABLE</div>
           )}
         </div>
@@ -2690,6 +2482,7 @@ const App = () => {
             <button className="topbar-btn" onClick={()=>setSampleMenuOpen(v=>!v)}>Sample Scenarios</button>
             {sampleMenuOpen && <SampleMenu onLoad={loadSample} onClose={()=>setSampleMenuOpen(false)}/>}
           </div>
+          <button className="topbar-btn" onClick={clearAllData} title="Erase all saved applicant data from this computer">Clear Data</button>
           <button className="topbar-btn" onClick={()=>setTheme(t=>t==='dark'?'light':'dark')}>{theme==='dark'?'Light':'Dark'}</button>
           <button className="topbar-btn" onClick={()=>setRefOpen(v=>!v)} title="Toggle reference panel">📖</button>
         </div>
@@ -2746,52 +2539,6 @@ const App = () => {
 };
 
 ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
-
-// === Aggressive Cyberpunk + Typewriter Polish (Final Direction) ===
-(function(){
-  // Add subtle gold glow to key gold elements
-  const style = document.createElement('style');
-  style.textContent = `
-    .auth-USAREC, .topbar-badge, .authority-badge { box-shadow: 0 0 12px rgba(255,204,1,.45) !important; }
-    .verdict-WAIVABLE { box-shadow: 0 0 0 1px #050507, 0 0 22px rgba(255,204,1,.38) !important; }
-  `;
-  document.head.appendChild(style);
-
-  // Simple typewriter for verdict explanation when WAIVABLE
-  function typeText(el, text, speed = 18) {
-    if (!el || el.dataset.typed) return;
-    el.dataset.typed = '1';
-    el.textContent = '';
-    let i = 0;
-    const cursor = document.createElement('span');
-    cursor.textContent = '▌';
-    cursor.style.color = '#FFCC01';
-    const iv = setInterval(() => {
-      if (i < text.length) {
-        el.appendChild(document.createTextNode(text[i]));
-        i++;
-        if (cursor.parentNode) cursor.parentNode.removeChild(cursor);
-        el.appendChild(cursor);
-      } else {
-        clearInterval(iv);
-        setTimeout(() => cursor.remove(), 900);
-      }
-    }, speed);
-  }
-
-  // Watch for verdict changes and apply typewriter on WAIVABLE
-  const observer = new MutationObserver(() => {
-    const verdictCard = document.querySelector('.verdict-WAIVABLE');
-    if (verdictCard) {
-      const body = verdictCard.querySelector('.verdict-body');
-      if (body && !body.dataset.typed && body.textContent.length > 20) {
-        const original = body.textContent.trim();
-        typeText(body, original, 16);
-      }
-    }
-  });
-  observer.observe(document.body, { childList: true, subtree: true });
-})();
 </script>
 </body>
 </html>
