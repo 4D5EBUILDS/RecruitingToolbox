@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-KLDD3TJJX6"></script>
@@ -17,500 +17,329 @@
 @font-face{font-family:"GI";src:url("../fonts/G.I.-530.ttf");font-weight:500;font-display:swap}
 @font-face{font-family:"GI";src:url("../fonts/G.I.-750.ttf");font-weight:700;font-display:swap}
 
-:root,[data-theme="dark"]{
-  --bg:#050507;--bg-s:#0a0a0f;--bg-c:#111113;--bg-h:rgba(255,204,1,.03);
-  --fg:#FFCC01;--fg2:#F0EDF0;--fg-m:#8A878A;--fg-d:#444;
-  --bd:rgba(255,204,1,.12);--bd-m:rgba(255,204,1,.22);--bd-s:rgba(255,204,1,.45);
-  --gold:#FFCC01;--danger:#CF0000;--green:#2d7a4f;--blue:#1a5fa8;--amber:#b07800;
-  --in-bg:rgba(255,255,255,.03);--in-bd:rgba(255,204,1,.25);
-  --sidebar-w:260px;--ref-w:300px;
-}
-[data-theme="light"]{
-  --bg:#F1E4C7;--bg-s:#fff;--bg-c:#fff;--bg-h:rgba(34,31,32,.03);
-  --fg:#221F20;--fg2:#221F20;--fg-m:#565557;--fg-d:#BBB;
-  --bd:rgba(34,31,32,.1);--bd-m:rgba(34,31,32,.2);--bd-s:rgba(34,31,32,.3);
-  --gold:#c9900a;--danger:#B00000;--green:#1a6338;--blue:#0d4a8f;--amber:#8a5e00;
-  --in-bg:rgba(34,31,32,.04);--in-bd:rgba(34,31,32,.25);
+/* ══════════════════════════════════════════════════════════════════
+   MORAL WAIVER BUILDER — QC redesign
+   US Army Design System tokens. Radius 0, no shadows, no gradients,
+   no animation. Gold is accent-only.
+   ══════════════════════════════════════════════════════════════════ */
+:root{
+  --gold:#FFCC01; --gold-press:#e6b800; --black:#221F20;
+  --s0:#0b0c0c; --s1:#0f1010; --s2:#131414; --s3:#161717; --s4:#191A1B;
+  --t1:#EDEBE8; --t2:#C9C5C0; --t2b:#D9D6D1; --t3:#98948E; --t4:#727365;
+  --red:#CF0000; --red-fg:#FF6B6B; --orange:#F16521; --green:#2DAA27;
+  --hair:rgba(255,255,255,.1); --hair-soft:rgba(255,255,255,.07);
+  --hair-faint:rgba(255,255,255,.06); --ghost:rgba(255,255,255,.14);
+  --rail-w:352px;
 }
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow:hidden}
-body{font-family:"GI",Arial,sans-serif;background:var(--bg);color:var(--fg2);font-weight:500;-webkit-font-smoothing:antialiased;transition:background .3s,color .3s}
-body::before{content:"";position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(#111113 1px,transparent 1px),linear-gradient(90deg,#111113 1px,transparent 1px);background-size:22px 22px;opacity:.75;z-index:-1}
+body{font-family:"GI",Arial,sans-serif;background:var(--s0);color:var(--t1);
+  font-size:14px;font-weight:400;-webkit-font-smoothing:antialiased}
 button,select,textarea,input{font-family:inherit}
-::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bd-s)}
+:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.16)}
+::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.3)}
 
-@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-@keyframes stampIn{0%{opacity:0;transform:scale(1.4) rotate(-5deg)}60%{transform:scale(.97) rotate(.5deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-@keyframes progressFill{from{width:0}to{width:var(--target-w,0)}}
-@keyframes slideInLeft{from{opacity:0;transform:translateX(-16px)}to{opacity:1;transform:none}}
+/* ── FRAME ───────────────────────────────────────────────── */
+#root{height:100%}
+.frame{height:100%;position:relative;display:flex;flex-direction:column;background:var(--s1)}
 
-.fade-up{animation:fadeUp .28s ease both}
-.fade-in{animation:fadeIn .2s ease both}
-.slide-left{animation:slideInLeft .2s ease both}
+/* ── TOP BAR ─────────────────────────────────────────────── */
+.topbar{height:56px;flex:none;display:flex;align-items:center;gap:16px;
+  padding:0 20px;background:var(--s4);border-bottom:1px solid var(--hair)}
+.brand{display:flex;align-items:center;gap:10px;flex:none}
+.brand-chip{width:26px;height:26px;background:var(--gold);display:flex;align-items:center;
+  justify-content:center;color:var(--black);font-weight:700;font-size:15px}
+.brand-word{font-weight:700;font-size:14px;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
+.topbar-div{width:1px;height:22px;background:var(--ghost);flex:none}
+.appl-switch{display:flex;align-items:center;gap:10px;background:none;border:1px solid var(--ghost);
+  color:var(--t1);font-size:13px;padding:6px 12px;cursor:pointer;text-align:left}
+.appl-switch:hover{border-color:rgba(255,255,255,.4)}
+.appl-switch-name{font-weight:700;white-space:nowrap}
+.appl-switch-meta{color:var(--t3);font-size:12px;white-space:nowrap}
+.appl-switch-caret{color:var(--t3);font-size:10px}
+.spacer{flex:1}
+.reg-stamp{font-size:11px;color:var(--t3);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+.btn-ghost-gold{background:none;border:1px solid rgba(255,204,1,.45);color:var(--gold);font-size:11px;
+  font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:7px 12px;cursor:pointer;white-space:nowrap}
+.btn-ghost-gold:hover{background:var(--gold);color:var(--black)}
+.btn-ghost{background:none;border:1px solid var(--ghost);color:var(--t3);font-size:11px;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;padding:7px 12px;cursor:pointer;white-space:nowrap}
+.btn-ghost:hover{border-color:rgba(255,255,255,.4);color:var(--t1)}
 
-/* ── LAYOUT ────────────────────────────────────────────────── */
-#root{height:100%;display:flex;flex-direction:column}
-.app-shell{flex:1;display:flex;overflow:hidden}
+/* ── VERDICT BANNER ──────────────────────────────────────── */
+.verdict{flex:none;padding:26px 28px 22px;background:var(--black);border-bottom:2px solid var(--t3)}
+.verdict-top{display:flex;align-items:baseline;gap:14px;margin-bottom:12px}
+.verdict-micro{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--t3)}
+.verdict-title{font-size:56px;font-weight:500;line-height:.98;text-transform:uppercase}
+.verdict-row{display:flex;align-items:center;gap:18px;margin-top:16px;flex-wrap:wrap}
+.verdict-auth{flex:none;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:7px 12px}
+.verdict-body{font-size:13px;color:var(--t2);line-height:1.5;max-width:720px}
+.cite{font-size:12px;color:var(--gold);text-decoration:none;border:none;border-bottom:1px solid rgba(255,204,1,.4);
+  background:none;cursor:pointer;padding:0;font-family:inherit;flex:none}
+.cite:hover{border-bottom-color:var(--gold)}
 
-/* ── TOP BAR ───────────────────────────────────────────────── */
-.topbar{flex-shrink:0;height:52px;display:flex;align-items:center;gap:12px;padding:0 16px;background:var(--bg-s);border-bottom:1px solid var(--bd);z-index:20}
-.topbar-badge{background:var(--gold);color:#000;font-weight:700;font-size:9px;padding:2px 7px;letter-spacing:.08em;text-transform:uppercase;flex-shrink:0}
-.topbar-title{font-size:13px;font-weight:700;color:var(--fg);letter-spacing:.04em;text-transform:uppercase;text-shadow:0 0 8px rgba(255,204,1,.3)}
-.topbar-sub{font-size:10px;color:var(--fg-m)}
-.topbar-center{flex:1;display:flex;align-items:center;justify-content:center;gap:16px}
-.topbar-actions{display:flex;gap:6px;align-items:center}
-.topbar-btn{background:none;border:1px solid var(--bd-m);color:var(--fg-m);padding:5px 10px;font-size:11px;cursor:pointer;transition:all .15s;font-family:inherit}
-.topbar-btn:hover{border-color:var(--bd-s);color:var(--fg2)}
-.topbar-btn.active{background:var(--gold);border-color:var(--gold);color:#000}
+/* ── PHASE TABS ──────────────────────────────────────────── */
+.phases{flex:none;display:grid;grid-template-columns:repeat(3,1fr);background:var(--s2);
+  border-bottom:1px solid var(--hair)}
+.phase{display:flex;align-items:center;gap:14px;padding:16px 22px;background:transparent;border:none;
+  border-right:1px solid rgba(255,255,255,.08);border-bottom:3px solid transparent;
+  text-align:left;cursor:pointer;font-family:inherit}
+.phase:last-child{border-right:none}
+.phase.on{background:var(--s4);border-bottom-color:var(--gold)}
+.phase-num{width:30px;height:30px;flex:none;display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:14px;background:transparent;color:var(--t3);border:1px solid rgba(255,255,255,.22)}
+.phase.on .phase-num{background:var(--gold);color:var(--black);border-color:var(--gold)}
+.phase-title{font-weight:700;font-size:14px;letter-spacing:.08em;text-transform:uppercase;color:var(--t3)}
+.phase.on .phase-title{color:var(--t1)}
+.phase-sub{font-size:12px;color:var(--t3);margin-top:2px}
 
-/* ── READINESS RING ────────────────────────────────────────── */
-.readiness-wrap{display:flex;align-items:center;gap:10px}
-.readiness-ring{position:relative;width:36px;height:36px;flex-shrink:0}
-.readiness-ring svg{transform:rotate(-90deg)}
-.readiness-ring .ring-bg{fill:none;stroke:var(--bd-m);stroke-width:3}
-.readiness-ring .ring-fill{fill:none;stroke-width:3;stroke-linecap:round;transition:stroke-dashoffset .6s ease,stroke .3s}
-.readiness-pct{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700}
-.readiness-label{font-size:10px;color:var(--fg-m)}
-.readiness-pct-big{font-size:12px;font-weight:700;color:var(--fg)}
+/* ── BODY ────────────────────────────────────────────────── */
+.body{flex:1;display:flex;overflow:hidden}
+.content{flex:1;overflow-y:auto;padding:26px 28px 40px}
+.col-760{max-width:760px;display:flex;flex-direction:column;gap:30px}
+.col-820{max-width:820px}
+.col-900{max-width:900px;display:flex;flex-direction:column;gap:26px}
 
-/* Authority Badge */
-.auth-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;font-weight:700;font-size:11px;letter-spacing:.04em;text-transform:uppercase;flex-shrink:0}
-.auth-BN{background:rgba(26,95,168,.2);border:1px solid rgba(26,95,168,.4);color:#5b9fd4}
-.auth-USARD{background:rgba(255,204,1,.12);border:1px solid rgba(255,204,1,.3);color:var(--gold)}
-.auth-NONE{background:rgba(255,255,255,.06);border:1px solid var(--bd-m);color:var(--fg-m)}
+/* ── SECTION HEADERS ─────────────────────────────────────── */
+.sec-hd{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.sec-label{font-weight:700;font-size:15px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold)}
+.sec-note{font-size:12px;color:var(--t3)}
+.panel{border:1px solid var(--hair);background:var(--s3);margin-top:14px}
 
-/* ── SIDEBAR ───────────────────────────────────────────────── */
-.sidebar{width:var(--sidebar-w);flex-shrink:0;border-right:1px solid var(--bd);display:flex;flex-direction:column;background:var(--bg-s);overflow:hidden;transition:width .25s ease}
-.sidebar.collapsed{width:0}
-.sidebar-hdr{padding:12px 14px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:8px;flex-shrink:0}
-.sidebar-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--fg-m);flex:1}
-.sidebar-body{flex:1;overflow-y:auto;padding:8px}
-.sidebar-footer{padding:10px 12px;border-top:1px solid var(--bd);flex-shrink:0}
+/* ── ELIGIBILITY GATES ───────────────────────────────────── */
+.gate{display:flex;align-items:center;gap:20px;padding:15px 18px;border-bottom:1px solid var(--hair-soft)}
+.gate:last-child{border-bottom:none}
+.gate-q{font-size:14px;font-weight:500;line-height:1.35}
+.gate-hint{font-size:12px;color:var(--t3);margin-top:4px;line-height:1.45}
+.seg{display:flex;flex:none}
+.seg-btn{padding:9px 15px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  cursor:pointer;background:transparent;color:var(--t3);border:1px solid rgba(255,255,255,.16);
+  margin-left:-1px;font-family:inherit;white-space:nowrap}
+.seg-btn:first-child{margin-left:0}
+.seg-btn:hover{border-color:rgba(255,255,255,.4);color:var(--t1)}
+.seg-btn.on{background:rgba(255,204,1,.14);color:var(--gold);border-color:var(--gold);position:relative;z-index:1}
+.seg-btn.on.bad{background:rgba(207,0,0,.18);color:var(--red-fg);border-color:var(--red)}
 
-/* Applicant Cards */
-.appl-card{border:1px solid var(--bd);padding:10px 12px;margin-bottom:6px;cursor:pointer;transition:all .15s;position:relative}
-.appl-card:hover{border-color:var(--bd-s);background:var(--bg-h)}
-.appl-card.active{border-color:var(--gold);background:rgba(255,204,1,.05)}
-.appl-card-name{font-size:12px;font-weight:700;color:var(--fg2);margin-bottom:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.appl-card-meta{font-size:10px;color:var(--fg-m)}
-.appl-card-status{position:absolute;top:8px;right:8px;width:8px;height:8px;border-radius:50%}
-.status-green{background:#5bc989}
-.status-yellow{background:var(--gold)}
-.status-red{background:#ff5555}
-.status-gray{background:var(--fg-d)}
+/* ── OFFENSE STACK ───────────────────────────────────────── */
+.stack{display:flex;flex-direction:column;gap:1px;margin-top:14px}
+.srow{display:flex;align-items:center;gap:16px;padding:14px 18px;background:var(--s3);
+  border:1px solid var(--hair);border-left:3px solid var(--t3)}
+.srow-main{flex:1;background:none;border:none;text-align:left;cursor:pointer;font-family:inherit;padding:0;color:inherit}
+.srow-label{font-size:14px;font-weight:700;color:var(--t1)}
+.srow-meta{font-size:12px;color:var(--t3);margin-top:3px}
+.stag{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:4px 9px;flex:none}
+.srow-x{background:none;border:none;color:var(--t3);font-size:14px;cursor:pointer;padding:4px 2px;flex:none;font-family:inherit}
+.srow-x:hover{color:var(--red)}
+.srow-edit{background:none;border:1px solid rgba(255,255,255,.16);color:var(--t3);font-size:11px;
+  font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 10px;cursor:pointer;flex:none;font-family:inherit}
+.srow-edit:hover{border-color:rgba(255,255,255,.4);color:var(--t1)}
 
-/* ── MAIN ──────────────────────────────────────────────────── */
-.main-panel{flex:1;display:flex;flex-direction:column;overflow:hidden}
-.tab-nav{flex-shrink:0;display:flex;background:var(--bg-s);border-bottom:1px solid var(--bd);padding:0 16px}
-.tab-btn{display:flex;align-items:center;gap:7px;padding:10px 16px;border:none;background:none;color:var(--fg-m);font-family:inherit;font-size:11px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;border-bottom:2px solid transparent;cursor:pointer;transition:all .15s}
-.tab-btn:disabled{opacity:.3;cursor:not-allowed}
-.tab-btn.active{color:var(--gold);border-bottom-color:var(--gold)}
-.tab-btn:not(:disabled):hover:not(.active){color:var(--fg2);border-bottom-color:var(--bd-m)}
-.tab-num{width:18px;height:18px;border-radius:50%;border:1.5px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0}
-.tab-btn.active .tab-num{background:var(--gold);border-color:var(--gold);color:#000}
-.tab-btn.done .tab-num{background:var(--green);border-color:var(--green);color:#fff}
-.main-scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding:20px}
+/* ── ADD-OFFENSE COMBOBOX ────────────────────────────────── */
+.combo{margin-top:14px;border:1px solid var(--hair);background:var(--s3)}
+.combo-input-row{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--hair-soft)}
+.combo-input{flex:1;background:none;border:none;outline:none;color:var(--t1);font-size:14px}
+.combo-input::placeholder{color:var(--t3)}
+.combo-count{font-size:11px;color:var(--t3);letter-spacing:.06em;text-transform:uppercase;flex:none}
+.combo-list{max-height:250px;overflow-y:auto}
+.combo-item{display:flex;width:100%;align-items:flex-start;gap:14px;text-align:left;padding:12px 16px;
+  background:none;border:none;border-bottom:1px solid var(--hair-faint);cursor:pointer;font-family:inherit}
+.combo-item:hover{background:rgba(255,255,255,.04)}
+.combo-tag{width:76px;flex:none;font-size:10px;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;padding-top:2px}
+.combo-label{font-size:14px;color:var(--t1)}
+.combo-sub{font-size:12px;color:var(--t3);margin-top:3px;line-height:1.45}
+.combo-empty{padding:14px 16px;font-size:12px;color:var(--t3)}
 
-/* ── RIGHT PANEL ───────────────────────────────────────────── */
-.ref-panel{width:var(--ref-w);flex-shrink:0;border-left:1px solid var(--bd);background:var(--bg-s);display:flex;flex-direction:column;overflow:hidden;transition:width .25s ease}
-.ref-panel.collapsed{width:0}
-.ref-panel-hdr{padding:12px 14px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:8px;flex-shrink:0}
-.ref-panel-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--fg-m);flex:1}
-.ref-panel-body{flex:1;overflow-y:auto;padding:12px}
-.ref-entry{padding:10px 12px;border:1px solid var(--bd);margin-bottom:8px;background:rgba(255,204,1,.02)}
-.ref-para-id{font-size:10px;font-weight:700;color:var(--gold);letter-spacing:.06em;margin-bottom:4px}
-.ref-para-text{font-size:11px;color:var(--fg2);line-height:1.6}
-.ref-tip{font-size:10px;color:var(--fg-m);padding:6px 8px;background:rgba(255,204,1,.04);border-left:2px solid var(--bd-m);margin-top:6px;line-height:1.5}
+/* ── OFFENSE EDITOR ──────────────────────────────────────── */
+.editor{background:var(--s3);border:1px solid var(--hair);border-left:3px solid var(--gold);
+  padding:18px;display:flex;flex-direction:column;gap:14px}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fgrid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.field{display:flex;flex-direction:column;gap:5px;min-width:0}
+.flabel{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--t3)}
+.finput{background:var(--s0);border:1px solid rgba(255,255,255,.16);border-radius:2px;color:var(--t1);
+  padding:9px 11px;font-size:13px;outline:none;width:100%;font-family:inherit}
+.finput:focus{border-color:var(--gold)}
+.finput::placeholder{color:var(--t4)}
+.finput.err{border-color:var(--red)}
+select.finput{cursor:pointer}
+.fnote{font-size:11px;color:var(--t3);line-height:1.45}
+.fcheck{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--t2)}
+.warnline{padding:9px 12px;background:rgba(207,0,0,.12);border:1px solid rgba(207,0,0,.4);
+  color:var(--red-fg);font-size:12px;line-height:1.45;display:flex;gap:8px}
+.editor-foot{display:flex;justify-content:flex-end;gap:8px}
 
-/* ── CARDS ─────────────────────────────────────────────────── */
-.card{background:var(--bg-c);border:1px solid var(--bd);padding:20px}
-.card+.card{margin-top:14px}
-.card-hdr{display:flex;align-items:center;gap:10px;margin-bottom:16px}
-.card-title{font-size:13px;font-weight:700;color:var(--fg);text-transform:uppercase;letter-spacing:.05em}
-.card-sub{font-size:11px;color:var(--fg-m);margin-top:2px}
-.section-bar{width:3px;align-self:stretch;min-height:16px;background:var(--gold);flex-shrink:0}
+/* ── NOTES ───────────────────────────────────────────────── */
+.notes{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.note{display:flex;gap:10px;font-size:12.5px;color:var(--t2);line-height:1.5}
+.note-mark{color:var(--t3);flex:none}
+.note-cite{color:var(--t4);font-size:11px}
 
-/* ── OFFENSE GRID ──────────────────────────────────────────── */
-.offense-group-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg-m);padding:8px 4px 4px;margin-top:4px}
-.offense-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:6px;margin-bottom:2px}
-.offense-card{background:var(--bg-s);border:1px solid var(--bd);padding:11px 13px;cursor:pointer;transition:all .15s;text-align:left}
-.offense-card:hover{border-color:var(--bd-s);background:var(--bg-h)}
-.offense-card.selected{border-color:var(--gold);background:rgba(255,204,1,.07)}
-.offense-card.bar{border-color:rgba(207,0,0,.25)}
-.offense-card.bar:hover{border-color:rgba(207,0,0,.6);background:rgba(207,0,0,.04)}
-.offense-card.bar.selected{border-color:var(--danger);background:rgba(207,0,0,.07)}
-.offense-card.no-waiver{border-color:rgba(26,95,168,.25)}
-.offense-card.no-waiver.selected{border-color:rgba(26,95,168,.6);background:rgba(26,95,168,.07)}
-.offense-label{font-size:12px;font-weight:700;color:var(--fg2);margin-bottom:3px}
-.offense-sub{font-size:10px;color:var(--fg-m);line-height:1.35}
-.offense-level-badge{display:inline-block;font-size:9px;font-weight:700;padding:1px 5px;letter-spacing:.06em;margin-top:5px;text-transform:uppercase}
-.lvl-MAJOR{background:rgba(207,0,0,.2);color:#ff6b6b}
-.lvl-MISC{background:rgba(255,204,1,.15);color:var(--gold)}
-.lvl-TRAFFIC{background:rgba(80,160,255,.15);color:#7eb8ff}
-.lvl-VARIES{background:rgba(160,80,255,.15);color:#cc99ff}
-.lvl-BAR{background:rgba(207,0,0,.3);color:#ff4444}
-.lvl-NO-WAIVER{background:rgba(26,95,168,.2);color:#5b9fd4}
+/* ── CHECKLIST (PHASE 2) ─────────────────────────────────── */
+.crow{display:grid;grid-template-columns:26px 1fr 150px 110px;align-items:center;gap:16px;
+  padding:15px 18px;border-bottom:1px solid var(--hair-soft)}
+.crow:last-of-type{border-bottom:none}
+.cbox{width:20px;height:20px;border:2px solid rgba(255,255,255,.25);background:transparent;color:var(--black);
+  font-size:12px;font-weight:700;line-height:1;cursor:pointer;display:flex;align-items:center;
+  justify-content:center;padding:0;font-family:inherit}
+.cbox.on{background:var(--gold);border-color:var(--gold)}
+.clabel{font-size:14px;font-weight:500;color:var(--t2);background:none;border:none;padding:0;
+  text-align:left;cursor:pointer;font-family:inherit;display:block}
+.clabel.on{color:var(--t1)}
+.cref{font-size:12px;color:var(--t3);margin-top:3px}
+.cvalidity{font-size:12px;color:var(--t3)}
+.cchip{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:4px 9px;text-align:center}
+.chip-ok{background:rgba(45,170,39,.15);color:var(--green)}
+.chip-warn{background:rgba(241,101,33,.15);color:var(--orange)}
+.chip-red{background:rgba(207,0,0,.18);color:var(--red-fg)}
+.chip-none{background:rgba(255,255,255,.06);color:var(--t3)}
+.chowto{padding:0 18px 18px 60px;border-bottom:1px solid var(--hair-soft);font-size:13px;
+  color:var(--t2);line-height:1.6}
+.chowto-tip{margin-top:8px;padding:8px 11px;background:rgba(241,101,33,.07);
+  border-left:2px solid var(--orange);color:var(--t2);font-size:12px;line-height:1.5}
+.cdate{background:var(--s0);border:1px solid rgba(255,255,255,.16);border-radius:2px;color:var(--t1);
+  padding:5px 7px;font-size:11px;outline:none;width:100%;font-family:inherit;margin-top:4px}
+.cdate:focus{border-color:var(--gold)}
 
-/* ── MULTI-OFFENSE SCREENER ────────────────────────────────── */
-.offense-stack{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
-.offense-chip{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--bg-s);border:1px solid var(--bd-m);position:relative;transition:background .2s,transform .2s;}
-.offense-chip.bar{border-color:rgba(207,0,0,.4);background:rgba(207,0,0,.05)}
-.offense-chip.waivable{border-color:rgba(45,122,79,.3);background:rgba(45,122,79,.04)}
-.offense-chip.waiting{border-color:rgba(176,120,0,.3);background:rgba(176,120,0,.04)}
-.offense-chip.etp{border-color:rgba(176,120,0,.3);background:rgba(176,120,0,.04)}
-.offense-chip.no-waiver{border-color:rgba(26,95,168,.3);background:rgba(26,95,168,.04)}
-.offense-chip.dragging{opacity:0.6;border-style:dashed;transform:scale(0.98);transition:transform .2s;}
+/* ── GENERATE (PHASE 3) ──────────────────────────────────── */
+.outgrid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--hair);border:1px solid var(--hair)}
+.outcard{background:var(--s3);padding:18px;display:flex;flex-direction:column;gap:10px}
+.outkind{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+.outname{font-size:15px;font-weight:700;color:var(--t1)}
+.outdesc{font-size:13px;color:var(--t3);line-height:1.5;flex:1}
+.outbtns{display:flex;gap:8px;flex-wrap:wrap}
+.btn-gold{background:var(--gold);border:none;color:var(--black);font-size:11px;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;padding:8px 14px;cursor:pointer;font-family:inherit}
+.btn-gold:hover{background:var(--gold-press)}
+.btn-gold:disabled{opacity:.35;cursor:not-allowed}
+.btn-line{background:none;border:1px solid rgba(255,255,255,.16);color:var(--t3);font-size:11px;
+  font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:8px 14px;cursor:pointer;font-family:inherit}
+.btn-line:hover{border-color:rgba(255,255,255,.4);color:var(--t1)}
+.btn-line:disabled{opacity:.35;cursor:not-allowed}
+.memo-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--t3);margin-bottom:8px}
+.memo{border:1px solid var(--hair);background:var(--s0);padding:22px 24px;
+  font-family:"Courier New",monospace;font-size:12.5px;line-height:1.85;color:var(--t2b);
+  white-space:pre-wrap;max-height:520px;overflow:auto}
+.memo-frame{width:100%;height:520px;border:1px solid var(--hair);background:#fff}
 
-/* Tooltip for offense chips using title attribute */
-.offense-chip[title]:hover::after {
-  content: attr(title);
-  position: absolute;
-  top: 100%;
-  left: 0;
-  margin-top: 4px;
-  background: rgba(0,0,0,0.85);
-  color: #fff;
-  padding: 5px 8px;
-  border-radius: 4px;
-  font-size: 12px;
-  white-space: nowrap;
-  z-index: 1000;
-}
-.chip-verdict{font-size:9px;font-weight:700;padding:2px 6px;text-transform:uppercase;letter-spacing:.06em;flex-shrink:0}
-.chip-v-bar{background:rgba(207,0,0,.2);color:#ff5555}
-.chip-v-waivable{background:rgba(45,122,79,.2);color:#5bc989}
-.chip-v-waiting{background:rgba(176,120,0,.2);color:#ffb84d}
-.chip-v-etp{background:rgba(176,120,0,.2);color:#ffb84d}
-.chip-v-no-waiver{background:rgba(26,95,168,.2);color:#5b9fd4}
-.chip-v-unknown{background:rgba(255,255,255,.06);color:var(--fg-m)}
-.chip-label{flex:1;font-size:12px;color:var(--fg2);font-weight:600}
-.chip-auth{font-size:10px;color:var(--fg-m)}
-.chip-del{background:none;border:none;cursor:pointer;color:var(--fg-m);padding:4px;display:flex;align-items:center}
-.chip-del:hover{color:#ff6b6b}
+/* ── RIGHT RAIL ──────────────────────────────────────────── */
+.rail{width:var(--rail-w);flex:none;border-left:1px solid var(--hair);background:var(--s2);
+  display:flex;flex-direction:column;overflow-y:auto}
+.rail-sec{padding:18px 20px;border-bottom:1px solid var(--hair)}
+.rail-sec:last-child{border-bottom:none}
+.rail-hd{display:flex;align-items:center;gap:10px}
+.rail-dot{width:8px;height:8px;flex:none;background:var(--t3)}
+.rail-label{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--t3)}
+.rail-clock{background:rgba(241,101,33,.06)}
+.rail-clock .rail-label{color:var(--orange)}
+.rail-clock-body{font-size:14px;line-height:1.5;color:var(--t1);margin-top:8px}
+.rail-clock-meta{font-size:12px;color:var(--t3);margin-top:4px;line-height:1.45}
+.score-hd{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px}
+.score-num{font-size:20px;font-weight:700}
+.score-track{height:4px;background:rgba(255,255,255,.12)}
+.score-fill{height:4px}
+.factors{display:flex;flex-direction:column;gap:6px;margin-top:12px}
+.factor{display:flex;gap:8px;font-size:12.5px;color:var(--t2);line-height:1.45}
+.factor-sign{font-weight:700;flex:none}
+.actions{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.action{display:flex;gap:10px;font-size:13px;color:var(--t1);line-height:1.45}
+.action-arrow{color:var(--gold);flex:none}
+.suit{display:flex;gap:10px;font-size:12.5px;color:var(--t2);line-height:1.45;margin-top:8px}
+.rail-disclaimer{font-size:11px;color:var(--t4);line-height:1.5;margin-top:10px;
+  padding-top:10px;border-top:1px solid var(--hair)}
 
-/* ── QUESTIONS ─────────────────────────────────────────────── */
-.q-wrap{max-width:560px}
-.q-card{background:var(--bg-c);border:1px solid var(--bd);padding:24px;animation:fadeUp .25s ease both}
-.q-num{font-size:10px;color:var(--fg-m);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
-.q-text{font-size:15px;font-weight:700;color:var(--fg2);margin-bottom:6px;line-height:1.4}
-.q-hint{font-size:11px;color:var(--fg-m);margin-bottom:16px;padding:8px 10px;background:rgba(255,255,255,.03);border-left:2px solid var(--bd-m);line-height:1.5}
-.q-options{display:flex;flex-direction:column;gap:5px}
-.q-opt{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:var(--bg-s);border:1px solid var(--bd);cursor:pointer;transition:all .15s}
-.q-opt:hover{border-color:var(--bd-s);background:var(--bg-h)}
-.q-opt.selected{border-color:var(--gold);background:rgba(255,204,1,.07)}
-.q-opt-dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--bd-s);flex-shrink:0;margin-top:1px;transition:all .15s;display:flex;align-items:center;justify-content:center}
-.q-opt.selected .q-opt-dot{border-color:var(--gold);background:var(--gold)}
-.q-opt-dot-inner{width:6px;height:6px;border-radius:50%;background:#000}
-.q-opt-label{font-size:13px;color:var(--fg2)}
-.q-actions{display:flex;align-items:center;gap:10px;margin-top:16px}
-.q-progress{display:flex;gap:4px;margin-bottom:20px}
-.q-prog-dot{height:3px;flex:1;background:var(--bd-m);transition:background .2s;border-radius:2px}
-.q-prog-dot.done{background:var(--gold)}
-.q-prog-dot.active{background:rgba(255,204,1,.5)}
+/* ── DRAWER ──────────────────────────────────────────────── */
+.scrim{position:absolute;inset:0;background:rgba(11,12,12,.72);display:flex;justify-content:flex-end;z-index:60}
+.drawer{width:520px;max-width:100%;background:var(--s4);border-left:2px solid var(--gold);height:100%;
+  display:flex;flex-direction:column}
+.drawer-hd{display:flex;align-items:center;gap:12px;padding:18px 22px;border-bottom:1px solid var(--hair);flex:none}
+.drawer-title{flex:1;font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold)}
+.drawer-close{background:none;border:1px solid rgba(255,255,255,.16);color:var(--t3);font-size:12px;
+  padding:5px 10px;cursor:pointer;font-family:inherit}
+.drawer-close:hover{color:var(--t1);border-color:rgba(255,255,255,.4)}
+.drawer-body{padding:22px;overflow-y:auto;font-size:14px;line-height:1.65;color:var(--t2b);white-space:pre-wrap}
+.drawer-form{padding:22px;overflow-y:auto;display:flex;flex-direction:column;gap:22px}
+.drawer-sec-label{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:12px}
+.roster-row{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--s3);
+  border:1px solid var(--hair);border-left:3px solid transparent;margin-bottom:1px;width:100%;
+  text-align:left;cursor:pointer;font-family:inherit;color:inherit}
+.roster-row:hover{background:rgba(255,255,255,.04)}
+.roster-row.on{border-left-color:var(--gold)}
+.roster-name{font-size:14px;font-weight:700;color:var(--t1)}
+.roster-meta{font-size:12px;color:var(--t3);margin-top:2px}
 
-/* ── VERDICT ───────────────────────────────────────────────── */
-.verdict-card{padding:24px;animation:stampIn .35s ease both}
-.verdict-WAIVABLE{background:#111113;border:3px solid #FFCC01;box-shadow:0 0 0 1px #050507, 0 0 18px rgba(255,204,1,.35)}
-.verdict-NO_WAIVER_REQUIRED{background:rgba(26,95,168,.1);border:2px solid rgba(26,95,168,.45)}
-.verdict-NOT_WAIVABLE{background:rgba(207,0,0,.1);border:2px solid rgba(207,0,0,.45)}
-.verdict-ETP_REQUIRED{background:rgba(176,120,0,.1);border:2px solid rgba(176,120,0,.4)}
-.verdict-WAITING_PERIOD{background:rgba(176,120,0,.07);border:2px solid rgba(176,120,0,.35)}
-.verdict-tag{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:7px}
-.verdict-WAIVABLE .verdict-tag{color:#5bc989}
-.verdict-NO_WAIVER_REQUIRED .verdict-tag{color:#5b9fd4}
-.verdict-NOT_WAIVABLE .verdict-tag{color:#ff5555}
-.verdict-ETP_REQUIRED .verdict-tag,.verdict-WAITING_PERIOD .verdict-tag{color:#ffb84d}
-.verdict-title{font-size:20px;font-weight:700;margin-bottom:8px}
-.verdict-WAIVABLE .verdict-title{color:#5bc989}
-.verdict-NO_WAIVER_REQUIRED .verdict-title{color:#5b9fd4}
-.verdict-NOT_WAIVABLE .verdict-title{color:#ff5555}
-.verdict-ETP_REQUIRED .verdict-title,.verdict-WAITING_PERIOD .verdict-title{color:#ffb84d}
-.verdict-body{font-size:13px;color:var(--fg2);line-height:1.55;margin-bottom:12px}
-.verdict-cite{font-size:11px;color:#FFCC01;padding:6px 12px;background:#111113;border-left:3px solid #FFCC01;display:inline-block;margin-bottom:12px;font-weight:600}
-.authority-badge{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;background:#FFCC01;color:#000;font-weight:700;font-size:12px;letter-spacing:.04em;box-shadow:0 0 14px rgba(255,204,1,.55)}
+/* ── REF LINK LIST ───────────────────────────────────────── */
+.ref-index{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.ref-pill{background:none;border:1px solid rgba(255,204,1,.35);color:var(--gold);font-size:11px;
+  font-weight:700;letter-spacing:.06em;padding:4px 9px;cursor:pointer;font-family:inherit}
+.ref-pill:hover{background:var(--gold);color:var(--black)}
+.ref-pill.on{background:var(--gold);color:var(--black)}
 
-/* ── APPROVABILITY METER ───────────────────────────────────── */
-.approval-meter{padding:14px 16px;border:1px solid var(--bd);background:var(--bg-s);margin-top:12px}
-.approval-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-.approval-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--fg-m)}
-.approval-score{font-size:18px;font-weight:700}
-.approval-bar-bg{height:6px;background:var(--bd-m);border-radius:3px;overflow:hidden}
-.approval-bar-fill{height:100%;border-radius:3px;transition:width .8s ease}
-.approval-factors{margin-top:10px;display:flex;flex-direction:column;gap:4px}
-.approval-factor{font-size:10px;color:var(--fg-m);display:flex;align-items:center;gap:6px}
-.factor-up{color:#5bc989}
-.factor-down{color:#ff7070}
-.approval-disclaimer{font-size:10px;color:var(--fg-d);margin-top:8px;padding-top:8px;border-top:1px solid var(--bd);font-style:italic}
+/* ── EMPTY ───────────────────────────────────────────────── */
+.empty{padding:28px 18px;text-align:center;color:var(--t3);font-size:13px;line-height:1.6}
 
-/* ── FORMS ─────────────────────────────────────────────────── */
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.form-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
-.form-grid-4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px}
-.form-field{display:flex;flex-direction:column;gap:4px}
-.form-label{font-size:10px;color:var(--fg-m);text-transform:uppercase;letter-spacing:.06em}
-.form-input{background:var(--in-bg);border:1px solid var(--in-bd);color:var(--fg2);padding:8px 10px;font-family:inherit;font-size:12px;outline:none;transition:border-color .15s;width:100%}
-.form-input:focus{border-color:var(--gold)}
-.form-input::placeholder{color:var(--fg-d)}
-select.form-input{cursor:pointer}
-.form-section{font-size:10px;font-weight:700;color:var(--fg-m);text-transform:uppercase;letter-spacing:.07em;margin:14px 0 8px}
-
-/* ── OFFENSE TABLE ─────────────────────────────────────────── */
-.off-table{width:100%;border-collapse:collapse}
-.off-table th{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--fg-m);padding:7px 10px;border-bottom:1px solid var(--bd-m);text-align:left}
-.off-table td{font-size:12px;color:var(--fg2);padding:9px 10px;border-bottom:1px solid var(--bd);vertical-align:top}
-.off-table tr:hover td{background:var(--bg-h)}
-.off-docs-badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;padding:2px 6px;margin-right:3px}
-.docs-yes{background:rgba(45,122,79,.2);color:#5bc989}
-.docs-no{background:rgba(207,0,0,.15);color:#ff7070}
-.waived-star{color:var(--gold);font-weight:700;margin-right:4px}
-
-/* ── CHECKLIST ─────────────────────────────────────────────── */
-.cl-item{border-bottom:1px solid var(--bd);overflow:hidden}
-.cl-item:last-child{border-bottom:none}
-.cl-row{display:flex;align-items:flex-start;gap:12px;padding:11px 14px;cursor:pointer}
-.cl-row:hover{background:var(--bg-h)}
-.cl-check{width:18px;height:18px;border:2px solid var(--bd-s);flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all .15s}
-.cl-check.checked{background:var(--gold);border-color:var(--gold)}
-.cl-check svg{width:10px;height:8px;display:none}
-.cl-check.checked svg{display:block}
-.cl-body{flex:1}
-.cl-label{font-size:12px;color:var(--fg2);margin-bottom:2px}
-.cl-meta{font-size:10px;color:var(--fg-m)}
-.cl-note{font-size:10px;color:rgba(255,204,1,.6);font-style:italic;margin-top:2px}
-.cl-expand-arrow{color:var(--fg-m);flex-shrink:0;transition:transform .2s;font-size:10px}
-.cl-status{flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:4px}
-.status-badge{font-size:9px;font-weight:700;letter-spacing:.06em;padding:2px 7px;text-transform:uppercase;cursor:pointer;transition:all .15s;user-select:none}
-.status-pending{background:rgba(255,255,255,.06);color:var(--fg-m)}
-.status-progress{background:rgba(255,204,1,.15);color:var(--gold)}
-.status-complete{background:rgba(45,122,79,.2);color:#5bc989}
-.cl-howto{padding:12px 14px 14px 44px;background:rgba(255,255,255,.02);border-top:1px solid var(--bd);animation:fadeIn .15s ease}
-.howto-label{font-size:10px;font-weight:700;color:var(--fg-m);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px}
-.howto-text{font-size:12px;color:var(--fg2);line-height:1.6;white-space:pre-wrap}
-.howto-tip{font-size:11px;color:#ffb84d;padding:7px 10px;background:rgba(255,184,77,.06);border-left:2px solid rgba(255,184,77,.4);margin-top:8px;line-height:1.5}
-.copy-btn{background:none;border:1px solid var(--gold);color:var(--gold);cursor:pointer;font-size:10px;margin-top:8px;padding:2px 6px;border-radius:3px;transition:background .2s;}
-.copy-btn:hover{background:var(--gold);color:#000;}
-
-/* ── EXPIRATION TRACKER ────────────────────────────────────── */
-.exp-item{display:grid;grid-template-columns:1fr 140px 90px;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--bd)}
-.exp-item:last-child{border-bottom:none}
-.exp-label{font-size:12px;color:var(--fg2)}
-.exp-valid{font-size:10px;color:var(--fg-m)}
-.exp-status{font-size:10px;font-weight:700;padding:3px 8px;text-align:center}
-.exp-ok{background:rgba(45,122,79,.2);color:#5bc989}
-.exp-warn{background:rgba(255,204,1,.15);color:var(--gold)}
-.exp-red{background:rgba(207,0,0,.2);color:#ff6b6b}
-.exp-none{background:rgba(255,255,255,.05);color:var(--fg-m)}
-
-/* ── OUTPUT CARDS ──────────────────────────────────────────── */
-.output-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
-.output-card{background:var(--bg-c);border:1px solid var(--bd);padding:16px;display:flex;flex-direction:column;gap:8px}
-.output-icon{width:30px;height:30px;background:rgba(255,204,1,.1);border:1px solid var(--bd-m);display:flex;align-items:center;justify-content:center}
-.output-name{font-size:12px;font-weight:700;color:var(--fg);text-transform:uppercase;letter-spacing:.05em}
-.output-desc{font-size:11px;color:var(--fg-m);line-height:1.5;flex:1}
-.output-actions{display:flex;gap:6px}
-
-/* ── MOS CHECKER ───────────────────────────────────────────── */
-.mos-result{border:1px solid var(--bd);padding:14px;margin-top:10px}
-.mos-result.high{border-color:rgba(207,0,0,.35);background:rgba(207,0,0,.05)}
-.mos-result.medium{border-color:rgba(255,204,1,.3);background:rgba(255,204,1,.04)}
-.mos-result.low{border-color:rgba(45,122,79,.3);background:rgba(45,122,79,.04)}
-.mos-result-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
-.mos-result.high .mos-result-label{color:#ff6b6b}
-.mos-result.medium .mos-result-label{color:var(--gold)}
-.mos-result.low .mos-result-label{color:#5bc989}
-.mos-restriction{font-size:11px;color:var(--fg2);padding:4px 0;display:flex;align-items:flex-start;gap:7px;border-bottom:1px solid var(--bd)}
-.mos-restriction:last-child{border-bottom:none}
-
-/* ── MODAL ─────────────────────────────────────────────────── */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:100;display:flex;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto;animation:fadeIn .15s ease}
-.modal{background:var(--bg-s);border:1px solid var(--bd-m);width:100%;max-width:680px;animation:fadeUp .2s ease}
-.modal-hdr{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--bd)}
-.modal-title{font-size:12px;font-weight:700;color:var(--fg);text-transform:uppercase;letter-spacing:.05em;flex:1}
-.modal-body{padding:18px;max-height:72vh;overflow-y:auto}
-.modal-ftr{display:flex;justify-content:flex-end;gap:8px;padding:12px 18px;border-top:1px solid var(--bd)}
-
-/* ── DOC PREVIEW ───────────────────────────────────────────── */
-.doc-preview{background:var(--bg);border:1px solid var(--bd);padding:18px;font-family:"Courier New",monospace;font-size:12px;color:var(--fg2);white-space:pre-wrap;line-height:1.7;max-height:55vh;overflow-y:auto}
-
-/* ── BUTTONS ───────────────────────────────────────────────── */
-.btn{padding:8px 16px;font-family:inherit;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;transition:all .15s;border:none;outline:none}
-.btn-gold{background:var(--gold);color:#000}
-.btn-gold:hover{background:#e6b800;filter:brightness(1.05)}
-.btn-outline{background:none;border:1px solid var(--bd-m);color:var(--fg-m)}
-.btn-outline:hover{border-color:var(--bd-s);color:var(--fg2)}
-.btn-danger{background:rgba(207,0,0,.15);border:1px solid rgba(207,0,0,.35);color:#ff7070}
-.btn-danger:hover{background:rgba(207,0,0,.25)}
-.btn-green{background:rgba(45,122,79,.2);border:1px solid rgba(45,122,79,.4);color:#5bc989}
-.btn-green:hover{background:rgba(45,122,79,.3)}
-.btn-sm{padding:5px 10px;font-size:11px}
-.btn:disabled{opacity:.35;cursor:not-allowed}
-
-/* ── ALERTS / BANNERS ──────────────────────────────────────── */
-.alert{padding:10px 14px;font-size:12px;line-height:1.5;display:flex;gap:10px;align-items:flex-start;margin-bottom:12px}
-.alert-warn{background:rgba(176,120,0,.12);border:1px solid rgba(176,120,0,.35);color:#ffb84d}
-.alert-info{background:rgba(26,95,168,.1);border:1px solid rgba(26,95,168,.3);color:#5b9fd4}
-.alert-danger{background:rgba(207,0,0,.12);border:1px solid rgba(207,0,0,.35);color:#ff6b6b}
-.alert-success{background:rgba(45,122,79,.1);border:1px solid rgba(45,122,79,.3);color:#5bc989}
-.alert-icon{font-size:14px;flex-shrink:0;margin-top:1px}
-
-/* ── RESUME MODAL ──────────────────────────────────────────── */
-.resume-modal{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:200;display:flex;align-items:center;justify-content:center;animation:fadeIn .15s}
-.resume-box{background:var(--bg-s);border:1px solid var(--bd-m);padding:28px;max-width:360px;width:100%;margin:16px;animation:fadeUp .2s ease}
-.resume-title{font-size:14px;font-weight:700;color:var(--fg);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
-.resume-applicant{font-size:18px;font-weight:700;color:var(--gold);margin-bottom:4px}
-.resume-ts{font-size:11px;color:var(--fg-m);margin-bottom:20px}
-
-/* ── UTILITY ───────────────────────────────────────────────── */
-.row{display:flex;align-items:center;gap:8px}
-.col{display:flex;flex-direction:column;gap:6px}
-.muted{color:var(--fg-m)}
-.gold{color:var(--gold)}
-.danger{color:#ff6b6b}
-.success{color:#5bc989}
-.label-sm{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--fg-m)}
-.divider{height:1px;background:var(--bd);margin:14px 0}
-.empty-state{text-align:center;padding:28px 20px;color:var(--fg-m);font-size:12px}
-.new-badge{background:rgba(45,122,79,.2);color:#5bc989;font-size:9px;font-weight:700;padding:1px 5px;letter-spacing:.06em;text-transform:uppercase;vertical-align:middle;margin-left:5px}
-
-/* ── REF HIGHLIGHT ─────────────────────────────────────────── */
-.ref-entry.highlighted{border-color:var(--gold);background:rgba(255,204,1,.07)}
-@keyframes refPulse{0%{box-shadow:0 0 0 0 rgba(255,204,1,.5)}70%{box-shadow:0 0 0 6px rgba(255,204,1,0)}100%{box-shadow:0 0 0 0 rgba(255,204,1,0)}}
-.ref-entry.pulse{animation:refPulse .6s ease}
-
-/* ══════════════════════════════════════════════════════════════
-   TACTICAL OVERRIDE LAYER — "Bold Tactical" aggressive redesign
-   Loaded last so it overrides the base styles above.
-   ══════════════════════════════════════════════════════════════ */
-
-/* Intensified frame contrast */
-:root,[data-theme="dark"]{
-  --bd:rgba(255,204,1,.16);
-  --bd-m:rgba(255,204,1,.32);
-  --bd-s:rgba(255,204,1,.58);
-}
-
-/* Heavier, more commanding display type */
-.topbar-title{font-size:14px;letter-spacing:.14em}
-.card-title{letter-spacing:.09em}
-.tab-btn,.btn{letter-spacing:.09em}
-.offense-group-label,.form-section,.label-sm,.sidebar-title,
-.ref-panel-title,.verdict-tag{letter-spacing:.13em}
-
-/* Top command accent rail on the header */
-.topbar{border-bottom:2px solid var(--bd-m);box-shadow:0 2px 0 rgba(0,0,0,.55)}
-.topbar::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;
-  background:linear-gradient(90deg,var(--gold),rgba(255,204,1,0) 55%);z-index:1}
-
-/* Notched tactical chip badges */
-.topbar-badge{clip-path:polygon(0 0,100% 0,100% calc(100% - 5px),calc(100% - 5px) 100%,0 100%);
-  filter:drop-shadow(0 0 8px rgba(255,204,1,.45))}
-
-/* Buttons — beveled corners + drop-shadow glow (survives clip-path) */
-.btn{clip-path:polygon(7px 0,100% 0,100% calc(100% - 7px),calc(100% - 7px) 100%,0 100%,0 7px)}
-.btn-gold{filter:drop-shadow(0 3px 9px rgba(255,204,1,.22))}
-.btn-gold:hover{filter:drop-shadow(0 0 14px rgba(255,204,1,.5));transform:translateY(-1px)}
-.btn-outline:hover{border-color:var(--gold);color:var(--gold)}
-
-/* Tab nav — active tab reads as a lit command block */
-.tab-btn{border-bottom-width:3px}
-.tab-btn.active{background:linear-gradient(180deg,rgba(255,204,1,.12),rgba(255,204,1,0))}
-
-/* Cards — HUD corner brackets + faint top sheen */
-.card{position:relative;background:linear-gradient(180deg,rgba(255,204,1,.018),transparent 40%),var(--bg-c)}
-.card::before{content:"";position:absolute;top:-1px;left:-1px;width:13px;height:13px;
-  border-top:2px solid var(--gold);border-left:2px solid var(--gold);opacity:.6;pointer-events:none}
-.card::after{content:"";position:absolute;bottom:-1px;right:-1px;width:13px;height:13px;
-  border-bottom:2px solid var(--gold);border-right:2px solid var(--gold);opacity:.6;pointer-events:none}
-
-/* Section bar — taller, glowing command stripe */
-.section-bar{width:4px;box-shadow:0 0 8px rgba(255,204,1,.55)}
-
-/* Verdict card — heavy beveled tactical frame */
-.verdict-card{clip-path:polygon(13px 0,100% 0,100% calc(100% - 13px),calc(100% - 13px) 100%,0 100%,0 13px);
-  border-width:2px}
-.verdict-title{font-size:23px;letter-spacing:.02em}
-.verdict-WAIVABLE{filter:drop-shadow(0 0 16px rgba(255,204,1,.4))}
-
-/* Authority badge — command pill */
-.authority-badge{clip-path:polygon(8px 0,100% 0,100% 100%,0 100%,0 8px)}
-
-/* Hazard-stripe accent on absolute-bar / denial states */
-.offense-card.bar,.verdict-NOT_WAIVABLE,.alert-danger{
-  background-image:repeating-linear-gradient(45deg,rgba(207,0,0,.10) 0 10px,transparent 10px 20px)}
-.verdict-NOT_WAIVABLE{border-width:2px}
-
-/* Offense / applicant cards — lift + lock-on highlight */
-.offense-card,.appl-card{transition:all .15s}
-.offense-card:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(0,0,0,.45)}
-.offense-card.selected{box-shadow:0 0 0 1px var(--gold),0 0 14px rgba(255,204,1,.22)}
-.appl-card.active{box-shadow:inset 3px 0 0 var(--gold)}
-
-/* Beveled status / level micro-badges */
-.offense-level-badge,.chip-verdict,.status-badge{
-  clip-path:polygon(4px 0,100% 0,100% calc(100% - 4px),calc(100% - 4px) 100%,0 100%,0 4px)}
-
-/* Inputs — sharper tactical focus ring */
-.form-input:focus{box-shadow:0 0 0 1px rgba(255,204,1,.32)}
-
-/* Readiness ring glow */
-.readiness-ring .ring-fill{filter:drop-shadow(0 0 3px rgba(255,204,1,.5))}
-
-
-/* ── CASE SCREENING (Step 1) ───────────────────────────────── */
-.case-q{padding:12px 4px;border-bottom:1px solid var(--bd)}
-.case-q:last-child{border-bottom:none}
-.case-q-text{font-size:13px;font-weight:700;color:var(--fg2);margin-bottom:8px;line-height:1.4}
-.case-q-opts{display:flex;flex-wrap:wrap;gap:6px}
-.case-opt{padding:7px 12px;font-size:11px;font-weight:600;border:1px solid var(--bd-m);background:var(--bg-s);color:var(--fg2);cursor:pointer;transition:all .15s;font-family:inherit;text-align:left}
-.case-opt:hover{border-color:var(--bd-s)}
-.case-opt.selected{border-color:var(--gold);background:rgba(255,204,1,.1);color:var(--gold)}
-.case-opt.selected.danger{border-color:#ff5555;background:rgba(207,0,0,.12);color:#ff7070}
-
-/* ── RESPONSIVE (phone / narrow) ───────────────────────────── */
-@media (max-width: 900px){
+/* ── RESPONSIVE ──────────────────────────────────────────────
+   Design is 1440 desktop. Below 1200 the rail drops under the
+   content rather than compressing (per handoff); phone sizes
+   stack the header and phase strip.
+   ────────────────────────────────────────────────────────── */
+@media (max-width:1200px){
   html,body{overflow:auto}
-  .app-shell{flex-direction:column;overflow:visible}
-  .sidebar{position:fixed;top:52px;left:0;bottom:0;z-index:60;width:min(280px,85vw);box-shadow:4px 0 20px rgba(0,0,0,.5)}
-  .sidebar.collapsed{width:0;box-shadow:none}
-  .ref-panel{width:100%;border-left:none;border-top:1px solid var(--bd);max-height:40vh}
-  .main-panel{overflow:visible}
-  .main-scroll{overflow:visible;padding:12px}
-  .topbar{height:auto;flex-wrap:wrap;padding:8px 10px;gap:8px}
-  .topbar-center{order:3;flex-basis:100%;justify-content:flex-start}
-  .tab-btn{padding:9px 8px;font-size:10px;letter-spacing:.04em}
-  .form-grid,.form-grid-3,.form-grid-4{grid-template-columns:1fr 1fr}
-  .offense-grid{grid-template-columns:1fr}
-  .output-grid{grid-template-columns:1fr}
-  .case-q-opts{flex-direction:column}
-  .case-opt{width:100%}
+  .frame{height:auto;min-height:100%}
+  .body{flex-direction:column;overflow:visible}
+  .content{overflow:visible}
+  .rail{width:100%;border-left:none;border-top:1px solid var(--hair)}
+  .verdict-title{font-size:44px}
 }
-@media (max-width: 540px){
-  .form-grid,.form-grid-3,.form-grid-4{grid-template-columns:1fr}
-  .exp-item{grid-template-columns:1fr;gap:6px}
+@media (max-width:820px){
+  .topbar{height:auto;flex-wrap:wrap;padding:10px 14px;gap:10px}
+  .topbar-div{display:none}
+  .spacer{display:none}
+  .verdict{padding:20px 16px 18px}
+  .verdict-title{font-size:34px}
+  .verdict-body{max-width:none}
+  .verdict-top{flex-direction:column;align-items:flex-start;gap:4px}
+  .verdict-top .spacer{display:none}
+  .verdict-row{align-items:flex-start;gap:12px}
+  .verdict-row .spacer{display:none}
+  .content{padding:18px 16px 32px}
+  .phases{grid-template-columns:1fr}
+  .phase{border-right:none;border-bottom:1px solid rgba(255,255,255,.08);padding:12px 16px}
+  .phase.on{border-bottom:3px solid var(--gold)}
+  .gate{flex-direction:column;align-items:stretch;gap:12px}
+  .seg{width:100%}
+  .seg-btn{flex:1;text-align:center;padding:10px 8px}
+  .crow{grid-template-columns:26px 1fr;row-gap:10px}
+  .cvalidity,.cchip{grid-column:2}
+  .cchip{justify-self:start}
+  .chowto{padding:0 16px 16px 16px}
+  .fgrid,.fgrid-3,.outgrid{grid-template-columns:1fr}
+  .drawer{width:100%;border-left:none;border-top:2px solid var(--gold)}
 }
 
-/* ── PRINT ─────────────────────────────────────────────────── */
+/* ── PRINT ───────────────────────────────────────────────── */
 @media print{
-  body{background:#fff;color:#000}
-  .topbar,.sidebar,.tab-nav,.ref-panel,.no-print{display:none!important}
-  .main-scroll{overflow:visible;padding:0}
-  .app-shell{display:block}
+  html,body{overflow:visible;background:#fff;color:#000}
+  .topbar,.phases,.rail,.scrim,.no-print{display:none!important}
+  .frame,.body,.content{display:block;overflow:visible;height:auto;padding:0}
 }
 </style>
 </head>
 <body>
 <div id="root"></div>
-<script src="waiver-data.js?v=4"></script>
+<script src="waiver-data.js?v=5"></script>
 <script src="https://unpkg.com/pako@2.1.0/dist/pako.min.js" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
 <script type="text/babel">
-const { useState, useEffect, useCallback, useRef, useMemo } = React;
+const { useState, useEffect, useMemo, useRef } = React;
 const {
   OFFENSE_CATEGORIES, CASE_QUESTIONS, CHECKLIST_ITEMS,
   DISPOSITION_OPTIONS, CONFINEMENT_OPTIONS, PROBATION_OPTIONS,
@@ -519,20 +348,6 @@ const {
   CAT_PARA_MAP, Q_PARA_MAP, REG_VERSION
 } = window;
 
-/* ── Icons ─────────────────────────────────────────────── */
-const IcoCheck  = () => <svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 3.8L3.8 7L9 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>;
-const IcoX      = ({s=10,c="currentColor"}) => <svg width={s} height={s} viewBox="0 0 10 10" fill="none"><path d="M1 1L9 9M9 1L1 9" stroke={c} strokeWidth="2" strokeLinecap="round"/></svg>;
-const IcoChev   = ({open,size=10}) => <svg width={size} height={size} viewBox="0 0 10 10" fill="none" style={{transform:open?"rotate(180deg)":"none",transition:"transform .2s"}}><path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>;
-const IcoDoc    = () => <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M3 2h7l3 3v9H3V2z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"/><path d="M10 2v3h3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/><path d="M5 8h6M5 10.5h4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>;
-const IcoPrint  = () => <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="2" y="5" width="12" height="8" rx="1" stroke="currentColor" strokeWidth="1.3"/><path d="M4 5V3h8v2M5 10h6M5 12h4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>;
-const IcoClock  = () => <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.3"/><path d="M7 4v3l2 2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>;
-const IcoShield = () => <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M7 1.5L2 4v4c0 2.5 2 4.5 5 5 3-0.5 5-2.5 5-5V4L7 1.5z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"/></svg>;
-const IcoPlus   = () => <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>;
-const IcoTrash  = () => <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M1.5 3h9M5 3V2h2v1M3 3l.5 7h5L9 3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>;
-const IcoUser   = () => <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="5" r="3" stroke="currentColor" strokeWidth="1.3"/><path d="M2 13c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>;
-const IcoStar   = () => <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1l1.4 3.1H11L8.1 6.4l1.1 3.2L6 7.7l-3.2 1.9L3.9 6.4 1 4.1h3.6z" stroke="currentColor" strokeWidth="1.1" fill="currentColor" fillOpacity=".3"/></svg>;
-const IcoGauge  = () => <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 11a5 5 0 1 1 10 0" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/><path d="M7 11L4.5 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>;
-const IcoMOS    = () => <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><rect x="1.5" y="3" width="11" height="8" rx="1" stroke="currentColor" strokeWidth="1.3"/><path d="M5 3V2h4v1M4 7h6M4 9.5h4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>;
 
 /* ── Storage ────────────────────────────────────────────── */
 const STORAGE_KEY = 'moral-waiver-v4';
@@ -559,7 +374,9 @@ const blankApplicant = () => ({
 });
 
 /* ── Helpers ────────────────────────────────────────────── */
-const fmtDate = iso => { if (!iso) return '—'; try { return new Date(iso).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); } catch { return iso; } };
+// Parses through localDate so a YYYY-MM-DD value is not shifted a day by the
+// UTC interpretation Date() gives bare ISO dates.
+const fmtDate = iso => { if (!iso) return '—'; try { return localDate(iso).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); } catch { return iso; } };
 const today = () => new Date().toISOString().split('T')[0];
 
 const daysUntilExpiry = (dateObtained, validityDays) => {
@@ -860,727 +677,15 @@ const computeReadiness = (applicant, verdict, clStatus) => {
   return { score: Math.min(100, score), breakdown };
 };
 
-/* ── Readiness Ring ─────────────────────────────────────── */
-const ReadinessRing = ({ score }) => {
-  const R = 15, C = 2*Math.PI*R;
-  const offset = C - (score/100)*C;
-  const color = score >= 80 ? '#5bc989' : score >= 50 ? 'var(--gold)' : '#ff7070';
-  return (
-    <div className="readiness-ring" title={`Packet ${score}% ready`}>
-      <svg width="36" height="36" viewBox="0 0 36 36">
-        <circle className="ring-bg" cx="18" cy="18" r={R}/>
-        <circle className="ring-fill" cx="18" cy="18" r={R}
-          stroke={color} strokeDasharray={C} strokeDashoffset={offset}/>
-      </svg>
-      <div className="readiness-pct" style={{color}}>{score}%</div>
-    </div>
-  );
-};
-
-/* ── Applicant Card (Sidebar) ───────────────────────────── */
-const ApplicantCard = ({ appl, active, onClick, onDelete }) => {
-  const verdict = computeCaseVerdict(appl);
-  const { score } = computeReadiness(appl, verdict, appl.checklistStatus||{});
-  const statusColor = verdict?.status === 'NOT_WAIVABLE' ? 'status-red' :
-    score >= 80 ? 'status-green' : score >= 30 ? 'status-yellow' : 'status-gray';
-  const name = [appl.firstName, appl.lastName].filter(Boolean).join(' ') || 'Unnamed Applicant';
-  return (
-    <div className={`appl-card${active?' active':''}`} onClick={onClick}>
-      <div className={`appl-card-status ${statusColor}`}/>
-      <div className="appl-card-name">{name}</div>
-      <div className="appl-card-meta">
-        {appl.rsid && <span style={{marginRight:6}}>{appl.rsid}</span>}
-        {verdict?.authority === 'USARD' && <span style={{color:'var(--gold)'}}>USARD</span>}
-        <span style={{float:'right'}}>{score}% ready</span>
-      </div>
-      <button className="btn btn-danger btn-sm" style={{marginTop:6,width:'100%',padding:'3px 0',fontSize:10}}
-        onClick={e=>{e.stopPropagation();onDelete();}}>Remove</button>
-    </div>
-  );
-};
-
-/* ── Phase 1: Case Screening + Offense Record ───────────── */
-const CLASS_BADGE = {
-  bar:     { cls:'lvl-BAR',       label:'BAR IF CONVICTED' },
-  major:   { cls:'lvl-MAJOR',     label:'MAJOR · TABLE 4-4' },
-  misc:    { cls:'lvl-MISC',      label:'MISCONDUCT · TABLE 4-3' },
-  minor:   { cls:'lvl-NO-WAIVER', label:'MINOR · TABLE 4-2' },
-  traffic: { cls:'lvl-TRAFFIC',   label:'TRAFFIC · TABLE 4-1' },
-  dat:     { cls:'lvl-VARIES',    label:'MEPS DAT' },
-  ps:      { cls:'lvl-VARIES',    label:'PRIOR SERVICE' },
-};
-
-const OFFENSE_GROUPS = [
-  { key:'bars',   label:'⛔ Not Waivable if Convicted', color:'#ff5555' },
-  { key:'major',  label:'🔴 Major Misconduct — Felony Level (Table 4-4)', color:'#ff6b6b' },
-  { key:'misc',   label:'🟡 Misconduct — Misdemeanor Level (Table 4-3)', color:'var(--gold)' },
-  { key:'minor',  label:'🔵 Minor Nontraffic (Table 4-2)', color:'#7eb8ff' },
-  { key:'traffic',label:'⚪ Traffic (Table 4-1)', color:'var(--fg-m)' },
-  { key:'dat',    label:'🧪 MEPS Drug / Alcohol Test (Para 4-18)', color:'#cc99ff' },
-  { key:'ps',     label:'🪖 Prior Service — Military Discipline', color:'#cc99ff' },
-];
-
-/* One editor per offense — dates, disposition, confinement, and packet details
-   all in one place (no repeated question wizard). */
-const OffenseEditor = ({ o, applicant, onChange, onDone }) => {
-  const cat = catOf(o.categoryId) || {};
-  const todayStr = today();
-  const isDat = cat.group === 'dat';
-  const isPs = cat.class === 'ps';
-  const isTraffic = cat.class === 'traffic';
-  const set = (field) => (e) => onChange({ [field]: e.target.type === 'checkbox' ? e.target.checked : e.target.value });
-
-  const warnings = [];
-  if (o.offenseDate && o.offenseDate > todayStr) warnings.push('Offense date is in the future.');
-  if (o.convictionDate && o.convictionDate > todayStr) warnings.push('Conviction date is in the future.');
-  if (applicant.dob && o.offenseDate && o.offenseDate < applicant.dob) warnings.push(`Offense date precedes applicant DOB (${fmtDate(applicant.dob)}).`);
-  if (o.offenseDate && o.convictionDate && o.convictionDate < o.offenseDate) warnings.push(`Conviction date (${fmtDate(o.convictionDate)}) is BEFORE the offense date (${fmtDate(o.offenseDate)}) — almost always a data-entry error. Fix before continuing.`);
-  if (o.releaseDate && o.convictionDate && o.releaseDate < o.convictionDate) warnings.push('Release-from-confinement date is before the conviction date — verify.');
-
-  const juvenile = isJuvenileOffense(applicant, o);
-  const confined = ['1to14','15plus'].includes(o.confinement);
-
-  return (
-    <div style={{border:'1px solid var(--bd-m)',padding:'14px',marginTop:6,marginBottom:8,background:'var(--bg-s)'}} className="fade-in">
-      <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:10}}>
-        <span className={`offense-level-badge ${CLASS_BADGE[cat.class]?.cls||''}`}>{CLASS_BADGE[cat.class]?.label||''}</span>
-        <span style={{fontSize:12,fontWeight:700,color:'var(--fg2)',flex:1}}>{cat.label}</span>
-        {juvenile && <span className="offense-level-badge lvl-VARIES" title="Offense date is before the applicant's 18th birthday (computed from DOB)">JUVENILE</span>}
-      </div>
-
-      <div className="form-grid" style={{marginBottom:8}}>
-        <div className="form-field">
-          <label className="form-label">{isDat ? 'Test Date' : 'Offense Date (when the act happened)'} <span style={{color:'#ff6b6b'}}>*</span></label>
-          <input className="form-input" type="date" max={todayStr} value={o.offenseDate||''} onChange={set('offenseDate')}/>
-        </div>
-        {!isDat && !isPs && (
-          <div className="form-field">
-            <label className="form-label">Conviction / Final Disposition Date</label>
-            <input className="form-input" type="date" max={todayStr} value={o.convictionDate||''} onChange={set('convictionDate')}
-              style={{borderColor:(o.convictionDate && o.offenseDate && o.convictionDate < o.offenseDate)?'#ff5555':undefined}}/>
-            {cat.class==='major' && <div style={{fontSize:9,color:'var(--fg-m)',marginTop:2}}>Starts the 24-month clock (4-7a)</div>}
-          </div>
-        )}
-      </div>
-
-      {!isDat && !isPs && (
-        <div className="form-field" style={{marginBottom:8}}>
-          <label className="form-label">Court Disposition <span style={{color:'#ff6b6b'}}>*</span></label>
-          <select className="form-input" value={o.disposition||''} onChange={set('disposition')}>
-            <option value="">Select disposition...</option>
-            {DISPOSITION_OPTIONS.map(d=><option key={d.v} value={d.v}>{d.l}</option>)}
-          </select>
-          <div style={{fontSize:9,color:'var(--fg-m)',marginTop:2}}>Diversion, deferred adjudication, fines, and probated sentences all count as ADVERSE dispositions (4-30b). Expunged/sealed records still count.</div>
-        </div>
-      )}
-
-      {!isDat && !isPs && !isTraffic && isAdverse(o) && (
-        <div className="form-grid" style={{marginBottom:8}}>
-          <div className="form-field">
-            <label className="form-label">Confinement Served</label>
-            <select className="form-input" value={o.confinement||'no'} onChange={set('confinement')}>
-              {CONFINEMENT_OPTIONS.map(c=><option key={c.v} value={c.v}>{c.l}</option>)}
-            </select>
-          </div>
-          {confined ? (
-            <div className="form-field">
-              <label className="form-label">Release from Confinement Date <span style={{color:'#ff6b6b'}}>*</span></label>
-              <input className="form-input" type="date" max={todayStr} value={o.releaseDate||''} onChange={set('releaseDate')}/>
-              <div style={{fontSize:9,color:'var(--fg-m)',marginTop:2}}>The 4-31 waiting period runs from THIS date</div>
-            </div>
-          ) : (
-            <div className="form-field">
-              <label className="form-label">Probation / Parole</label>
-              <select className="form-input" value={o.probation||'no'} onChange={set('probation')}>
-                {PROBATION_OPTIONS.map(p=><option key={p.v} value={p.v}>{p.l}</option>)}
-              </select>
-            </div>
-          )}
-        </div>
-      )}
-      {!isDat && !isPs && !isTraffic && isAdverse(o) && confined && (
-        <div className="form-field" style={{marginBottom:8}}>
-          <label className="form-label">Probation / Parole</label>
-          <select className="form-input" value={o.probation||'no'} onChange={set('probation')}>
-            {PROBATION_OPTIONS.map(p=><option key={p.v} value={p.v}>{p.l}</option>)}
-          </select>
-        </div>
-      )}
-
-      {warnings.length > 0 && (
-        <div style={{marginBottom:8}}>
-          {warnings.map((w,i)=>(
-            <div key={i} style={{padding:'6px 10px',background:'rgba(207,0,0,.13)',border:'1px solid rgba(207,0,0,.4)',color:'#ff7070',fontSize:11,marginTop:4,display:'flex',gap:6}}>
-              <span>⛔</span><span>{w}</span>
-            </div>
-          ))}
-        </div>
-      )}
-
-      <div className="form-field" style={{marginBottom:8}}>
-        <label className="form-label">Description (as it will appear on UF 601-210.08)</label>
-        <input className="form-input" value={o.description||''} onChange={set('description')} placeholder={isDat?'e.g. Positive DAT — THC, MEPS Nashville':'Brief factual description of the offense'}/>
-      </div>
-
-      {!isDat && (
-        <>
-          <div className="form-grid-3" style={{marginBottom:8}}>
-            <div className="form-field">
-              <label className="form-label">City / Jurisdiction</label>
-              <input className="form-input" value={o.city||''} onChange={set('city')} placeholder="City"/>
-            </div>
-            <div className="form-field">
-              <label className="form-label">County</label>
-              <input className="form-input" value={o.county||''} onChange={set('county')} placeholder="County"/>
-            </div>
-            <div className="form-field">
-              <label className="form-label">State</label>
-              <select className="form-input" value={o.state||''} onChange={set('state')}>
-                <option value="">State...</option>
-                {US_STATES.map(s=><option key={s} value={s}>{s}</option>)}
-              </select>
-            </div>
-          </div>
-          <div className="form-field" style={{marginBottom:8}}>
-            <label className="form-label">Disposition — Exact Wording for Documents</label>
-            <input className="form-input" value={o.dispositionText||''} onChange={set('dispositionText')} placeholder='e.g. Convicted — Misdemeanor, $500 fine, 12-month probation (completed)'/>
-          </div>
-          <div className="row" style={{gap:16,flexWrap:'wrap'}}>
-            <label style={{display:'flex',alignItems:'center',gap:7,cursor:'pointer',fontSize:12,color:'var(--fg2)'}}>
-              <input type="checkbox" checked={o.courtDocs||false} onChange={set('courtDocs')}/> Court dockets obtained
-            </label>
-            <label style={{display:'flex',alignItems:'center',gap:7,cursor:'pointer',fontSize:12,color:'var(--fg2)'}}>
-              <input type="checkbox" checked={o.incidentRpt||false} onChange={set('incidentRpt')}/> Police incident report obtained
-            </label>
-          </div>
-        </>
-      )}
-
-      <div className="row" style={{marginTop:12,justifyContent:'flex-end'}}>
-        <button className="btn btn-gold btn-sm" onClick={onDone}>Done</button>
-      </div>
-    </div>
-  );
-};
-
-const Phase1 = ({ applicant, setApplicant, onHighlight }) => {
-  const [addOpen, setAddOpen] = useState(false);
-  const [editId, setEditId] = useState(null);
-  const [hoverCat, setHoverCat] = useState(null);
-
-  const ca = applicant.caseAnswers || {};
-  const offenses = sortNewest(applicant.offenses || []);
-  const verdict = computeCaseVerdict(applicant);
-  const approv = computeApprovabilityScore(applicant, verdict);
-  const caseDone = CASE_QUESTIONS.every(q => ca[q.id]);
-
-  const setCase = (qid, v) => setApplicant(prev => ({ ...prev, caseAnswers:{ ...(prev.caseAnswers||{}), [qid]:v } }));
-  const updateOffenses = (offs) => setApplicant(prev => ({ ...prev, offenses:offs }));
-  const patchOffense = (id, patch) => updateOffenses((applicant.offenses||[]).map(o => o.id === id ? { ...o, ...patch } : o));
-  const removeOffense = (id) => { updateOffenses((applicant.offenses||[]).filter(o => o.id !== id)); if (editId === id) setEditId(null); };
-
-  // Regulation-panel highlights follow what the recruiter is touching
-  useEffect(() => {
-    if (!onHighlight) return;
-    const paras = new Set();
-    if (hoverCat) (CAT_PARA_MAP[hoverCat]||[]).forEach(p => paras.add(p));
-    CASE_QUESTIONS.forEach(q => { if (ca[q.id] && ca[q.id] !== 'no') (Q_PARA_MAP[q.id]||[]).forEach(p => paras.add(p)); });
-    (applicant.offenses||[]).forEach(o => (CAT_PARA_MAP[o.categoryId]||[]).forEach(p => paras.add(p)));
-    onHighlight([...paras]);
-  }, [hoverCat, applicant.caseAnswers, applicant.offenses]);
-
-  const addOffense = (catId) => {
-    const cat = catOf(catId);
-    const o = { id:`o${Date.now()}`, categoryId:catId, offenseDate:'', convictionDate:'',
-      disposition: (cat.group === 'dat' || cat.class === 'ps') ? 'convicted' : '',
-      confinement:'no', releaseDate:'', probation:'no',
-      description:'', city:'', county:'', state:'', dispositionText:'', courtDocs:false, incidentRpt:false };
-    updateOffenses([...(applicant.offenses||[]), o]);
-    setAddOpen(false); setEditId(o.id);
-  };
-
-  const chipInfo = (o) => {
-    const cat = catOf(o.categoryId) || {};
-    if (!o.disposition && cat.group !== 'dat' && cat.class !== 'ps') return { cls:'', v:'chip-v-unknown', label:'Needs disposition' };
-    if (o.disposition === 'dismissed') return { cls:'no-waiver', v:'chip-v-no-waiver', label:'Dismissed — no waiver' };
-    if (o.disposition === 'self_admit') return { cls:'etp', v:'chip-v-etp', label:'Self-admit — verify' };
-    if (cat.class === 'bar' && isAdverse(o)) return { cls:'bar', v:'chip-v-bar', label:'NOT WAIVABLE' };
-    if (verdict?.waivedIds.includes(o.id)) return { cls:'waivable', v:'chip-v-waivable', label:'★ In waiver' };
-    if (cat.class === 'ps') return { cls:'', v:'chip-v-unknown', label:'See S1 / RE code' };
-    return { cls:'no-waiver', v:'chip-v-no-waiver', label:'Counted — no waiver alone' };
-  };
-
-  const missingDisposition = offenses.some(o => { const c = catOf(o.categoryId)||{}; return !o.disposition && c.group !== 'dat' && c.class !== 'ps'; });
-
-  return (
-    <div className="main-scroll">
-      <div className="fade-up">
-        {/* 2026 policy banner — verified against AR 601-210, 20 Mar 2026 */}
-        <div className="alert alert-success" style={{marginBottom:14}}>
-          <span className="alert-icon">📋</span>
-          <div>
-            <strong>AR 601-210 (20 Mar 2026):</strong> A single conviction for marijuana possession or drug paraphernalia no longer requires a waiver (para 4-6). Sale/distribution/trafficking (incl. intent) is <strong>not waivable</strong> (4-7c(3)). Major misconduct waivers go to <strong>CG, USARD</strong> with a 24-month wait from conviction (4-7a).
-          </div>
-        </div>
-
-        {/* Overall case determination */}
-        {verdict && verdict.status !== 'PENDING' && (
-          <div style={{marginBottom:14}}>
-            <OverallVerdictBanner verdict={verdict} approv={approv} applicant={applicant}/>
-            {missingDisposition && (
-              <div className="alert alert-warn" style={{marginTop:8,marginBottom:0}}>
-                <span className="alert-icon">⚠️</span>
-                <div>One or more offenses have no disposition selected — they are NOT counted yet. The verdict above may change.</div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* STEP 1 — Case screening (asked once) */}
-        <div className="card" style={{marginBottom:14}}>
-          <div className="card-hdr">
-            <div className="section-bar"/>
-            <div style={{flex:1}}>
-              <div className="card-title">Step 1 — Case Screening <span style={{color:caseDone?'#5bc989':'var(--fg-m)',fontSize:10,marginLeft:6}}>{caseDone?'✓ COMPLETE':`${CASE_QUESTIONS.filter(q=>ca[q.id]).length}/${CASE_QUESTIONS.length}`}</span></div>
-              <div className="card-sub">Five applicant-level questions — answered once, they apply to the whole case</div>
-            </div>
-          </div>
-          {CASE_QUESTIONS.map(q => (
-            <div key={q.id} className="case-q">
-              <div className="case-q-text">{q.q}</div>
-              <div className="case-q-opts">
-                {q.options.map(opt => {
-                  const sel = ca[q.id] === opt.v;
-                  const danger = ['yes','active'].includes(opt.v);
-                  return (
-                    <button key={opt.v} className={`case-opt${sel?' selected':''}${sel&&danger?' danger':''}`} onClick={()=>setCase(q.id,opt.v)}>
-                      {opt.l}
-                    </button>
-                  );
-                })}
-              </div>
-              {ca[q.id] && ca[q.id] !== 'no' && <div className="q-hint" style={{marginTop:6,marginBottom:0}}>{q.hint}</div>}
-            </div>
-          ))}
-        </div>
-
-        {/* STEP 2 — Offense record */}
-        <div className="card">
-          <div className="card-hdr">
-            <div className="section-bar"/>
-            <div style={{flex:1}}>
-              <div className="card-title">Step 2 — Offense Record</div>
-              <div className="card-sub">Add EVERY offense in the applicant's history, including traffic — the regulation counts them (4-6/4-7) and UF 601-210.08 requires all of them. Auto-sorted newest to oldest.</div>
-            </div>
-            {!addOpen && <button className="btn btn-gold btn-sm" onClick={()=>setAddOpen(true)}><IcoPlus/> Add Offense</button>}
-            {addOpen && <button className="btn btn-outline btn-sm" onClick={()=>setAddOpen(false)}>Cancel</button>}
-          </div>
-
-          {offenses.length === 0 && !addOpen && (
-            <div className="empty-state">
-              <div style={{fontSize:24,marginBottom:8}}>⚖️</div>
-              <div>No offenses logged yet. Click <strong>Add Offense</strong> to begin.</div>
-              <div style={{fontSize:10,marginTop:6}}>The verdict is computed from the whole record — single minor offenses often need no waiver at all.</div>
-            </div>
-          )}
-
-          {/* Offense chips + inline editor */}
-          <div className="offense-stack">
-            {offenses.map(o => {
-              const cat = catOf(o.categoryId) || {};
-              const info = chipInfo(o);
-              const juvenile = isJuvenileOffense(applicant, o);
-              return (
-                <React.Fragment key={o.id}>
-                  <div data-id={o.id} className={`offense-chip ${info.cls}`}>
-                    <span className={`chip-verdict ${info.v}`}>{info.label}</span>
-                    <div className="chip-label">{o.description || cat.label}</div>
-                    {juvenile && <span className="chip-auth" title="Before applicant's 18th birthday">JUV</span>}
-                    {o.offenseDate && <span className="chip-auth">{fmtDate(o.offenseDate)}</span>}
-                    <button className="btn btn-outline btn-sm" style={{padding:'2px 8px',fontSize:10}} onClick={()=>setEditId(editId===o.id?null:o.id)}>{editId===o.id?'Close':'Edit'}</button>
-                    <button className="chip-del" onClick={()=>removeOffense(o.id)} title="Remove this offense"><IcoX s={9}/></button>
-                  </div>
-                  {editId === o.id && (
-                    <OffenseEditor o={o} applicant={applicant} onChange={patch=>patchOffense(o.id,patch)} onDone={()=>setEditId(null)}/>
-                  )}
-                </React.Fragment>
-              );
-            })}
-          </div>
-
-          {/* Category picker */}
-          {addOpen && (
-            <div style={{marginTop:12}}>
-              <div style={{fontSize:13,fontWeight:600,marginBottom:8,color:'var(--fg2)'}}>What kind of offense?</div>
-              {OFFENSE_GROUPS.map(grp => {
-                const cats = OFFENSE_CATEGORIES.filter(c => c.group === grp.key);
-                if (!cats.length) return null;
-                return (
-                  <div key={grp.key} style={{marginBottom:10}}>
-                    <div className="offense-group-label" style={{color:grp.color}}>{grp.label}</div>
-                    <div className="offense-grid">
-                      {cats.map(cat => (
-                        <button key={cat.id}
-                          className={`offense-card${cat.class==='bar'?' bar':''}${cat.noWaiverSingle?' no-waiver':''}`}
-                          onMouseEnter={()=>setHoverCat(cat.id)} onMouseLeave={()=>setHoverCat(null)}
-                          onClick={()=>addOffense(cat.id)}>
-                          <div className="offense-label">{cat.label}</div>
-                          <div className="offense-sub">{cat.sub}</div>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-/* ── Overall Case Verdict Banner ─────────────────────────── */
-const OverallVerdictBanner = ({ verdict, approv, applicant }) => {
-  const [showMeter, setShowMeter] = useState(false);
-  if (!verdict) return null;
-  const AUTH_FULL = { BN:'Battalion Commander', USARD:'CG, U.S. Army Recruiting Division (USARD)' };
-  const st = verdict.status;
-  const fmtD = d => (d && !isNaN(d)) ? d.toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'}) : '—';
-
-  /* NOT WAIVABLE — full red banner */
-  if (st === 'NOT_WAIVABLE') {
-    const permBars = verdict.bars.filter(b => b.perm);
-    const tempBars = verdict.bars.filter(b => !b.perm);
-    return (
-      <div style={{background:'linear-gradient(135deg,#3a0f0f 0%,#1f0808 100%)',border:'3px solid #ff3b3b',borderRadius:8,padding:'20px 24px',color:'#ffdddd',boxShadow:'0 0 0 1px #ff3b3b44 inset'}}>
-        <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:10}}>
-          <div style={{fontSize:32}}>⛔</div>
-          <div>
-            <div style={{fontSize:22,fontWeight:800,color:'#ff5555'}}>
-              {permBars.length ? 'NOT WAIVABLE — DO NOT SUBMIT' : 'CANNOT PROCESS NOW'}
-            </div>
-            <div style={{fontSize:13,color:'#ffaaaa',marginTop:2}}>
-              {permBars.length ? 'One or more permanent bars — no waiver authority exists at any level.' : 'Temporary block — resolve the items below, then re-screen.'}
-            </div>
-          </div>
-        </div>
-        {permBars.length > 0 && (
-          <div style={{background:'rgba(0,0,0,0.3)',padding:'12px 16px',borderRadius:6,marginBottom:10}}>
-            <div style={{fontWeight:700,color:'#ff8888',marginBottom:6,fontSize:12,letterSpacing:'.06em'}}>PERMANENT BARS:</div>
-            {permBars.map((b,i)=>(
-              <div key={i} style={{marginBottom:6,fontSize:13}}>• <strong>{b.title}</strong> — {b.text} <span style={{opacity:.6}}>({b.cite})</span></div>
-            ))}
-          </div>
-        )}
-        {tempBars.length > 0 && (
-          <div style={{background:'rgba(0,0,0,0.25)',padding:'12px 16px',borderRadius:6}}>
-            <div style={{fontWeight:700,color:'#ffb84d',marginBottom:6,fontSize:12,letterSpacing:'.06em'}}>MUST BE RESOLVED BEFORE PROCESSING:</div>
-            {tempBars.map((b,i)=>(
-              <div key={i} style={{marginBottom:6,fontSize:13}}>• <strong>{b.title}</strong> — {b.text} <span style={{opacity:.6}}>({b.cite})</span></div>
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  const configs = {
-    WAIVABLE:           { cls:'verdict-WAIVABLE',           tag:'Waivable',        icon:'✅', title:`Waivable — ${AUTH_FULL[verdict.authority]||''}` },
-    WAITING_PERIOD:     { cls:'verdict-WAITING_PERIOD',     tag:'Waiting Period',  icon:'⏳', title:'Waivable — Mandatory Waiting Period Not Met' },
-    ETP_REQUIRED:       { cls:'verdict-ETP_REQUIRED',       tag:'Verify First',    icon:'⚠️', title:'Self-Admitted Offense — Court Check / ETP Required' },
-    NO_WAIVER_REQUIRED: { cls:'verdict-NO_WAIVER_REQUIRED', tag:'No Waiver Needed',icon:'✔️', title:'No Waiver Required' },
-  };
-  const cfg = configs[st] || { cls:'', tag:'', icon:'•', title:'Pending' };
-
-  return (
-    <div className={`card verdict-card ${cfg.cls}`} style={{padding:'18px 20px'}}>
-      <div className="verdict-tag">{cfg.icon} {cfg.tag}</div>
-      <div className="verdict-title" style={{fontSize:18}}>{cfg.title}</div>
-
-      {/* Why a waiver is (or isn't) required */}
-      {verdict.waivers.length > 0 && (
-        <div style={{margin:'8px 0'}}>
-          {verdict.waivers.map((w,i)=>(
-            <div key={i} style={{fontSize:12,color:'var(--fg2)',padding:'3px 0'}}>
-              • {w.label} <span style={{color:'var(--fg-m)',fontSize:10}}>(4-{w.cite.replace(/^4-/,'')} · {w.authority === 'USARD' ? 'CG USARD' : 'BN CO'})</span>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {(st === 'WAIVABLE' || st === 'WAITING_PERIOD') && verdict.authority && (
-        <div style={{display:'flex',flexWrap:'wrap',gap:10,marginTop:6,alignItems:'center'}}>
-          <div className="authority-badge"><IcoShield/> {AUTH_FULL[verdict.authority]}</div>
-          <div style={{fontSize:11,color:'var(--fg-m)'}}>Waiver valid <strong style={{color:'var(--fg2)'}}>6 months</strong> from approval · AR 601-210, 4-27</div>
-        </div>
-      )}
-
-      {/* Waiting period countdown */}
-      {verdict.waits.length > 0 && (
-        <div style={{marginTop:12,border:'1px solid rgba(176,120,0,.4)',background:'rgba(176,120,0,.07)',padding:'14px 16px'}}>
-          <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:8}}>
-            <span style={{fontSize:16}}>⏳</span>
-            <span style={{fontSize:12,fontWeight:700,letterSpacing:'.08em',textTransform:'uppercase',color:'#ffb84d'}}>Waiting Periods</span>
-          </div>
-          {verdict.waits.map(w => (
-            <div key={w.id} style={{padding:'8px 0',borderTop:'1px solid rgba(176,120,0,.2)'}}>
-              <div style={{fontSize:12,fontWeight:700,color:'var(--fg2)',marginBottom:3}}>{w.label}</div>
-              {w.needDate ? (
-                <div style={{fontSize:11,color:'#ffcc66'}}>Enter the required date on this offense (Edit) to calculate the earliest submission date.</div>
-              ) : (
-                <div style={{fontSize:11,color:'var(--fg2)'}}>
-                  <strong style={{color:'#ffb84d',fontSize:13}}>{w.daysLeft} days remaining</strong> · earliest submission <strong>{fmtD(w.earliest)}</strong>
-                  <div style={{fontSize:10,color:'var(--fg-m)',marginTop:2}}>Clock from {fmtDate(w.from)} · AR 601-210, {w.cite}{w.note ? ` · ${w.note}` : ''}</div>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Suitability reviews required */}
-      {verdict.suitability.length > 0 && (
-        <div style={{marginTop:12,border:'1px solid rgba(26,95,168,.35)',background:'rgba(26,95,168,.06)',padding:'12px 16px'}}>
-          <div style={{fontSize:11,fontWeight:700,letterSpacing:'.08em',textTransform:'uppercase',color:'#5b9fd4',marginBottom:6}}>Suitability Review Required (before MEPS projection — 4-2f)</div>
-          {verdict.suitability.map((s,i)=>(
-            <div key={i} style={{fontSize:11,color:'var(--fg2)',padding:'2px 0'}}>
-              • {s.label} — <strong>{s.level === 'USARD' ? 'CG USARD' : 'BN CO'} review</strong> <span style={{color:'var(--fg-m)',fontSize:10}}>({s.cite})</span>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Notes */}
-      {verdict.notes.length > 0 && (
-        <div style={{marginTop:12}}>
-          {verdict.notes.map((n,i)=>(
-            <div key={i} style={{fontSize:11,color:'var(--fg-m)',padding:'3px 0',lineHeight:1.5}}>
-              ℹ️ {n.label} <span style={{opacity:.7,fontSize:10}}>({n.cite})</span>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Unofficial approval-odds estimate — collapsed by default */}
-      {approv && st === 'WAIVABLE' && (
-        <div style={{marginTop:12}}>
-          <button style={{fontSize:10,color:'var(--fg-m)',background:'none',border:'1px solid var(--bd)',cursor:'pointer',padding:'4px 10px'}} onClick={()=>setShowMeter(v=>!v)}>
-            {showMeter ? '▲ Hide' : '▼ Show'} unofficial approval-odds estimate
-          </button>
-          {showMeter && (
-            <div className="approval-meter">
-              <div className="approval-hdr">
-                <div className="approval-label"><IcoGauge/> Unofficial Estimate</div>
-                <div className="approval-score" style={{color: approv.score >= 70 ? '#5bc989' : approv.score >= 45 ? 'var(--gold)' : '#ff7070'}}>{approv.score}</div>
-              </div>
-              <div className="approval-bar-bg"><div className="approval-bar-fill" style={{width:`${approv.score}%`,background: approv.score >= 70 ? '#5bc989' : approv.score >= 45 ? 'var(--gold)' : '#ff7070'}}/></div>
-              <div className="approval-factors">
-                {approv.factors.map((f,i)=>(
-                  <div key={i} className="approval-factor">
-                    <span className={f.mod > 0 ? 'factor-up' : 'factor-down'}>{f.mod > 0 ? '+' : ''}{f.mod}</span>
-                    <span>{f.label}</span>
-                  </div>
-                ))}
-              </div>
-              <div className="approval-disclaimer">NOT from regulation — heuristic estimate only. Actual outcome depends on the commander interview, applicant statement, and command climate. Do not share with the applicant.</div>
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-};
-
-/* ── Phase 2: Applicant Info ────────────────────────────── */
-const Phase2 = ({ applicant, setApplicant }) => {
-  const setAppl = (k,v) => setApplicant(prev => ({...prev, [k]:v}));
-
-  return (
-    <div className="main-scroll">
-      <div className="fade-up">
-        {/* Applicant Info */}
-        <div className="card">
-          <div className="card-hdr"><div className="section-bar"/><div><div className="card-title">Applicant Information</div></div></div>
-          <div className="form-grid-3" style={{marginBottom:10}}>
-            {[['lastName','Last Name'],['firstName','First Name'],['mi','MI']].map(([k,l])=>(
-              <div key={k} className="form-field">
-                <label className="form-label">{l}</label>
-                <input className="form-input" value={applicant[k]||''} onChange={e=>setAppl(k,e.target.value)} placeholder={l}/>
-              </div>
-            ))}
-          </div>
-          <div className="form-grid-3" style={{marginBottom:10}}>
-            <div className="form-field">
-              <label className="form-label">SSN — Last 4 Only</label>
-              <input className="form-input" value={applicant.ssn||''} onChange={e=>setAppl('ssn',e.target.value.replace(/\D/g,'').slice(-4))} placeholder="1234" maxLength={4}/>
-              <div style={{fontSize:9,color:'var(--fg-m)',marginTop:2}}>Full SSN is never stored in this tool — documents print last 4 only</div>
-            </div>
-            <div className="form-field">
-              <label className="form-label">Date of Birth</label>
-              <input className="form-input" type="date" value={applicant.dob||''} onChange={e=>setAppl('dob',e.target.value)}/>
-            </div>
-            <div className="form-field">
-              <label className="form-label">RSID</label>
-              <input className="form-input" value={applicant.rsid||''} onChange={e=>setAppl('rsid',e.target.value)} placeholder="RSID"/>
-            </div>
-          </div>
-          <div className="form-grid-4" style={{marginBottom:10}}>
-            <div className="form-field">
-              <label className="form-label">Education Level</label>
-              <select className="form-input" value={applicant.educationLevel||''} onChange={e=>setAppl('educationLevel',e.target.value)}>
-                <option value="">Select...</option>
-                {ED_LEVELS.map(l=><option key={l} value={l}>{l}</option>)}
-              </select>
-            </div>
-            <div className="form-field">
-              <label className="form-label">Ed Code</label>
-              <input className="form-input" value={applicant.educationCode||''} onChange={e=>setAppl('educationCode',e.target.value)} placeholder="e.g. 2A"/>
-            </div>
-            <div className="form-field">
-              <label className="form-label">AFQT Score</label>
-              <input className="form-input" value={applicant.afqt||''} onChange={e=>setAppl('afqt',e.target.value)} placeholder="0–99"/>
-            </div>
-            <div className="form-field">
-              <label className="form-label">PS / NPS</label>
-              <select className="form-input" value={applicant.psNps||''} onChange={e=>setAppl('psNps',e.target.value)}>
-                <option value="">Select...</option>
-                <option value="NPS">NPS — Non-Prior Service</option>
-                <option value="PS">PS — Prior Service</option>
-              </select>
-            </div>
-          </div>
-          <div className="form-grid-4">
-            <div className="form-field">
-              <label className="form-label">Marital Status</label>
-              <select className="form-input" value={applicant.maritalStatus||''} onChange={e=>setAppl('maritalStatus',e.target.value)}>
-                <option value="">Select...</option>
-                {['Single','Married','Divorced','Widowed','Separated'].map(s=><option key={s} value={s}>{s}</option>)}
-              </select>
-            </div>
-            <div className="form-field">
-              <label className="form-label"># of Dependents</label>
-              <input className="form-input" type="number" min="0" max="20" value={applicant.numDependents||''} onChange={e=>setAppl('numDependents',e.target.value)} placeholder="0"/>
-            </div>
-            <div className="form-field" style={{gridColumn:'span 2'}}>
-              <label className="form-label">Dependent Ages</label>
-              <input className="form-input" value={applicant.dependentAges||''} onChange={e=>setAppl('dependentAges',e.target.value)} placeholder="e.g. 3, 7, 12"/>
-            </div>
-          </div>
-        </div>
-
-        {/* MOS Check */}
-        <div className="card" style={{marginTop:14}}>
-          <div className="card-hdr"><div className="section-bar"/><div><div className="card-title"><IcoMOS/> MOS Compatibility Check</div><div className="card-sub">ADVISORY ONLY — not sourced from AR 601-210. Always verify with the MOS career manager and DA PAM 611-21</div></div></div>
-          <MOSChecker applicant={applicant} setAppl={setAppl}/>
-        </div>
-
-        {/* Recruiter Info */}
-        <div className="card" style={{marginTop:14}}>
-          <div className="card-hdr"><div className="section-bar"/><div className="card-title">Recruiter / Unit Info</div></div>
-          <div className="form-field" style={{marginBottom:10}}>
-            <label className="form-label">Unit Designation</label>
-            <input className="form-input" value={applicant.recruiterUnit||''} onChange={e=>setAppl('recruiterUnit',e.target.value)} placeholder="e.g. U.S. ARMY GRAND ISLAND DETACHMENT, DENVER RECRUITING BATTALION"/>
-          </div>
-          <div className="form-field" style={{marginBottom:10}}>
-            <label className="form-label">Unit Address</label>
-            <input className="form-input" value={applicant.recruiterAddress||''} onChange={e=>setAppl('recruiterAddress',e.target.value)} placeholder="Full street address, city, state, ZIP"/>
-          </div>
-          <div className="form-grid-3">
-            <div className="form-field">
-              <label className="form-label">Office Symbol (RSID)</label>
-              <input className="form-input" value={applicant.recruiterOfficeSym||''} onChange={e=>setAppl('recruiterOfficeSym',e.target.value)} placeholder="e.g. RCSW-DEN-GI"/>
-            </div>
-            <div className="form-field">
-              <label className="form-label">Recruiter Name</label>
-              <input className="form-input" value={applicant.recruiterName||''} onChange={e=>setAppl('recruiterName',e.target.value)} placeholder="Last, First MI"/>
-            </div>
-            <div className="form-field">
-              <label className="form-label">Rank / Branch</label>
-              <input className="form-input" value={applicant.recruiterRank||''} onChange={e=>setAppl('recruiterRank',e.target.value)} placeholder="e.g. SSG, USA"/>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-/* ── MOS Checker ────────────────────────────────────────── */
-const MOSChecker = ({ applicant, setAppl }) => {
-  const [search, setSearch] = useState(applicant.mosCode||'');
-  const [result, setResult] = useState(null);
-
-  const checkMOS = () => {
-    const code = search.trim().toUpperCase();
-    setAppl('mosCode', code);
-    const match = MOS_RESTRICTIONS.find(g => g.mos.includes(code));
-    if (!match) { setResult({ notFound:true, code }); }
-    else { setResult({ group:match, code }); }
-  };
-
-  return (
-    <div>
-      <div className="row" style={{gap:8,marginBottom:12}}>
-        <input className="form-input" style={{maxWidth:140}} value={search} onChange={e=>setSearch(e.target.value.toUpperCase())}
-          onKeyDown={e=>e.key==='Enter'&&checkMOS()} placeholder="MOS code (e.g. 11B)"/>
-        <button className="btn btn-outline btn-sm" onClick={checkMOS}>Check MOS</button>
-        {result && <button className="btn btn-outline btn-sm" onClick={()=>{setResult(null);setSearch('');setAppl('mosCode','');}}>Clear</button>}
-      </div>
-      {result && (
-        result.notFound ? (
-          <div className="mos-result low">
-            <div className="mos-result-label">✅ No specific restrictions found for {result.code}</div>
-            <div style={{fontSize:11,color:'var(--fg-m)'}}>
-              This MOS is not in the high-restriction list. Standard waiver rules apply.
-              Always verify with the MOS-specific career manager and AR 601-210.
-            </div>
-          </div>
-        ) : (
-          <div className={`mos-result ${result.group.severity}`}>
-            <div className="mos-result-label">
-              {result.group.severity==='high'?'⚠️ HIGH RESTRICTION':result.group.severity==='medium'?'⚠️ MODERATE RESTRICTION':'ℹ️ LOW RESTRICTION'} — {result.group.label}
-            </div>
-            <div style={{fontSize:11,color:'var(--fg2)',marginBottom:8,lineHeight:1.5}}>{result.group.notes}</div>
-            {result.group.restrictions.map((r,i) => (
-              <div key={i} className="mos-restriction">
-                <span style={{color:result.group.severity==='high'?'#ff6b6b':'var(--gold)',fontSize:12}}>⚠</span>
-                <span style={{fontSize:11}}>{r}</span>
-              </div>
-            ))}
-          </div>
-        )
-      )}
-    </div>
-  );
-};
-
-/* ── Phase 3: Build Packet ──────────────────────────────── */
-const Phase3 = ({ applicant, setApplicant }) => {
-  const [clStatus, setClStatus] = useState(applicant.checklistStatus||{});
-  const [expDates, setExpDates] = useState(applicant.expDates||{});
-  const [expandedItems, setExpandedItems] = useState({});
-  const [activeDoc, setActiveDoc] = useState(null);
-
+/* ── Document generators ─────────────────────────────────────────────────
+   Output text is unchanged from the pre-redesign build; the generators were
+   lifted out of the old packet tab so the Generate phase can call them.
+   ─────────────────────────────────────────────────────────────────────── */
+const makeDocs = (applicant, verdict, clStatus) => {
   const screenedOffenses = applicant.offenses || [];
-  const verdict = computeCaseVerdict(applicant);
   const authority = verdict?.authority || 'BN';
   const waivedIds = verdict?.waivedIds || [];
-  const flags = offenseFlags(screenedOffenses);
-  const requiredItems = getRequiredChecklist(authority, flags);
-  const expiringItems = requiredItems.filter(i => i.validity);
-  const statusCycle = s => s==='pending'?'progress':s==='progress'?'complete':'pending';
-
-  // Sync clStatus/expDates back to applicant
-  useEffect(() => { setApplicant(prev => ({...prev, checklistStatus:clStatus})); }, [clStatus]);
-  useEffect(() => { setApplicant(prev => ({...prev, expDates})); }, [expDates]);
-  useEffect(() => { setClStatus(applicant.checklistStatus||{}); setExpDates(applicant.expDates||{}); }, [applicant.id]);
-
-  const toggleExpand = (id) => setExpandedItems(prev => ({...prev, [id]:!prev[id]}));
-  const copyToClipboard = (text) => { navigator.clipboard.writeText(text).catch(() => {}); };
-  const toggleCheck = (id) => setClStatus(prev => ({...prev, [id]: prev[id]==='complete'?'pending':'complete'}));
-  const cycleStatus = (id) => setClStatus(prev => ({...prev, [id]: statusCycle(prev[id]||'pending')}));
-
+  const requiredItems = getRequiredChecklist(authority, offenseFlags(screenedOffenses));
   const fullName = [applicant.firstName, applicant.mi?applicant.mi+'.':'', applicant.lastName].filter(Boolean).join(' ');
   const ssnLast4 = (applicant.ssn||'').slice(-4)||'XXXX';
   const authorityFull = { BN:'Battalion Commander', USARD:'Commanding General, U.S. Army Recruiting Division (USARD)' };
@@ -1589,16 +694,8 @@ const Phase3 = ({ applicant, setApplicant }) => {
   const offenseList = sortNewest(screenedOffenses.filter(so=>so.offenseDate||so.description));
   const isWaived = o => waivedIds.includes(o.id);
   const completedCount = requiredItems.filter(i => clStatus[i.id]==='complete').length;
-  const { score: readiness } = computeReadiness(applicant, verdict, clStatus);
 
-  // Common rejection warnings
-  const warnings = [];
-  if (!applicant.afqt) warnings.push('AFQT score not entered — required for UF 601-210.08');
-  if (expiringItems.some(i => { const d = daysUntilExpiry(expDates[i.id], i.validity); return d !== null && d < 0; })) warnings.push('One or more documents have EXPIRED — renew before submission');
-  if (!applicant.rsid) warnings.push('RSID not entered — required for routing memo');
-  if ((verdict?.waivers?.length > 0) && !offenseList.some(so=>so.description)) warnings.push('Offense descriptions not filled in — needed for document generation');
 
-  /* Document generators */
   const genCoverSheet = () => {
     const lines = [];
     lines.push(`MORAL WAIVER PACKET — COVER SHEET`);
@@ -1777,202 +874,21 @@ ${offList}
     return lines.join('\n');
   };
 
-  const docTypes = [
-    { id:'cover',     name:'Cover Sheet',                desc:'Formatted summary page for the top of the physical packet — applicant info, all offenses, doc status.', icon:<IcoDoc/>, gen:genCoverSheet, fmt:'text' },
-    { id:'statement', name:"Applicant's Statement",      desc:'Pre-filled structure with offense-specific guidance prompts. Applicant personalizes, handwrites, and signs.', icon:<IcoDoc/>, gen:genStatement, fmt:'text' },
-    { id:'mfr',       name:"CO Interview MFR",           desc:'Official Army memo (AR 25-50 format) with letterhead, fill-in lines, and APPROVE/DISAPPROVE checkboxes.', icon:<IcoDoc/>, gen:genMFR, fmt:'html' },
-    { id:'routing',   name:'Routing / Transmittal Memo', desc:'Memo from recruiter routing the complete packet to battalion S1 with full document checklist.', icon:<IcoDoc/>, gen:genRouting, fmt:'text' },
-  ];
 
-  const printDoc = (content, fmt='text') => {
-    const w = window.open('','_blank');
-    if (fmt === 'html') {
-      const html = content.replace('</body>', '<script>window.onload=()=>window.print()<\/script></body>');
-      w.document.write(html);
-    } else {
-      w.document.write(`<!DOCTYPE html><html><head><title>Moral Waiver Document</title><style>body{font-family:"Courier New",monospace;font-size:12px;line-height:1.7;padding:48px;color:#000;max-width:700px;margin:auto}@media print{body{padding:24px}}</style></head><body><pre>${content}</pre><script>window.onload=()=>window.print()<\/script></body></html>`);
-    }
-    w.document.close();
-  };
-
-  return (
-    <div className="main-scroll">
-      <div className="fade-up">
-        {/* Hard stop — case is not waivable */}
-        {verdict?.status === 'NOT_WAIVABLE' && (
-          <div className="alert alert-danger" style={{marginBottom:14}}>
-            <span className="alert-icon">⛔</span>
-            <div>
-              <strong>THIS CASE IS NOT WAIVABLE — do not build or submit this packet.</strong>
-              <div style={{fontSize:11,marginTop:4}}>
-                {verdict.bars.map((b,i)=><div key={i}>• {b.title} ({b.cite})</div>)}
-              </div>
-              <div style={{fontSize:11,marginTop:4}}>Return to <strong>Screen Charges</strong> to review. If a temporary block (pending charges, active restraint), resolve it and re-screen.</div>
-            </div>
-          </div>
-        )}
-        {verdict?.status === 'NO_WAIVER_REQUIRED' && (
-          <div className="alert alert-info" style={{marginBottom:14}}>
-            <span className="alert-icon">✔️</span>
-            <div><strong>No waiver is required for this case.</strong> A packet is not needed — just ensure all offenses are on the SF 86, RZ, and UF 601-210.08 (generator below).</div>
-          </div>
-        )}
-
-        {/* QC Warnings */}
-        {warnings.length > 0 && (
-          <div className="alert alert-warn" style={{marginBottom:14}}>
-            <span className="alert-icon">⚠️</span>
-            <div>
-              <strong>Common Rejection Issues Found:</strong>
-              <ul style={{margin:'4px 0 0 16px',fontSize:11}}>
-                {warnings.map((w,i) => <li key={i}>{w}</li>)}
-              </ul>
-            </div>
-          </div>
-        )}
-
-        {/* Checklist */}
-        <div className="card">
-          <div className="card-hdr">
-            <div className="section-bar"/>
-            <div style={{flex:1}}>
-              <div className="card-title">Document Checklist</div>
-              <div className="card-sub">{authorityShort} level · {completedCount}/{requiredItems.length} complete · Click any item for how-to guidance</div>
-            </div>
-            <div style={{fontSize:12,fontWeight:700,color:'var(--gold)'}}>{Math.round((completedCount/Math.max(1,requiredItems.length))*100)}%</div>
-          </div>
-          {requiredItems.map(item => {
-            const status = clStatus[item.id]||'pending';
-            const expanded = expandedItems[item.id];
-            return (
-              <div key={item.id} className="cl-item">
-                <div className="cl-row" onClick={()=>toggleExpand(item.id)}>
-                  <div className={`cl-check${status==='complete'?' checked':''}`} onClick={e=>{e.stopPropagation();toggleCheck(item.id);}}>
-                    {status==='complete'&&<IcoCheck/>}
-                  </div>
-                  <div className="cl-body">
-                    <div className="cl-label" style={status==='complete'?{textDecoration:'line-through',opacity:.4}:{}}>{item.label}</div>
-                    <div className="cl-meta">{item.ref}{item.validity && ` · Valid ${item.validity} ${item.unit}`}</div>
-                    {item.note && <div className="cl-note">{item.note}<button className="copy-btn" onClick={() => copyToClipboard(item.note)} title="Copy note to clipboard">Copy</button></div>}
-                  </div>
-                  <div className="cl-status">
-                    <span className={`status-badge status-${status}`} onClick={e=>{e.stopPropagation();cycleStatus(item.id);}}>
-                      {status==='pending'?'Pending':status==='progress'?'In Progress':'Complete'}
-                    </span>
-                    {item.validity && <span className="muted" style={{fontSize:10}}><IcoClock/> {item.validity}d</span>}
-                  </div>
-                  <span className="cl-expand-arrow"><IcoChev open={expanded}/></span>
-                </div>
-                {expanded && item.howto && (
-                  <div className="cl-howto">
-                    <div className="howto-label">How to Obtain</div>
-                    <div className="howto-text">{item.howto}</div>
-                    {item.tip && <div className="howto-tip">💡 <strong>Recruiter Tip:</strong> {item.tip}</div>}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Expiration Tracker */}
-        {expiringItems.length > 0 && (
-          <div className="card" style={{marginTop:14}}>
-            <div className="card-hdr"><div className="section-bar"/><div><div className="card-title"><IcoClock/> Expiration Tracker</div><div className="card-sub">Documents with validity windows — plan your timeline carefully</div></div></div>
-            {expiringItems.map(item => {
-              const d = expDates[item.id];
-              const days = daysUntilExpiry(d, item.validity);
-              const expStatus = getExpiryStatus(days);
-              return (
-                <div key={item.id} className="exp-item">
-                  <div>
-                    <div className="exp-label">{item.label}</div>
-                    <div className="exp-valid">Valid {item.validity} {item.unit}</div>
-                  </div>
-                  <input type="date" className="form-input" style={{fontSize:11,padding:'5px 8px'}}
-                    value={d||''} onChange={e=>setExpDates(p=>({...p,[item.id]:e.target.value}))} placeholder="Date obtained"/>
-                  <div className={`exp-status exp-${expStatus}`}>
-                    {!d ? '—' : days<0 ? `EXPIRED ${Math.abs(days)}d ago` : `${days}d left`}
-                  </div>
-                </div>
-              );
-            })}
-            <div style={{padding:'8px 14px',fontSize:10,color:'var(--fg-d)'}}>
-              <strong>MIRS reminder:</strong> Print MIRS 1.1 on the day of submission — stale MIRS is a common return reason.
-            </div>
-          </div>
-        )}
-
-        {/* Generated Documents */}
-        <div className="card" style={{marginTop:14}}>
-          <div className="card-hdr"><div className="section-bar"/><div><div className="card-title">Generated Documents</div><div className="card-sub">Pre-filled drafts — preview or print directly</div></div></div>
-          {(() => {
-            const missing = [];
-            if (!applicant.lastName || !applicant.firstName) missing.push('Applicant name (Tab 2)');
-            if (!applicant.rsid) missing.push('RSID (Tab 2)');
-            if (!applicant.afqt) missing.push('AFQT score (Tab 2)');
-            if (!applicant.recruiterUnit) missing.push('Unit designation (Tab 2)');
-            if (!screenedOffenses.some(so => so.description)) missing.push('Offense description(s) (Tab 1 — Offense Record)');
-            if (!missing.length) return null;
-            return (
-              <div className="alert alert-warn" style={{margin:'0 0 12px'}}>
-                <span className="alert-icon">⚠️</span>
-                <div>
-                  <strong>Documents will contain [PLACEHOLDER] text — complete before printing:</strong>
-                  <ul style={{margin:'4px 0 0 16px', fontSize:11}}>
-                    {missing.map((m,i) => <li key={i}>{m}</li>)}
-                  </ul>
-                </div>
-              </div>
-            );
-          })()}
-          <div className="output-grid">
-            {docTypes.map(dt => (
-              <div key={dt.id} className="output-card">
-                <div className="output-icon">{dt.icon}</div>
-                <div className="output-name">{dt.name}</div>
-                <div className="output-desc">{dt.desc}</div>
-                <div className="output-actions">
-                  <button className="btn btn-outline btn-sm" onClick={()=>setActiveDoc({...dt, content:dt.gen()})}>Preview</button>
-                  <button className="btn btn-gold btn-sm" onClick={()=>printDoc(dt.gen(),dt.fmt)}><IcoPrint/> Print</button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* PDF Generator */}
-        <UF608Card applicant={applicant} offenses={screenedOffenses} waivedIds={waivedIds}/>
-
-        <div style={{fontSize:10,color:'var(--fg-d)',textAlign:'center',marginTop:20,paddingBottom:16}}>
-          Eligibility logic: {REG_VERSION}. Verify currency with your S1 before submission.
-        </div>
-      </div>
-
-      {/* Preview Modal */}
-      {activeDoc && (
-        <div className="modal-overlay" onClick={e=>{if(e.target===e.currentTarget)setActiveDoc(null)}}>
-          <div className="modal" style={{maxWidth:activeDoc.fmt==='html'?860:720}}>
-            <div className="modal-hdr">
-              <span className="modal-title">{activeDoc.name}</span>
-              <button className="btn btn-outline btn-sm" onClick={()=>setActiveDoc(null)}><IcoX/></button>
-            </div>
-            <div className="modal-body" style={{padding:activeDoc.fmt==='html'?0:18}}>
-              {activeDoc.fmt==='html'
-                ? <iframe srcDoc={activeDoc.content} style={{width:'100%',height:'62vh',border:'none',background:'#fff'}} title="Preview"/>
-                : <pre className="doc-preview">{activeDoc.content}</pre>
-              }
-            </div>
-            <div className="modal-ftr">
-              <button className="btn btn-outline" onClick={()=>setActiveDoc(null)}>Close</button>
-              <button className="btn btn-gold" onClick={()=>printDoc(activeDoc.content,activeDoc.fmt)}><IcoPrint/> Print / Download</button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
+  return { genCoverSheet, genStatement, genMFR, genRouting };
 };
+
+const printDoc = (content, fmt='text') => {
+  const w = window.open('','_blank');
+  if (!w) return;
+  if (fmt === 'html') {
+    w.document.write(content.replace('</body>', '<script>window.onload=()=>window.print()<\/script></body>'));
+  } else {
+    w.document.write(`<!DOCTYPE html><html><head><title>Moral Waiver Document</title><style>body{font-family:"Courier New",monospace;font-size:12px;line-height:1.7;padding:48px;color:#000;max-width:700px;margin:auto}@media print{body{padding:24px}}</style></head><body><pre>${content}</pre><script>window.onload=()=>window.print()<\/script></body></html>`);
+  }
+  w.document.close();
+};
+
 
 /* ── UF 601-210.08 PDF Generator ─────────────────────── */
 function buildDatasetsXML(applicant, screenedOffenses, waivedIds = []) {
@@ -2092,449 +1008,1066 @@ async function generateFilledUF608(applicant, offenses, waivedIds, onProgress, t
   return result;
 }
 
-const UF608Card = ({ applicant, offenses, waivedIds = [] }) => {
-  const [status, setStatus] = useState('idle');
-  const [msg, setMsg] = useState('');
-  const [selectedTemplate, setSelectedTemplate] = useState(null); // Uint8Array from user-selected file
-  const canGenerate = offenses.some(so=>so.offenseDate||so.description);
+/* ══════════════════════════════════════════════════════════════════════
+   PRESENTATION LAYER — QC redesign
+   The regulation engine above is authoritative; everything here maps its
+   output onto the design's verdict states, accents, and copy.
+   ══════════════════════════════════════════════════════════════════════ */
 
-  const handleTemplateSelect = (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+const C_RED='#CF0000', C_REDFG='#FF6B6B', C_ORANGE='#F16521',
+      C_GOLD='#FFCC01', C_GREEN='#2DAA27', C_MUTED='#98948E', C_BLACK='#221F20';
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      const bytes = new Uint8Array(reader.result);
-      setSelectedTemplate(bytes);
-      setMsg(`Template loaded: ${file.name}. Ready to generate.`);
-      setStatus('idle');
-    };
-    reader.onerror = () => {
-      setMsg('Failed to read the selected PDF file.');
-      setStatus('error');
-    };
-    reader.readAsArrayBuffer(file);
+const CLS = {
+  bar:     { accent:C_RED,    tagBg:'rgba(207,0,0,.15)',    tag:'Bar' },
+  major:   { accent:C_ORANGE, tagBg:'rgba(241,101,33,.15)', tag:'Major' },
+  misc:    { accent:C_GOLD,   tagBg:'rgba(255,204,1,.12)',  tag:'Misconduct' },
+  dat:     { accent:C_ORANGE, tagBg:'rgba(241,101,33,.15)', tag:'DAT' },
+  minor:   { accent:C_MUTED,  tagBg:'rgba(255,255,255,.08)',tag:'Minor' },
+  traffic: { accent:C_MUTED,  tagBg:'rgba(255,255,255,.08)',tag:'Traffic' },
+  ps:      { accent:C_MUTED,  tagBg:'rgba(255,255,255,.08)',tag:'Prior svc' },
+};
+const clsOf = c => CLS[c?.class] || CLS.minor;
+
+/* Resolve any citation string the engine emits to a PARA_TEXT key. */
+const resolvePara = (cite) => {
+  if (!cite) return '4-6';
+  let raw = String(cite).replace(/^AR 601-210[,·]?\s*/i,'').replace(/^para\s*/i,'').trim();
+  if (PARA_TEXT[raw]) return raw;
+  const head = raw.split(/[/·]/)[0].trim();
+  if (PARA_TEXT[head]) return head;
+  const m = head.match(/^(\d+-\d+[a-z]?)/);
+  if (m) {
+    if (PARA_TEXT[m[1]]) return m[1];
+    const base = m[1].replace(/[a-z]$/,'');
+    if (PARA_TEXT[base]) return base;
+  }
+  return '4-6';
+};
+
+/* Map the engine verdict onto the banner's design states. */
+const bannerFor = (verdict) => {
+  const muted = { authBg:'rgba(255,255,255,.08)', authFg:C_MUTED };
+  if (!verdict || verdict.status === 'PENDING') return {
+    tag:'No record entered', title:'Clean so far', accent:C_MUTED, authority:'Nothing to waive', ...muted,
+    body:'Answer the gates and add any offense to get a ruling. Dismissed charges are still listed on the SF 86 and UF 601-210.08.',
+    cite:'4-30' };
+
+  if (verdict.status === 'NOT_WAIVABLE') {
+    const perm = verdict.bars.filter(b => b.perm);
+    if (perm.length) return {
+      tag:'Permanent bar', title:'Not waivable', accent:C_RED, authority:'No waiver authority',
+      authBg:'rgba(207,0,0,.18)', authFg:C_REDFG,
+      body: perm.length === 1 ? perm[0].text
+        : `${perm.length} permanent bars are on the record. No waiver will be approved at any level — stop the packet and counsel the applicant.`,
+      cite: perm[0].cite };
+    const t = verdict.bars[0];
+    return {
+      tag:'Processing stopped', title:'On hold', accent:C_ORANGE, authority:'Cannot submit',
+      authBg:'rgba(241,101,33,.18)', authFg:C_ORANGE,
+      body:`Resolve before anything else: ${verdict.bars.map(b=>b.title.toLowerCase()).join(', ')}. No waiver may be submitted while this is open.`,
+      cite: t.cite };
+  }
+
+  if (verdict.status === 'ETP_REQUIRED') return {
+    tag:'Court check required', title:'Verify first', accent:C_ORANGE, authority:'Confirm with S1',
+    authBg:'rgba(241,101,33,.18)', authFg:C_ORANGE,
+    body:'A self-admitted offense has no court record. Run the court check first — UF 601-210.02 if the court will not furnish records — then coordinate with the battalion S1. An exception to policy may be required before waiver processing.',
+    cite:'4-30' };
+
+  if (verdict.status === 'NO_WAIVER_REQUIRED') return {
+    tag:'No waiver required', title:'No waiver', accent:C_GREEN, authority:'Recruiter level',
+    authBg:'rgba(45,170,39,.18)', authFg:C_GREEN,
+    body:'Nothing on the record rises to a waiver. Every offense must still be listed on the UF 601-210.08, SF 86, and RZ.',
+    cite: verdict.notes[0]?.cite || '4-6' };
+
+  // WAIVABLE / WAITING_PERIOD
+  const usard = verdict.authority === 'USARD';
+  const primary = verdict.waivers[0];
+  const waiting = verdict.status === 'WAITING_PERIOD';
+  const reasons = verdict.waivers.map(w => w.label).join('; ');
+  return {
+    tag: waiting ? 'Waiver required — waiting period' : 'Waiver required',
+    title: usard ? 'USARD waiver' : 'BN CO waiver',
+    accent: C_GOLD, authority: usard ? 'CG USARD' : 'Battalion commander',
+    authBg:C_GOLD, authFg:C_BLACK,
+    body: `${reasons}.${usard ? ' Requires CG USARD approval and a 24-month wait from the conviction date.' : ''}${waiting ? ' A mandatory waiting period has not been met — the packet can be built but not submitted yet.' : ''}`,
+    cite: primary ? primary.cite : '4-6' };
+};
+
+const displayScore = (verdict, approv) => {
+  if (!verdict || verdict.status === 'PENDING') return 100;
+  if (verdict.status === 'NOT_WAIVABLE') return verdict.permBar ? 0 : 35;
+  if (verdict.status === 'NO_WAIVER_REQUIRED') return 92;
+  if (verdict.status === 'ETP_REQUIRED') return 50;
+  return approv ? approv.score : 60;
+};
+
+const displayFactors = (verdict, approv) => {
+  if (approv && approv.factors.length) return approv.factors.map(f => ({
+    sign: f.mod > 0 ? '+' : '−',
+    color: f.mod > 0 ? C_GREEN : (f.mod <= -20 ? C_RED : C_ORANGE),
+    label: f.label }));
+  if (verdict && verdict.bars.length) return verdict.bars.map(b => ({
+    sign:'−', color: b.perm ? C_RED : C_ORANGE, label: b.title }));
+  return [];
+};
+
+const nextActions = (applicant, verdict, clStatus, expDates) => {
+  const out = [];
+  if (!verdict) return out;
+  verdict.bars.filter(b => !b.perm).forEach(b => out.push(`Resolve: ${b.title.toLowerCase()}`));
+  const noDisp = (applicant.offenses||[]).filter(o => {
+    const c = catOf(o.categoryId) || {};
+    return !o.disposition && c.group !== 'dat' && c.class !== 'ps';
+  });
+  if (noDisp.length) out.push(`Set the court disposition on ${noDisp.length} offense${noDisp.length>1?'s':''}`);
+  const req = getRequiredChecklist(verdict.authority || 'BN', offenseFlags(applicant.offenses||[]));
+  req.filter(i => i.validity).forEach(i => {
+    const d = daysUntilExpiry(expDates[i.id], i.validity);
+    if (d !== null && d < 0) out.push(`Re-run ${i.label} — expired`);
+  });
+  if (!applicant.lastName || !applicant.firstName) out.push('Add the applicant name to the case file');
+  if (!applicant.rsid) out.push('Add the RSID to the case file');
+  if (!applicant.afqt) out.push('Add the AFQT score to the case file');
+  req.filter(i => clStatus[i.id] !== 'complete').slice(0,3).forEach(i => out.push(`Obtain ${i.label}`));
+  return out.slice(0,6);
+};
+
+const dispLabel = (v) => ({ convicted:'Convicted', adverse:'Adverse disposition',
+  dismissed:'Dismissed', self_admit:'Self-admitted' }[v] || 'No disposition set');
+
+const shortOpt = (qid, v) => qid === 'dependence'
+  ? ({ no:'None', remission:'Remission', yes:'Current' }[v] || v)
+  : ({ no:'No', yes:'Yes', active:'Active', unsupervised:'Unsupervised' }[v] || v);
+
+const isBadOpt = v => v === 'yes' || v === 'active';
+
+/* ── Offense editor ──────────────────────────────────────────────────── */
+const OffenseEditor = ({ o, applicant, onChange, onDone }) => {
+  const cat = catOf(o.categoryId) || {};
+  const todayStr = today();
+  const isDat = cat.group === 'dat';
+  const isPs = cat.class === 'ps';
+  const isTraffic = cat.class === 'traffic';
+  const set = f => e => onChange({ [f]: e.target.type === 'checkbox' ? e.target.checked : e.target.value });
+
+  const warnings = [];
+  if (o.offenseDate && o.offenseDate > todayStr) warnings.push('Offense date is in the future.');
+  if (o.convictionDate && o.convictionDate > todayStr) warnings.push('Conviction date is in the future.');
+  if (applicant.dob && o.offenseDate && o.offenseDate < applicant.dob) warnings.push(`Offense date precedes the applicant's date of birth (${fmtDate(applicant.dob)}).`);
+  if (o.offenseDate && o.convictionDate && o.convictionDate < o.offenseDate) warnings.push(`Conviction date (${fmtDate(o.convictionDate)}) is before the offense date (${fmtDate(o.offenseDate)}) — almost always a data-entry error.`);
+  if (o.releaseDate && o.convictionDate && o.releaseDate < o.convictionDate) warnings.push('Release from confinement is dated before the conviction — verify.');
+
+  const confined = ['1to14','15plus'].includes(o.confinement);
+  const badOrder = !!(o.offenseDate && o.convictionDate && o.convictionDate < o.offenseDate);
+
+  return (
+    <div className="editor">
+      <div className="fgrid">
+        <div className="field">
+          <label className="flabel">{isDat ? 'Test date' : 'Offense date'}</label>
+          <input className="finput" type="date" max={todayStr} value={o.offenseDate||''} onChange={set('offenseDate')}/>
+        </div>
+        {!isDat && !isPs && (
+          <div className="field">
+            <label className="flabel">Conviction / final disposition date</label>
+            <input className={`finput${badOrder?' err':''}`} type="date" max={todayStr} value={o.convictionDate||''} onChange={set('convictionDate')}/>
+            {cat.class === 'major' && <div className="fnote">Starts the 24-month clock — 4-7a</div>}
+          </div>
+        )}
+      </div>
+
+      {!isDat && !isPs && (
+        <div className="field">
+          <label className="flabel">Court disposition</label>
+          <select className="finput" value={o.disposition||''} onChange={set('disposition')}>
+            <option value="">Select disposition…</option>
+            {DISPOSITION_OPTIONS.map(d => <option key={d.v} value={d.v}>{d.l}</option>)}
+          </select>
+          <div className="fnote">Diversion, deferred adjudication, fines, and probated sentences all count as adverse dispositions (4-30b). Expunged and sealed records still count.</div>
+        </div>
+      )}
+
+      {!isDat && !isPs && !isTraffic && isAdverse(o) && (
+        <div className="fgrid">
+          <div className="field">
+            <label className="flabel">Confinement served</label>
+            <select className="finput" value={o.confinement||'no'} onChange={set('confinement')}>
+              {CONFINEMENT_OPTIONS.map(c => <option key={c.v} value={c.v}>{c.l}</option>)}
+            </select>
+          </div>
+          {confined && (
+            <div className="field">
+              <label className="flabel">Release from confinement</label>
+              <input className="finput" type="date" max={todayStr} value={o.releaseDate||''} onChange={set('releaseDate')}/>
+              <div className="fnote">The 4-31 waiting period runs from this date</div>
+            </div>
+          )}
+          <div className="field">
+            <label className="flabel">Probation / parole</label>
+            <select className="finput" value={o.probation||'no'} onChange={set('probation')}>
+              {PROBATION_OPTIONS.map(p => <option key={p.v} value={p.v}>{p.l}</option>)}
+            </select>
+          </div>
+        </div>
+      )}
+
+      {warnings.map((w,i) => (
+        <div key={i} className="warnline"><span>⛔</span><span>{w}</span></div>
+      ))}
+
+      <div className="field">
+        <label className="flabel">Description — as it appears on UF 601-210.08</label>
+        <input className="finput" value={o.description||''} onChange={set('description')}
+          placeholder={isDat ? 'e.g. Positive DAT — THC, MEPS Nashville' : 'Brief factual description of the offense'}/>
+      </div>
+
+      {!isDat && (
+        <>
+          <div className="fgrid-3">
+            <div className="field">
+              <label className="flabel">City / jurisdiction</label>
+              <input className="finput" value={o.city||''} onChange={set('city')} placeholder="City"/>
+            </div>
+            <div className="field">
+              <label className="flabel">County</label>
+              <input className="finput" value={o.county||''} onChange={set('county')} placeholder="County"/>
+            </div>
+            <div className="field">
+              <label className="flabel">State</label>
+              <select className="finput" value={o.state||''} onChange={set('state')}>
+                <option value="">State…</option>
+                {US_STATES.map(s => <option key={s} value={s}>{s}</option>)}
+              </select>
+            </div>
+          </div>
+          <div className="field">
+            <label className="flabel">Disposition — exact wording for documents</label>
+            <input className="finput" value={o.dispositionText||''} onChange={set('dispositionText')}
+              placeholder="e.g. Convicted — Misdemeanor, $500 fine, 12-month probation (completed)"/>
+          </div>
+          <div style={{display:'flex',gap:20,flexWrap:'wrap'}}>
+            <label className="fcheck"><input type="checkbox" checked={o.courtDocs||false} onChange={set('courtDocs')}/> Court dockets obtained</label>
+            <label className="fcheck"><input type="checkbox" checked={o.incidentRpt||false} onChange={set('incidentRpt')}/> Police incident report obtained</label>
+          </div>
+        </>
+      )}
+
+      <div className="editor-foot">
+        <button className="btn-gold" onClick={onDone}>Done</button>
+      </div>
+    </div>
+  );
+};
+
+/* ── Phase 1: Screen ─────────────────────────────────────────────────── */
+const PhaseScreen = ({ applicant, setApplicant, verdict, openRef }) => {
+  const [query, setQuery] = useState('');
+  const [editId, setEditId] = useState(null);
+  const [comboOpen, setComboOpen] = useState(false);
+
+  const ca = applicant.caseAnswers || {};
+  const offenses = sortNewest(applicant.offenses || []);
+  const setCase = (qid, v) => setApplicant(prev => ({ ...prev, caseAnswers:{ ...(prev.caseAnswers||{}), [qid]:v } }));
+  const updateOffenses = offs => setApplicant(prev => ({ ...prev, offenses:offs }));
+  const patch = (id, p) => updateOffenses((applicant.offenses||[]).map(o => o.id === id ? {...o, ...p} : o));
+  const remove = id => { updateOffenses((applicant.offenses||[]).filter(o => o.id !== id)); if (editId === id) setEditId(null); };
+
+  const add = (catId) => {
+    const cat = catOf(catId);
+    const o = { id:`o${Date.now()}${Math.floor(Math.random()*1e3)}`, categoryId:catId,
+      offenseDate:'', convictionDate:'',
+      disposition:(cat.group === 'dat' || cat.class === 'ps') ? 'convicted' : '',
+      confinement:'no', releaseDate:'', probation:'no',
+      description:'', city:'', county:'', state:'', dispositionText:'', courtDocs:false, incidentRpt:false };
+    updateOffenses([...(applicant.offenses||[]), o]);
+    setQuery(''); setComboOpen(false); setEditId(o.id);
   };
 
-  const generatePDF = async () => {
-    setStatus('loading'); setMsg('Starting...');
+  const q = query.trim().toLowerCase();
+  const counts = {};
+  (applicant.offenses||[]).forEach(o => { counts[o.categoryId] = (counts[o.categoryId]||0) + 1; });
+  const results = OFFENSE_CATEGORIES.filter(c =>
+    !q || (c.label + ' ' + (c.sub||'')).toLowerCase().includes(q));
+
+  return (
+    <div className="col-760">
+      <div>
+        <div className="sec-hd">
+          <div className="sec-label">Eligibility gates</div>
+          <div className="sec-note">Five questions. Any red answer stops the packet.</div>
+        </div>
+        <div className="panel">
+          {CASE_QUESTIONS.map(gq => {
+            const para = (Q_PARA_MAP[gq.id]||[]).filter(p => PARA_TEXT[p])[0];
+            return (
+              <div key={gq.id} className="gate">
+                <div style={{flex:1,minWidth:0}}>
+                  <div className="gate-q">{gq.q}</div>
+                  <div className="gate-hint">
+                    {gq.hint}{para && <> <button className="cite" onClick={()=>openRef(para)}>{para}</button></>}
+                  </div>
+                </div>
+                <div className="seg">
+                  {gq.options.map(opt => {
+                    const on = ca[gq.id] === opt.v;
+                    const bad = isBadOpt(opt.v);
+                    return (
+                      <button key={opt.v} title={opt.l}
+                        className={`seg-btn${on?' on':''}${bad?' bad':''}`}
+                        onClick={()=>setCase(gq.id, opt.v)}>{shortOpt(gq.id, opt.v)}</button>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      <div>
+        <div className="sec-hd">
+          <div className="sec-label">Offense record</div>
+          <div className="sec-note">
+            {offenses.length} {offenses.length === 1 ? 'entry' : 'entries'} · list every offense, including traffic — the regulation counts them
+          </div>
+        </div>
+
+        {offenses.length > 0 && (
+          <div className="stack">
+            {offenses.map(o => {
+              const cat = catOf(o.categoryId) || {};
+              const c = clsOf(cat);
+              const waived = (verdict?.waivedIds||[]).includes(o.id);
+              const meta = [
+                dispLabel(o.disposition),
+                o.offenseDate ? fmtDate(o.offenseDate) : 'no date',
+                o.courtDocs ? 'court docs on file' : null,
+              ].filter(Boolean).join(' · ');
+              return (
+                <React.Fragment key={o.id}>
+                  <div className="srow" style={{borderLeftColor:c.accent}}>
+                    <button className="srow-main" onClick={()=>setEditId(editId===o.id?null:o.id)}>
+                      <div className="srow-label">{waived && <span style={{color:C_GOLD}}>★ </span>}{o.description || cat.label}</div>
+                      <div className="srow-meta">{meta}</div>
+                    </button>
+                    <div className="stag" style={{background:c.tagBg,color:c.accent}}>{c.tag}</div>
+                    <button className="srow-edit" onClick={()=>setEditId(editId===o.id?null:o.id)}>
+                      {editId===o.id?'Close':'Edit'}
+                    </button>
+                    <button className="srow-x" onClick={()=>remove(o.id)} title="Remove this offense">✕</button>
+                  </div>
+                  {editId === o.id && (
+                    <OffenseEditor o={o} applicant={applicant}
+                      onChange={p=>patch(o.id,p)} onDone={()=>setEditId(null)}/>
+                  )}
+                </React.Fragment>
+              );
+            })}
+          </div>
+        )}
+
+        <div className="combo">
+          <div className="combo-input-row">
+            <span style={{color:C_MUTED,fontSize:13}}>+</span>
+            <input className="combo-input" value={query}
+              onChange={e=>{setQuery(e.target.value);setComboOpen(true);}}
+              onFocus={()=>setComboOpen(true)}
+              placeholder="Add an offense — search charge, code, or keyword"/>
+            <span className="combo-count">{comboOpen ? `${results.length} available` : 'Search'}</span>
+          </div>
+          {comboOpen && (
+            <div className="combo-list">
+              {results.length === 0 && <div className="combo-empty">No offense matches “{query}”.</div>}
+              {results.map(cat => {
+                const c = clsOf(cat);
+                const n = counts[cat.id] || 0;
+                return (
+                  <button key={cat.id} className="combo-item" onClick={()=>add(cat.id)}>
+                    <div className="combo-tag" style={{color:c.accent}}>{c.tag}</div>
+                    <div style={{flex:1,minWidth:0}}>
+                      <div className="combo-label">{cat.label}
+                        {n > 0 && <span style={{color:C_MUTED,fontSize:12}}> · {n} on record</span>}</div>
+                      <div className="combo-sub">{cat.sub}</div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {verdict?.notes?.length > 0 && (
+          <div className="notes">
+            {verdict.notes.map((n,i) => (
+              <div key={i} className="note">
+                <span className="note-mark">·</span>
+                <span>{n.label} <button className="cite" onClick={()=>openRef(resolvePara(n.cite))}>{n.cite}</button></span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+/* ── Phase 2: Build packet ───────────────────────────────────────────── */
+const PhasePacket = ({ applicant, requiredItems, clStatus, setClStatus, expDates, setExpDates }) => {
+  const [open, setOpen] = useState({});
+  const toggle = id => setClStatus(p => ({...p, [id]: p[id]==='complete' ? 'pending' : 'complete'}));
+
+  const chipFor = (item) => {
+    const done = clStatus[item.id] === 'complete';
+    if (item.validity) {
+      const d = daysUntilExpiry(expDates[item.id], item.validity);
+      if (d === null) return { cls:'chip-none', text:'No date' };
+      if (d < 0) return { cls:'chip-red', text:`Expired ${Math.abs(d)}d` };
+      if (d <= 30) return { cls:'chip-warn', text:`${d}d left` };
+      return { cls:'chip-ok', text:`${d}d left` };
+    }
+    if (done) return { cls:'chip-ok', text:'On file' };
+    if (clStatus[item.id] === 'progress') return { cls:'chip-warn', text:'In progress' };
+    return { cls:'chip-none', text:'Missing' };
+  };
+
+  return (
+    <div className="col-820">
+      <div className="sec-hd" style={{marginBottom:14}}>
+        <div className="sec-label">Packet build</div>
+        <div className="sec-note">Only the documents this case actually requires. Expirations tracked in place.</div>
+      </div>
+      <div className="panel" style={{marginTop:0}}>
+        {requiredItems.map(item => {
+          const done = clStatus[item.id] === 'complete';
+          const chip = chipFor(item);
+          const isOpen = !!open[item.id];
+          return (
+            <React.Fragment key={item.id}>
+              <div className="crow">
+                <button className={`cbox${done?' on':''}`} onClick={()=>toggle(item.id)}
+                  title={done?'Mark not on file':'Mark on file'}>{done ? '✓' : ''}</button>
+                <div style={{minWidth:0}}>
+                  <button className={`clabel${done?' on':''}`}
+                    onClick={()=>setOpen(p=>({...p,[item.id]:!p[item.id]}))}>{item.label}</button>
+                  <div className="cref">{item.ref}{item.note ? ` · ${item.note}` : ''}</div>
+                </div>
+                <div className="cvalidity">
+                  {item.validity ? (
+                    <>
+                      Valid {item.validity} {item.unit}
+                      <input className="cdate" type="date" value={expDates[item.id]||''}
+                        onChange={e=>setExpDates(p=>({...p,[item.id]:e.target.value}))}/>
+                    </>
+                  ) : 'No expiration'}
+                </div>
+                <div className={`cchip ${chip.cls}`}>{chip.text}</div>
+              </div>
+              {isOpen && item.howto && (
+                <div className="chowto">
+                  {item.howto}
+                  {item.tip && <div className="chowto-tip">{item.tip}</div>}
+                </div>
+              )}
+            </React.Fragment>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+/* ── UF 601-210.08 generator card ────────────────────────────────────── */
+const UF608Card = ({ applicant, offenses, waivedIds }) => {
+  const [status, setStatus] = useState('idle');
+  const [msg, setMsg] = useState('');
+  const [tpl, setTpl] = useState(null);
+  const can = offenses.some(o => o.offenseDate || o.description);
+
+  const pickTemplate = (e) => {
+    const file = e.target.files?.[0]; if (!file) return;
+    const r = new FileReader();
+    r.onload = () => { setTpl(new Uint8Array(r.result)); setMsg(`Template loaded: ${file.name}`); setStatus('idle'); };
+    r.onerror = () => { setMsg('Could not read that PDF.'); setStatus('error'); };
+    r.readAsArrayBuffer(file);
+  };
+
+  const build = async () => {
+    setStatus('loading'); setMsg('Starting…');
     try {
-      const bytes = await generateFilledUF608(applicant, offenses, waivedIds, m=>setMsg(m), selectedTemplate);
-      const blob = new Blob([bytes], {type:'application/pdf'});
-      const url = URL.createObjectURL(blob);
+      const bytes = await generateFilledUF608(applicant, offenses, waivedIds, m=>setMsg(m), tpl);
+      const url = URL.createObjectURL(new Blob([bytes], {type:'application/pdf'}));
       const a = document.createElement('a');
-      a.href=url; a.download=`UF-601-210.08-${(applicant.lastName||'applicant').toUpperCase()}.pdf`;
+      a.href = url; a.download = `UF-601-210.08-${(applicant.lastName||'applicant').toUpperCase()}.pdf`;
       document.body.appendChild(a); a.click(); document.body.removeChild(a);
       URL.revokeObjectURL(url);
       setStatus('done'); setMsg('Downloaded — open with Adobe Acrobat Reader.');
-    } catch(e) { 
-      setStatus('error'); 
-      setMsg(e.message); 
-    }
+    } catch (e) { setStatus('error'); setMsg(e.message); }
   };
 
-  // Reliable fallback that always works
-  const copyTextVersion = () => {
+  const copyText = () => {
     const lines = [];
     lines.push('UF 601-210.08 — RECORD OF ALL LAW VIOLATIONS');
     lines.push(`Applicant: ${[applicant.firstName, applicant.mi, applicant.lastName].filter(Boolean).join(' ')}`);
     lines.push(`RSID: ${applicant.rsid || ''}    AFQT: ${applicant.afqt || ''}`);
     lines.push('All offenses listed newest to oldest. Waived offenses marked with ★');
     lines.push('');
-
-    const sorted = sortNewest(offenses);
-
-    sorted.forEach((o, i) => {
-      const cat = OFFENSE_CATEGORIES.find(c => c.id === o.categoryId);
-      const date = o.offenseDate ? new Date(o.offenseDate).toLocaleDateString() : 'Unknown date';
-      const asterisk = waivedIds.includes(o.id) ? '★ ' : '';
-      lines.push(`${i+1}. ${asterisk}${date} — ${cat?.label || o.categoryId}`);
+    sortNewest(offenses).forEach((o, i) => {
+      const cat = catOf(o.categoryId);
+      const date = o.offenseDate ? localDate(o.offenseDate).toLocaleDateString() : 'Unknown date';
+      lines.push(`${i+1}. ${waivedIds.includes(o.id) ? '★ ' : ''}${date} — ${cat?.label || o.categoryId}`);
       if (o.description) lines.push(`   Description: ${o.description}`);
       if (o.dispositionText) lines.push(`   Disposition: ${o.dispositionText}`);
       if (o.city || o.state) lines.push(`   Location: ${[o.city, o.state].filter(Boolean).join(', ')}`);
       lines.push('');
     });
-
-    navigator.clipboard.writeText(lines.join('\n')).then(() => {
-      setMsg('Text version copied to clipboard. Paste directly into the UF 601-210.08 form.');
-      setStatus('done');
-    }).catch(() => {
-      // Fallback if clipboard fails
-      const ta = document.createElement('textarea');
-      ta.value = lines.join('\n');
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand('copy');
-      document.body.removeChild(ta);
-      setMsg('Text version copied (fallback). Paste into the form.');
-      setStatus('done');
-    });
+    const text = lines.join('\n');
+    navigator.clipboard.writeText(text).then(
+      () => { setMsg('Text version copied — paste into the form.'); setStatus('done'); },
+      () => {
+        const ta = document.createElement('textarea');
+        ta.value = text; document.body.appendChild(ta); ta.select();
+        document.execCommand('copy'); document.body.removeChild(ta);
+        setMsg('Text version copied — paste into the form.'); setStatus('done');
+      });
   };
 
+  const msgColor = status === 'error' ? C_REDFG : status === 'done' ? C_GREEN : C_MUTED;
+
   return (
-    <div className="card" style={{marginTop:14,borderColor:status==='error'?'rgba(207,0,0,.3)':status==='done'?'rgba(45,122,79,.3)':'rgba(255,204,1,.2)'}}>
-      <div className="card-hdr">
-        <div className="section-bar"/>
-        <div style={{flex:1}}>
-          <div className="card-title">UF 601-210.08 — Pre-Fill & Download</div>
-          <div className="card-sub">XFA injection — opens pre-populated in Adobe Acrobat Reader (all offenses, newest to oldest)</div>
-        </div>
+    <div className="outcard">
+      <div className="outkind" style={{color:C_MUTED}}>Form</div>
+      <div className="outname">UF 601-210.08</div>
+      <div className="outdesc">
+        Record of offenses — every entry on the record, newest to oldest, with waived offenses asterisked.
+        Fills the XFA form for Adobe Acrobat Reader.
       </div>
-      <div style={{fontSize:12,color:'var(--fg-m)',marginBottom:12,lineHeight:1.6}}>
-        Injects applicant data and all logged offenses directly into form fields. Waived offenses are automatically asterisked (★).
-      </div>
-
-      {!canGenerate && <div style={{fontSize:11,color:'var(--fg-m)',marginBottom:12,padding:'6px 10px',background:'rgba(255,204,1,.04)',border:'1px solid var(--bd)'}}>Add offense details (date + description) in the Screener before generating.</div>}
-
-      {msg && (
-        <div style={{
-          fontSize:11, 
-          marginBottom:12, 
-          padding:'8px 10px',
-          whiteSpace: 'pre-wrap',
-          background:status==='error'?'rgba(207,0,0,.1)':status==='done'?'rgba(45,122,79,.1)':'rgba(255,204,1,.06)',
-          border:`1px solid ${status==='error'?'rgba(207,0,0,.3)':status==='done'?'rgba(45,122,79,.3)':'rgba(255,204,1,.15)'}`,
-          color:status==='error'?'#ff7070':status==='done'?'#5bc989':'var(--gold)'
-        }}>
-          {msg}
-        </div>
-      )}
-
-      <div className="row" style={{gap:8, flexWrap:'wrap', alignItems:'center'}}>
-        <button 
-          className="btn btn-gold" 
-          disabled={!canGenerate||status==='loading'} 
-          onClick={generatePDF}
-        >
-          {status==='loading' ? 'Generating PDF...' : 'Generate & Download Filled PDF'}
+      {msg && <div style={{fontSize:12,color:msgColor,lineHeight:1.5,whiteSpace:'pre-wrap'}}>{msg}</div>}
+      <div className="outbtns">
+        <button className="btn-gold" disabled={!can || status==='loading'} onClick={build}>
+          {status === 'loading' ? 'Building…' : 'Build'}
         </button>
-
-        <label className="btn btn-outline" style={{cursor:'pointer', display:'inline-flex', alignItems:'center'}}>
-          Select Blank UF 601-210.08 PDF
-          <input 
-            type="file" 
-            accept=".pdf" 
-            style={{display:'none'}} 
-            onChange={handleTemplateSelect}
-          />
+        <button className="btn-line" disabled={!can} onClick={copyText}>Copy text</button>
+        <label className="btn-line" style={{cursor:'pointer'}}>
+          Template
+          <input type="file" accept=".pdf" style={{display:'none'}} onChange={pickTemplate}/>
         </label>
-
-        <button 
-          className="btn btn-outline" 
-          disabled={!canGenerate} 
-          onClick={copyTextVersion}
-        >
-          Copy Text Version (Always Works)
-        </button>
-
-        {status!=='idle'&&status!=='loading' && (
-          <button className="btn btn-outline btn-sm" onClick={()=>{setStatus('idle');setMsg(''); setSelectedTemplate(null);}}>
-            Reset
-          </button>
-        )}
-      </div>
-
-      {selectedTemplate && (
-        <div style={{marginTop:6, fontSize:11, color:'#5bc989'}}>
-          ✓ Custom template loaded and ready. The generator will use this file.
-        </div>
-      )}
-
-      <div style={{marginTop:10, fontSize:11, color:'var(--fg-d)', lineHeight:1.4}}>
-        <strong>For reliable PDF fill:</strong> Use the "Select Blank UF 601-210.08 PDF" button to pick the file (works even if it's not in this exact folder).<br/>
-        The "Copy Text Version" button above always works and gives you clean, properly formatted data (newest to oldest, with ★ for waived offenses).
       </div>
     </div>
   );
 };
 
-/* ── Right Regulation Panel ──────────────────────────── */
-const RefPanel = ({ collapsed, tab, authority, highlighted }) => {
-  const [refExpanded, setRefExpanded] = useState({});
-  const relevantParas = {
-    1: ['4-6','4-7','4-7c','4-22g','4-22h','4-22i','4-22j','4-22k','4-30','4-31','4-35','4-18','4-2f'],
-    2: ['4-28','4-28e4','4-28e5','4-27','4-12c'],
-    3: ['4-28','4-28e4','4-28e5','4-27','4-31'],
-  };
-  const allParas = [...(relevantParas[tab] || Object.keys(PARA_TEXT))];
-  // Highlighted paras bubble to top, rest follow
-  const hi = (highlighted || []).filter(p => PARA_TEXT[p]);
-  const rest = allParas.filter(p => !hi.includes(p) && PARA_TEXT[p]);
-  const ordered = [...hi, ...rest];
+/* ── Phase 3: Generate ───────────────────────────────────────────────── */
+const PhaseGenerate = ({ applicant, verdict, clStatus, requiredItems }) => {
+  const [preview, setPreview] = useState(null);
+  const docs = makeDocs(applicant, verdict, clStatus);
+  const offenses = applicant.offenses || [];
+  const waivedIds = verdict?.waivedIds || [];
 
-  const tips = {
-    1: ['The verdict is computed from the WHOLE record: 2–5 misconduct = BN waiver; a single DUI/prostitution/non-Lautenberg DV = BN waiver; any felony = CG USARD + 24-month wait.', 'Since 20 Mar 2026, a single marijuana possession conviction needs NO waiver.'],
-    2: ['AFQT on UF 601-210.08 must match current MIRS score.', 'MOS compatibility check is advisory — verify with the career manager.'],
-    3: ['Click any checklist item to expand step-by-step guidance.', 'DD 369s must cover every location where an offense occurred, regardless of date.', 'Aliases require separate DD 369 forms.'],
-  };
-  if (collapsed) return null;
+  const missing = [];
+  if (!applicant.lastName || !applicant.firstName) missing.push('applicant name');
+  if (!applicant.rsid) missing.push('RSID');
+  if (!applicant.afqt) missing.push('AFQT score');
+  if (!applicant.recruiterUnit) missing.push('unit designation');
+  if (!offenses.some(o => o.description)) missing.push('offense descriptions');
+
+  const cards = [
+    { id:'routing',   kind:'Memorandum', accent:C_GOLD,  name:'Routing / Transmittal Memo',
+      desc:'Routes the finished packet to the battalion S1 with the offense list, approving authority, and document index.',
+      gen:docs.genRouting, fmt:'text' },
+    { id:'statement', kind:'Memorandum', accent:C_GOLD,  name:"Applicant's Statement",
+      desc:'Pre-filled structure with offense-specific prompts. The applicant personalizes it in their own words, then signs.',
+      gen:docs.genStatement, fmt:'text' },
+    { id:'mfr',       kind:'Memorandum', accent:C_GOLD,  name:'Commander Interview MFR',
+      desc:'AR 25-50 memorandum with letterhead, fill-in lines, and the approve / disapprove recommendation block.',
+      gen:docs.genMFR, fmt:'html' },
+    { id:'cover',     kind:'Packet',     accent:C_GREEN, name:'Submission Cover Sheet',
+      desc:'Index of everything attached, in the order the battalion S1 expects it, with the current document status.',
+      gen:docs.genCoverSheet, fmt:'text' },
+  ];
+
   return (
-    <div className="ref-panel">
-      <div className="ref-panel-hdr">
-        <div className="ref-panel-title">Reg Reference</div>
-        {hi.length > 0 && <span style={{fontSize:9,color:'var(--gold)',fontWeight:700,textTransform:'uppercase',letterSpacing:'.06em'}}>{hi.length} active</span>}
-      </div>
-      <div className="ref-panel-body">
-        {(tips[tab]||[]).map((tip,i) => (
-          <div key={i} className="ref-tip" style={{marginBottom:8}}>{tip}</div>
-        ))}
-        {ordered.map(para => {
-          const isHighlighted = hi.includes(para);
-          const isOpen = isHighlighted || !!refExpanded[para];
-          return (
-            <div key={para} className={`ref-entry${isHighlighted?' highlighted':''}`} style={isHighlighted?{marginBottom:10}:{}}>
-              {isHighlighted && (
-                <div style={{fontSize:9,fontWeight:700,color:'var(--gold)',textTransform:'uppercase',letterSpacing:'.07em',marginBottom:3}}>
-                  ▶ RELEVANT TO CURRENT SELECTION
-                </div>
-              )}
-              <div className="ref-para-id"
-                onClick={()=>{ if(!isHighlighted) setRefExpanded(s=>({...s,[para]:!s[para]})); }}
-                style={{display:'flex',alignItems:'center',justifyContent:'space-between',cursor:isHighlighted?'default':'pointer'}}>
-                <span>Para {para}</span>
-                {!isHighlighted && <span style={{color:'var(--fg-m)',fontSize:9}}>{isOpen?'▲':'▼'}</span>}
-              </div>
-              <div className="ref-para-text" style={isOpen?{}:{color:'var(--fg-m)',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>
-                {PARA_TEXT[para]}
-              </div>
-            </div>
-          );
-        })}
-        {authority === 'USARD' && (
-          <div className="ref-tip" style={{marginTop:8,borderLeft:'2px solid var(--gold)',color:'var(--gold)'}}>
-            CG USARD level — DD Form 370 references (4-28e(4)) and DD Form 2808 (4-28e(5)) required.
+    <div className="col-900">
+      <div>
+        <div className="sec-hd" style={{marginBottom:14}}>
+          <div className="sec-label">Generate</div>
+          <div className="sec-note">Pre-filled from the case file. Review before signature.</div>
+        </div>
+        {missing.length > 0 && (
+          <div className="warnline" style={{marginBottom:14}}>
+            <span>⚠</span>
+            <span>Documents will print with placeholders — still missing: {missing.join(', ')}. Add them in the case file.</span>
           </div>
         )}
+        <div className="outgrid">
+          {cards.map(c => (
+            <div key={c.id} className="outcard">
+              <div className="outkind" style={{color:c.accent}}>{c.kind}</div>
+              <div className="outname">{c.name}</div>
+              <div className="outdesc">{c.desc}</div>
+              <div className="outbtns">
+                <button className="btn-gold" onClick={()=>printDoc(c.gen(), c.fmt)}>Build</button>
+                <button className="btn-line" onClick={()=>setPreview({...c, content:c.gen()})}>Preview</button>
+              </div>
+            </div>
+          ))}
+          <UF608Card applicant={applicant} offenses={offenses} waivedIds={waivedIds}/>
+          <div style={{background:'var(--s3)'}}/>
+        </div>
+      </div>
+
+      {preview && (
+        <div>
+          <div className="memo-label">{preview.name} — preview</div>
+          {preview.fmt === 'html'
+            ? <iframe className="memo-frame" srcDoc={preview.content} title="Preview"/>
+            : <div className="memo">{preview.content}</div>}
+          <div className="outbtns" style={{marginTop:10}}>
+            <button className="btn-gold" onClick={()=>printDoc(preview.content, preview.fmt)}>Print</button>
+            <button className="btn-line" onClick={()=>setPreview(null)}>Close preview</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+/* ── Right rail ──────────────────────────────────────────────────────── */
+const Rail = ({ applicant, verdict, banner, approv, clStatus, expDates }) => {
+  const score = displayScore(verdict, approv);
+  const factors = displayFactors(verdict, approv);
+  const actions = nextActions(applicant, verdict, clStatus, expDates);
+  const waits = verdict?.waits || [];
+  const suitability = verdict?.suitability || [];
+
+  return (
+    <div className="rail">
+      <div className="rail-sec">
+        <div className="rail-hd">
+          <div className="rail-dot" style={{background:banner.accent}}/>
+          <div className="rail-label">Case status</div>
+        </div>
+      </div>
+
+      {waits.length > 0 && (
+        <div className="rail-sec rail-clock">
+          <div className="rail-label">Waiting period</div>
+          {waits.map(w => (
+            <div key={w.id} style={{marginTop:8}}>
+              <div className="rail-clock-body">{w.label}</div>
+              <div className="rail-clock-meta">
+                {w.needDate
+                  ? 'Enter the required date on this offense to calculate the earliest submission.'
+                  : <>Earliest submission {w.earliest.toLocaleDateString('en-US',{day:'numeric',month:'short',year:'numeric'})} · <strong style={{color:C_ORANGE}}>{w.daysLeft} days remaining</strong>. Clock from {fmtDate(w.from)} — {w.cite}.{w.note ? ` ${w.note}` : ''}</>}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {suitability.length > 0 && (
+        <div className="rail-sec">
+          <div className="rail-label">Suitability review</div>
+          {suitability.map((s,i) => (
+            <div key={i} className="suit">
+              <span style={{color:C_MUTED,flex:'none'}}>·</span>
+              <span>{s.label} — <strong style={{color:'var(--t1)'}}>{s.level === 'USARD' ? 'CG USARD' : 'BN CO'}</strong> <span className="note-cite">({s.cite})</span></span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className="rail-sec">
+        <div className="score-hd">
+          <div className="rail-label">Approvability</div>
+          <div className="score-num" style={{color:banner.accent}}>{score}</div>
+        </div>
+        <div className="score-track"><div className="score-fill" style={{width:`${score}%`,background:banner.accent}}/></div>
+        {factors.length > 0 && (
+          <div className="factors">
+            {factors.map((f,i) => (
+              <div key={i} className="factor">
+                <span className="factor-sign" style={{color:f.color}}>{f.sign}</span>
+                <span>{f.label}</span>
+              </div>
+            ))}
+          </div>
+        )}
+        <div className="rail-disclaimer">
+          Unofficial estimate — not from regulation. The outcome depends on the commander interview, the applicant statement, and command climate. Do not share this with the applicant.
+        </div>
+      </div>
+
+      {actions.length > 0 && (
+        <div className="rail-sec">
+          <div className="rail-label">Next actions</div>
+          <div className="actions">
+            {actions.map((a,i) => (
+              <div key={i} className="action"><span className="action-arrow">→</span><span>{a}</span></div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+/* ── Case file drawer ────────────────────────────────────────────────── */
+const CaseFileDrawer = ({ roster, activeId, applicant, setApplicant, onSwitch, onAdd, onRemove, onClear, onClose }) => {
+  const set = (k,v) => setApplicant(prev => ({...prev, [k]:v}));
+  const [mos, setMos] = useState(applicant.mosCode||'');
+  const [mosResult, setMosResult] = useState(null);
+
+  const checkMos = () => {
+    const code = mos.trim().toUpperCase();
+    set('mosCode', code);
+    const match = MOS_RESTRICTIONS.find(g => g.mos.includes(code));
+    setMosResult(match ? { group:match, code } : { notFound:true, code });
+  };
+
+  return (
+    <div className="scrim" onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
+      <div className="drawer">
+        <div className="drawer-hd">
+          <div className="drawer-title">Case file</div>
+          <button className="drawer-close" onClick={onClose}>Close</button>
+        </div>
+        <div className="drawer-form">
+          <div>
+            <div className="drawer-sec-label">Applicants ({roster.length})</div>
+            {roster.map(a => {
+              const v = computeCaseVerdict(a);
+              const b = bannerFor(v);
+              const name = [a.firstName, a.lastName].filter(Boolean).join(' ') || 'Unnamed applicant';
+              return (
+                <div key={a.id} className={`roster-row${a.id===activeId?' on':''}`}>
+                  <button onClick={()=>onSwitch(a.id)}
+                    style={{flex:1,background:'none',border:'none',textAlign:'left',cursor:'pointer',fontFamily:'inherit',color:'inherit',padding:0,minWidth:0}}>
+                    <div className="roster-name">{name}</div>
+                    <div className="roster-meta">{a.rsid || 'No RSID'} · {b.title}</div>
+                  </button>
+                  <button className="srow-x" title="Remove applicant" onClick={()=>onRemove(a.id)}>✕</button>
+                </div>
+              );
+            })}
+            <div className="outbtns" style={{marginTop:12}}>
+              <button className="btn-gold" onClick={onAdd}>New applicant</button>
+              <button className="btn-line" onClick={onClear}>Clear all data</button>
+            </div>
+          </div>
+
+          <div>
+            <div className="drawer-sec-label">Applicant</div>
+            <div className="fgrid-3">
+              <div className="field"><label className="flabel">Last name</label>
+                <input className="finput" value={applicant.lastName||''} onChange={e=>set('lastName',e.target.value)}/></div>
+              <div className="field"><label className="flabel">First name</label>
+                <input className="finput" value={applicant.firstName||''} onChange={e=>set('firstName',e.target.value)}/></div>
+              <div className="field"><label className="flabel">MI</label>
+                <input className="finput" value={applicant.mi||''} onChange={e=>set('mi',e.target.value)}/></div>
+            </div>
+            <div className="fgrid-3" style={{marginTop:14}}>
+              <div className="field"><label className="flabel">SSN — last 4</label>
+                <input className="finput" value={applicant.ssn||''} maxLength={4} placeholder="1234"
+                  onChange={e=>set('ssn', e.target.value.replace(/\D/g,'').slice(-4))}/>
+                <div className="fnote">Full SSN is never stored</div></div>
+              <div className="field"><label className="flabel">Date of birth</label>
+                <input className="finput" type="date" value={applicant.dob||''} onChange={e=>set('dob',e.target.value)}/></div>
+              <div className="field"><label className="flabel">RSID</label>
+                <input className="finput" value={applicant.rsid||''} onChange={e=>set('rsid',e.target.value)}/></div>
+            </div>
+            <div className="fgrid" style={{marginTop:14}}>
+              <div className="field"><label className="flabel">Education level</label>
+                <select className="finput" value={applicant.educationLevel||''} onChange={e=>set('educationLevel',e.target.value)}>
+                  <option value="">Select…</option>
+                  {ED_LEVELS.map(l => <option key={l} value={l}>{l}</option>)}
+                </select></div>
+              <div className="field"><label className="flabel">Ed code</label>
+                <input className="finput" value={applicant.educationCode||''} onChange={e=>set('educationCode',e.target.value)} placeholder="e.g. 2A"/></div>
+              <div className="field"><label className="flabel">AFQT</label>
+                <input className="finput" value={applicant.afqt||''} onChange={e=>set('afqt',e.target.value)} placeholder="0–99"/></div>
+              <div className="field"><label className="flabel">PS / NPS</label>
+                <select className="finput" value={applicant.psNps||''} onChange={e=>set('psNps',e.target.value)}>
+                  <option value="">Select…</option>
+                  <option value="NPS">NPS — non-prior service</option>
+                  <option value="PS">PS — prior service</option>
+                </select>
+                <div className="fnote">Drives the 4-7c(5) and 4-18d prior-service rules</div></div>
+              <div className="field"><label className="flabel">Marital status</label>
+                <select className="finput" value={applicant.maritalStatus||''} onChange={e=>set('maritalStatus',e.target.value)}>
+                  <option value="">Select…</option>
+                  {['Single','Married','Divorced','Widowed','Separated'].map(s => <option key={s} value={s}>{s}</option>)}
+                </select></div>
+              <div className="field"><label className="flabel">Dependents</label>
+                <input className="finput" type="number" min="0" max="20" value={applicant.numDependents||''} onChange={e=>set('numDependents',e.target.value)} placeholder="0"/></div>
+            </div>
+            <div className="field" style={{marginTop:14}}><label className="flabel">Dependent ages</label>
+              <input className="finput" value={applicant.dependentAges||''} onChange={e=>set('dependentAges',e.target.value)} placeholder="e.g. 3, 7, 12"/></div>
+          </div>
+
+          <div>
+            <div className="drawer-sec-label">MOS compatibility — advisory</div>
+            <div style={{display:'flex',gap:8,alignItems:'flex-start'}}>
+              <input className="finput" style={{maxWidth:150}} value={mos}
+                onChange={e=>setMos(e.target.value.toUpperCase())}
+                onKeyDown={e=>e.key==='Enter'&&checkMos()} placeholder="e.g. 11B"/>
+              <button className="btn-line" onClick={checkMos}>Check</button>
+            </div>
+            {mosResult && (
+              <div style={{marginTop:12,padding:'12px 14px',background:'var(--s3)',border:'1px solid var(--hair)'}}>
+                {mosResult.notFound ? (
+                  <div style={{fontSize:12,color:'var(--t2)',lineHeight:1.5}}>
+                    No specific restrictions listed for {mosResult.code}. Standard waiver rules apply — verify with the MOS career manager.
+                  </div>
+                ) : (
+                  <>
+                    <div style={{fontSize:11,fontWeight:700,letterSpacing:'.08em',textTransform:'uppercase',
+                      color: mosResult.group.severity==='high'?C_REDFG:mosResult.group.severity==='medium'?C_ORANGE:C_GREEN}}>
+                      {mosResult.group.severity} restriction — {mosResult.group.label}
+                    </div>
+                    <div style={{fontSize:12,color:'var(--t2)',lineHeight:1.5,marginTop:6}}>{mosResult.group.notes}</div>
+                  </>
+                )}
+                <div className="fnote" style={{marginTop:8}}>Advisory only — not sourced from AR 601-210. Verify with the career manager and DA PAM 611-21.</div>
+              </div>
+            )}
+          </div>
+
+          <div>
+            <div className="drawer-sec-label">Recruiter / unit</div>
+            <div className="field"><label className="flabel">Unit designation</label>
+              <input className="finput" value={applicant.recruiterUnit||''} onChange={e=>set('recruiterUnit',e.target.value)}
+                placeholder="e.g. U.S. ARMY GRAND ISLAND DETACHMENT"/></div>
+            <div className="field" style={{marginTop:14}}><label className="flabel">Unit address</label>
+              <input className="finput" value={applicant.recruiterAddress||''} onChange={e=>set('recruiterAddress',e.target.value)}
+                placeholder="Street, city, state, ZIP"/></div>
+            <div className="fgrid-3" style={{marginTop:14}}>
+              <div className="field"><label className="flabel">Office symbol</label>
+                <input className="finput" value={applicant.recruiterOfficeSym||''} onChange={e=>set('recruiterOfficeSym',e.target.value)} placeholder="RCSW-DEN-GI"/></div>
+              <div className="field"><label className="flabel">Recruiter name</label>
+                <input className="finput" value={applicant.recruiterName||''} onChange={e=>set('recruiterName',e.target.value)} placeholder="Last, First MI"/></div>
+              <div className="field"><label className="flabel">Rank / branch</label>
+                <input className="finput" value={applicant.recruiterRank||''} onChange={e=>set('recruiterRank',e.target.value)} placeholder="SSG, USA"/></div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
 };
 
-/* ── Resume Modal ───────────────────────────────────── */
-const ResumeModal = ({ draft, onResume, onDiscard }) => (
-  <div className="resume-modal">
-    <div className="resume-box">
-      <div className="resume-title">Resume Previous Session?</div>
-      <div className="resume-applicant">{draft.roster?.[0]?.firstName||''} {draft.roster?.[0]?.lastName||'Unnamed'}</div>
-      <div className="resume-ts">{draft.roster?.length||0} applicant(s) · Last saved: {draft.savedAt ? new Date(draft.savedAt).toLocaleString() : 'Unknown'}</div>
-      <div style={{display:'flex',gap:8}}>
-        <button className="btn btn-gold" style={{flex:1}} onClick={onResume}>Resume</button>
-        <button className="btn btn-outline" onClick={onDiscard}>Start Fresh</button>
+/* ── Reference drawer ────────────────────────────────────────────────── */
+const RefDrawer = ({ para, setPara, onClose }) => {
+  const keys = Object.keys(PARA_TEXT);
+  return (
+    <div className="scrim" onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
+      <div className="drawer">
+        <div className="drawer-hd">
+          <div className="drawer-title">AR 601-210 — {para}</div>
+          <button className="drawer-close" onClick={onClose}>Close</button>
+        </div>
+        <div style={{padding:'14px 22px',borderBottom:'1px solid var(--hair)',flex:'none'}}>
+          <div className="ref-index">
+            {keys.map(k => (
+              <button key={k} className={`ref-pill${k===para?' on':''}`} onClick={()=>setPara(k)}>{k}</button>
+            ))}
+          </div>
+        </div>
+        <div className="drawer-body">{PARA_TEXT[para] || PARA_TEXT['4-6']}</div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
-/* ── Sample Scenarios Dropdown ──────────────────────── */
+/* ── Samples menu ────────────────────────────────────────────────────── */
 const SampleMenu = ({ onLoad, onClose }) => (
-  <div style={{position:'absolute',top:'100%',right:0,background:'var(--bg-s)',border:'1px solid var(--bd-m)',zIndex:50,minWidth:240,marginTop:4}} className="fade-in">
+  <div style={{position:'absolute',top:'100%',right:0,marginTop:4,background:'var(--s4)',
+    border:'1px solid var(--hair)',zIndex:70,minWidth:280}}>
     {SAMPLE_SCENARIOS.map(s => (
       <button key={s.id} onClick={()=>{onLoad(s);onClose();}}
-        style={{display:'block',width:'100%',background:'none',border:'none',borderBottom:'1px solid var(--bd)',padding:'10px 14px',textAlign:'left',cursor:'pointer',color:'var(--fg2)',fontFamily:'inherit',fontSize:12}}
-        onMouseEnter={e=>e.currentTarget.style.background='var(--bg-h)'}
+        style={{display:'block',width:'100%',background:'none',border:'none',
+          borderBottom:'1px solid var(--hair-faint)',padding:'11px 14px',textAlign:'left',
+          cursor:'pointer',color:'var(--t1)',fontFamily:'inherit'}}
+        onMouseEnter={e=>e.currentTarget.style.background='rgba(255,255,255,.04)'}
         onMouseLeave={e=>e.currentTarget.style.background='none'}>
-        <div style={{fontWeight:700,fontSize:11}}>{s.title}</div>
-        <div style={{fontSize:10,color:'var(--fg-m)',marginTop:2}}>{s.tag}</div>
+        <div style={{fontSize:13,fontWeight:700}}>{s.title}</div>
+        <div style={{fontSize:11,color:'var(--t3)',marginTop:2}}>{s.tag}</div>
       </button>
     ))}
   </div>
 );
 
-/* ── App ────────────────────────────────────────────── */
+/* ── App ─────────────────────────────────────────────────────────────── */
 const App = () => {
-  const [theme, setTheme] = useState('dark');
-  const [tab, setTab] = useState(1);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [refOpen, setRefOpen] = useState(true);
-  const [sampleMenuOpen, setSampleMenuOpen] = useState(false);
-  const [pendingRestore, setPendingRestore] = useState(null);
-  const [highlightedParas, setHighlightedParas] = useState([]);
-  // Roster state — supports multiple applicants; add/remove never wipes others
+  const [phase, setPhase] = useState(1);
   const [roster, setRoster] = useState([blankApplicant()]);
   const [activeId, setActiveId] = useState(null);
+  const [restore, setRestore] = useState(null);
+  const [refOpen, setRefOpen] = useState(false);
+  const [refPara, setRefPara] = useState('4-6');
+  const [caseOpen, setCaseOpen] = useState(false);
+  const [samplesOpen, setSamplesOpen] = useState(false);
 
-  // Init
   useEffect(() => {
     const saved = loadRoster();
-    if (saved?.roster?.length) {
-      setPendingRestore(saved);
-    } else {
-      const first = blankApplicant();
-      setRoster([first]); setActiveId(first.id);
-    }
+    if (saved?.roster?.length) setRestore(saved);
+    else { const a = blankApplicant(); setRoster([a]); setActiveId(a.id); }
   }, []);
 
-  // Theme
-  useEffect(() => { document.documentElement.setAttribute('data-theme', theme); }, [theme]);
+  useEffect(() => { if (activeId) saveRoster({ roster, activeId, savedAt:new Date().toISOString() }); }, [roster, activeId]);
 
-  // Autosave
-  useEffect(() => {
-    if (!activeId) return;
-    saveRoster({ roster, activeId, savedAt:new Date().toISOString() });
-  }, [roster, activeId]);
+  const applicant = roster.find(a => a.id === activeId) || roster[0];
+  const setApplicant = (updater) => setRoster(prev => prev.map(a =>
+    a.id === activeId ? (typeof updater === 'function' ? updater(a) : {...a, ...updater}) : a));
 
-  const activeApplicant = roster.find(a => a.id === activeId) || roster[0];
+  const verdict = applicant ? computeCaseVerdict(applicant) : null;
+  const banner = bannerFor(verdict);
+  const approv = applicant ? computeApprovabilityScore(applicant, verdict) : null;
 
-  const setActiveApplicant = (updater) => {
-    setRoster(prev => prev.map(a => a.id === activeId ? (typeof updater === 'function' ? updater(a) : {...a,...updater}) : a));
-  };
+  const clStatus = applicant?.checklistStatus || {};
+  const expDates = applicant?.expDates || {};
+  const setClStatus = (u) => setApplicant(prev => ({...prev, checklistStatus: typeof u === 'function' ? u(prev.checklistStatus||{}) : u}));
+  const setExpDates = (u) => setApplicant(prev => ({...prev, expDates: typeof u === 'function' ? u(prev.expDates||{}) : u}));
 
-  const addApplicant = () => {
-    const a = blankApplicant();
-    setRoster(prev => [...prev, a]);
-    setActiveId(a.id);
-    setTab(1);
-  };
+  const requiredItems = getRequiredChecklist(verdict?.authority || 'BN', offenseFlags(applicant?.offenses||[]));
+  const doneCount = requiredItems.filter(i => clStatus[i.id] === 'complete').length;
+
+  const openRef = (para) => { setRefPara(resolvePara(para)); setRefOpen(true); };
+
+  const addApplicant = () => { const a = blankApplicant(); setRoster(p => [...p, a]); setActiveId(a.id); setPhase(1); };
 
   const removeApplicant = (id) => {
-    const appl = roster.find(a => a.id === id);
-    const name = [appl?.firstName, appl?.lastName].filter(Boolean).join(' ') || 'this applicant';
-    if (!window.confirm(`Remove ${name}? This permanently deletes their screening data and checklist progress.`)) return;
+    const a = roster.find(x => x.id === id);
+    const name = [a?.firstName, a?.lastName].filter(Boolean).join(' ') || 'this applicant';
+    if (!window.confirm(`Remove ${name}? This permanently deletes their screening and checklist progress.`)) return;
     setRoster(prev => {
-      const next = prev.filter(a => a.id !== id);
-      if (!next.length) {
-        const fresh = blankApplicant();
-        setActiveId(fresh.id);
-        return [fresh];
-      }
+      const next = prev.filter(x => x.id !== id);
+      if (!next.length) { const fresh = blankApplicant(); setActiveId(fresh.id); return [fresh]; }
       if (id === activeId) setActiveId(next[0].id);
       return next;
     });
   };
 
-  const clearAllData = () => {
-    if (!window.confirm('Clear ALL saved applicants and start fresh? This cannot be undone.')) return;
+  const clearAll = () => {
+    if (!window.confirm('Clear ALL saved applicants from this computer? This cannot be undone.')) return;
     try { localStorage.removeItem(STORAGE_KEY); } catch {}
-    const a = blankApplicant();
-    setRoster([a]); setActiveId(a.id); setTab(1);
+    const a = blankApplicant(); setRoster([a]); setActiveId(a.id); setPhase(1); setCaseOpen(false);
   };
 
-  const loadSample = (scenario) => {
+  const loadSample = (s) => {
     const a = blankApplicant();
-    Object.assign(a, JSON.parse(JSON.stringify(scenario.applicant)));
+    Object.assign(a, JSON.parse(JSON.stringify(s.applicant)));
     a.id = `a${Date.now()}${Math.floor(Math.random()*1e4)}`;
-    a.caseAnswers = { ...scenario.caseAnswers };
-    a.offenses = scenario.offenses.map(o => ({ ...o, id:`${o.id}_${Date.now()}` }));
-    setRoster(prev => [...prev, a]);
-    setActiveId(a.id);
-    setTab(1);
+    a.caseAnswers = { ...s.caseAnswers };
+    a.offenses = s.offenses.map(o => ({ ...o, id:`${o.id}_${Date.now()}` }));
+    setRoster(p => [...p, a]); setActiveId(a.id); setPhase(1);
   };
 
-  const restoreSession = () => {
-    if (!pendingRestore) return;
-    setRoster(pendingRestore.roster);
-    setActiveId(pendingRestore.activeId || pendingRestore.roster[0]?.id);
-    setPendingRestore(null);
-  };
+  if (restore) {
+    return (
+      <div className="frame">
+        <div className="scrim" style={{position:'fixed',justifyContent:'center',alignItems:'center'}}>
+          <div style={{background:'var(--s4)',border:'1px solid var(--hair)',borderTop:'2px solid var(--gold)',
+            padding:28,maxWidth:380,width:'100%',margin:16}}>
+            <div className="drawer-title" style={{marginBottom:10}}>Resume previous session?</div>
+            <div style={{fontSize:20,fontWeight:700,color:'var(--gold)'}}>
+              {restore.roster[0]?.firstName||''} {restore.roster[0]?.lastName||'Unnamed'}
+            </div>
+            <div style={{fontSize:12,color:'var(--t3)',margin:'6px 0 20px'}}>
+              {restore.roster.length} applicant{restore.roster.length===1?'':'s'} · last saved {restore.savedAt ? new Date(restore.savedAt).toLocaleString() : 'unknown'}
+            </div>
+            <div className="outbtns">
+              <button className="btn-gold" onClick={()=>{ setRoster(restore.roster); setActiveId(restore.activeId||restore.roster[0]?.id); setRestore(null); }}>Resume</button>
+              <button className="btn-line" onClick={()=>{ const a = blankApplicant(); setRoster([a]); setActiveId(a.id); setRestore(null); }}>Start fresh</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-  const discardSession = () => {
-    const a = blankApplicant();
-    setRoster([a]); setActiveId(a.id);
-    setPendingRestore(null);
-  };
+  if (!applicant) return null;
 
-  const verdict = activeApplicant ? computeCaseVerdict(activeApplicant) : null;
-  const authority = verdict?.authority || null;
-  const { score:readiness, breakdown } = computeReadiness(activeApplicant||{}, verdict, activeApplicant?.checklistStatus||{});
+  const applName = [applicant.lastName ? applicant.lastName.toUpperCase()+',' : '', applicant.firstName, applicant.mi ? applicant.mi+'.' : '']
+    .filter(Boolean).join(' ') || 'NEW APPLICANT';
+  const caseLine = [
+    applicant.rsid ? `Case ${applicant.rsid}` : 'Case — no RSID',
+    applName,
+    applicant.psNps || 'PS/NPS not set',
+  ].join(' · ');
 
-  const authorityLabels = { BN:'BN CO', USARD:'CG USARD' };
-
-  const tabs = [
-    { n:1, label:'Screen Charges' },
-    { n:2, label:'Applicant Info' },
-    { n:3, label:'Build Packet' },
+  const phases = [
+    { n:1, title:'Screen', sub:'Gates and offense record' },
+    { n:2, title:'Build packet', sub:`${doneCount} of ${requiredItems.length} documents on file` },
+    { n:3, title:'Generate', sub:'Waiver memo and forms' },
   ];
 
-  const p1Done = verdict && ['WAIVABLE','NO_WAIVER_REQUIRED'].includes(verdict.status);
-  const p2Done = p1Done && !!(activeApplicant?.lastName);
-  const p3Done = p2Done && readiness >= 80;
-  const isDone = (n) => n===1?p1Done:n===2?p2Done:n===3?p3Done:false;
-
   return (
-    <>
-      {/* Top Bar */}
+    <div className="frame">
       <div className="topbar">
-        <button className="topbar-btn" style={{padding:'5px 8px',fontSize:14,lineHeight:1}} onClick={()=>setSidebarOpen(v=>!v)} title="Toggle roster">☰</button>
-        <span className="topbar-badge">4D5E</span>
-        <div>
-          <div className="topbar-title">Moral Waiver Builder</div>
-          <div className="topbar-sub">AR 601-210 (20 Mar 2026) · Chapter 4</div>
+        <div className="brand">
+          <div className="brand-chip">★</div>
+          <div className="brand-word">Moral Waiver</div>
         </div>
-        <div className="topbar-center">
-          {activeApplicant && (
-            <div className="readiness-wrap">
-              <ReadinessRing score={readiness}/>
-              <div>
-                <div className="readiness-pct-big">{readiness}% Ready</div>
-                <div className="readiness-label">{breakdown.find(b=>!b.done)?.label||'Packet Complete!'}</div>
-              </div>
+        <div className="topbar-div"/>
+        <button className="appl-switch" onClick={()=>setCaseOpen(true)} title="Open case file">
+          <span className="appl-switch-name">{applName}</span>
+          <span className="appl-switch-meta">4D5E · {applicant.psNps || 'NPS'}</span>
+          <span className="appl-switch-caret">▾</span>
+        </button>
+        <div className="spacer"/>
+        <div className="reg-stamp">AR 601-210 · 20 Mar 2026</div>
+        <div style={{position:'relative'}}>
+          <button className="btn-ghost" onClick={()=>setSamplesOpen(v=>!v)}>Samples</button>
+          {samplesOpen && <SampleMenu onLoad={loadSample} onClose={()=>setSamplesOpen(false)}/>}
+        </div>
+        <button className="btn-ghost-gold" onClick={()=>openRef(banner.cite)}>Reference</button>
+      </div>
+
+      <div className="verdict" style={{borderBottomColor:banner.accent}}>
+        <div className="verdict-top">
+          <div className="verdict-micro">{caseLine}</div>
+          <div className="spacer"/>
+          <div className="verdict-micro">{banner.tag}</div>
+        </div>
+        <div className="verdict-title" style={{color:banner.accent}}>{banner.title}</div>
+        <div className="verdict-row">
+          <div className="verdict-auth" style={{background:banner.authBg,color:banner.authFg}}>{banner.authority}</div>
+          <div className="verdict-body">{banner.body}</div>
+          <div className="spacer"/>
+          <button className="cite" onClick={()=>openRef(banner.cite)}>{resolvePara(banner.cite)}</button>
+        </div>
+      </div>
+
+      <div className="phases">
+        {phases.map(p => (
+          <button key={p.n} className={`phase${phase===p.n?' on':''}`} onClick={()=>setPhase(p.n)}>
+            <div className="phase-num">{p.n}</div>
+            <div>
+              <div className="phase-title">{p.title}</div>
+              <div className="phase-sub">{p.sub}</div>
             </div>
-          )}
-          {verdict?.status !== 'NOT_WAIVABLE' && authority && (
-            <div className={`auth-badge auth-${authority}`}><IcoShield/> {authorityLabels[authority]} Level</div>
-          )}
-          {verdict?.status === 'NOT_WAIVABLE' && (
-            <div className="auth-badge auth-NONE" style={{background:'rgba(207,0,0,.15)',borderColor:'rgba(207,0,0,.3)',color:'#ff5555'}}>⛔ NOT WAIVABLE</div>
-          )}
-        </div>
-        <div className="topbar-actions">
-          <div style={{position:'relative'}}>
-            <button className="topbar-btn" onClick={()=>setSampleMenuOpen(v=>!v)}>Sample Scenarios</button>
-            {sampleMenuOpen && <SampleMenu onLoad={loadSample} onClose={()=>setSampleMenuOpen(false)}/>}
-          </div>
-          <button className="topbar-btn" onClick={clearAllData} title="Erase all saved applicant data from this computer">Clear Data</button>
-          <button className="topbar-btn" onClick={()=>setTheme(t=>t==='dark'?'light':'dark')}>{theme==='dark'?'Light':'Dark'}</button>
-          <button className="topbar-btn" onClick={()=>setRefOpen(v=>!v)} title="Toggle reference panel">📖</button>
-        </div>
+          </button>
+        ))}
       </div>
 
-      <div className="app-shell">
-        {/* Sidebar — Roster */}
-        <div className={`sidebar${sidebarOpen?'':' collapsed'}`}>
-          <div className="sidebar-hdr">
-            <div className="sidebar-title">Applicants ({roster.length})</div>
-          </div>
-          <div className="sidebar-body">
-            {roster.map(a => (
-              <ApplicantCard key={a.id} appl={a} active={a.id===activeId}
-                onClick={()=>{setActiveId(a.id);}}
-                onDelete={()=>removeApplicant(a.id)}/>
-            ))}
-          </div>
-          <div className="sidebar-footer">
-            <button className="btn btn-gold" style={{width:'100%'}} onClick={addApplicant}><IcoPlus/> New Applicant</button>
-          </div>
+      <div className="body">
+        <div className="content">
+          {phase === 1 && <PhaseScreen applicant={applicant} setApplicant={setApplicant} verdict={verdict} openRef={openRef}/>}
+          {phase === 2 && <PhasePacket applicant={applicant} requiredItems={requiredItems}
+            clStatus={clStatus} setClStatus={setClStatus} expDates={expDates} setExpDates={setExpDates}/>}
+          {phase === 3 && <PhaseGenerate applicant={applicant} verdict={verdict}
+            clStatus={clStatus} requiredItems={requiredItems}/>}
         </div>
-
-        {/* Main Panel */}
-        <div className="main-panel">
-          <div className="tab-nav">
-            {tabs.map(t => (
-              <button key={t.n} className={`tab-btn${tab===t.n?' active':''}${isDone(t.n)?' done':''}`}
-                onClick={()=>setTab(t.n)}>
-                <span className="tab-num">{isDone(t.n)?<IcoCheck/>:t.n}</span>
-                {t.label}
-              </button>
-            ))}
-          </div>
-
-          {tab===1 && activeApplicant && (
-            <Phase1 applicant={activeApplicant} setApplicant={setActiveApplicant} onHighlight={setHighlightedParas}/>
-          )}
-          {tab===2 && activeApplicant && (
-            <Phase2 applicant={activeApplicant} setApplicant={setActiveApplicant}/>
-          )}
-          {tab===3 && activeApplicant && (
-            <Phase3 applicant={activeApplicant} setApplicant={setActiveApplicant}/>
-          )}
-        </div>
-
-        {/* Right Panel */}
-        {refOpen && <RefPanel collapsed={false} tab={tab} authority={authority} highlighted={highlightedParas}/>}
+        <Rail applicant={applicant} verdict={verdict} banner={banner} approv={approv}
+          clStatus={clStatus} expDates={expDates}/>
       </div>
 
-      {pendingRestore && <ResumeModal draft={pendingRestore} onResume={restoreSession} onDiscard={discardSession}/>}
-    </>
+      {refOpen && <RefDrawer para={refPara} setPara={setRefPara} onClose={()=>setRefOpen(false)}/>}
+      {caseOpen && <CaseFileDrawer roster={roster} activeId={activeId} applicant={applicant}
+        setApplicant={setApplicant} onSwitch={id=>setActiveId(id)} onAdd={addApplicant}
+        onRemove={removeApplicant} onClear={clearAll} onClose={()=>setCaseOpen(false)}/>}
+    </div>
   );
 };
 
