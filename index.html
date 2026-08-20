@@ -42,135 +42,112 @@
     .nav-brand { display:flex; align-items:center; gap:14px; }
     .nav-title { font-size:13px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; }
 
-    /* HERO */
-    .hero {
-      position:relative; height:100vh; min-height:640px;
-      display:flex; flex-direction:column; justify-content:center;
-      padding:64px 9% 80px; overflow:hidden;
+    /* FACT BANNER — compact rotator under the nav */
+    .fact-banner {
+      position:relative;
+      margin-top:64px;
+      height:200px;
+      min-height:180px;
+      max-height:220px;
+      overflow:hidden;
+      background:var(--army-black);
+      border-bottom:2px solid var(--army-gold);
     }
-    .hero::before {
+    .fact-banner::before {
       content:''; position:absolute; inset:0; pointer-events:none;
       background-image:
-        linear-gradient(rgba(255,204,1,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,204,1,0.03) 1px, transparent 1px);
-      background-size:72px 72px;
+        linear-gradient(rgba(255,204,1,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,204,1,0.04) 1px, transparent 1px);
+      background-size:48px 48px;
+      opacity:.55;
     }
-    .hero::after {
-      content:''; position:absolute; inset:0; pointer-events:none;
-      background:radial-gradient(ellipse at 38% 50%, transparent 25%, rgba(34,31,32,0.82) 100%);
-    }
-
-    /* USAREC Bell patch */
-    .hero-patch {
-      position:absolute; right:-3%; top:50%;
+    .fact-banner-patch {
+      position:absolute; right:0; top:50%;
       transform:translateY(-50%);
-      width:min(50%, 600px);
-      pointer-events:none; z-index:1;
-      mix-blend-mode:overlay; opacity:0.14;
+      height:140%; width:auto; max-width:42%;
+      pointer-events:none; z-index:0;
+      mix-blend-mode:overlay; opacity:0.16;
     }
-
-    /* FACT STAGE */
-    .fact-stage { position:relative; z-index:2; will-change:opacity,transform; }
-
+    .fact-banner-inner {
+      position:relative; z-index:1;
+      height:100%;
+      display:flex; align-items:stretch;
+      padding:16px 9% 20px;
+      border-left:4px solid var(--army-gold);
+    }
+    .fact-banner-copy {
+      flex:1; min-width:0;
+      display:flex; flex-direction:column; justify-content:center;
+    }
     .fact-eyebrow {
-      font-size:11px; font-weight:700; letter-spacing:0.28em; text-transform:uppercase;
-      color:var(--army-gold); margin-bottom:28px;
-      opacity:0; transform:translateY(6px);
-      transition:opacity 0.4s ease, transform 0.4s ease;
+      font-size:10px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase;
+      color:var(--army-gold); margin-bottom:8px;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
     }
-    .fact-eyebrow.vis { opacity:1; transform:translateY(0); }
-
-    .headline-wrapper { position:relative; display:block; margin-bottom:36px; }
-
     .fact-headline {
-      --clip-w: 0%;
-      clip-path:inset(0 calc(100% - var(--clip-w)) 0 0);
-      font-size:clamp(52px, 9vw, 136px);
-      font-weight:700; line-height:0.93;
-      text-transform:uppercase; letter-spacing:-0.015em;
-      color:var(--white); white-space:nowrap; display:block;
+      font-size:clamp(22px, 2.6vw, 36px);
+      font-weight:700; line-height:0.95;
+      text-transform:uppercase; letter-spacing:-0.01em;
+      color:var(--white);
+      margin-bottom:8px;
+      display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
     }
     .fact-headline.gold { color:var(--army-gold); }
-
-    /* Square cursor — moves AHEAD of text, never overlapping */
-    .fact-cursor {
-      position:absolute; top:0; left:0;
-      border-radius:0;
-      opacity:0; pointer-events:none;
-      transform-origin:50% 88%;
-      transition:opacity 0.22s ease;
-      will-change:transform, left, opacity;
-    }
-
-    /* Small period dot — fades in when cursor fades out */
-    .fact-dot {
-      position:absolute; left:0; top:0;
-      border-radius:50%;
-      opacity:0; pointer-events:none;
-      transition:opacity 0.25s ease;
-    }
-
     .fact-subtext {
-      font-size:clamp(14px, 1.6vw, 20px); font-weight:400;
-      color:var(--gray-02); max-width:560px; line-height:1.62;
-      opacity:0; transform:translateY(10px);
-      transition:opacity 0.5s ease, transform 0.5s ease;
+      font-size:13px; font-weight:400; color:var(--gray-02); line-height:1.45;
+      max-width:760px; margin:0;
+      display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
     }
-    .fact-subtext.vis { opacity:1; transform:translateY(0); }
-
     .fact-citation {
-      margin-top:14px; font-size:10px; font-weight:500;
-      letter-spacing:0.22em; text-transform:uppercase;
-      color:var(--gray-01); opacity:0; transition:opacity 0.4s ease;
+      margin-top:6px; font-size:9px; font-weight:500;
+      letter-spacing:0.18em; text-transform:uppercase;
+      color:var(--gray-01);
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
     }
-    .fact-citation.vis { opacity:1; }
-
-    /* BOTTOM BAR */
-    .bottom-bar {
-      position:absolute; bottom:0; left:0; right:0; z-index:2;
-      display:flex; align-items:stretch;
-      border-top:1px solid rgba(255,255,255,0.08); height:48px;
-    }
-    .progress-track { flex:1; position:relative; background:rgba(255,255,255,0.06); }
-    .progress-fill { position:absolute; left:0; top:0; bottom:0; background:var(--army-gold); width:0%; transition:width 0.1s linear; }
-    .counter-cell {
-      display:flex; align-items:center; gap:10px; padding:0 24px;
+    .fact-banner-controls {
+      display:flex; align-items:center; gap:4px;
+      flex-shrink:0; padding-left:24px;
       border-left:1px solid rgba(255,255,255,0.08);
-      font-size:10px; font-weight:700; letter-spacing:0.22em; color:var(--gray-01); white-space:nowrap;
+      align-self:stretch;
     }
-    .pause-dot { width:5px; height:5px; background:var(--army-gold); border-radius:50%; opacity:0; transition:opacity 0.3s; flex-shrink:0; }
+    .fact-counter {
+      font-size:10px; font-weight:700; letter-spacing:0.22em;
+      color:var(--gray-01); white-space:nowrap; padding:0 12px;
+    }
+    .pause-dot {
+      width:5px; height:5px; background:var(--army-gold);
+      opacity:0; transition:opacity 0.3s; flex-shrink:0;
+    }
     .pause-dot.vis { opacity:1; }
     .ctrl-btn {
-      width:48px; background:none; border:none;
+      width:44px; height:100%; background:none; border:none;
       border-left:1px solid rgba(255,255,255,0.08);
       color:var(--gray-01); font-family:"GI",Arial,sans-serif; font-size:16px;
       cursor:pointer; display:flex; align-items:center; justify-content:center;
-      transition:color 0.18s, background 0.18s; flex-shrink:0;
+      transition:color 0.18s, background 0.18s;
     }
     .ctrl-btn:hover { color:var(--army-gold); background:rgba(255,204,1,0.06); }
-
-    /* SCROLL HINT */
-    .scroll-hint {
-      position:absolute; bottom:64px; right:9%; z-index:2;
-      display:flex; flex-direction:column; align-items:center; gap:10px;
-      opacity:0.18; animation:nudge 2.4s ease-in-out infinite;
+    .ctrl-btn:focus-visible { outline:3px solid var(--army-gold); outline-offset:-3px; }
+    .fact-progress {
+      position:absolute; left:0; right:0; bottom:0; height:3px; z-index:2;
+      background:rgba(255,255,255,0.06);
     }
-    @keyframes nudge { 0%,100%{transform:translateY(0)} 55%{transform:translateY(8px)} }
-    .scroll-line { width:1px; height:48px; background:var(--white); }
-    .scroll-label { font-size:9px; font-weight:700; letter-spacing:0.28em; text-transform:uppercase; color:var(--white); }
+    .progress-fill { height:100%; width:0%; background:var(--army-gold); transition:width 0.18s linear; }
 
     /* TOOLS SECTION */
     .tools-section {
-      background:var(--army-black); padding:100px 9%;
-      border-top:2px solid var(--army-gold);
+      background:var(--army-black); padding:24px 9% 72px;
     }
-    .tools-header { margin-bottom:64px; }
-    .tools-eyebrow { font-size:11px; font-weight:700; letter-spacing:0.28em; text-transform:uppercase; color:var(--army-gold); margin-bottom:16px; }
-    .tools-heading { font-size:clamp(40px,6vw,80px); font-weight:700; text-transform:uppercase; color:var(--white); line-height:0.92; letter-spacing:-0.01em; margin-bottom:20px; }
-    .tools-sub { font-size:16px; font-weight:400; color:var(--gray-02); max-width:480px; line-height:1.6; }
+    .tools-header {
+      display:flex; align-items:baseline; justify-content:space-between;
+      gap:24px; flex-wrap:wrap; margin-bottom:18px;
+    }
+    .tools-eyebrow { font-size:11px; font-weight:700; letter-spacing:0.28em; text-transform:uppercase; color:var(--army-gold); margin-bottom:8px; }
+    .tools-heading { font-size:clamp(28px, 3vw, 40px); font-weight:700; text-transform:uppercase; color:var(--white); line-height:0.92; letter-spacing:-0.01em; margin:0; }
+    .tools-sub { font-size:13px; font-weight:400; color:var(--gray-02); max-width:420px; line-height:1.5; }
     .tools-grid {
       display:grid;
-      grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));
+      grid-template-columns:repeat(4, 1fr);
       gap:3px;
     }
     /* Medallion card */
@@ -299,12 +276,28 @@
     .footer-brand { display:flex; align-items:center; gap:12px; }
     .footer-txt { font-size:10px; font-weight:700; letter-spacing:0.2em; text-transform:uppercase; color:var(--gray-01); }
 
+    @media (max-width:1200px) {
+      .tools-grid { grid-template-columns:repeat(3, 1fr); }
+    }
+    @media (max-width:900px) {
+      .tools-grid { grid-template-columns:repeat(2, 1fr); }
+    }
     @media (max-width:768px) {
       nav { padding:0 24px; }
-      .hero { padding:64px 6% 80px; }
-      .tools-section { padding:80px 6%; }
+      .fact-banner { height:220px; }
+      .fact-banner-inner { padding:14px 6% 18px; flex-direction:column; }
+      .fact-banner-controls {
+        border-left:none; border-top:1px solid rgba(255,255,255,0.08);
+        padding:0; height:40px; align-self:stretch;
+      }
+      .fact-headline { font-size:22px; }
+      .fact-subtext { font-size:12px; }
+      .tools-section { padding:20px 6% 56px; }
       .tools-grid { grid-template-columns:1fr; }
       footer { flex-direction:column; gap:16px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .fact-banner-inner { transition:none !important; }
     }
   </style>
 </head>
@@ -321,42 +314,33 @@
   </div>
 </nav>
 
-<!-- HERO -->
-<section class="hero">
-  <img class="hero-patch" src="uploads/Vector_USAREC_BELL_od green.png" alt="" aria-hidden="true">
-
-  <div class="fact-stage" id="factStage">
-    <div class="fact-eyebrow" id="factEyebrow"></div>
-    <div class="headline-wrapper" id="headlineWrapper">
+<!-- FACT BANNER -->
+<section class="fact-banner" aria-label="Recruiting regulation fun facts">
+  <img class="fact-banner-patch" src="uploads/Vector_USAREC_BELL_od green.png" alt="" aria-hidden="true">
+  <div class="fact-banner-inner" id="factStage">
+    <div class="fact-banner-copy" aria-live="polite">
+      <div class="fact-eyebrow" id="factEyebrow"></div>
       <div class="fact-headline" id="factHeadline"></div>
-      <div class="fact-cursor" id="factCursor"></div>
-      <div class="fact-dot"    id="factDot"></div>
+      <p class="fact-subtext" id="factSubtext"></p>
+      <div class="fact-citation" id="factCitation"></div>
     </div>
-    <div class="fact-subtext"  id="factSubtext"></div>
-    <div class="fact-citation" id="factCitation"></div>
-  </div>
-
-  <div class="bottom-bar">
-    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
-    <div class="counter-cell">
-      <span id="progressCounter">01 / 70</span>
-      <div class="pause-dot" id="pauseDot"></div>
+    <div class="fact-banner-controls">
+      <span class="fact-counter" id="progressCounter">01 / 70</span>
+      <div class="pause-dot" id="pauseDot" aria-hidden="true"></div>
+      <button class="ctrl-btn" id="prevBtn" type="button" aria-label="Previous fact">←</button>
+      <button class="ctrl-btn" id="nextBtn" type="button" aria-label="Next fact">→</button>
     </div>
-    <button class="ctrl-btn" id="prevBtn" aria-label="Previous">←</button>
-    <button class="ctrl-btn" id="nextBtn" aria-label="Next">→</button>
   </div>
-
-  <div class="scroll-hint" aria-hidden="true">
-    <div class="scroll-label">Scroll</div>
-    <div class="scroll-line"></div>
-  </div>
+  <div class="fact-progress"><div class="progress-fill" id="progressFill"></div></div>
 </section>
 
 <!-- TOOLS -->
 <section class="tools-section">
   <div class="tools-header">
-    <div class="tools-eyebrow">Army Recruiter Tools // Open Source</div>
-    <h2 class="tools-heading">The Toolbox</h2>
+    <div>
+      <div class="tools-eyebrow">Army Recruiter Tools // Open Source</div>
+      <h2 class="tools-heading">The Toolbox</h2>
+    </div>
     <p class="tools-sub">Built by a recruiter, for recruiters. Free and open.</p>
   </div>
   <div class="tools-grid">
@@ -731,8 +715,6 @@ let DECK = shuffle(FACTS);  // randomized order each load
 const stageEl    = document.getElementById('factStage');
 const eyebrowEl  = document.getElementById('factEyebrow');
 const headlineEl = document.getElementById('factHeadline');
-const cursorEl   = document.getElementById('factCursor');
-const dotEl      = document.getElementById('factDot');
 const subtextEl  = document.getElementById('factSubtext');
 const citationEl = document.getElementById('factCitation');
 const fillEl     = document.getElementById('progressFill');
@@ -741,190 +723,50 @@ const pauseDot   = document.getElementById('pauseDot');
 const prevBtn    = document.getElementById('prevBtn');
 const nextBtn    = document.getElementById('nextBtn');
 
-/* ─── STATE ─────────────────────────────────────────── */
 let currentIdx   = 0;
-let rafId        = null;
 let holdTimer    = null;
 let isTransiting = false;
 let isPaused     = false;
+const HOLD_MS    = 6000;
+const EXIT_MS    = 180;
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-const MS_PER_CHAR = 28;   // fast reveal
-const HOLD_MS     = 6000;
-const EXIT_MS     = 160;
+function cancelHold() { if (holdTimer) { clearTimeout(holdTimer); holdTimer = null; } }
 
-/* ─── TEXT MEASUREMENT ──────────────────────────────── */
-let probe = null;
-function measureW(text, fs) {
-  if (!probe) {
-    probe = document.createElement('div');
-    probe.style.cssText = 'position:fixed;top:-9999px;left:-9999px;' +
-      'font-family:GI,Arial,sans-serif;font-weight:700;' +
-      'text-transform:uppercase;letter-spacing:-0.015em;' +
-      'white-space:nowrap;visibility:hidden;pointer-events:none;';
-    document.body.appendChild(probe);
-  }
-  probe.style.fontSize = fs + 'px';
-  probe.textContent    = text;
-  return probe.offsetWidth;
-}
-
-function easeIO(t) { return t < 0.5 ? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2; }
-function cancelAll() {
-  if (rafId)     cancelAnimationFrame(rafId);
-  if (holdTimer) clearTimeout(holdTimer);
-  rafId = holdTimer = null;
-}
-
-/* ─── POPULATE ──────────────────────────────────────── */
-function populate(f, idx) {
+function paint(idx) {
+  const f = DECK[idx];
   eyebrowEl.textContent  = f.e;
   headlineEl.textContent = f.h;
   headlineEl.className   = 'fact-headline' + (f.g ? ' gold' : '');
   subtextEl.textContent  = f.s;
   citationEl.textContent = f.c;
-  eyebrowEl.classList.remove('vis');
-  subtextEl.classList.remove('vis');
-  citationEl.classList.remove('vis');
-  headlineEl.style.setProperty('--clip-w','0%');
-  cursorEl.style.opacity   = '0';
-  cursorEl.style.transform = 'rotate(0deg)';
-  dotEl.style.opacity      = '0';
-  counterEl.textContent    = String(idx+1).padStart(2,'0') + ' / ' + DECK.length;
+  counterEl.textContent  = String(idx + 1).padStart(2, '0') + ' / ' + DECK.length;
+  fillEl.style.width     = ((idx + 1) / DECK.length * 100) + '%';
 }
 
-/* ─── REVEAL ────────────────────────────────────────── */
-function reveal(f, idx, done) {
-  headlineEl.style.fontSize = '';
-  let fs = parseFloat(getComputedStyle(headlineEl).fontSize);
-  const availW = window.innerWidth * 0.80;
-  const textW  = measureW(f.h, fs);
-  if (textW > availW) {
-    fs = Math.floor(fs * (availW / textW)) - 1;
-    headlineEl.style.fontSize = fs + 'px';
-  }
-  /* Square dot = cap-height ~ 72% of font-size */
-  const capH    = Math.round(fs * 0.72);
-  const dotSize = Math.round(fs * 0.13);   // small period dot
-  const gap     = Math.round(fs * 0.12);   // space after last letter
-  const tw      = measureW(f.h, fs);
-  const finalX  = tw + gap;                // where dot lands
-  const color   = f.g ? 'var(--army-gold)' : 'var(--white)';
-  const ahead   = capH * 0.85;            // cursor travels THIS far ahead of clip edge
-
-  /* Size / style cursor */
-  cursorEl.style.cssText +=
-    ';width:'+capH+'px;height:'+capH+'px;top:0;background:'+color+
-    ';border-radius:0;transition:opacity 0.22s ease;';
-
-  /* Pre-size the dot (hidden) */
-  dotEl.style.width        = dotSize + 'px';
-  dotEl.style.height       = dotSize + 'px';
-  /* Baseline: bottom of capitals ≈ fs * 0.72; dot sits just above baseline */
-  dotEl.style.top          = Math.round(fs * 0.72 - dotSize * 1.1) + 'px';
-  dotEl.style.background   = color;
-  dotEl.style.borderRadius = '0';
-  dotEl.style.left         = finalX + 'px';
-
-  /* Show cursor immediately, start tilted */
-  cursorEl.style.left      = ahead + 'px';
-  cursorEl.style.transform = 'rotate(0deg)';
-  cursorEl.style.opacity   = '1';
-
-  requestAnimationFrame(() => eyebrowEl.classList.add('vis'));
-
-  const dur = f.h.length * MS_PER_CHAR;
-  let t0 = null;
-
-  rafId = requestAnimationFrame(function step(ts) {
-    if (!t0) t0 = ts;
-    const raw   = Math.min((ts - t0) / dur, 1);
-    const eased = easeIO(raw);
-
-    /* Headline clip */
-    headlineEl.style.setProperty('--clip-w', (eased * 100) + '%');
-
-    /* Cursor stays AHEAD of the clip edge — no tilt, slides horizontally */
-    const clipPx  = eased * tw;
-    const cursorX = Math.min(clipPx + ahead, finalX);
-    cursorEl.style.left      = cursorX + 'px';
-    cursorEl.style.transform = 'rotate(0deg)';
-
-    fillEl.style.width = ((idx + raw) / DECK.length * 100) + '%';
-
-    if (raw < 1) {
-      rafId = requestAnimationFrame(step);
-    } else {
-      /* Text fully revealed — lock progress */
-      fillEl.style.width = ((idx + 1) / DECK.length * 100) + '%';
-
-      /* Settle cursor at final position */
-      cursorEl.style.left      = finalX + 'px';
-      cursorEl.style.transform = 'rotate(0deg)';
-
-      /* Show subtext + citation */
-      subtextEl.classList.add('vis');
-      citationEl.classList.add('vis');
-
-      /* Cursor fades out, then square baseline dot fades in */
-      holdTimer = setTimeout(() => {
-        cursorEl.style.opacity = '0';
-        holdTimer = setTimeout(() => {
-          dotEl.style.opacity = '1';
-          done && done();
-        }, 200);
-      }, 280);
-    }
-  });
-}
-
-/* ─── TRANSITIONS ───────────────────────────────────── */
-function exitStage(cb) {
-  stageEl.style.transition =
-    'opacity ' + EXIT_MS + 'ms cubic-bezier(.85,0,.15,1),' +
-    'transform ' + EXIT_MS + 'ms cubic-bezier(.85,0,.15,1)';
-  stageEl.style.opacity   = '0';
-  stageEl.style.transform = 'translateY(-14px)';
-  holdTimer = setTimeout(cb, EXIT_MS);
-}
-function enterStage() {
-  stageEl.style.transition = 'none';
-  stageEl.style.opacity    = '0';
-  stageEl.style.transform  = 'translateY(18px)';
-  stageEl.getBoundingClientRect();
-  stageEl.style.transition = 'opacity 340ms ease,transform 340ms ease';
-  stageEl.style.opacity    = '1';
-  stageEl.style.transform  = 'translateY(0)';
-}
-
-/* ─── RUN ───────────────────────────────────────────── */
-function runFact(idx) {
+function swapTo(idx) {
+  if (isTransiting) return;
   isTransiting = true;
-  populate(DECK[idx], idx);
-  enterStage();
-  reveal(DECK[idx], idx, () => {
+  cancelHold();
+  const apply = () => {
+    currentIdx = (idx + DECK.length) % DECK.length;
+    paint(currentIdx);
+    stageEl.style.transition = 'none';
+    stageEl.style.opacity = '1';
+    stageEl.style.transform = 'translateY(0)';
     isTransiting = false;
-    if (!isPaused) holdTimer = setTimeout(advance, HOLD_MS);
-  });
+    if (!isPaused && !reduceMotion) holdTimer = setTimeout(advance, HOLD_MS);
+  };
+  if (reduceMotion) { apply(); return; }
+  stageEl.style.transition = 'opacity ' + EXIT_MS + 'ms cubic-bezier(.85,0,.15,1), transform ' + EXIT_MS + 'ms cubic-bezier(.85,0,.15,1)';
+  stageEl.style.opacity = '0';
+  stageEl.style.transform = 'translateY(-10px)';
+  holdTimer = setTimeout(apply, EXIT_MS);
 }
 
-function advance() {
-  if (isTransiting) return;
-  isTransiting = true; cancelAll();
-  exitStage(() => {
-    currentIdx = (currentIdx + 1) % DECK.length;
-    holdTimer  = setTimeout(() => runFact(currentIdx), 40);
-  });
-}
-function retreat() {
-  if (isTransiting) return;
-  isTransiting = true; cancelAll();
-  exitStage(() => {
-    currentIdx = (currentIdx - 1 + DECK.length) % DECK.length;
-    holdTimer  = setTimeout(() => runFact(currentIdx), 40);
-  });
-}
+function advance() { swapTo(currentIdx + 1); }
+function retreat() { swapTo(currentIdx - 1); }
 
-/* ─── CONTROLS ──────────────────────────────────────── */
 nextBtn.addEventListener('click', advance);
 prevBtn.addEventListener('click', retreat);
 document.addEventListener('keydown', e => {
@@ -932,21 +774,15 @@ document.addEventListener('keydown', e => {
   if (e.key === 'ArrowLeft')                   { e.preventDefault(); retreat(); }
 });
 stageEl.addEventListener('mouseenter', () => {
-  isPaused = true;
-  if (holdTimer) clearTimeout(holdTimer);
-  pauseDot.classList.add('vis');
+  isPaused = true; cancelHold(); pauseDot.classList.add('vis');
 });
 stageEl.addEventListener('mouseleave', () => {
-  isPaused = false;
-  pauseDot.classList.remove('vis');
-  if (!isTransiting) holdTimer = setTimeout(advance, HOLD_MS);
+  isPaused = false; pauseDot.classList.remove('vis');
+  if (!isTransiting && !reduceMotion) holdTimer = setTimeout(advance, HOLD_MS);
 });
 
-/* ─── INIT ──────────────────────────────────────────── */
-stageEl.style.opacity = '1';
-stageEl.style.transform = 'translateY(0)';
-stageEl.style.transition = 'none';
-document.fonts.ready.then(() => runFact(0));
+paint(0);
+if (!reduceMotion) holdTimer = setTimeout(advance, HOLD_MS);
 
 /* ═══════════════════════════════════════════════════════
    3D MEDALLION — tilt + SVG sticker activation + gloss
