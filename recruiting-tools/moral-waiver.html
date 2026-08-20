@@ -274,6 +274,27 @@ select.finput{cursor:pointer}
 .roster-name{font-size:14px;font-weight:700;color:var(--t1)}
 .roster-meta{font-size:12px;color:var(--t3);margin-top:2px}
 
+/* ── REFERENCE DRAWER — TABS + OFFENSE TABLES ────────────── */
+.drawer-tabs{display:flex;flex:none;border-bottom:1px solid var(--hair)}
+.drawer-tab{flex:1;background:none;border:none;border-bottom:3px solid transparent;color:var(--t3);
+  font-family:inherit;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  padding:12px 10px;cursor:pointer}
+.drawer-tab:hover{color:var(--t1)}
+.drawer-tab.on{color:var(--gold);border-bottom-color:var(--gold);background:rgba(255,204,1,.05)}
+.tbl-search{display:flex;align-items:center;gap:12px;padding:14px 22px;
+  border-bottom:1px solid var(--hair);flex:none}
+.tbl-count{font-size:11px;color:var(--t3);letter-spacing:.06em;text-transform:uppercase;flex:none}
+.tbl-hd{padding:16px 22px 12px;border-bottom:1px solid var(--hair);border-left:3px solid var(--t3);
+  background:var(--s3);position:sticky;top:0;z-index:1}
+.tbl-title{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.tbl-rule{font-size:12px;color:var(--t2);line-height:1.5;margin-top:6px}
+.tbl-row{display:grid;grid-template-columns:44px 1fr;gap:12px;padding:9px 22px;
+  border-bottom:1px solid var(--hair-faint);align-items:start}
+.tbl-code{font-size:12px;font-weight:700;letter-spacing:.04em}
+.tbl-text{font-size:13px;color:var(--t2b);line-height:1.45}
+.tbl-flag{font-size:11.5px;color:var(--orange);line-height:1.45;margin-top:4px;
+  padding-left:9px;border-left:2px solid rgba(241,101,33,.5)}
+
 /* ── REF LINK LIST ───────────────────────────────────────── */
 .ref-index{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
 .ref-pill{background:none;border:1px solid rgba(255,204,1,.35);color:var(--gold);font-size:11px;
@@ -344,7 +365,7 @@ const {
   OFFENSE_CATEGORIES, CASE_QUESTIONS, CHECKLIST_ITEMS,
   DISPOSITION_OPTIONS, CONFINEMENT_OPTIONS, PROBATION_OPTIONS,
   SAMPLE_SCENARIOS, PARA_TEXT, ED_LEVELS, US_STATES,
-  MOS_RESTRICTIONS, APPROVABILITY_FACTORS,
+  MOS_RESTRICTIONS, APPROVABILITY_FACTORS, OFFENSE_TABLES,
   CAT_PARA_MAP, Q_PARA_MAP, REG_VERSION
 } = window;
 
@@ -352,14 +373,25 @@ const {
 /* ── Storage ────────────────────────────────────────────── */
 const STORAGE_KEY = 'moral-waiver-v4';
 
-const loadRoster = () => { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)||'null'); } catch { return null; } };
+// Drafts saved before SSN was removed may still carry an `ssn` key. Drop it on
+// load and rewrite the record so the value does not survive in localStorage.
+const loadRoster = () => {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');
+    if (!saved?.roster) return saved;
+    let scrubbed = false;
+    saved.roster.forEach(a => { if ('ssn' in a) { delete a.ssn; scrubbed = true; } });
+    if (scrubbed) localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+    return saved;
+  } catch { return null; }
+};
 const saveRoster = (roster) => { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(roster)); } catch {} };
 
 const blankApplicant = () => ({
   id: `a${Date.now()}${Math.floor(Math.random()*1e4)}`,
   savedAt: new Date().toISOString(),
-  // Applicant Info (SSN stored as last-4 only — full SSN is never persisted)
-  lastName:'', firstName:'', mi:'', ssn:'', dob:'', rsid:'',
+  // Applicant Info. No SSN in any form — the tool never collects or stores one.
+  lastName:'', firstName:'', mi:'', dob:'', rsid:'',
   educationLevel:'', educationCode:'', afqt:'', psNps:'', maritalStatus:'',
   numDependents:'', dependentAges:'',
   // Recruiter Info
@@ -677,6 +709,26 @@ const computeReadiness = (applicant, verdict, clStatus) => {
   return { score: Math.min(100, score), breakdown };
 };
 
+/* ── Department of War seal (memorandum letterhead) ──────────────────────
+   The memo prints from a document.write() popup, where relative paths do not
+   reliably resolve. Preload the seal as a data URI so the generated memo is
+   self-contained; fall back to an absolute URL if the fetch is unavailable
+   (e.g. opened over file://).
+   ─────────────────────────────────────────────────────────────────────── */
+const SEAL_PATH = '../assets/logos/memo-emblem.jpg';
+const sealHref = () => { try { return new URL(SEAL_PATH, location.href).href; } catch { return SEAL_PATH; } };
+let SEAL_DATA_URL = null;
+(async () => {
+  try {
+    const res = await fetch(sealHref());
+    if (!res.ok) return;
+    const blob = await res.blob();
+    const fr = new FileReader();
+    fr.onload = () => { SEAL_DATA_URL = fr.result; };
+    fr.readAsDataURL(blob);
+  } catch { /* fall back to the absolute URL */ }
+})();
+
 /* ── Document generators ─────────────────────────────────────────────────
    Output text is unchanged from the pre-redesign build; the generators were
    lifted out of the old packet tab so the Generate phase can call them.
@@ -687,8 +739,7 @@ const makeDocs = (applicant, verdict, clStatus) => {
   const waivedIds = verdict?.waivedIds || [];
   const requiredItems = getRequiredChecklist(authority, offenseFlags(screenedOffenses));
   const fullName = [applicant.firstName, applicant.mi?applicant.mi+'.':'', applicant.lastName].filter(Boolean).join(' ');
-  const ssnLast4 = (applicant.ssn||'').slice(-4)||'XXXX';
-  const authorityFull = { BN:'Battalion Commander', USARD:'Commanding General, U.S. Army Recruiting Division (USARD)' };
+  const authorityFull ={ BN:'Battalion Commander', USARD:'Commanding General, U.S. Army Recruiting Division (USARD)' };
   const authorityMemo = { BN:'Battalion Commander', USARD:'CG, USARD' };
   const authorityShort = authorityFull[authority]||authority;
   const offenseList = sortNewest(screenedOffenses.filter(so=>so.offenseDate||so.description));
@@ -701,7 +752,6 @@ const makeDocs = (applicant, verdict, clStatus) => {
     lines.push(`MORAL WAIVER PACKET — COVER SHEET`);
     lines.push(`${'─'.repeat(60)}`);
     lines.push(`Applicant:         ${fullName || '[Name]'}`);
-    lines.push(`SSN (Last 4):      XXXX-XX-${ssnLast4}`);
     lines.push(`Date of Birth:     ${fmtDate(applicant.dob)}`);
     lines.push(`RSID:              ${applicant.rsid||'[RSID]'}`);
     lines.push(`PS/NPS:            ${applicant.psNps||'[PS/NPS]'}`);
@@ -787,6 +837,7 @@ const makeDocs = (applicant, verdict, clStatus) => {
     const recName = applicant.recruiterName || '[RECRUITER NAME]';
     const recRank = applicant.recruiterRank || '[RANK, BRANCH]';
     const authTo  = authorityMemo[authority]||authorityShort;
+    const sealUrl = SEAL_DATA_URL || sealHref();
     const offList = offenseList.map((o,i) => {
       const cat = OFFENSE_CATEGORIES.find(c=>c.id===o.categoryId);
       const letter = String.fromCharCode(97+i);
@@ -797,10 +848,14 @@ const makeDocs = (applicant, verdict, clStatus) => {
   body{font-family:"Times New Roman",serif;font-size:12pt;color:#000;margin:0;padding:0}
   @page{size:letter;margin:1in}
   @media screen{body{max-width:7.5in;margin:.5in auto;padding:.5in}}
+  .lhd{position:relative;min-height:76pt}
+  .lhd-seal{position:absolute;left:0;top:0;width:72pt;height:72pt;object-fit:contain}
+  .lhd-txt{padding-top:6pt}
   .lhd-unit{font-family:Arial,sans-serif;font-weight:bold;font-size:10pt;text-align:center;text-transform:uppercase;line-height:1.4}
   .lhd-dept{font-family:Arial,sans-serif;font-weight:bold;font-size:9pt;text-align:center;letter-spacing:.05em;margin-bottom:2pt}
   .lhd-addr{font-family:Arial,sans-serif;font-size:9pt;text-align:center;font-weight:normal}
-  .lhd-rule{border:none;border-top:1.5pt solid #000;margin:6pt 0 4pt}
+  .lhd-rule{border:none;border-top:1.5pt solid #000;margin:6pt 0 4pt;clear:both}
+  @media print{.lhd-seal{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
   .sym-date{display:flex;justify-content:space-between;font-family:Arial,sans-serif;font-size:10pt;margin-bottom:18pt}
   .sym-label{font-size:8pt;font-style:italic;color:#333}
   .body-block{font-family:"Times New Roman",serif;font-size:12pt;line-height:1.5}
@@ -809,9 +864,14 @@ const makeDocs = (applicant, verdict, clStatus) => {
   .sig-line{border-bottom:1pt solid #000;width:3.5in}
   .fill-blank{border-bottom:1pt solid #555;display:inline-block;min-width:1.8in}
 </style></head><body>
-<div class="lhd-dept">DEPARTMENT OF THE ARMY</div>
-<div class="lhd-unit">${unit}</div>
-<div class="lhd-addr">${addr}</div>
+<div class="lhd">
+  <img class="lhd-seal" src="${sealUrl}" alt="Department of War seal"/>
+  <div class="lhd-txt">
+    <div class="lhd-dept">DEPARTMENT OF WAR</div>
+    <div class="lhd-unit">${unit}</div>
+    <div class="lhd-addr">${addr}</div>
+  </div>
+</div>
 <hr class="lhd-rule"/>
 <div class="sym-date">
   <div><div class="sym-label">REPLY TO<br>ATTENTION OF</div><div style="font-family:Arial;font-size:10pt;font-weight:bold">${sym}</div></div>
@@ -843,7 +903,7 @@ ${offList}
     lines.push(`MEMORANDUM FOR Battalion S1`);
     lines.push(`SUBJECT: Moral Waiver Packet Submission — ${fullName||'[APPLICANT NAME]'}`);
     lines.push(``);
-    lines.push(`1. Submitting moral waiver packet for ${fullName||'[NAME]'}, SSN (last 4): XXXX-XX-${ssnLast4}.`);
+    lines.push(`1. Submitting moral waiver packet for ${fullName||'[NAME]'}.`);
     if (applicant.rsid) lines.push(`   RSID: ${applicant.rsid}`);
     if (applicant.mosCode) lines.push(`   Target MOS: ${applicant.mosCode}`);
     lines.push(``);
@@ -1261,7 +1321,7 @@ const OffenseEditor = ({ o, applicant, onChange, onDone }) => {
 };
 
 /* ── Phase 1: Screen ─────────────────────────────────────────────────── */
-const PhaseScreen = ({ applicant, setApplicant, verdict, openRef }) => {
+const PhaseScreen = ({ applicant, setApplicant, verdict, openRef, openTables }) => {
   const [query, setQuery] = useState('');
   const [editId, setEditId] = useState(null);
   const [comboOpen, setComboOpen] = useState(false);
@@ -1329,7 +1389,8 @@ const PhaseScreen = ({ applicant, setApplicant, verdict, openRef }) => {
         <div className="sec-hd">
           <div className="sec-label">Offense record</div>
           <div className="sec-note">
-            {offenses.length} {offenses.length === 1 ? 'entry' : 'entries'} · list every offense, including traffic — the regulation counts them
+            {offenses.length} {offenses.length === 1 ? 'entry' : 'entries'} · list every offense, including traffic — the regulation counts them.{' '}
+            <button className="cite" onClick={openTables}>Offense chart</button>
           </div>
         </div>
 
@@ -1766,15 +1827,14 @@ const CaseFileDrawer = ({ roster, activeId, applicant, setApplicant, onSwitch, o
               <div className="field"><label className="flabel">MI</label>
                 <input className="finput" value={applicant.mi||''} onChange={e=>set('mi',e.target.value)}/></div>
             </div>
-            <div className="fgrid-3" style={{marginTop:14}}>
-              <div className="field"><label className="flabel">SSN — last 4</label>
-                <input className="finput" value={applicant.ssn||''} maxLength={4} placeholder="1234"
-                  onChange={e=>set('ssn', e.target.value.replace(/\D/g,'').slice(-4))}/>
-                <div className="fnote">Full SSN is never stored</div></div>
+            <div className="fgrid" style={{marginTop:14}}>
               <div className="field"><label className="flabel">Date of birth</label>
                 <input className="finput" type="date" value={applicant.dob||''} onChange={e=>set('dob',e.target.value)}/></div>
               <div className="field"><label className="flabel">RSID</label>
                 <input className="finput" value={applicant.rsid||''} onChange={e=>set('rsid',e.target.value)}/></div>
+            </div>
+            <div className="fnote" style={{marginTop:10}}>
+              This tool does not collect an SSN in any form. Keep PII out of the description and disposition fields — the generated packet identifies the applicant by name and RSID only.
             </div>
             <div className="fgrid" style={{marginTop:14}}>
               <div className="field"><label className="flabel">Education level</label>
@@ -1856,24 +1916,80 @@ const CaseFileDrawer = ({ roster, activeId, applicant, setApplicant, onSwitch, o
   );
 };
 
-/* ── Reference drawer ────────────────────────────────────────────────── */
-const RefDrawer = ({ para, setPara, onClose }) => {
+/* ── Reference drawer ──────────────────────────────────────────────────
+   Two views: the paragraph text, and the Chapter 4 offense-code tables
+   (4-1 through 4-4) showing how each offense is classified for waivers.
+   ─────────────────────────────────────────────────────────────────────── */
+const OffenseTables = () => {
+  const [q, setQ] = useState('');
+  const term = q.trim().toLowerCase();
+  const tables = OFFENSE_TABLES.map(t => ({
+    ...t,
+    rows: term ? t.rows.filter(r => (r[0] + ' ' + r[1] + ' ' + (r[2]||'')).toLowerCase().includes(term)) : t.rows,
+  })).filter(t => t.rows.length > 0);
+  const hits = tables.reduce((n,t) => n + t.rows.length, 0);
+
+  return (
+    <>
+      <div className="tbl-search">
+        <input className="finput" value={q} onChange={e=>setQ(e.target.value)}
+          placeholder="Filter by code or keyword — e.g. 316, shoplifting, assault"/>
+        <div className="tbl-count">{term ? `${hits} of 163` : '163 codes'}</div>
+      </div>
+      <div className="drawer-body" style={{whiteSpace:'normal',padding:0}}>
+        {tables.length === 0 && <div className="empty">No offense code matches “{q}”.</div>}
+        {tables.map(t => {
+          const accent = clsOf({class:t.cls}).accent;
+          return (
+            <div key={t.id}>
+              <div className="tbl-hd" style={{borderLeftColor:accent}}>
+                <div className="tbl-title" style={{color:accent}}>{t.title}</div>
+                <div className="tbl-rule">{t.rule}</div>
+              </div>
+              {t.rows.map(([code, title, flag]) => (
+                <div key={code} className="tbl-row">
+                  <div className="tbl-code" style={{color:accent}}>{code}</div>
+                  <div>
+                    <div className="tbl-text">{title}</div>
+                    {flag && <div className="tbl-flag">{flag}</div>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          );
+        })}
+      </div>
+    </>
+  );
+};
+
+const RefDrawer = ({ para, setPara, view, setView, onClose }) => {
   const keys = Object.keys(PARA_TEXT);
   return (
     <div className="scrim" onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
       <div className="drawer">
         <div className="drawer-hd">
-          <div className="drawer-title">AR 601-210 — {para}</div>
+          <div className="drawer-title">
+            AR 601-210 — {view === 'tables' ? 'Chapter 4 offense tables' : para}
+          </div>
           <button className="drawer-close" onClick={onClose}>Close</button>
         </div>
-        <div style={{padding:'14px 22px',borderBottom:'1px solid var(--hair)',flex:'none'}}>
-          <div className="ref-index">
-            {keys.map(k => (
-              <button key={k} className={`ref-pill${k===para?' on':''}`} onClick={()=>setPara(k)}>{k}</button>
-            ))}
-          </div>
+        <div className="drawer-tabs">
+          <button className={`drawer-tab${view==='para'?' on':''}`} onClick={()=>setView('para')}>Paragraphs</button>
+          <button className={`drawer-tab${view==='tables'?' on':''}`} onClick={()=>setView('tables')}>Offense tables</button>
         </div>
-        <div className="drawer-body">{PARA_TEXT[para] || PARA_TEXT['4-6']}</div>
+        {view === 'tables' ? <OffenseTables/> : (
+          <>
+            <div style={{padding:'14px 22px',borderBottom:'1px solid var(--hair)',flex:'none'}}>
+              <div className="ref-index">
+                {keys.map(k => (
+                  <button key={k} className={`ref-pill${k===para?' on':''}`} onClick={()=>setPara(k)}>{k}</button>
+                ))}
+              </div>
+            </div>
+            <div className="drawer-body">{PARA_TEXT[para] || PARA_TEXT['4-6']}</div>
+          </>
+        )}
       </div>
     </div>
   );
@@ -1905,6 +2021,7 @@ const App = () => {
   const [restore, setRestore] = useState(null);
   const [refOpen, setRefOpen] = useState(false);
   const [refPara, setRefPara] = useState('4-6');
+  const [refView, setRefView] = useState('para');
   const [caseOpen, setCaseOpen] = useState(false);
   const [samplesOpen, setSamplesOpen] = useState(false);
 
@@ -1932,7 +2049,8 @@ const App = () => {
   const requiredItems = getRequiredChecklist(verdict?.authority || 'BN', offenseFlags(applicant?.offenses||[]));
   const doneCount = requiredItems.filter(i => clStatus[i.id] === 'complete').length;
 
-  const openRef = (para) => { setRefPara(resolvePara(para)); setRefOpen(true); };
+  const openRef = (para) => { setRefPara(resolvePara(para)); setRefView('para'); setRefOpen(true); };
+  const openTables = () => { setRefView('tables'); setRefOpen(true); };
 
   const addApplicant = () => { const a = blankApplicant(); setRoster(p => [...p, a]); setActiveId(a.id); setPhase(1); };
 
@@ -2021,6 +2139,7 @@ const App = () => {
           <button className="btn-ghost" onClick={()=>setSamplesOpen(v=>!v)}>Samples</button>
           {samplesOpen && <SampleMenu onLoad={loadSample} onClose={()=>setSamplesOpen(false)}/>}
         </div>
+        <button className="btn-ghost" onClick={openTables} title="AR 601-210 Chapter 4 offense code tables">Offense chart</button>
         <button className="btn-ghost-gold" onClick={()=>openRef(banner.cite)}>Reference</button>
       </div>
 
@@ -2053,7 +2172,7 @@ const App = () => {
 
       <div className="body">
         <div className="content">
-          {phase === 1 && <PhaseScreen applicant={applicant} setApplicant={setApplicant} verdict={verdict} openRef={openRef}/>}
+          {phase === 1 && <PhaseScreen applicant={applicant} setApplicant={setApplicant} verdict={verdict} openRef={openRef} openTables={openTables}/>}
           {phase === 2 && <PhasePacket applicant={applicant} requiredItems={requiredItems}
             clStatus={clStatus} setClStatus={setClStatus} expDates={expDates} setExpDates={setExpDates}/>}
           {phase === 3 && <PhaseGenerate applicant={applicant} verdict={verdict}
@@ -2063,7 +2182,8 @@ const App = () => {
           clStatus={clStatus} expDates={expDates}/>
       </div>
 
-      {refOpen && <RefDrawer para={refPara} setPara={setRefPara} onClose={()=>setRefOpen(false)}/>}
+      {refOpen && <RefDrawer para={refPara} setPara={setRefPara} view={refView} setView={setRefView}
+        onClose={()=>setRefOpen(false)}/>}
       {caseOpen && <CaseFileDrawer roster={roster} activeId={activeId} applicant={applicant}
         setApplicant={setApplicant} onSwitch={id=>setActiveId(id)} onAdd={addApplicant}
         onRemove={removeApplicant} onClear={clearAll} onClose={()=>setCaseOpen(false)}/>}
