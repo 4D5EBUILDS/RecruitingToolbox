@@ -544,6 +544,243 @@ window.PARA_TEXT = {
 };
 
 
+/* ── PLAIN-LANGUAGE OFFENSE TRIAGE ───────────────────────────────────────
+   Recruiters and applicants describe offenses in everyday words, not in
+   AR 601-210 category names. Each topic below maps those words onto the
+   one question that actually changes the offense code, so the recruiter
+   describes what happened and the app does the classification.
+
+   A topic with `to` is unambiguous and resolves on click. A topic with
+   `q` asks exactly one question first. Every question carries a
+   "Not sure yet" answer that logs the offense as UNRESOLVED rather than
+   guessing — an unresolved offense is never counted toward a ruling.
+   ─────────────────────────────────────────────────────────────────────── */
+window.TRIAGE_TOPICS = [
+  { id:'theft', label:'Theft / shoplifting', to:null,
+    terms:['shoplifting','shoplift','shoplifted','stealing','stole','stolen','theft','larceny','petty theft','grand theft','retail theft','boosting','took merchandise','pocketed'],
+    q:'What was the total value of what was taken?',
+    hint:'$500 is the line. Under it the offense is misconduct (Table 4-3, code 311). At or over it, it is a felony (Table 4-4, code 418) and the waiver goes to CG USARD.',
+    answers:[
+      { label:'Under $500', to:'misc_theft_minor' },
+      { label:'$500 or more', to:'major_property' },
+      { label:'Not sure yet', to:null, verify:'Get the court documents. The dollar amount decides misdemeanor vs felony, which changes the approval authority and adds a 24-month wait.' },
+    ] },
+
+  { id:'burglary', label:'Burglary / breaking and entering', to:'major_property',
+    terms:['burglary','burgled','broke in','broke into','breaking and entering','b and e','forced entry','broke a window to get in'] },
+
+  { id:'vehicle', label:'Took a vehicle / joyriding', to:null,
+    terms:['joyriding','joy riding','took the car','stole a car','stole the truck','car theft','grand theft auto','gta','took his car','borrowed the car'],
+    q:'Whose vehicle was it?',
+    hint:'Taking a family member vehicle or joyriding is misconduct (Table 4-3, code 324). Grand theft auto is a felony (Table 4-4, code 419).',
+    answers:[
+      { label:'Family member, or taken without permission then returned', to:'misc_other' },
+      { label:'Stranger vehicle — charged as grand theft auto', to:'major_property' },
+      { label:'Not sure yet', to:null, verify:'Get the charging document. Joyriding and grand theft auto carry very different approval levels.' },
+    ] },
+
+  { id:'marijuana', label:'Marijuana / THC', to:null,
+    terms:['weed','pot','marijuana','cannabis','thc','edibles','dab','dabs','vape pen','grass','joint','blunt','paraphernalia','pipe','bong','grinder'],
+    q:'Was it possession, or selling and distributing?',
+    hint:'Possession or paraphernalia is Table 4-3, code 316 — and since 20 Mar 2026 a single conviction needs no waiver. Sale, distribution, or trafficking, including intent, is code 436 and CANNOT be waived (4-7c(3)).',
+    answers:[
+      { label:'Possession or paraphernalia only', to:'misc_marijuana_possess' },
+      { label:'Selling, sharing, or intent to distribute', to:'bar_drug_distribution' },
+      { label:'Not sure yet', to:null, verify:'Get the charging document. Possession may need no waiver at all; a distribution charge ends the case.' },
+    ] },
+
+  { id:'drugs', label:'Other drugs', to:null,
+    terms:['cocaine','coke','crack','meth','methamphetamine','heroin','fentanyl','opioid','pills','xanax','percocet','oxy','adderall','molly','ecstasy','mdma','lsd','acid','mushrooms','shrooms','narcotics','controlled substance','drug charge'],
+    q:'Was it possession and use, or selling and distributing?',
+    hint:'Possession or use of a non-marijuana drug is a felony-level offense (Table 4-4, code 428). Sale, distribution, or trafficking is code 436 and CANNOT be waived (4-7c(3)).',
+    answers:[
+      { label:'Possession or personal use', to:'major_drug_possess' },
+      { label:'Selling, distributing, or intent', to:'bar_drug_distribution' },
+      { label:'Not sure yet', to:null, verify:'Get the charging document. Possession is a CG USARD waiver; distribution ends the case.' },
+    ] },
+
+  { id:'dui', label:'DUI / DWI / driving impaired', to:'misc_dui',
+    terms:['dui','dwi','owi','dwai','drunk driving','driving drunk','drinking and driving','impaired driving','buzzed driving','blew a','over the limit','breathalyzer'] },
+
+  { id:'fight', label:'Fight / assault / battery', to:null,
+    terms:['fight','fighting','bar fight','assault','battery','punched','hit someone','beat up','jumped','brawl','altercation','scuffle','got physical','shoved'],
+    q:'Was a weapon involved, and what did the court impose?',
+    hint:'Simple assault with a fine of $500 or less and no confinement is a MINOR offense (Table 4-2, code 201). Over $500 or any confinement makes it misconduct (code 300). A weapon or maiming makes it aggravated assault — a felony (code 400).',
+    answers:[
+      { label:'A weapon was used, or serious injury resulted', to:'major_violent' },
+      { label:'No weapon — fine over $500, or jail was ordered', to:'misc_assault' },
+      { label:'No weapon — fine $500 or less, no jail', to:'minor_assault_simple' },
+      { label:'Not sure yet', to:null, verify:'Get the sentencing document. The fine amount and whether confinement was ordered decide whether this is a minor offense or misconduct.' },
+    ] },
+
+  { id:'domestic', label:'Domestic violence', to:null,
+    terms:['domestic','domestic violence','dv','domestic battery','hit his girlfriend','hit her boyfriend','family fight','spouse','restraining order','order of protection','no contact order'],
+    q:'What was the relationship to the victim?',
+    hint:'The Lautenberg Amendment covers a current or former spouse, a parent or guardian, someone the applicant shares a child with, or someone they lived with as a partner. A qualifying CONVICTION bars enlistment permanently, at every level (4-7b).',
+    answers:[
+      { label:'Spouse, ex, co-parent, or live-in partner', to:'bar_lautenberg' },
+      { label:'Sibling, other relative, or non-partner roommate', to:'misc_dv_non_laut' },
+      { label:'Not sure yet', to:null, verify:'Get the court documents and check with JAG. The relationship decides whether this is a waiverable offense or a permanent bar.' },
+    ] },
+
+  { id:'weapon', label:'Weapon charge', to:null,
+    terms:['gun','firearm','pistol','handgun','rifle','knife','weapon','concealed carry','ccw','carrying concealed','brass knuckles','bb gun','pellet gun','switchblade','box cutter','taser'],
+    q:'What kind of weapon, and where was it?',
+    hint:'ANY weapon on school grounds triggers a CG USARD suitability review regardless of disposition (4-2f(2)(a)7). A firearm on school grounds is a felony (code 408).',
+    answers:[
+      { label:'Firearm on school grounds', to:'major_weapons' },
+      { label:'Firearm — unlawful or concealed carry, not at school', to:'misc_weapons' },
+      { label:'Non-firearm weapon on school grounds', to:'misc_other' },
+      { label:'Non-firearm weapon elsewhere (knife, knuckles, BB gun)', to:'minor_other' },
+      { label:'Not sure yet', to:null, verify:'Get the police report. Whether it was a firearm, and whether it was on school grounds, changes both the code and the review level.' },
+    ] },
+
+  { id:'vandalism', label:'Vandalism / property damage', to:null,
+    terms:['vandalism','graffiti','tagging','keyed','broke a window','criminal mischief','damaged property','destruction of property','smashed','egged'],
+    q:'Was the fine or restitution over $500, or was confinement ordered?',
+    hint:'Over $500 or any confinement makes it misconduct (Table 4-3, code 328). At or under $500 with no confinement it is a minor offense (Table 4-2, code 228).',
+    answers:[
+      { label:'Yes — over $500, or jail was ordered', to:'misc_vandalism' },
+      { label:'No — $500 or less, no jail', to:'minor_other' },
+      { label:'Not sure yet', to:null, verify:'Get the sentencing document for the restitution amount.' },
+    ] },
+
+  { id:'trespass', label:'Trespassing', to:null,
+    terms:['trespass','trespassing','was on property','no trespassing','unlawful entry','snuck in','went onto'],
+    q:'How was it charged?',
+    hint:'Criminal trespass and unlawful entry are misconduct (Table 4-3, codes 306 and 326). Simple or non-criminal trespass is minor (Table 4-2, code 237).',
+    answers:[
+      { label:'Criminal trespass or unlawful entry', to:'misc_trespass' },
+      { label:'Simple or non-criminal trespass', to:'minor_trespass_simple' },
+      { label:'Not sure yet', to:null, verify:'Get the charging document for the exact charge.' },
+    ] },
+
+  { id:'underage', label:'Underage drinking / MIP', to:'minor_mip',
+    terms:['mip','minor in possession','underage drinking','underage','drinking under 21','possession of alcohol','tobacco','vaping underage','fake id'] },
+
+  { id:'disorderly', label:'Disorderly conduct / drunk in public', to:'minor_disorderly',
+    terms:['disorderly','disorderly conduct','drunk in public','public intoxication','public intox','disturbing the peace','causing a scene','noise complaint','boisterous','rowdy'] },
+
+  { id:'traffic', label:'Traffic ticket', to:null,
+    terms:['speeding','ticket','tickets','traffic','no insurance','uninsured','suspended license','expired plates','expired tags','ran a red light','stop sign','seatbelt','citation','pulled over','moving violation','reckless driving','hit and run','left the scene'],
+    q:'Which of these fits?',
+    hint:'Routine traffic needs no waiver. But an UNPAID ticket counts as a pending charge and stops ALL processing until it is paid (4-22g).',
+    answers:[
+      { label:'Reckless driving with a $300+ fine or jail, or hit-and-run', to:'misc_driving' },
+      { label:'Routine tickets — speeding, insurance, plates, license', to:'traffic_minor' },
+      { label:'Not sure yet', to:null, verify:'Get the citation. Reckless driving crosses into misconduct once the fine reaches $300 or confinement is imposed.' },
+    ] },
+
+  { id:'fraud', label:'Fraud / bad checks / forgery', to:null,
+    terms:['fraud','bad check','bounced check','worthless check','forgery','forged','identity theft','credit card','stolen card','debit card','embezzlement','scam','scammed','wrote a check'],
+    q:'What was the dollar value involved?',
+    hint:'Under $500 it is misconduct (Table 4-3, codes 310 and 311). At or over $500 it is a felony (Table 4-4, codes 409, 417, 421).',
+    answers:[
+      { label:'Under $500', to:'misc_theft_minor' },
+      { label:'$500 or more', to:'major_fraud' },
+      { label:'Not sure yet', to:null, verify:'Get the charging document for the dollar amount.' },
+    ] },
+
+  { id:'resisting', label:'Resisting arrest / running from police', to:'misc_resist',
+    terms:['resisting','resisting arrest','ran from police','ran from the cops','eluding','evading','fled','took off running','high speed chase'] },
+
+  { id:'threats', label:'Threats / bomb threat', to:'major_terrorist_threats',
+    terms:['threat','threats','bomb threat','school threat','terroristic','threatened to shoot','shot up the school','swatting','made a threat'] },
+
+  { id:'harassment', label:'Harassment / stalking', to:null,
+    terms:['harassment','harassing','stalking','stalked','cyberbullying','bullying','menacing','sexting','revenge porn','sent messages','kept texting','catfishing'],
+    q:'How was it charged?',
+    hint:'Any sexually based offense, including sexting, triggers a CG USARD suitability review (4-2f(2)(a)6).',
+    answers:[
+      { label:'By phone, text, internet, or email', to:'misc_harassment' },
+      { label:'In person — harassment, menacing, or stalking', to:'minor_harassment' },
+      { label:'Charged as a felony', to:'major_other' },
+      { label:'Not sure yet', to:null, verify:'Get the charging document for the exact charge and degree.' },
+    ] },
+
+  { id:'sex', label:'Sex offense / prostitution', to:null,
+    terms:['sex offense','sexual assault','rape','statutory','indecent exposure','registry','sex offender','molestation','child porn','solicitation','prostitution','indecent'],
+    q:'How was it charged?',
+    hint:'A sex offense conviction, or any current or past registry listing, is a permanent bar with no waiver authorized (4-22j / 4-7d).',
+    answers:[
+      { label:'Sex offense conviction, or on any registry', to:'bar_sex_offense' },
+      { label:'Prostitution or solicitation', to:'misc_prostitution' },
+      { label:'Indecent exposure only', to:'minor_other' },
+      { label:'Not sure yet', to:null, verify:'Get the court documents and run the registry check before going any further.' },
+    ] },
+
+  { id:'violent', label:'Robbery / arson / kidnapping', to:'major_violent',
+    terms:['robbery','robbed','mugging','armed robbery','carjacking','held up','arson','set fire','set a fire','kidnapping','abduction','false imprisonment'] },
+
+  { id:'homicide', label:'Homicide', to:null,
+    terms:['murder','homicide','killed','manslaughter','vehicular homicide','died','death'],
+    q:'How was it charged?',
+    hint:'A murder conviction is a permanent disqualification with no waiver authority (4-22k).',
+    answers:[
+      { label:'Murder or intentional homicide', to:'bar_murder' },
+      { label:'Manslaughter', to:'major_violent' },
+      { label:'Negligent or vehicular homicide', to:'major_other' },
+      { label:'Not sure yet', to:null, verify:'Get the court documents. Murder is a permanent bar; manslaughter is a CG USARD waiver.' },
+    ] },
+
+  { id:'juvenile', label:'Runaway / truancy / curfew', to:'minor_other',
+    terms:['runaway','ran away','truancy','truant','skipped school','curfew','incorrigible','beyond parental control','wayward','ungovernable','status offense'] },
+
+  { id:'dat', label:'Failed drug test at MEPS', to:null,
+    terms:['dat','drug test','failed drug test','popped hot','positive test','tested positive','meps drug test','urinalysis','hot ua','ua'],
+    q:'Which test, and what substance?',
+    hint:'A FIRST positive for marijuana or alcohol is a 90-day wait and a BN CO waiver. A first positive for any other drug is a ONE-YEAR wait. A SECOND positive of any kind is a permanent disqualification (4-18b).',
+    answers:[
+      { label:'First positive — marijuana or alcohol', to:'dat_mj_first' },
+      { label:'First positive — cocaine or another drug', to:'dat_other_first' },
+      { label:'Second positive — any substance', to:'dat_second' },
+      { label:'Not sure yet', to:null, verify:'Confirm with MEPS which test this was. A second positive ends the case permanently.' },
+    ] },
+
+  { id:'prior_service', label:'Prior service — military discipline', to:null,
+    terms:['article 15','njp','nonjudicial','non-judicial','court martial','court-martial','chapter','discharged','re code','re-code','bad conduct','other than honorable','oth','general discharge'],
+    q:'What kind of action was it?',
+    hint:'Military discipline is handled through suitability review and RE-code rules, not a civil conduct waiver (4-12c).',
+    answers:[
+      { label:'Article 15 / nonjudicial punishment', to:'ps_njp' },
+      { label:'Court-martial', to:'ps_court_martial' },
+      { label:'Administrative separation / RE code', to:'ps_adsep' },
+      { label:'Not sure yet', to:null, verify:'Get the DD 214 and the separation packet before determining the RE-code path.' },
+    ] },
+];
+
+/* ── TRIAGE NOTES ────────────────────────────────────────────────────────
+   Words recruiters type that are NOT offenses but are common points of
+   confusion. Searching them returns the regulation answer instead of an
+   empty result.
+   ─────────────────────────────────────────────────────────────────────── */
+window.TRIAGE_NOTES = [
+  { terms:['warrant','bench warrant','outstanding warrant','failure to appear','fta'],
+    title:'An outstanding warrant is a pending charge',
+    body:'Answer the first gate YES. Under 4-22g an open warrant or unresolved charge stops ALL processing — including waiver submission — until it is fully resolved. Unpaid traffic citations count too.',
+    cite:'4-22g' },
+  { terms:['expunged','expungement','sealed','sealed record','pardon','pardoned','set aside','wiped'],
+    title:'Expungement does NOT remove the waiver requirement',
+    body:'Under 4-30c, a later expungement, sealing, or pardon removes the conviction under state law but the waiver is still required and the underlying facts must be revealed. List the offense on the SF 86 and UF 601-210.08 and log it here as a conviction.',
+    cite:'4-30' },
+  { terms:['diversion','deferred','deferred adjudication','pretrial diversion','first offender','adjudication withheld','probated','nolo','no contest'],
+    title:'Diversion is an adverse disposition, not a dismissal',
+    body:'This is the most common packet error. Under 4-30b, diversion programs, deferred adjudication, adjudication withheld, probated sentences, fines, and community service are all ADVERSE DISPOSITIONS. Log the offense as "Other adverse disposition" — not as dismissed.',
+    cite:'4-30' },
+  { terms:['juvenile','under 18','minor','was a kid','as a teenager','youthful offender'],
+    title:'Juvenile offenses still count',
+    body:'Unless the court record clearly shows the applicant was tried as an adult, a juvenile offense counts as an adverse disposition (4-30b(5)). Log it normally — the app flags it as juvenile from the date of birth. Juvenile major misconduct with no offenses in the last 5 years may be considered in meritorious cases (4-7c(2)).',
+    cite:'4-30' },
+  { terms:['dropped','dismissed','charges dropped','nolle','not guilty','acquitted','no charges'],
+    title:'Only a true dismissal skips the waiver',
+    body:'If the arrest never resulted in referred charges, or the charge was dismissed with NO adverse disposition, no waiver is required (4-30a) — but the incident must still be listed on the SF 86. Confirm nothing was paid or completed in exchange for the dismissal; if it was, it is an adverse disposition. A charge dropped on the condition that the applicant enlists is never waiverable.',
+    cite:'4-30' },
+  { terms:['probation','on probation','parole','supervised','unsupervised probation'],
+    title:'Current civil restraint stops processing',
+    body:'Confinement, parole, or supervised probation makes the applicant ineligible to process (4-22h). The one exception is UNSUPERVISED probation for a para 4-35 minor offense, with all fines paid and all conditions complete. Answer the second gate accordingly.',
+    cite:'4-22h' },
+];
+
 /* ── AR 601-210 CHAPTER 4 OFFENSE TABLES ─────────────────────────────────
    Verbatim code lists from AR 601-210, 20 March 2026, paras 4-8 through 4-11.
    `rule` states how each table is treated for waiver purposes; `flags` call out

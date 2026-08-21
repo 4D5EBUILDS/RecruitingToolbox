@@ -78,6 +78,9 @@ button,select,textarea,input{font-family:inherit}
 .verdict-row{display:flex;align-items:center;gap:18px;margin-top:16px;flex-wrap:wrap}
 .verdict-auth{flex:none;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:7px 12px}
 .verdict-body{font-size:13px;color:var(--t2);line-height:1.5;max-width:720px}
+.verdict-caution{display:flex;gap:10px;align-items:flex-start;margin-top:16px;padding:10px 14px;
+  background:rgba(241,101,33,.12);border-left:3px solid var(--orange);color:#F7B79A;
+  font-size:12.5px;line-height:1.5}
 .cite{font-size:12px;color:var(--gold);text-decoration:none;border:none;border-bottom:1px solid rgba(255,204,1,.4);
   background:none;cursor:pointer;padding:0;font-family:inherit;flex:none}
 .cite:hover{border-bottom-color:var(--gold)}
@@ -144,7 +147,7 @@ button,select,textarea,input{font-family:inherit}
 .combo-input{flex:1;background:none;border:none;outline:none;color:var(--t1);font-size:14px}
 .combo-input::placeholder{color:var(--t3)}
 .combo-count{font-size:11px;color:var(--t3);letter-spacing:.06em;text-transform:uppercase;flex:none}
-.combo-list{max-height:250px;overflow-y:auto}
+.combo-list{max-height:340px;overflow-y:auto}
 .combo-item{display:flex;width:100%;align-items:flex-start;gap:14px;text-align:left;padding:12px 16px;
   background:none;border:none;border-bottom:1px solid var(--hair-faint);cursor:pointer;font-family:inherit}
 .combo-item:hover{background:rgba(255,255,255,.04)}
@@ -153,6 +156,29 @@ button,select,textarea,input{font-family:inherit}
 .combo-label{font-size:14px;color:var(--t1)}
 .combo-sub{font-size:12px;color:var(--t3);margin-top:3px;line-height:1.45}
 .combo-empty{padding:14px 16px;font-size:12px;color:var(--t3)}
+
+/* ── TRIAGE ──────────────────────────────────────────────── */
+.triage{padding:18px;border-top:1px solid var(--hair-soft)}
+.triage-topic{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold)}
+.triage-q{font-size:16px;font-weight:500;line-height:1.35;margin-top:8px;color:var(--t1)}
+.triage-hint{font-size:12px;color:var(--t3);line-height:1.5;margin-top:8px;
+  padding-left:11px;border-left:2px solid var(--hair)}
+.triage-answers{display:flex;flex-direction:column;gap:6px;margin-top:14px}
+.triage-a{display:flex;flex-direction:column;gap:3px;align-items:flex-start;text-align:left;
+  padding:12px 15px;background:var(--s4);border:1px solid rgba(255,255,255,.16);color:var(--t1);
+  font-family:inherit;font-size:14px;cursor:pointer}
+.triage-a:hover{border-color:var(--gold);background:rgba(255,204,1,.07)}
+.triage-a.unsure{border-style:dashed;color:var(--t3)}
+.triage-a.unsure:hover{border-color:var(--orange);background:rgba(241,101,33,.07);color:var(--t1)}
+.triage-a-note{font-size:11px;color:var(--t4)}
+.triage-note{padding:14px 16px;border-bottom:1px solid var(--hair-soft);background:rgba(241,101,33,.06);
+  border-left:3px solid var(--orange)}
+.triage-note-hd{font-size:13px;font-weight:700;color:var(--orange)}
+.triage-note-body{font-size:12.5px;color:var(--t2);line-height:1.55;margin:6px 0 8px}
+.combo-divider{padding:9px 16px;font-size:10px;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--t4);background:rgba(255,255,255,.02);
+  border-bottom:1px solid var(--hair-faint)}
+.srow-flag{background:rgba(241,101,33,.06)}
 
 /* ── OFFENSE EDITOR ──────────────────────────────────────── */
 .editor{background:var(--s3);border:1px solid var(--hair);border-left:3px solid var(--gold);
@@ -366,7 +392,7 @@ const {
   DISPOSITION_OPTIONS, CONFINEMENT_OPTIONS, PROBATION_OPTIONS,
   SAMPLE_SCENARIOS, PARA_TEXT, ED_LEVELS, US_STATES,
   MOS_RESTRICTIONS, APPROVABILITY_FACTORS, OFFENSE_TABLES,
-  CAT_PARA_MAP, Q_PARA_MAP, REG_VERSION
+  CAT_PARA_MAP, Q_PARA_MAP, REG_VERSION, TRIAGE_TOPICS, TRIAGE_NOTES
 } = window;
 
 
@@ -462,6 +488,21 @@ const computeCaseVerdict = (applicant) => {
   if (ca.sex_offender === 'yes') bars.push({ perm:true, title:'Sex Offense / Registry Listing', cite:'AR 601-210, 4-22j / 4-7d', text:'Sex offense conviction or sex offender registry listing — permanently disqualified. No waiver authorized.' });
   if (ca.civil_restraint === 'unsupervised') notes.push({ label:'Unsupervised probation for a para 4-35 minor offense — may process, provided all fines are paid, all conditions complete, and no further court action is pending.', cite:'4-35' });
   if (ca.dependence === 'remission') notes.push({ label:'Prior dependence in sustained remission 12+ consecutive months — eligible. Document treatment history on DD 2807-2.', cite:'4-22b/c' });
+
+  /* ── Incomplete entries ──
+     An offense with no disposition, or one logged from triage without a
+     resolved classification, is NOT counted below. Report it so the UI can
+     refuse to show a clean ruling built on a partial record. */
+  const incomplete = [];
+  offenses.forEach(o => {
+    if (!o.categoryId) {
+      incomplete.push({ id:o.id, label:o.pendingLabel || 'Unclassified offense', missing:'classification' });
+      return;
+    }
+    const c = catOf(o.categoryId);
+    if (c && c.group !== 'dat' && c.class !== 'ps' && !o.disposition)
+      incomplete.push({ id:o.id, label:c.label, missing:'disposition' });
+  });
 
   /* ── Classify each offense ── */
   const majors=[], miscs=[], minors=[], traffics=[], dats=[];
@@ -616,7 +657,7 @@ const computeCaseVerdict = (applicant) => {
   else if (offenses.length) status = 'NO_WAIVER_REQUIRED';
   else status = 'PENDING';
 
-  return { status, authority, bars, waivers, waits, suitability, notes, etp,
+  return { status, authority, bars, waivers, waits, suitability, notes, etp, incomplete,
            permBar: bars.some(b => b.perm), waivedIds,
            counts:{ major:nMaj, misc:nMisc, minor:nMinor, traffic:traffics.length, dat:dats.length } };
 };
@@ -1104,8 +1145,37 @@ const resolvePara = (cite) => {
   return '4-6';
 };
 
-/* Map the engine verdict onto the banner's design states. */
+/* Map the engine verdict onto the banner's design states.
+   An incomplete record never renders as a clean ruling — a missing
+   disposition or unresolved classification produces an amber HOLD instead
+   of the green "no waiver" it would otherwise compute to. */
 const bannerFor = (verdict) => {
+  const base = bannerBase(verdict);
+  const inc = verdict?.incomplete || [];
+  if (!inc.length) return base;
+
+  const one = inc.length === 1;
+  const what = one
+    ? (inc[0].missing === 'classification'
+        ? `"${inc[0].label}" has not been classified yet`
+        : `"${inc[0].label}" is missing its court disposition`)
+    : `${inc.length} offenses are missing a disposition or classification`;
+  const they = one ? 'it is' : 'they are';
+
+  // A clean or empty ruling is not trustworthy while entries are outstanding.
+  if (base.tag === 'No waiver required' || verdict.status === 'PENDING') return {
+    tag:'Record incomplete', title:'Not determined', accent:C_ORANGE,
+    authority:'Cannot rule yet', authBg:'rgba(241,101,33,.18)', authFg:C_ORANGE,
+    body:`${what}, so ${they} NOT counted in this ruling. Finish the record before telling the applicant anything.`,
+    cite: base.cite, caution:null };
+
+  // A permanent bar cannot get better, so the ruling stands; everything else
+  // could still escalate, so carry the warning on the face of the banner.
+  if (verdict.permBar) return base;
+  return { ...base, caution:`${what} and ${one ? 'is' : 'are'} not counted — this ruling may change once ${they} entered.` };
+};
+
+const bannerBase = (verdict) => {
   const muted = { authBg:'rgba(255,255,255,.08)', authFg:C_MUTED };
   if (!verdict || verdict.status === 'PENDING') return {
     tag:'No record entered', title:'Clean so far', accent:C_MUTED, authority:'Nothing to waive', ...muted,
@@ -1155,7 +1225,13 @@ const bannerFor = (verdict) => {
 };
 
 const displayScore = (verdict, approv) => {
-  if (!verdict || verdict.status === 'PENDING') return 100;
+  // No score on a partial record — a number here reads as confidence the
+  // app has not earned. Same for an empty case.
+  if (!verdict) return null;
+  const emptyCase = verdict.status === 'PENDING' && !verdict.incomplete.length;
+  if (emptyCase) return null;
+  if (verdict.incomplete.length && !verdict.permBar) return null;
+  if (verdict.status === 'PENDING') return null;
   if (verdict.status === 'NOT_WAIVABLE') return verdict.permBar ? 0 : 35;
   if (verdict.status === 'NO_WAIVER_REQUIRED') return 92;
   if (verdict.status === 'ETP_REQUIRED') return 50;
@@ -1175,12 +1251,11 @@ const displayFactors = (verdict, approv) => {
 const nextActions = (applicant, verdict, clStatus, expDates) => {
   const out = [];
   if (!verdict) return out;
+  // Incomplete entries come first — they are the reason a ruling may be wrong.
+  (verdict.incomplete||[]).forEach(i => out.push(i.missing === 'classification'
+    ? `Classify "${i.label}" — it is not counted yet`
+    : `Set the court disposition on "${i.label}" — it is not counted yet`));
   verdict.bars.filter(b => !b.perm).forEach(b => out.push(`Resolve: ${b.title.toLowerCase()}`));
-  const noDisp = (applicant.offenses||[]).filter(o => {
-    const c = catOf(o.categoryId) || {};
-    return !o.disposition && c.group !== 'dat' && c.class !== 'ps';
-  });
-  if (noDisp.length) out.push(`Set the court disposition on ${noDisp.length} offense${noDisp.length>1?'s':''}`);
   const req = getRequiredChecklist(verdict.authority || 'BN', offenseFlags(applicant.offenses||[]));
   req.filter(i => i.validity).forEach(i => {
     const d = daysUntilExpiry(expDates[i.id], i.validity);
@@ -1325,6 +1400,8 @@ const PhaseScreen = ({ applicant, setApplicant, verdict, openRef, openTables }) 
   const [query, setQuery] = useState('');
   const [editId, setEditId] = useState(null);
   const [comboOpen, setComboOpen] = useState(false);
+  const [topic, setTopic] = useState(null);      // triage question being answered
+  const [resolving, setResolving] = useState(null); // offense id being re-classified
 
   const ca = applicant.caseAnswers || {};
   const offenses = sortNewest(applicant.offenses || []);
@@ -1333,22 +1410,55 @@ const PhaseScreen = ({ applicant, setApplicant, verdict, openRef, openTables }) 
   const patch = (id, p) => updateOffenses((applicant.offenses||[]).map(o => o.id === id ? {...o, ...p} : o));
   const remove = id => { updateOffenses((applicant.offenses||[]).filter(o => o.id !== id)); if (editId === id) setEditId(null); };
 
-  const add = (catId) => {
-    const cat = catOf(catId);
-    const o = { id:`o${Date.now()}${Math.floor(Math.random()*1e3)}`, categoryId:catId,
+  const blankOffense = (catId, extra = {}) => {
+    const cat = catId ? catOf(catId) : null;
+    return { id:`o${Date.now()}${Math.floor(Math.random()*1e3)}`, categoryId:catId,
       offenseDate:'', convictionDate:'',
-      disposition:(cat.group === 'dat' || cat.class === 'ps') ? 'convicted' : '',
+      disposition:(cat && (cat.group === 'dat' || cat.class === 'ps')) ? 'convicted' : '',
       confinement:'no', releaseDate:'', probation:'no',
-      description:'', city:'', county:'', state:'', dispositionText:'', courtDocs:false, incidentRpt:false };
-    updateOffenses([...(applicant.offenses||[]), o]);
-    setQuery(''); setComboOpen(false); setEditId(o.id);
+      description:'', city:'', county:'', state:'', dispositionText:'',
+      courtDocs:false, incidentRpt:false, ...extra };
   };
+
+  const closeSearch = () => { setQuery(''); setComboOpen(false); setTopic(null); setResolving(null); };
+
+  const add = (catId) => {
+    const o = blankOffense(catId);
+    updateOffenses([...(applicant.offenses||[]), o]);
+    closeSearch(); setEditId(o.id);
+  };
+
+  // A triage answer either resolves to a category, or logs the offense
+  // unclassified so the ruling refuses to count it.
+  const answerTopic = (t, ans) => {
+    if (resolving) {
+      patch(resolving, ans.to
+        ? { categoryId:ans.to, pendingLabel:null, pendingTopicId:null, verifyNote:null }
+        : { verifyNote:ans.verify });
+      const id = resolving;
+      closeSearch();
+      if (ans.to) setEditId(id);
+      return;
+    }
+    const o = ans.to ? blankOffense(ans.to)
+      : blankOffense(null, { pendingLabel:t.label, pendingTopicId:t.id, verifyNote:ans.verify });
+    updateOffenses([...(applicant.offenses||[]), o]);
+    closeSearch();
+    if (ans.to) setEditId(o.id);
+  };
+
+  const pickTopic = (t) => { if (t.to) add(t.to); else { setTopic(t); setComboOpen(true); } };
 
   const q = query.trim().toLowerCase();
   const counts = {};
   (applicant.offenses||[]).forEach(o => { counts[o.categoryId] = (counts[o.categoryId]||0) + 1; });
-  const results = OFFENSE_CATEGORIES.filter(c =>
-    !q || (c.label + ' ' + (c.sub||'')).toLowerCase().includes(q));
+  const matchTopics = q ? TRIAGE_TOPICS.filter(t =>
+    t.label.toLowerCase().includes(q) || t.terms.some(x => x.includes(q) || q.includes(x))) : TRIAGE_TOPICS;
+  const matchNotes = q ? TRIAGE_NOTES.filter(n =>
+    n.terms.some(x => x.includes(q) || q.includes(x))) : [];
+  const results = q ? OFFENSE_CATEGORIES.filter(c =>
+    (c.label + ' ' + (c.sub||'')).toLowerCase().includes(q)) : [];
+  const nHits = matchTopics.length + results.length + matchNotes.length;
 
   return (
     <div className="col-760">
@@ -1397,28 +1507,41 @@ const PhaseScreen = ({ applicant, setApplicant, verdict, openRef, openTables }) 
         {offenses.length > 0 && (
           <div className="stack">
             {offenses.map(o => {
+              const unresolved = !o.categoryId;
               const cat = catOf(o.categoryId) || {};
-              const c = clsOf(cat);
+              const c = unresolved ? { accent:C_ORANGE, tagBg:'rgba(241,101,33,.15)', tag:'Unclassified' } : clsOf(cat);
               const waived = (verdict?.waivedIds||[]).includes(o.id);
-              const meta = [
-                dispLabel(o.disposition),
-                o.offenseDate ? fmtDate(o.offenseDate) : 'no date',
-                o.courtDocs ? 'court docs on file' : null,
-              ].filter(Boolean).join(' · ');
+              const needsDisp = !unresolved && cat.group !== 'dat' && cat.class !== 'ps' && !o.disposition;
+              const meta = unresolved
+                ? (o.verifyNote || 'Classification not resolved — not counted in the ruling')
+                : [ dispLabel(o.disposition),
+                    o.offenseDate ? fmtDate(o.offenseDate) : 'no date',
+                    o.courtDocs ? 'court docs on file' : null ].filter(Boolean).join(' · ');
+              const topicFor = unresolved ? TRIAGE_TOPICS.find(t => t.id === o.pendingTopicId) : null;
               return (
                 <React.Fragment key={o.id}>
-                  <div className="srow" style={{borderLeftColor:c.accent}}>
-                    <button className="srow-main" onClick={()=>setEditId(editId===o.id?null:o.id)}>
-                      <div className="srow-label">{waived && <span style={{color:C_GOLD}}>★ </span>}{o.description || cat.label}</div>
-                      <div className="srow-meta">{meta}</div>
+                  <div className={`srow${unresolved||needsDisp?' srow-flag':''}`} style={{borderLeftColor:c.accent}}>
+                    <button className="srow-main" onClick={()=>unresolved ? null : setEditId(editId===o.id?null:o.id)}>
+                      <div className="srow-label">
+                        {waived && <span style={{color:C_GOLD}}>★ </span>}
+                        {o.description || o.pendingLabel || cat.label}
+                      </div>
+                      <div className="srow-meta" style={unresolved||needsDisp?{color:C_ORANGE}:{}}>
+                        {needsDisp ? 'Needs a court disposition — not counted in the ruling' : meta}
+                      </div>
                     </button>
                     <div className="stag" style={{background:c.tagBg,color:c.accent}}>{c.tag}</div>
-                    <button className="srow-edit" onClick={()=>setEditId(editId===o.id?null:o.id)}>
-                      {editId===o.id?'Close':'Edit'}
-                    </button>
+                    {unresolved && topicFor ? (
+                      <button className="srow-edit" style={{borderColor:C_ORANGE,color:C_ORANGE}}
+                        onClick={()=>{ setResolving(o.id); setTopic(topicFor); setComboOpen(true); }}>Resolve</button>
+                    ) : (
+                      <button className="srow-edit" onClick={()=>setEditId(editId===o.id?null:o.id)}>
+                        {editId===o.id?'Close':'Edit'}
+                      </button>
+                    )}
                     <button className="srow-x" onClick={()=>remove(o.id)} title="Remove this offense">✕</button>
                   </div>
-                  {editId === o.id && (
+                  {editId === o.id && !unresolved && (
                     <OffenseEditor o={o} applicant={applicant}
                       onChange={p=>patch(o.id,p)} onDone={()=>setEditId(null)}/>
                   )}
@@ -1432,14 +1555,61 @@ const PhaseScreen = ({ applicant, setApplicant, verdict, openRef, openTables }) 
           <div className="combo-input-row">
             <span style={{color:C_MUTED,fontSize:13}}>+</span>
             <input className="combo-input" value={query}
-              onChange={e=>{setQuery(e.target.value);setComboOpen(true);}}
+              onChange={e=>{setQuery(e.target.value);setComboOpen(true);setTopic(null);}}
               onFocus={()=>setComboOpen(true)}
-              placeholder="Add an offense — search charge, code, or keyword"/>
-            <span className="combo-count">{comboOpen ? `${results.length} available` : 'Search'}</span>
+              placeholder="Describe what happened — e.g. shoplifting, got in a fight, failed drug test"/>
+            <span className="combo-count">
+              {topic ? '1 question' : comboOpen ? `${nHits} match${nHits===1?'':'es'}` : 'Search'}
+            </span>
           </div>
-          {comboOpen && (
+
+          {/* One question, asked only when the answer changes the offense code. */}
+          {comboOpen && topic && (
+            <div className="triage">
+              <div className="triage-topic">{resolving ? 'Resolve classification' : topic.label}</div>
+              <div className="triage-q">{topic.q}</div>
+              {topic.hint && <div className="triage-hint">{topic.hint}</div>}
+              <div className="triage-answers">
+                {topic.answers.map((a,i) => (
+                  <button key={i} className={`triage-a${a.to?'':' unsure'}`} onClick={()=>answerTopic(topic,a)}>
+                    {a.label}
+                    {!a.to && <span className="triage-a-note">Logs the offense without a ruling</span>}
+                  </button>
+                ))}
+              </div>
+              <button className="btn-line" style={{marginTop:12}} onClick={closeSearch}>Cancel</button>
+            </div>
+          )}
+
+          {comboOpen && !topic && (
             <div className="combo-list">
-              {results.length === 0 && <div className="combo-empty">No offense matches “{query}”.</div>}
+              {matchNotes.map((n,i) => (
+                <div key={`n${i}`} className="triage-note">
+                  <div className="triage-note-hd">{n.title}</div>
+                  <div className="triage-note-body">{n.body}</div>
+                  <button className="cite" onClick={()=>openRef(n.cite)}>AR 601-210, {n.cite}</button>
+                </div>
+              ))}
+              {nHits === 0 && matchNotes.length === 0 && (
+                <div className="combo-empty">
+                  Nothing matches “{query}”. Try the words the applicant used — or browse the{' '}
+                  <button className="cite" onClick={openTables}>offense chart</button>.
+                </div>
+              )}
+              {matchTopics.map(t => (
+                <button key={t.id} className="combo-item" onClick={()=>pickTopic(t)}>
+                  <div className="combo-tag" style={{color:C_GOLD}}>{t.q ? '1 question' : 'Direct'}</div>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div className="combo-label">{t.label}</div>
+                    <div className="combo-sub">
+                      {t.q ? t.q : (catOf(t.to)?.label || '')}
+                    </div>
+                  </div>
+                </button>
+              ))}
+              {results.length > 0 && (
+                <div className="combo-divider">Or pick the AR 601-210 category directly</div>
+              )}
               {results.map(cat => {
                 const c = clsOf(cat);
                 const n = counts[cat.id] || 0;
@@ -1741,10 +1911,18 @@ const Rail = ({ applicant, verdict, banner, approv, clStatus, expDates }) => {
       <div className="rail-sec">
         <div className="score-hd">
           <div className="rail-label">Approvability</div>
-          <div className="score-num" style={{color:banner.accent}}>{score}</div>
+          <div className="score-num" style={{color: score === null ? C_MUTED : banner.accent}}>
+            {score === null ? '—' : score}
+          </div>
         </div>
-        <div className="score-track"><div className="score-fill" style={{width:`${score}%`,background:banner.accent}}/></div>
-        {factors.length > 0 && (
+        {score === null
+          ? <div className="rail-clock-meta" style={{marginTop:0}}>
+              {(verdict?.incomplete||[]).length
+                ? 'No estimate while the record is incomplete.'
+                : 'No estimate until the record is entered.'}
+            </div>
+          : <div className="score-track"><div className="score-fill" style={{width:`${score}%`,background:banner.accent}}/></div>}
+        {score !== null && factors.length > 0 && (
           <div className="factors">
             {factors.map((f,i) => (
               <div key={i} className="factor">
@@ -1754,9 +1932,9 @@ const Rail = ({ applicant, verdict, banner, approv, clStatus, expDates }) => {
             ))}
           </div>
         )}
-        <div className="rail-disclaimer">
+        {score !== null && <div className="rail-disclaimer">
           Unofficial estimate — not from regulation. The outcome depends on the commander interview, the applicant statement, and command climate. Do not share this with the applicant.
-        </div>
+        </div>}
       </div>
 
       {actions.length > 0 && (
@@ -2156,6 +2334,11 @@ const App = () => {
           <div className="spacer"/>
           <button className="cite" onClick={()=>openRef(banner.cite)}>{resolvePara(banner.cite)}</button>
         </div>
+        {banner.caution && (
+          <div className="verdict-caution">
+            <span>&#9888;</span><span>{banner.caution}</span>
+          </div>
+        )}
       </div>
 
       <div className="phases">
