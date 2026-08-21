@@ -126,6 +126,7 @@ button,select,textarea,input{font-family:inherit}
 .seg-btn:hover{border-color:rgba(255,255,255,.4);color:var(--t1)}
 .seg-btn.on{background:rgba(255,204,1,.14);color:var(--gold);border-color:var(--gold);position:relative;z-index:1}
 .seg-btn.on.bad{background:rgba(207,0,0,.18);color:var(--red-fg);border-color:var(--red)}
+.seg-btn.on.unsure{background:rgba(241,101,33,.16);color:var(--orange);border-color:var(--orange)}
 
 /* ── OFFENSE STACK ───────────────────────────────────────── */
 .stack{display:flex;flex-direction:column;gap:1px;margin-top:14px}
@@ -199,6 +200,12 @@ select.finput{cursor:pointer}
   color:var(--red-fg);font-size:12px;line-height:1.45;display:flex;gap:8px}
 .editor-foot{display:flex;justify-content:flex-end;gap:8px}
 
+/* ── DISPOSITION CHALLENGE ───────────────────────────────── */
+.challenge{padding:14px 16px;background:rgba(241,101,33,.09);border:1px solid rgba(241,101,33,.45)}
+.challenge-q{font-size:14px;font-weight:700;color:var(--orange)}
+.challenge-body{font-size:12.5px;color:var(--t2);line-height:1.55;margin:8px 0 12px}
+.challenge-btns{display:flex;gap:8px;flex-wrap:wrap}
+
 /* ── NOTES ───────────────────────────────────────────────── */
 .notes{display:flex;flex-direction:column;gap:8px;margin-top:14px}
 .note{display:flex;gap:10px;font-size:12.5px;color:var(--t2);line-height:1.5}
@@ -266,9 +273,7 @@ select.finput{cursor:pointer}
 .rail-clock-body{font-size:14px;line-height:1.5;color:var(--t1);margin-top:8px}
 .rail-clock-meta{font-size:12px;color:var(--t3);margin-top:4px;line-height:1.45}
 .score-hd{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px}
-.score-num{font-size:20px;font-weight:700}
-.score-track{height:4px;background:rgba(255,255,255,.12)}
-.score-fill{height:4px}
+.score-band{font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
 .factors{display:flex;flex-direction:column;gap:6px;margin-top:12px}
 .factor{display:flex;gap:8px;font-size:12.5px;color:var(--t2);line-height:1.45}
 .factor-sign{font-weight:700;flex:none}
@@ -494,6 +499,14 @@ const computeCaseVerdict = (applicant) => {
      resolved classification, is NOT counted below. Report it so the UI can
      refuse to show a clean ruling built on a partial record. */
   const incomplete = [];
+  // A gate answered "Not verified yet" is not an answer — the ruling below is
+  // built on unconfirmed facts, so surface it the same way a missing
+  // disposition is surfaced.
+  CASE_QUESTIONS.forEach(cq => {
+    if (ca[cq.id] !== 'unknown') return;
+    const opt = cq.options.find(o => o.v === 'unknown');
+    incomplete.push({ id:`gate_${cq.id}`, label:cq.short || cq.q, missing:'verification', verify:opt?.verify });
+  });
   offenses.forEach(o => {
     if (!o.categoryId) {
       incomplete.push({ id:o.id, label:o.pendingLabel || 'Unclassified offense', missing:'classification' });
@@ -976,7 +989,103 @@ ${offList}
   };
 
 
-  return { genCoverSheet, genStatement, genMFR, genRouting };
+  /* One page a recruiter can hand to the station commander: the call, the
+     reasons, the citations, and what is still outstanding. */
+  const genDetermination = (banner) => {
+    const L = [], rule = '─'.repeat(64);
+    const inc = verdict?.incomplete || [];
+    L.push('MORAL WAIVER — DETERMINATION SUMMARY');
+    L.push(rule);
+    L.push(`Applicant:      ${fullName || '[Name]'}`);
+    L.push(`RSID:           ${applicant.rsid || '[RSID]'}`);
+    L.push(`PS / NPS:       ${applicant.psNps || '[not set]'}`);
+    L.push(`Prepared:       ${new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}`);
+    L.push(`Basis:          ${REG_VERSION}`);
+    L.push('');
+    L.push(rule);
+    L.push(`DETERMINATION:  ${(banner.title||'').toUpperCase()}`);
+    L.push(`STATUS:         ${banner.tag}`);
+    L.push(`AUTHORITY:      ${banner.authority}`);
+    L.push(rule);
+    L.push('');
+    L.push(banner.body);
+    L.push('');
+
+    if (inc.length) {
+      L.push('!! RECORD INCOMPLETE — THIS DETERMINATION IS NOT FINAL');
+      L.push(rule);
+      inc.forEach(i => L.push(i.missing === 'verification'
+        ? `[ ] UNVERIFIED GATE — ${i.label}`
+        : i.missing === 'classification'
+          ? `[ ] UNCLASSIFIED — ${i.label}`
+          : `[ ] NO DISPOSITION — ${i.label}`));
+      L.push('');
+    }
+
+    if (verdict?.bars?.length) {
+      L.push('DISQUALIFICATIONS');
+      L.push(rule);
+      verdict.bars.forEach(b => {
+        L.push(`${b.perm ? '[PERMANENT BAR]' : '[BLOCKS PROCESSING]'} ${b.title}`);
+        L.push(`   ${b.text}`);
+        L.push(`   Authority: ${b.cite}`);
+        L.push('');
+      });
+    }
+
+    if (verdict?.waivers?.length) {
+      L.push('WAIVER REQUIRED');
+      L.push(rule);
+      verdict.waivers.forEach(w => L.push(`- ${w.label}`
+        + `\n   Approval: ${w.authority === 'USARD' ? 'CG, USARD' : 'Battalion Commander'} · AR 601-210, ${w.cite}`));
+      L.push('');
+    }
+
+    if (verdict?.waits?.length) {
+      L.push('WAITING PERIODS');
+      L.push(rule);
+      verdict.waits.forEach(w => L.push(w.needDate
+        ? `- ${w.label} — date not entered; earliest submission cannot be computed.`
+        : `- ${w.label}\n   Earliest submission ${w.earliest.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})} · ${w.daysLeft} days remaining · AR 601-210, ${w.cite}`));
+      L.push('');
+    }
+
+    if (verdict?.suitability?.length) {
+      L.push('SUITABILITY REVIEW REQUIRED (before MEPS projection)');
+      L.push(rule);
+      verdict.suitability.forEach(x => L.push(`- ${x.label} — ${x.level === 'USARD' ? 'CG USARD' : 'BN CO'} (AR 601-210, ${x.cite})`));
+      L.push('');
+    }
+
+    const offs = sortNewest(screenedOffenses.filter(o => o.categoryId && (o.offenseDate || o.description)));
+    if (offs.length) {
+      L.push('OFFENSE RECORD (newest to oldest)');
+      L.push(rule);
+      offs.forEach((o,i) => {
+        const cat = OFFENSE_CATEGORIES.find(c => c.id === o.categoryId);
+        L.push(`${i+1}. ${isWaived(o) ? '* ' : ''}${fmtDate(o.offenseDate)} — ${o.description || cat?.label || '[Offense]'}`);
+        if (o.dispositionText) L.push(`   Disposition: ${o.dispositionText}`);
+      });
+      L.push('');
+      L.push('* = offense being waived');
+      L.push('');
+    }
+
+    if (verdict?.notes?.length) {
+      L.push('NOTES');
+      L.push(rule);
+      verdict.notes.forEach(n => L.push(`- ${n.label} (AR 601-210, ${n.cite})`));
+      L.push('');
+    }
+
+    L.push(rule);
+    L.push('This is a screening aid, not an approval. The determination rests with');
+    L.push('the approval authority named above. Verify currency with your S1 before');
+    L.push('submission.');
+    return L.join('\n');
+  };
+
+  return { genCoverSheet, genStatement, genMFR, genRouting, genDetermination };
 };
 
 const printDoc = (content, fmt='text') => {
@@ -1155,24 +1264,33 @@ const bannerFor = (verdict) => {
   if (!inc.length) return base;
 
   const one = inc.length === 1;
-  const what = one
-    ? (inc[0].missing === 'classification'
-        ? `"${inc[0].label}" has not been classified yet`
-        : `"${inc[0].label}" is missing its court disposition`)
-    : `${inc.length} offenses are missing a disposition or classification`;
+  const describe = (i) => i.missing === 'classification' ? `"${i.label}" has not been classified yet`
+    : i.missing === 'verification' ? `the "${i.label}" gate is not verified`
+    : `"${i.label}" is missing its court disposition`;
+  const nGate = inc.filter(i => i.missing === 'verification').length;
+  const nOff  = inc.length - nGate;
+  const gateOnly = nOff === 0;
+  const what = one ? describe(inc[0])
+    : [ nGate ? `${nGate} gate${nGate>1?'s are':' is'} unverified` : null,
+        nOff ? `${nOff} offense${nOff>1?'s are':' is'} missing a disposition or classification` : null
+      ].filter(Boolean).join(' and ');
   const they = one ? 'it is' : 'they are';
 
   // A clean or empty ruling is not trustworthy while entries are outstanding.
   if (base.tag === 'No waiver required' || verdict.status === 'PENDING') return {
     tag:'Record incomplete', title:'Not determined', accent:C_ORANGE,
     authority:'Cannot rule yet', authBg:'rgba(241,101,33,.18)', authFg:C_ORANGE,
-    body:`${what}, so ${they} NOT counted in this ruling. Finish the record before telling the applicant anything.`,
+    body: gateOnly
+      ? `${what}. Any ruling here would rest on unconfirmed facts — verify before telling the applicant anything.`
+      : `${what}, so ${they} NOT counted in this ruling. Finish the record before telling the applicant anything.`,
     cite: base.cite, caution:null };
 
   // A permanent bar cannot get better, so the ruling stands; everything else
   // could still escalate, so carry the warning on the face of the banner.
   if (verdict.permBar) return base;
-  return { ...base, caution:`${what} and ${one ? 'is' : 'are'} not counted — this ruling may change once ${they} entered.` };
+  return { ...base, caution: gateOnly
+    ? `${what} — this ruling may change once ${they} confirmed.`
+    : `${what} and ${one ? 'is' : 'are'} not counted — this ruling may change once ${they} entered.` };
 };
 
 const bannerBase = (verdict) => {
@@ -1238,6 +1356,16 @@ const displayScore = (verdict, approv) => {
   return approv ? approv.score : 60;
 };
 
+// A band, not a number — the underlying weights are heuristic and a
+// two-digit score reads as precision the app cannot back up.
+const riskBand = (score) => {
+  if (score === null) return { label:'Not rated', color:C_MUTED };
+  if (score >= 70) return { label:'Low',      color:C_GREEN };
+  if (score >= 45) return { label:'Moderate', color:C_GOLD };
+  if (score >= 30) return { label:'Elevated', color:C_ORANGE };
+  return { label:'High', color:C_RED };
+};
+
 const displayFactors = (verdict, approv) => {
   if (approv && approv.factors.length) return approv.factors.map(f => ({
     sign: f.mod > 0 ? '+' : '−',
@@ -1252,8 +1380,9 @@ const nextActions = (applicant, verdict, clStatus, expDates) => {
   const out = [];
   if (!verdict) return out;
   // Incomplete entries come first — they are the reason a ruling may be wrong.
-  (verdict.incomplete||[]).forEach(i => out.push(i.missing === 'classification'
-    ? `Classify "${i.label}" — it is not counted yet`
+  (verdict.incomplete||[]).forEach(i => out.push(
+    i.missing === 'verification' ? (i.verify || `Verify: ${i.label}`)
+    : i.missing === 'classification' ? `Classify "${i.label}" — it is not counted yet`
     : `Set the court disposition on "${i.label}" — it is not counted yet`));
   verdict.bars.filter(b => !b.perm).forEach(b => out.push(`Resolve: ${b.title.toLowerCase()}`));
   const req = getRequiredChecklist(verdict.authority || 'BN', offenseFlags(applicant.offenses||[]));
@@ -1271,8 +1400,8 @@ const nextActions = (applicant, verdict, clStatus, expDates) => {
 const dispLabel = (v) => ({ convicted:'Convicted', adverse:'Adverse disposition',
   dismissed:'Dismissed', self_admit:'Self-admitted' }[v] || 'No disposition set');
 
-const shortOpt = (qid, v) => qid === 'dependence'
-  ? ({ no:'None', remission:'Remission', yes:'Current' }[v] || v)
+const shortOpt = (qid, v) => v === 'unknown' ? 'Not verified'
+  : qid === 'dependence' ? ({ no:'None', remission:'Remission', yes:'Current' }[v] || v)
   : ({ no:'No', yes:'Yes', active:'Active', unsupervised:'Unsupervised' }[v] || v);
 
 const isBadOpt = v => v === 'yes' || v === 'active';
@@ -1284,7 +1413,9 @@ const OffenseEditor = ({ o, applicant, onChange, onDone }) => {
   const isDat = cat.group === 'dat';
   const isPs = cat.class === 'ps';
   const isTraffic = cat.class === 'traffic';
-  const set = f => e => onChange({ [f]: e.target.type === 'checkbox' ? e.target.checked : e.target.value });
+  const set = f => e => onChange(f === 'disposition'
+    ? { disposition: e.target.value, dismissalConfirmed:false }
+    : { [f]: e.target.type === 'checkbox' ? e.target.checked : e.target.value });
 
   const warnings = [];
   if (o.offenseDate && o.offenseDate > todayStr) warnings.push('Offense date is in the future.');
@@ -1320,6 +1451,27 @@ const OffenseEditor = ({ o, applicant, onChange, onDone }) => {
             {DISPOSITION_OPTIONS.map(d => <option key={d.v} value={d.v}>{d.l}</option>)}
           </select>
           <div className="fnote">Diversion, deferred adjudication, fines, and probated sentences all count as adverse dispositions (4-30b). Expunged and sealed records still count.</div>
+        </div>
+      )}
+
+      {/* The most common packet error: an applicant reports "dismissed" after
+          completing diversion, which 4-30b treats as an adverse disposition. */}
+      {o.disposition === 'dismissed' && !o.dismissalConfirmed && (
+        <div className="challenge">
+          <div className="challenge-q">Was anything required in exchange for the dismissal?</div>
+          <div className="challenge-body">
+            Diversion, deferred adjudication, adjudication withheld, a fine, restitution, community
+            service, or classes all make this an <strong>adverse disposition</strong> under 4-30b —
+            not a dismissal. This is the single most common reason packets come back.
+          </div>
+          <div className="challenge-btns">
+            <button className="btn-line" onClick={()=>onChange({ disposition:'adverse', dismissalConfirmed:true })}>
+              Yes — record as adverse
+            </button>
+            <button className="btn-line" onClick={()=>onChange({ dismissalConfirmed:true })}>
+              No — nothing was required
+            </button>
+          </div>
         </div>
       )}
 
@@ -1464,7 +1616,7 @@ const PhaseScreen = ({ applicant, setApplicant, verdict, openRef, openTables }) 
     <div className="col-760">
       <div>
         <div className="sec-hd">
-          <div className="sec-label">Eligibility gates</div>
+          <div className="sec-label">Step 1 — Eligibility gates</div>
           <div className="sec-note">Five questions. Any red answer stops the packet.</div>
         </div>
         <div className="panel">
@@ -1482,9 +1634,10 @@ const PhaseScreen = ({ applicant, setApplicant, verdict, openRef, openTables }) 
                   {gq.options.map(opt => {
                     const on = ca[gq.id] === opt.v;
                     const bad = isBadOpt(opt.v);
+                    const unsure = opt.v === 'unknown';
                     return (
                       <button key={opt.v} title={opt.l}
-                        className={`seg-btn${on?' on':''}${bad?' bad':''}`}
+                        className={`seg-btn${on?' on':''}${bad?' bad':''}${unsure?' unsure':''}`}
                         onClick={()=>setCase(gq.id, opt.v)}>{shortOpt(gq.id, opt.v)}</button>
                     );
                   })}
@@ -1497,7 +1650,7 @@ const PhaseScreen = ({ applicant, setApplicant, verdict, openRef, openTables }) 
 
       <div>
         <div className="sec-hd">
-          <div className="sec-label">Offense record</div>
+          <div className="sec-label">Step 2 — Offense record</div>
           <div className="sec-note">
             {offenses.length} {offenses.length === 1 ? 'entry' : 'entries'} · list every offense, including traffic — the regulation counts them.{' '}
             <button className="cite" onClick={openTables}>Offense chart</button>
@@ -1789,7 +1942,7 @@ const UF608Card = ({ applicant, offenses, waivedIds }) => {
 };
 
 /* ── Phase 3: Generate ───────────────────────────────────────────────── */
-const PhaseGenerate = ({ applicant, verdict, clStatus, requiredItems }) => {
+const PhaseGenerate = ({ applicant, verdict, banner, clStatus, requiredItems }) => {
   const [preview, setPreview] = useState(null);
   const docs = makeDocs(applicant, verdict, clStatus);
   const offenses = applicant.offenses || [];
@@ -1803,6 +1956,9 @@ const PhaseGenerate = ({ applicant, verdict, clStatus, requiredItems }) => {
   if (!offenses.some(o => o.description)) missing.push('offense descriptions');
 
   const cards = [
+    { id:'determination', kind:'Summary', accent:C_GREEN, name:'Determination Summary',
+      desc:'One page for the station commander — the ruling, the reasons with citations, waiting periods, suitability reviews, and anything still outstanding.',
+      gen:()=>docs.genDetermination(banner), fmt:'text' },
     { id:'routing',   kind:'Memorandum', accent:C_GOLD,  name:'Routing / Transmittal Memo',
       desc:'Routes the finished packet to the battalion S1 with the offense list, approving authority, and document index.',
       gen:docs.genRouting, fmt:'text' },
@@ -1866,6 +2022,7 @@ const PhaseGenerate = ({ applicant, verdict, clStatus, requiredItems }) => {
 /* ── Right rail ──────────────────────────────────────────────────────── */
 const Rail = ({ applicant, verdict, banner, approv, clStatus, expDates }) => {
   const score = displayScore(verdict, approv);
+  const band = riskBand(score);
   const factors = displayFactors(verdict, approv);
   const actions = nextActions(applicant, verdict, clStatus, expDates);
   const waits = verdict?.waits || [];
@@ -1910,18 +2067,16 @@ const Rail = ({ applicant, verdict, banner, approv, clStatus, expDates }) => {
 
       <div className="rail-sec">
         <div className="score-hd">
-          <div className="rail-label">Approvability</div>
-          <div className="score-num" style={{color: score === null ? C_MUTED : banner.accent}}>
-            {score === null ? '—' : score}
-          </div>
+          <div className="rail-label">Denial risk</div>
+          <div className="score-band" style={{color: band.color}}>{band.label}</div>
         </div>
-        {score === null
-          ? <div className="rail-clock-meta" style={{marginTop:0}}>
-              {(verdict?.incomplete||[]).length
-                ? 'No estimate while the record is incomplete.'
-                : 'No estimate until the record is entered.'}
-            </div>
-          : <div className="score-track"><div className="score-fill" style={{width:`${score}%`,background:banner.accent}}/></div>}
+        {score === null && (
+          <div className="rail-clock-meta" style={{marginTop:0}}>
+            {(verdict?.incomplete||[]).length
+              ? 'No read while the record is incomplete.'
+              : 'No read until the record is entered.'}
+          </div>
+        )}
         {score !== null && factors.length > 0 && (
           <div className="factors">
             {factors.map((f,i) => (
@@ -1933,7 +2088,7 @@ const Rail = ({ applicant, verdict, banner, approv, clStatus, expDates }) => {
           </div>
         )}
         {score !== null && <div className="rail-disclaimer">
-          Unofficial estimate — not from regulation. The outcome depends on the commander interview, the applicant statement, and command climate. Do not share this with the applicant.
+          Unofficial read — not from regulation. The outcome depends on the commander interview, the applicant statement, and command climate. Do not share this with the applicant.
         </div>}
       </div>
 
@@ -2358,7 +2513,7 @@ const App = () => {
           {phase === 1 && <PhaseScreen applicant={applicant} setApplicant={setApplicant} verdict={verdict} openRef={openRef} openTables={openTables}/>}
           {phase === 2 && <PhasePacket applicant={applicant} requiredItems={requiredItems}
             clStatus={clStatus} setClStatus={setClStatus} expDates={expDates} setExpDates={setExpDates}/>}
-          {phase === 3 && <PhaseGenerate applicant={applicant} verdict={verdict}
+          {phase === 3 && <PhaseGenerate applicant={applicant} verdict={verdict} banner={banner}
             clStatus={clStatus} requiredItems={requiredItems}/>}
         </div>
         <Rail applicant={applicant} verdict={verdict} banner={banner} approv={approv}

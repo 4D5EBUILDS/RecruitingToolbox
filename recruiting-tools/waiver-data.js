@@ -166,49 +166,59 @@ window.OFFENSE_CATEGORIES = [
 window.CASE_QUESTIONS = [
   {
     id: 'pending_charges',
+    short: 'Pending charges',
     q: 'Are any criminal or juvenile charges currently pending?',
     hint: 'AR 601-210, 4-22g / 4-33 — ANY pending charge blocks ALL processing until fully resolved, in every state. Unpaid traffic tickets count as pending charges.',
     options: [
       { v:'no',  l:'No — all charges fully resolved' },
-      { v:'yes', l:'Yes — one or more charges pending (STOPS processing)' }
+      { v:'yes', l:'Yes — one or more charges pending (STOPS processing)' },
+      { v:'unknown', l:'Not verified yet', verify:'Run the police record check (DD 369) and the court check. An open charge or unpaid citation stops all processing.' }
     ]
   },
   {
     id: 'civil_restraint',
+    short: 'Civil restraint',
     q: 'Is the applicant currently under any civil restraint?',
     hint: 'Civil restraint = confinement, parole, or probation (4-22h). EXCEPTION (4-35): may enlist while on UNSUPERVISED probation for minor traffic or these minor offenses only: curfew, disorderly conduct/disturbance, littering, loitering, MIP alcohol/tobacco, truancy/runaway, vagrancy, fireworks/fish-and-game/leash-law violations, turnstile jumping, and similar — provided all fines are paid and all conditions complete.',
     options: [
       { v:'no',           l:'No civil restraint of any kind' },
       { v:'unsupervised', l:'Unsupervised probation for a para 4-35 minor offense only (may process)' },
-      { v:'active',       l:'Yes — confined, on parole, or on supervised probation (STOPS processing)' }
+      { v:'active',       l:'Yes — confined, on parole, or on supervised probation (STOPS processing)' },
+      { v:'unknown',      l:'Not verified yet', verify:'Confirm with the applicant and the probation or parole officer whether supervision is active and whether all conditions are complete.' }
     ]
   },
   {
     id: 'lautenberg',
+    short: 'Lautenberg DV conviction',
     q: 'Any conviction for misdemeanor domestic violence (Lautenberg, 18 USC 922)?',
     hint: 'Covers ANY qualifying misdemeanor DV conviction — even old or (in some states) expunged convictions. Victim must be a current/former spouse, parent, guardian, cohabitant, or co-parent. If in doubt, check with JAG.',
     options: [
       { v:'no',  l:'No' },
-      { v:'yes', l:'Yes — qualifying DV conviction (PERMANENT BAR)' }
+      { v:'yes', l:'Yes — qualifying DV conviction (PERMANENT BAR)' },
+      { v:'unknown', l:'Not verified yet', verify:'Pull the court documents and check the victim relationship with JAG. This answer decides between a waiverable offense and a permanent bar.' }
     ]
   },
   {
     id: 'sex_offender',
+    short: 'Sex offense or registry',
     q: 'Any sex offense conviction, or listing on any sex offender registry?',
     hint: 'Includes felony rape, sexual abuse/assault, incest, any other sexual offense, juvenile adjudications of guilt, and any current or past registry listing — Federal or State (4-22j / 4-7d).',
     options: [
       { v:'no',  l:'No' },
-      { v:'yes', l:'Yes (PERMANENT BAR — no waiver authorized)' }
+      { v:'yes', l:'Yes (PERMANENT BAR — no waiver authorized)' },
+      { v:'unknown', l:'Not verified yet', verify:'Run the sex offender registry check through MEPS (UM 21-022) before going any further.' }
     ]
   },
   {
     id: 'dependence',
+    short: 'Alcohol or drug dependence',
     q: 'Any history of alcohol or drug dependence?',
     hint: 'Persons who are or were alcohol- or drug-dependent are ineligible unless in sustained remission for 12 consecutive months (4-22b / 4-22c). Current enrollment in a recovery program = not in remission.',
     options: [
       { v:'no',        l:'No history of dependence' },
       { v:'remission', l:'Prior dependence — in sustained remission 12+ consecutive months' },
-      { v:'yes',       l:'Dependent / in treatment / less than 12 months remission (STOPS processing)' }
+      { v:'yes',       l:'Dependent / in treatment / less than 12 months remission (STOPS processing)' },
+      { v:'unknown',   l:'Not verified yet', verify:'Ask directly about treatment history and current program enrollment, and confirm the date of last occurrence.' }
     ]
   },
 ];
