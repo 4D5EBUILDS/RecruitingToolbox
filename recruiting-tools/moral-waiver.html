@@ -1193,25 +1193,115 @@ async function generateFilledUF608(applicant, offenses, waivedIds, onProgress, t
     );
   }
 
+  onProgress('Reading the template structure...');
+  const L1 = new TextDecoder('latin1');
+  const txt = L1.decode(origBytes);
+
+  // Balanced-brace read of the dictionary starting at/after `from`.
+  const dictAt = (from) => {
+    const s = txt.slice(from, from + 4096);
+    const i0 = s.indexOf('<<');
+    if (i0 < 0) return null;
+    let depth = 0;
+    for (let k = i0; k < s.length - 1; k++) {
+      if (s[k] === '<' && s[k+1] === '<') { depth++; k++; }
+      else if (s[k] === '>' && s[k+1] === '>') { depth--; k++; if (!depth) return s.slice(i0, k + 1); }
+    }
+    return null;
+  };
+
+  // Where the existing cross-reference lives, and what the trailer says.
+  const sxi = txt.lastIndexOf('startxref');
+  const prevXref = sxi < 0 ? 0 : parseInt((txt.slice(sxi, sxi + 64).match(/startxref\s+(\d+)/) || [])[1] || '0', 10);
+  const xrefIsStream = !/^\s*xref/.test(txt.slice(prevXref, prevXref + 12));
+  const trailerDict = xrefIsStream
+    ? dictAt(prevXref)
+    : (() => { const t = txt.indexOf('trailer', prevXref); return t < 0 ? null : dictAt(t); })();
+  if (!trailerDict) throw new Error('Could not read the PDF cross-reference table. This template is not one the generator understands — use "Copy text" instead.');
+
+  const pick = (re) => (trailerDict.match(re) || [])[1];
+  const rootRef = pick(/\/Root\s+(\d+\s+\d+\s+R)/);
+  const infoRef = pick(/\/Info\s+(\d+\s+\d+\s+R)/);
+  const idArr   = pick(/\/ID\s*(\[[^\]]*\])/);
+  const prevSize = parseInt(pick(/\/Size\s+(\d+)/) || '0', 10);
+  if (!rootRef || !prevSize) throw new Error('The PDF trailer is missing /Root or /Size — cannot write a valid update.');
+
+  // Which object holds the XFA "datasets" packet? Never assume — the array
+  // usually lives inside a compressed object stream.
+  const findDatasets = () => {
+    const fromArray = (block) => {
+      const d = block.match(/\(datasets\)\s*(\d+)\s+0\s+R/);
+      return d ? parseInt(d[1], 10) : null;
+    };
+    let m = txt.match(/\/XFA\s*\[([\s\S]{0,800}?)\]/);
+    if (m) { const n = fromArray(m[1]); if (n) return n; }
+    const re = /(\d+)\s+0\s+obj\s*<<([\s\S]{0,400}?)>>\s*stream\r?\n/g;
+    let om;
+    while ((om = re.exec(txt)) !== null) {
+      if (!/\/ObjStm/.test(om[2])) continue;
+      const len = parseInt((om[2].match(/\/Length\s+(\d+)/) || [])[1] || '0', 10);
+      if (!len) continue;
+      const start = om.index + om[0].length;
+      try {
+        const inner = L1.decode(pako.inflate(origBytes.slice(start, start + len)));
+        const mm = inner.match(/\/XFA\s*\[([\s\S]{0,800}?)\]/);
+        if (mm) { const n = fromArray(mm[1]); if (n) return n; }
+      } catch (e) { /* not inflatable — skip */ }
+    }
+    return null;
+  };
+  const dsObj = findDatasets();
+  if (!dsObj) throw new Error('Could not locate the XFA datasets packet in this PDF. It may not be an XFA form — use "Copy text" instead.');
+
   onProgress('Building XFA datasets...');
   const xml = buildDatasetsXML(applicant, offenses, waivedIds);
-  const xmlBytes = new TextEncoder().encode(xml);
   onProgress('Compressing...');
-  const compressed = pako.deflate(xmlBytes);
-  const tail = new TextDecoder('utf-8',{fatal:false}).decode(origBytes.slice(-512));
-  const prevMatch = tail.match(/startxref\s+(\d+)/g);
-  const prevXref = prevMatch ? parseInt(prevMatch[prevMatch.length-1].match(/\d+/)[0]) : 0;
+  const compressed = pako.deflate(new TextEncoder().encode(xml));
+
   const enc = new TextEncoder();
   const sep = enc.encode('\n');
-  const objHeader = enc.encode(`72 0 obj\n<<\n/Filter [/FlateDecode]\n/Length ${compressed.length}\n/Type /EmbeddedFile\n>>\nstream\n`);
+  const objHeader = enc.encode(`${dsObj} 0 obj\n<</Filter[/FlateDecode]/Length ${compressed.length}/Type/EmbeddedFile>>\nstream\n`);
   const objFooter = enc.encode('\nendstream\nendobj\n');
-  const newObj72At = origBytes.length + sep.length;
-  const xrefAt = newObj72At + objHeader.length + compressed.length + objFooter.length;
-  const xrefEntry = `${String(newObj72At).padStart(10,'0')} 00000 n \r\n`;
-  const xrefBlock = enc.encode(`xref\n72 1\n${xrefEntry}`);
-  const trailerBlock = enc.encode(`trailer\n<<\n/Size 100\n/Prev ${prevXref}\n>>\nstartxref\n${xrefAt}\n%%EOF\n`);
+  const dsAt   = origBytes.length + sep.length;
+  const xrefAt = dsAt + objHeader.length + compressed.length + objFooter.length;
+
+  onProgress('Writing cross-reference...');
+  let xrefBytes;
+  if (xrefIsStream) {
+    // Match the original: an incremental update to an xref-stream PDF must
+    // itself be an xref stream, not a classic table.
+    const xrefObj = prevSize;              // next free object number
+    const newSize = xrefObj + 1;
+    const lo = Math.min(dsObj, xrefObj), hi = Math.max(dsObj, xrefObj);
+    const entry = (off) => {
+      const e = new Uint8Array(7);
+      e[0] = 1;                            // in-use, uncompressed
+      e[1] = (off >>> 24) & 255; e[2] = (off >>> 16) & 255;
+      e[3] = (off >>> 8) & 255;  e[4] = off & 255;
+      e[5] = 0; e[6] = 0;                  // generation 0
+      return e;
+    };
+    const first = lo === dsObj ? entry(dsAt) : entry(xrefAt);
+    const second = lo === dsObj ? entry(xrefAt) : entry(dsAt);
+    const data = new Uint8Array(14);
+    data.set(first, 0); data.set(second, 7);
+    const head = enc.encode(
+      `${xrefObj} 0 obj\n<</Type/XRef/Size ${newSize}/Index[${lo} 1 ${hi} 1]/W[1 4 2]` +
+      `/Root ${rootRef}${infoRef ? `/Info ${infoRef}` : ''}${idArr ? `/ID${idArr}` : ''}` +
+      `/Prev ${prevXref}/Length ${data.length}>>\nstream\n`);
+    const foot = enc.encode(`\nendstream\nendobj\nstartxref\n${xrefAt}\n%%EOF\n`);
+    xrefBytes = new Uint8Array(head.length + data.length + foot.length);
+    xrefBytes.set(head, 0); xrefBytes.set(data, head.length); xrefBytes.set(foot, head.length + data.length);
+  } else {
+    // Classic table original — append a classic section, carrying /Root through.
+    xrefBytes = enc.encode(
+      `xref\n${dsObj} 1\n${String(dsAt).padStart(10,'0')} 00000 n \r\n` +
+      `trailer\n<</Size ${prevSize}/Root ${rootRef}${infoRef ? `/Info ${infoRef}` : ''}` +
+      `${idArr ? `/ID${idArr}` : ''}/Prev ${prevXref}>>\nstartxref\n${xrefAt}\n%%EOF\n`);
+  }
+
   onProgress('Assembling PDF...');
-  const parts = [origBytes, sep, objHeader, compressed, objFooter, xrefBlock, trailerBlock];
+  const parts = [origBytes, sep, objHeader, compressed, objFooter, xrefBytes];
   const total = parts.reduce((s,p)=>s+p.length,0);
   const result = new Uint8Array(total);
   let pos=0; for (const p of parts){result.set(p,pos);pos+=p.length;}
